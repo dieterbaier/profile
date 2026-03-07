@@ -1,0 +1,24 @@
+plugins {
+    id "org.asciidoctor.jvm.convert" version "4.0.5"
+    id "org.asciidoctor.jvm.pdf" version "4.0.5"
+}
+
+repositories {
+    mavenCentral()
+}
+
+tasks.register('buildSite', org.asciidoctor.gradle.jvm.AsciidoctorTask) {
+    sourceDir = file("content")
+    outputDir = file("build/site")
+
+   attributes(
+           'includesdir': 'content/includes',
+ //           'stylesheet': 'style.css',
+  //          'stylesdir': 'theme',
+   )
+}
+
+tasks.register('buildCV', org.asciidoctor.gradle.jvm.pdf.AsciidoctorPdfTask) {
+    sourceDir = file("cv")
+    outputDir = file("build/cv")
+}
