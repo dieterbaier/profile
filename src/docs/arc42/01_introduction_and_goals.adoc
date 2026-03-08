@@ -1,0 +1,38 @@
+= Introduction and Goals
+
+== Motivation
+
+Maintaining a personal profile across multiple platforms (GitHub, GitLab, personal website, CV) leads to duplication and inconsistencies.
+
+This project provides a unified solution based on the idea:
+
+"Write once, publish everywhere."
+
+== Goals
+
+- Single source of truth for all profile information
+- Generation of multiple output formats:
+* HTML (website)
+* PDF (CV)
+* Markdown (README)
+- Environment-specific data injection (e.g. private contact details)
+- Fully reproducible builds
+
+== Quality Goals
+
+[cols="1,2"]
+|===
+|Quality |Description
+
+|Reproducibility
+|Same output regardless of environment
+
+|Maintainability
+|Clear structure and modular build pipeline
+
+|Automation
+|Fully automated generation and deployment
+
+|Flexibility
+|Different outputs from same source
+|===

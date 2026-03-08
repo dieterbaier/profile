@@ -1,0 +1,20 @@
+ifndef::is-included[]
+:stylesdir: ../../theme
+:stylesheet: style.css
+[cols="1,2", frame=none, grid=none]
+|===
+endif::[]
+a|
+=== [.subtle]#{pe-timeframe}#
+a|
+=== {pe-company}
+*{pe-role}*
+
+ifdef::pe-description-file[]
+include::{pe-description-file}[]
+endif::[]
+
+[.subtle]#{pe-subtl}#
+ifndef::is-included[]
+|===
+endif::[]

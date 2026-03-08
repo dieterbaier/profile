@@ -1,0 +1,37 @@
+ifndef::stylesheet[]
+:stylesdir: ../../theme
+:stylesheet: style.css
+endif::[]
+ifndef::is-included[]
+[cols="1", frame=none, grid=none]
+|===
+a|
+endif::[]
+[cols="1,2", frame=none, grid=none]
+!===
+a!
+=== [.subtle]#2005#
+a!
+=== Informations und Kommunikationstechnologien
+*Private Fernfachhochschule Darmstadt* +
+[.subtle]#Darmstadt#
+
+a!
+=== [.subtle]#1992#
+a!
+=== Angewandte Informatik
+*Alpen-Adria Universität* +
+[.subtle]#Klagenfurt#
+
+a!
+=== [.subtle]#1989#
+a!
+=== Informatikkaufmann
+[.text-left]
+*Schule für Datenverarbeitungskaufleute* +
+[.subtle]#Korneuburg / Wien#
+
+!===
+ifndef::is-included[]
+|===
+endif::[]

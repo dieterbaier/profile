@@ -1,0 +1,1 @@
+Autor: xref:{basedir}/index.adoc[Dieter Baier]

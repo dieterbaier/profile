@@ -1,0 +1,12 @@
+= Architecture Constraints
+
+- Use of AsciiDoc as primary authoring format
+- Use of Gradle as build system
+- No proprietary tools (open source only)
+- Docker support for reproducible environments
+- CI/CD via GitHub Actions
+
+Technical constraints:
+
+- Pandoc required for Markdown conversion
+- Graphviz required for diagrams

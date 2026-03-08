@@ -1,0 +1,29 @@
+= Write Once. Publish Everywhere.
+ifndef::includesdir[]
+:includesdir: .
+endif::[]
+include::{includesdir}/../../revinfo.adoc[]
+Dieter Baier
+:revremark: Because Maintaining 5 CVs is insane
+:toc:
+
+This project is not just documentation.
+
+It is a working example of:
+
+- Documentation as Code
+- Multi-target publishing
+- Reproducible builds
+
+:leveloffset: +1
+include::{includesdir}/01_introduction_and_goals.adoc[]
+
+include::{includesdir}/02_architecture_constraints.adoc[]
+
+include::{includesdir}/03_system_scope_and_context.adoc[]
+
+include::{includesdir}/05_building_block_view.adoc[]
+
+include::{includesdir}/06_runtime_view.adoc[]
+
+include::{includesdir}/09_architecture_decisions.adoc[]

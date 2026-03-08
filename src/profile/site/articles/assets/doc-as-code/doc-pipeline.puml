@@ -1,0 +1,33 @@
+@startuml
+
+package "Documentation Sources" as source {
+  [stylesheet]
+  [pdftheme]
+  [AsciiDoc]
+  [PlantUML]
+  [Includes / Macros] as includes
+
+  stylesheet -D-> AsciiDoc
+  pdftheme -D-> AsciiDoc
+  PlantUML -D-> AsciiDoc
+  includes -D-> AsciiDoc
+}
+
+package "Build System" as build {
+    [Gradle]
+    [Asciidoctor]
+
+    Gradle -D-> Asciidoctor
+}
+
+package "Outputs" as output {
+  [HTML Website]
+  [PDF]
+  [Internal Docs]
+  [...]
+}
+
+AsciiDoc --> build
+Asciidoctor --> output
+
+@enduml

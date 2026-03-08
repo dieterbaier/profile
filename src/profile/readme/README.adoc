@@ -1,0 +1,36 @@
+= Dieter Baier
+ifdef::buildsite[]
+:basedir: .
+endif::[]
+:norevinfo:
+include::{includesdir}/docheader.adoc[]
+:nolinks:
+
+== {doctitle}
+[.callout]
+====
+ifeval::["{backend}" == "html5"]
+image::dieterbaier_image_site_rounded_200.png[]
+endif::[]
+
+*Software Architekt | Integration, Architektur & Dokumentation*
+====
+
+include::{includesdir}/profile/profile.adoc[]
+
+include::{includesdir}/profile/profile_personal.adoc[]
+
+include::{includesdir}/profile/about_me_citations.adoc[]
+
+=== Kontakt
+
+:type: readme
+include::{includesdir}/contact/contact.adoc[]
+
+=== Sprachkenntnisse
+
+include::{includesdir}/languages/languages.adoc[]
+
+'''
+
+include::{includesdir}/footer.adoc[]

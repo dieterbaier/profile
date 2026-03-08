@@ -1,0 +1,8 @@
+ifndef::is-included[]
+:is-included:
+:stylesdir: ../../theme
+:stylesheet: style.css
+endif::[]
+
+include::EventDrivenIntegrationPlatform/master.adoc[]
+include::ArchitecturDocumentationInitiative/master.adoc[]

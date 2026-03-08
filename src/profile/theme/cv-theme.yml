@@ -1,0 +1,93 @@
+extends: default
+
+font:
+  catalog:
+    Noto Sans:
+      normal: NotoSans-Regular.ttf
+      bold: NotoSans-Bold.ttf
+      italic: NotoSans-Italic.ttf
+      bold_italic: NotoSans-BoldItalic.ttf
+
+page:
+  size: A4
+  margin: [1.5cm, 2cm, 1.5cm, 2cm]
+  numbering:
+    start-at: 1
+
+footer:
+  font-size: 9
+  font-style: italic
+  font-color: #6c757d
+  recto: &shared_footer
+    left:
+      content: '{revnumber}, {revdate}'
+    center:
+      content: '{doctitle} - {subtitle}'
+    right:
+      content: '{page-number} / {page-count}'
+  verso: *shared_footer
+
+base:
+  font-family: Noto Sans
+  font-size: 10
+  line-height: 1.4
+  font-color: #222222
+  text-align: left
+
+heading:
+  font-family: Noto Sans
+  font-style: bold
+  font-color: #1b4965
+
+heading-h1:
+  text-transform: uppercase
+  font-size: 30
+  font-color: #0b2545
+  margin-bottom: 6
+
+heading-h2:
+  text-transform: uppercase
+  font-size: 30
+  font-color: #0b2545
+  margin-bottom: 6
+
+heading-h3:
+  text-transform: uppercase
+  font-size: 14
+  font-color: #1b4965
+  margin-top: 16
+  margin-bottom: 6
+
+
+heading-h4:
+  font-size: 11
+  font-style: bold
+  margin-top: 8
+  margin-bottom: 2
+
+table:
+  border-width: 0
+  grid-width: 0
+  cell-padding: [2,2,2,2]
+
+link:
+  font-color: #1b4965
+
+list:
+  indent: 0.5cm
+  item-spacing: 2
+
+role:
+  subtle:
+    font-color: #6c757d
+    font-size: 9
+
+  highlight:
+    font-color: #1b4965
+    font-style: bold
+
+  footer:
+    font-color: #6c757d
+    font-size: 9
+    font-style: italic
+

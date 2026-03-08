@@ -1,0 +1,26 @@
+ifeval::["{type}" == "readme"]
+[.footer]#Dieses README wurde aus den Inhalten des Repositories https://github.com/dieterbaier/profile[Dieter Baier - Profile^] generiert.#
+endif::[]
+ifeval::["{type}" != "readme"]
+ifeval::["{backend}" == "html5"]
+++++
+<footer>
+++++
+[.footer]
+****
+Dieser Inhalt gehört zur Webseite von xref:{basedir}/index.adoc[Dieter Baier], wurde nach dem xref:{basedir}/articles/documentation/doc-as-code.adoc[Doc as Code Ansatz] in https://asciidoc.org/[AsciiDoc^] geschrieben und xref:{basedir}/sustainability.adoc[als statische HTML-Seite] generiert. *_https://dieterbaier.github.io/profile/[Dive into the architecture^]_*
+[.contact_{backend}]
+*****
+include::../../revinfo.adoc[]
+{revnumber}, {revdate}
+*****
+****
+++++
+</footer>
+++++
+endif::[]
+
+ifeval::["{backend}" == "pdf"]
+[.footer]#Dieses Dokument wurde aus den Inhalten der Webseite von https://dieterbaier.eu[Dieter Baier] erstellt und nach dem https://dieterbaier.eu/articles/documentation/doc-as-code.html[Doc as Code Ansatz] in https://asciidoc.org/[AsciiDoc] geschrieben. https://dieterbaier.github.io/profile/[Dive into the architecture]#
+endif::[]
+endif::[]

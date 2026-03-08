@@ -1,0 +1,8 @@
+ifndef::is-included[]
+:is-included:
+:stylesdir: ../../theme
+:stylesheet: style.css
+endif::[]
+
+include::ACMEInsurance/master.adoc[]
+include::ACMEInsurance1/master.adoc[]

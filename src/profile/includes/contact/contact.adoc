@@ -1,0 +1,89 @@
+:cvcontact: false
+ifeval::["{type}" == "cv"]
+:cvcontact: true
+endif::[]
+ifeval::["{type}" == "readme"]
+:cvcontact: true
+endif::[]
+
+:addwebsite: false
+ifeval::["{backend} == "pdf"]
+:addwebsite: true
+endif::[]
+ifeval::["{type}" == "readme"]
+:addwebsite: true
+endif::[]
+
+ifeval::["{cvcontact}" == "false"]
+include::./linkedin.adoc[]
+include::./github.adoc[]
+endif::[]
+
+ifeval::["{cvcontact}" == "true"]
+[cols="1,2", frame=none, grid=none]
+|===
+
+ifeval::["{type}" != "readme"]
+a|
+*icon:calendar[] Geburtsdatum*
+a|
+16.12.1971
+endif::[]
+
+ifndef::cvprint[]
+a|
+ifeval::["{type}" != "readme"]
+*icon:home[] Adresse*
+endif::[]
+ifeval::["{type}" == "readme"]
+*Adresse*
+endif::[]
+a|
+Deutschland
+endif::[]
+ifdef::cvprint[]
+a|
+*icon:home[] Adresse*
+a|
+{contact-street} +
+{contact-plz} {contact-city}
+
+a|
+*icon:phone[] Telefon*
+a|
+link:tel:+{contact-tel}[{contact-tel-print}]
+
+a|
+*icon:envelope[] E-Mail*
+a|
+link:mailto:{contact-email}[{contact-email}]
+endif::[]
+
+ifeval::["{addwebsite}" == "true"]
+a|
+ifeval::["{type}" != "readme"]
+*icon:globe[] Website*
+endif::[]
+ifeval::["{type}" == "readme"]
+*Website*
+endif::[]
+a|
+link:https://dieterbaier.eu[dieterbaier.eu^]
+endif::[]
+
+a|
+[.vcenter]
+ifeval::["{type}" != "readme"]
+*icon:network-wired[] Netzwerk*
+endif::[]
+ifeval::["{type}" == "readme"]
+*Netzwerk*
+endif::[]
+a|
+include::./linkedin.adoc[]
+include::./github.adoc[]
+|===
+ifndef::cvprint[]
+*_Für detailierte Informationen, wie Adresse oder persönliche E-Mail-Adresse, kontaktieren Sie mich einfach über mein Netzwerk_*
+endif::[]
+endif::[]

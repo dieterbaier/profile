@@ -1,0 +1,32 @@
+= Runtime View
+
+== Build Process
+
+[plantuml]
+----
+@startuml
+
+start
+
+:Load AsciiDoc sources;
+
+:Run Asciidoctor;
+note right
+Generates HTML and PDF
+end note
+
+:Generate DocBook;
+
+:Run Pandoc;
+note right
+Convert to Markdown
+end note
+
+:Copy Assets;
+
+:Cleanup;
+
+stop
+
+@enduml
+----

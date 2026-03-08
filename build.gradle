@@ -1,24 +1,211 @@
 plugins {
-    id "org.asciidoctor.jvm.convert" version "4.0.5"
-    id "org.asciidoctor.jvm.pdf" version "4.0.5"
+    id 'org.asciidoctor.jvm.convert' version '4.0.5'
+    id 'org.asciidoctor.jvm.pdf' version '4.0.5'
 }
 
 repositories {
     mavenCentral()
 }
 
-tasks.register('buildSite', org.asciidoctor.gradle.jvm.AsciidoctorTask) {
-    sourceDir = file("content")
-    outputDir = file("build/site")
+abstract class PandocTask extends DefaultTask {
 
-   attributes(
-           'includesdir': 'content/includes',
- //           'stylesheet': 'style.css',
-  //          'stylesdir': 'theme',
-   )
+    @InputFile
+    abstract RegularFileProperty getInputFile()
+
+    @OutputFile
+    abstract RegularFileProperty getOutputFile()
+
+    @TaskAction
+    void runPandoc() {
+        project.exec {
+            commandLine 'pandoc',
+                    inputFile.get().asFile,
+                    '-f', 'docbook',
+                    '-t', 'gfm',
+                    '--wrap=none',
+                    '--extract-media=build/pandoc/media',
+                    '-o', outputFile.get().asFile
+        }
+    }
 }
 
-tasks.register('buildCV', org.asciidoctor.gradle.jvm.pdf.AsciidoctorPdfTask) {
-    sourceDir = file("cv")
-    outputDir = file("build/cv")
+def commandExists = { String command, String versionArgument ->
+    try {
+        def result = new ByteArrayOutputStream()
+        exec {
+            commandLine command, versionArgument
+            standardOutput = result
+            errorOutput = result
+            ignoreExitValue = true
+        }
+        return !result.toString().isEmpty()
+    } catch(Exception e) {
+        e.printStackTrace()
+        return false
+    }
+}
+
+def envFile = file(".env")
+def localEnv = new Properties()
+if (envFile.exists()) {
+    envFile.withReader("UTF-8") { localEnv.load(it) }
+}
+
+def env = { String key, String defaultValue = null ->
+    System.getenv(key) ?: localEnv[key] ?: defaultValue
+}
+
+tasks.register('checkEnvironment') {
+    doLast {
+        def missing = []
+
+        if (!commandExists('java', '-version')) {
+            missing << 'java'
+        }
+
+        if (!commandExists('pandoc', '--version')) {
+            missing << 'pandoc'
+        }
+
+        if (!commandExists('dot', '-V')) { // graphviz
+            missing << 'graphviz (dot)'
+        }
+
+        if (!missing.isEmpty()) {
+            throw new GradleException("""
+❌ Missing required tools:
+- ${missing.join('\n- ')}
+
+👉 Bitte installieren und PATH prüfen.
+""")
+        }
+
+        println "✅ Environment looks good"
+    }
+}
+
+tasks.register('housekeeping', Delete) {
+    delete layout.buildDirectory.dir("tmp")
+    delete fileTree(rootProject.layout.buildDirectory) {
+        include '**/.asciidoctorconfig.*'
+    }
+}
+
+// gemeinsame Konfiguration
+def asciidoctorBase = { taskName, taskDependsOnTask, sourceDir, outputDir, clean = false, backend = "html5", extraAttrs = [:] ->
+    var asciidocAttributes = ['includesdir': 'src/profile/includes',
+                      'buildsite': 'true',] + extraAttrs
+
+    def taskProvider
+    if (backend == 'docbook' || backend == 'html5') {
+        taskProvider = tasks.register(taskName, org.asciidoctor.gradle.jvm.AsciidoctorTask) {
+            setSourceDir(file(sourceDir))
+            setOutputDir(file(outputDir))
+            attributes(asciidocAttributes)
+
+            asciidoctorj {
+                modules {
+                    diagram.use()
+                }
+            }
+            if (backend == 'docbook') {
+                outputOptions {
+                    backends = ['docbook']
+                }
+            }
+        }
+    }
+    else  {
+        taskProvider = tasks.register(taskName, org.asciidoctor.gradle.jvm.pdf.AsciidoctorPdfTask) {
+            setSourceDir(file(sourceDir))
+            setOutputDir(file(outputDir))
+            attributes(asciidocAttributes)
+        }
+    }
+
+    def copyTask = tasks.register("${taskName}CopyAssets", Copy) {
+        dependsOn taskProvider
+
+        into(taskProvider.map { it.outputDir })
+
+        from("src/profile/theme/fonts") {
+            include "*.woff2"
+            into "stylesheet/fonts"
+        }
+
+        from("src/profile/theme/icons") {
+            into "assets/icons"
+        }
+
+        from("src/profile/includes/images") {
+            into "assets/images"
+        }
+
+    }
+
+    def cleanTask = tasks.register("${taskName}Clean", Delete) {
+        delete outputDir
+    }
+
+    if (backend == 'pdf') {
+        taskProvider.configure {finalizedBy("housekeeping")}
+    } else {
+        taskProvider.configure {finalizedBy(copyTask,"housekeeping")}
+    }
+
+    if (clean) {
+        tasks.named(taskName) {
+            dependsOn cleanTask
+        }
+    }
+    tasks.named(taskName) {
+        dependsOn tasks.named('checkEnvironment')
+    }
+    if(taskDependsOnTask != '') {
+        tasks.named(taskName) {
+            dependsOn tasks.named(taskDependsOnTask)
+        }
+    }
+}
+
+// Readme
+asciidoctorBase('buildReadmeDocbook','','src/profile/readme', 'build/readme/docbook', true, 'docbook')
+tasks.register('convertDocBookToMarkdown', PandocTask) {
+    dependsOn tasks.named('buildReadmeDocbook')
+    dependsOn tasks.named('buildReadmeDocbookCopyAssets')
+
+    setInputFile(file("build/readme/docbook/README.xml"))
+    setOutputFile(file("build/readme/README.md"))
+}
+asciidoctorBase('buildReadme','convertDocBookToMarkdown','src/profile/readme', 'build/readme', false)
+// CV
+asciidoctorBase('buildCVPersonal','','src/profile/cv', 'build/cv', true, 'pdf', [ // personal PDF (not deployed to the site)
+                                                                       'cvprint'       : 'true',
+                                                                       'contact-street': env('CONTACT_STREET') ?: '.',
+                                                                       'contact-plz'   : env('CONTACT_PLZ') ?: '.',
+                                                                       'contact-city'  : env('CONTACT_CITY') ?: '.',
+                                                                       'contact-tel'   : env('CONTACT_TEL') ?: '.',
+                                                                       'contact-tel-print': env('CONTACT_TEL_PRINT') ?: '.',
+                                                                       'contact-email' : env('CONTACT_EMAIL') ?: '.'
+])
+asciidoctorBase('buildCVSite','','src/profile/cv', 'build/site', true) // HTML
+asciidoctorBase('buildCVDownload','buildCVSite','src/profile/cv', 'build/site/cv', false, 'pdf') // PDF download
+// Website
+asciidoctorBase('buildSite','buildCVDownload','src/profile/site', 'build/site', false)
+// Architekturseite
+tasks.register('buildArchitecture', org.asciidoctor.gradle.jvm.AsciidoctorTask) {
+    var asciidocAttributes = ['includesdir': 'src/docs/arc42']
+
+    setSourceDir(file('src/docs/arc42'))
+    setOutputDir(file('build/architecture'))
+    sources {
+        include 'index.adoc'
+    }
+    attributes(asciidocAttributes)
+
+    asciidoctorj {
+        modules {
+            diagram.use()
+        }
+    }
 }

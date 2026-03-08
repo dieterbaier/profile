@@ -1,0 +1,38 @@
+ifeval::["{lang}" == ""]
+:lang: de
+endif::[]
+ifndef::lang[]
+:lang: de
+endif::[]
+include::../../revinfo.adoc[]
+ifdef::norevinfo[]
+:revdate!:
+:revnumber!:
+:revremark!:
+endif::[]
+:docinfo: shared
+:docinfodir: {includesdir}/docinfo/
+ifndef::basedir[]
+:basedir: .
+endif::[]
+:stylesheet: style.css
+:stylesdir: {basedir}/theme
+:iconsdir: {stylesdir}/icons
+:imagesdir: {includesdir}/images/
+ifdef::buildsite[]
+:stylesdir: {basedir}/stylesheet
+:iconsdir: {basedir}/assets/icons
+:linkcss:
+ifeval::["{backend}" != "pdf"]
+:imagesdir: {basedir}/assets/images/
+endif::[]
+endif::[]
+:copycss: {basedir}/src/profile/theme/style.css
+:icons: image
+:nofooter:
+ifeval::["{backend}" == "pdf"]
+:icons: font
+:nofooter!:
+:copycss!:
+:stylesdir!:
+endif::[]

@@ -1,0 +1,17 @@
+:project-timeframe: 2021 - Present
+:project-company: Event Driven Integration Platform
+:project-role: Software Architekt
+:project-branche: Banking
+:project-technologies: Kafka · Spring Boot · Kubernetes
+:project-description-file: EventDrivenIntegrationPlatform/description.adoc
+
+ifndef::is-included[]
+:is-included:
+:stylesdir: ../../../theme
+:stylesheet: style.css
+endif::[]
+
+[cols="1,2", frame=none, grid=none]
+|===
+include::../project.adoc[]
+|===

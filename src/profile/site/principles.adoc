@@ -1,0 +1,47 @@
+= Pragmatic Architecture Principles
+:norevinfo:
+ifdef::buildsite[]
+:basedir: .
+endif::[]
+include::{includesdir}/docheader.adoc[]
+:revremark: Principcles in a nutshell
+:toc:
+
+:active: articles
+include::{includesdir}/menue.adoc[]
+
+include::{includesdir}/author.adoc[]
+
+== Clear Ownership
+[.highlight.info]
+Every business capability should have a clear owner.
+
+== Loose Coupling
+[.highlight.info]
+Systems should evolve independently.
+
+== High Cohesion
+[.highlight.info]
+Components should have a focused responsibility.
+
+== Minimize Ripple Effects
+[.highlight.info]
+Changes should affect as few components as possible.
+
+== Explicit Boundaries
+[.highlight.info]
+System boundaries must be visible.
+
+== Understandability
+[.highlight.info]
+Systems must remain understandable.
+
+== Evolutionary Architecture
+[.highlight.info]
+Architecture must support change.
+
+== Explicit Decisions
+[.highlight.info]
+Important architectural decisions should be documented.
+
+include::{includesdir}/footer.adoc[]

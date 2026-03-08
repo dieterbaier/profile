@@ -1,0 +1,42 @@
+= Building Block View
+
+== Overview
+
+The system consists of the following main building blocks:
+
+[cols="1,2"]
+|===
+|Component |Responsibility
+
+|Gradle
+|Orchestration of the build pipeline
+
+|Asciidoctor
+|Conversion of AsciiDoc to HTML/PDF
+
+|Pandoc
+|Conversion of DocBook to Markdown
+
+|Docker
+|Provides reproducible runtime environment
+
+|GitHub Actions
+|CI/CD execution
+|===
+
+== Internal Structure
+
+[plantuml]
+----
+@startuml
+package "Pipeline" {
+  [Gradle Tasks]
+  [Asciidoctor]
+  [Pandoc]
+}
+
+[Gradle Tasks] --> [Asciidoctor]
+[Gradle Tasks] --> [Pandoc]
+
+@enduml
+----

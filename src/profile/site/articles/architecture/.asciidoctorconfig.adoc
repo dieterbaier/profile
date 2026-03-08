@@ -1,0 +1,2 @@
+:includesdir: ../../../includes
+:basedir: ../../..

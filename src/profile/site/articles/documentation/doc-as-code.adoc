@@ -1,0 +1,241 @@
+= Dokumentation als Code
+:norevinfo:
+ifdef::buildsite[]
+:basedir: ../..
+endif::[]
+include::{includesdir}/docheader.adoc[]
+:revremark: So kann Dokumentation stabil bleiben UND: 'Doc as Code' ist nicht gleich 'Code as Doc'
+:include_next_articles_variante1: false
+:include_next_articles_variante2: false
+:toc:
+
+:active: articles
+include::{includesdir}/menue.adoc[]
+
+include::{includesdir}/author.adoc[]
+
+[.callout]
+====
+Doc-as-Code bedeutet nicht, dass Code die Dokumentation ersetzt.
+
+Es bedeutet, Dokumentation mit denselben Prinzipien zu behandeln wie Software: strukturiert, versioniert, automatisiert und nahe am Code.
+
+Dieser Artikel erklärt, warum klassische Dokumentation oft scheitert und wie ein Doc-as-Code-Ansatz helfen kann, sie dauerhaft aktuell und nutzbar zu halten.
+====
+
+== Zwei Mythen über Dokumentation
+
+[quote, Entwickler:Innen]
+____
+Mein Code ist die Dokumentation
+____
+
+Kennen Sie diese Aussage?
+
+Ich kenne diese Aussage sehr gut und benutze sie gerne selbst. Sie funktioniert aber nur unter folgenden Voraussetzungen:
+
+* Der Code ist nach https://{lang}.wikipedia.org/wiki/Clean_Code[Clean Code Prinzipien^] geschrieben und man kann wirklich aufgrund der Einhaltung von klarer und eindeutiger Namensgebung von Funktionsnamen, Variablennamen, Schnittstellen etc., der Einhaltung des _Single Responsible Principle_ und anderen _best practices_ im Code selbst erkennen, worum und warum es bei dem Code geht
+* Das System ist wenig komplex, sodass es keine zusätzliche Architekturdokumentation geben muss (ist meist eine Falschannahme!)
+* Der Code ist für alle Stakeholder zugänglich und alle Stakeholder können den Code lesen
+* ...
+
+Im Grunde ist diese Aussage einfach falsch, denn der Code kann maximal ein Teil der Dokumentation eines Software-Systems sein. Wenn er aber wirklich sauber geschrieben ist, kann er durchaus Bestandteil einer Dokumentation sein.
+
+Will man ernsthaft und seriös Software bauen, kommt man um Dokumentation neben dem Code nicht umher.
+
+[quot, Entwickler:Innen]
+____
+Dokumentation ist veraltet, sobald sie geschrieben ist
+____
+
+Ja, das stimmt - wenn es _falsch_ gemacht wird.
+
+== Drei zentrale Fragen der Dokumentation
+
+Erstens muss man sich fragen, *WAS* dokumentiert werden soll, zweitens, *WIE* und drittens, *WARUM* man dokumentieren will.
+
+Je nach Umfeld kann es durchaus unterschiedliche Anforderungen an eine Dokumentation geben. Projekte im öffentlichen Dienst fordern oft umfangreiche Dokumentation, um die man einfach nicht herumkommt. Ganz einfach, _weil es so ist_. Systeme, bei denen u.U. sogar Menschenleben auf dem Spiel steht, werden sicherlich andere Dokumenationen erfordern, als eine Verwaltungssoftware.
+
+Wie auch immer. Sobald man ein System bauen muss, dass aus mehreren Bausteinen besteht, wird man sich Gedanken über die Architektur machen und die gehört dokumentiert. Und wenn man es _richtig_ macht, entsteht Architektur immer vor dem Code.
+
+[.highlight.info]
+====
+Natürlich entsteht die Architektur heut zutage und Gott sei Dank nicht _upfront_. Gute Architektur ist evolutionär und wächst mit den Anforderungen. Aber trotzdem steht vor dem Code immer ein Design und es gibt immer Gründe, warum man Code schreibt (fachliche Anforderungen, Qualitätsanforderungen, etc.). All das gehört dokumentiert.
+====
+
+D.h. aus Sicht eines Softwareentwicklers und / oder Softwarearchitekten wird das *WAS* mindestens mit einer Dokumentation der Architektur beantwortet werden. Wie diese Dokumentation aussehen soll, ist individuell und kann sich von Projekt zu Projekt unterscheiden. Aus Bequemlichkeit halte ich mich bei solchen Sachen an Bewährtes und von Fachleuten entwickelte _Best practices_. Daher halte ich mich in Sachen Architekturdokumentation an die https://arc42.org/[arc42-Struktur^]. Aber darum geht es in diesem Artikel gar nicht.
+
+Gehen wir dann mal an das *WARUM* soll ich etwas dokumentieren, wenn ohnehin der Code die eigentliche Wahrheit ist?
+
+Meine erste Antwort wäre direkt: nicht jeder Stakeholder kann und will Code lesen. Projektleiter:Innen (wenn es welche gibt) oder aber auch ProductOwner:Innen haben vielleicht Zugriff auf den Code aber sie haben einen ganz anderen Blick auf die Software, für die sie Verantwortung tragen.
+
+Die Dokumentation muss also auch abstraktere oder auch ganz andere Blickwinkel befriedigen. So wird in einer Architekturdokumentation eher auf das _Warum sollte_ die Software so geschrieben werden, wie sie - hoffentlich - auch geschrieben wurde (das Sicherzustellen ist eine andere Disziplin innerhalb des Software-Entwicklungsprozesses). Sie wird also diverse Anforderungen dokumentieren und diese mit Strategien und Entscheidungen verknüpfen, welche letztendlich mit dem Code abgebildet werden sollten.
+
+Aber *WIE* sollte nun dokumentiert werden, damit das Team die Dokumentation auch pflegt und aktuell hält?
+
+Nun, meine Erfahrung sagt, dass es sowenig _Mediumwechsel_ wie möglich geben sollte, damit auch die Entwickler:Innen - im Idealfall sogar gerne - dokumentieren. Heißt: *Je näher am Code, desto besser*.
+
+Ich versuche daher, jegliche Dokumentation im ASCII-Format (wie es der Code auch ist) zu schreiben und so nahe am Code, wie möglich abzulegen. Wenn möglich und sinnvoll, sogar im gleichen Source-Repository.
+
+[.highlight.info]
+====
+Wenn ich erst gar nicht suchen muss, wo die Dokumentation abgelegt ist, sondern direkt mit meinem Code bekomme, habe ich alles an einem Platz und kann zwischen Dokumentieren und Codieren ohne Medienbruch leicht hin- und herwechseln.
+
+Außerdem ist so eher sichergestellt, dass Code und Dokumentation nicht zu sehr auseinander läuft. Der Entwicklungsprozess kann dies auch leichter sicherstellen, da er sich nur mit einem Medium beschäftigen muss.
+====
+
+*Ist das nun schon _Doc-as-Code_?*
+
+*NEIN*.
+
+== Was bedeutet Doc-as-Code wirklich?
+
+Ablageort der Dokumentation oder Medium ist nicht entscheidend für _Doc-as-Code_. Wenngleich es sicherlich Medien gibt, die sich besser eignen, wirklich _Doc-as-Code_ zu leben, als es andere Medien tun.
+
+Aber ich kann _Doc-as-Code_ in einem Git-Repository genauso leben, wie in Confluence oder ähnliche Plattformen.
+
+[.highlight.info]
+====
+*Doc-as-Code* bedeutet für mich, dass ich nicht nur Text schreibe und Bilder einfüge, sondern, dass ich die Dokumentation genauso pflege, wie ich meinen Code Pflege.
+====
+
+D.h., ich versuche auf eine *erkennbare Struktur* zu achten. Ich versuche auch in der Dokumentation das *Single Responsible Principle* einzuhalten. Und ich versuche *Duplizierungen zu vermeiden* und nichts zu schreiben, was nicht gebraucht wird (*YAGNI*).
+
+Ein sehr wichtiger Aspekt hilft mir darüber hinaus auch bei der Entscheidung, welches Medium ich verwende (leider ist das in vielen Kundenprojekten nicht möglich, wenngleich ich schon versuche, darauf einzuwirken): *_Write once, deliver anywhere_*. Das wird aus meiner Sicht im Kontext von Dokumentation oft unterschätzt, ist aber spätestens dann absolut wichtig, wenn ich meine Dokumentation ausliefern muss oder unterschiedlichen Stakeholdern aus unterschiedlichen Abteilungen, vielleicht sogar Firmen zugänglich machen sollte.
+
+Es muss also möglich sein, dass ich meine Dokumentation einmal schreibe, sie aber z.B. als Webseite präsentieren oder auch als PDF verschicken kann. Und dabei soll die Qualität nicht wirklich unterschiedlich sein (die Druckfunktion des Browsers wird i.d.R. kein zufriedenstellendes Ergebnis liefern).
+
+Dann kommen aber auch noch die *unterschiedlichen Sichten* hinzu. Ich muss also meine Dokumentation so aufbereiten können, dass sie je nach Anforderung auch mal Dinge weglässt. Z.b. will man vielleicht keine Abteilungsnamen in dem PDF, das man an den externen Dienstleister schickt, sehen. Im firmeninternen Wiki, in dem die Dokumentation abgelegt ist, jedoch sehrwohl. Vielleicht sogar mit einem direkten Link auf das Abteilungs-Intranet, auf das man _von außen_ gar keinen Zugriff hätte.
+
+Es wirken also unterschiedliche Dinge auf eine Dokumentation ein:
+
+plantuml::{includesdir}/../site/articles/assets/doc-as-code/doc-influences.puml[format=svg, alt="Einflussfaktoren auf die Dokumentation",width=100%]
+
+[.highlight.info]
+====
+Dokumentation entsteht nicht im luftleeren Raum. Sie wird von technischen, organisatorischen und prozessualen Faktoren beeinflusst.
+
+Doc-as-Code bedeutet daher nicht nur ein bestimmtes Tool oder Format zu wählen, sondern diese Einflüsse bewusst in eine strukturierte und wartbare Dokumentation zu übersetzen.
+====
+
+Damit man das alles erreicht, muss auch in der Dokumentation rund um die eigentliche Dokumentation echter Code geschrieben werden. Meist sind das Makros, die während des Generierens des Ausgabeformates interpretiert werden. Es können aber auch Pre-Prozessoren vonnöten sein, die vielleicht erst mal die Dokumentation scannen muss, um vielleicht zusätzliche Artefakte zu generieren.
+
+Wer Dokumentation also ernst nimmt und einen gewissen Qualitätsanspruch an seine Software (und damit auch auf die Dokumentation) hat, der wird nicht umher kommen, sich Gedanken auf Ebene eines Softwareentwicklers zu machen.
+
+Als direktes Beispiel kann auch diese Seite angewandt werden. Sie präsentiert eigentlich nur statischen Inhalt (ähnlich einer Dokumentation). Aber sie repräsentiert mich in unterschiedlichen Sichten. So enthält sie Seite z.B. auch meinen xref:{basedir}/../cv/cv.adoc[CV]. Neben der Tatsache, dass im CV auch Informationen stehen, die auf der Webseite auch zu finden sind, will ich den CV sowohl als Webseite darstellen, als auch als PDF direkt downloadbar anbieten. Der von der Webseite direkt heruntergeladene CV sollte aber keine persönlichen Daten, wie Adresse, Telefonnummer enthalten. Dafür will ich - aus den gleichen Inhalten - aber mit zusätzlichen Inhalten, bei Bedarf ein anderes PDF generieren lassen können.
+
+Diese Seite ist mit ASCIIDOC geschrieben. Entsprechend gibt es Makros, die mir beim Entscheiden, welche Inhalte wann und wie dargestellt werden sollen, helfen.
+
+[source,asciidoc]
+----
+\ifeval::["{backend}" == "pdf"]
+=== Kenntnisse
+
+\include::{includesdir}/skills/skills_matrix.adoc[]
+'''
+\endif::[]
+----
+
+Hier soll meine xref:{basedir}/architecture-toolkit.adoc[Kenntnis Matrix] nur eingebunden werden, wenn das Ausgabeformat PDF ist.
+
+An anderer Stelle wird die Matrix nur eingebunden, wenn das Ausgabeformat HTML ist
+
+[source,asciidoc]
+----
+\ifeval::["{backend}" == "html5"]
+\include::{includesdir}/skills/skills_matrix.adoc[]
+\endif::[]
+----
+
+Man sieht: an unterschiedlichen Stellen (_Views_), gleiches Dokument, das eingebunden wird.
+
+Und da ich die Matrix auf der Webseite etwas _fancier_ darstellen kann, als im PDF, entscheide ich im Dokument selbst noch mal, welche Form eingebunden werden soll.
+
+[source,asciidoc]
+----
+\ifeval::["{backend}" == "html5"]
+\include::./skills_matrix_site.adoc[]
+\endif::[]
+
+\ifeval::["{backend}" == "pdf"]
+\include::./skills_matrix_pdf.adoc[]
+\endif::[]
+----
+
+Also: *unterschiedliche Zielgruppe, unterschiedliche Aufbereitung*.
+
+== Wie sieht eine typische Doc-as-Code Pipeline aus?
+
+Die Pipeline für eine Dokumentation kann natürlich im Detail unterschiedlich aussehen. Das hängt stark vom Umfeld ab. Das folgende Bild zeigt als Beispiel die Pipeline für diese Webseite:
+
+plantuml::{includesdir}/../site/articles/assets/doc-as-code/doc-pipeline.puml[format=svg, alt="Dokumentations Build-Pipeline",width=100%]
+
+Man sieht als zentrale Komponente das _Build System_. Diese Webseite wird mit `Gradle` und `asciidoctor` gebaut. Das kann natürlich variieren. Z.B. könnte es noch andere Frameworks, wie z.B. die https://doctoolchain.org[docToolchain^] vor oder rund um `asciidoctor` geben. Die Idee ist aber immer die gleiche:
+
+* *Schreibe die Dokumenation* als _Code_
+* Benutze Interpreten deiner Dokumentation, um
+* unterschiedliche *Ausgabeformen* der Dokumentation zu *generieren*
+
+== Key Takeaways
+
+[.callout]
+====
+* **Code allein ist keine Dokumentation.**
+Gute Software braucht auch Kontext, Entscheidungen und Architektur.
+
+* **Dokumentation funktioniert nur ohne Medienbruch.**
+Je näher sie am Code und am Entwicklungsprozess liegt, desto eher bleibt sie aktuell.
+
+* **Doc-as-Code ist kein Tool – sondern eine Arbeitsweise.**
+Dokumentation wird strukturiert, versioniert, automatisiert und wie Code gepflegt.
+
+* **Automatisierung macht Dokumentation nachhaltig.**
+Eine Build-Pipeline ermöglicht es, aus denselben Quellen verschiedene Ausgabeformate zu generieren.
+====
+
+== Fazit
+
+Dokumentation scheitert selten daran, dass Menschen nicht dokumentieren wollen.
+Sie scheitert meist daran, dass der Prozess nicht zu ihrem Arbeitsalltag passt.
+
+Der *Doc-as-Code* Ansatz versucht genau dieses Problem zu lösen:
+Dokumentation wird dort geschrieben, wo auch der Code entsteht, mit denselben Werkzeugen, denselben Prinzipien und derselben Automatisierung.
+
+So wird Dokumentation nicht zu einer lästigen Zusatzaufgabe – sondern zu einem natürlichen Teil der Softwareentwicklung.
+
+[quote]
+____
+Dokumentation ist kein Nebenprodukt der Softwareentwicklung – sie ist Teil davon.
+
+Der *Code* zeigt *was* ein System tut.
+*Dokumentation* erklärt *warum*.
+____
+
+ifeval::["{include_next_articles_variante1}" == "true"]
+[.highlight.tip]
+====
+Dieser Artikel ist Teil einer kleinen Reihe über **Doc-as-Code**.
+
+Weitere Artikel:
+
+* Architekturdokumentation, die Entwickler wirklich pflegen
+* Doc-as-Code mit AsciiDoc und Gradle
+* Eine Dokumentation – mehrere Sichten
+====
+endif::[]
+
+ifeval::["{include_next_articles_variante2}" == "true"]
+Dieser Artikel hat gezeigt, warum klassische Dokumentation oft scheitert und was hinter dem Begriff *Doc-as-Code* wirklich steckt.
+
+Im nächsten Teil der Serie bauen wir Schritt für Schritt eine **Doc-as-Code Pipeline** auf:
+
+* AsciiDoc als Dokumentationsformat
+* Diagramme mit PlantUML
+* Strukturierung mit Includes und Makros
+* automatischer Build mit Gradle
+* Generierung von HTML und PDF
+
+Am Ende steht eine Dokumentation, die sich wie Software bauen, versionieren und ausliefern lässt.
+endif::[]
+
+include::{includesdir}/footer.adoc[]

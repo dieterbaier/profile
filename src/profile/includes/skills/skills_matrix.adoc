@@ -1,0 +1,47 @@
+:skill_documentation_title: Dokumentation
+:skill_documentation_1: arc42 - Confluence / Notion / docToolchain
+
+:skill_integration_title: Integration
+:skill_integration_1: Apache Kafka
+:skill_integration_2: Messaging
+:skill_integration_3: REST / APIs
+:skill_integration_4: BPM - Camunda
+
+:skill_development_title: Entwicklung
+:skill_development_1: Java / Spring Boot
+:skill_development_2: React / Typescript
+:skill_development_3: REST Services
+
+:skill_architecture_title: Software Architektur
+:skill_architecture_1: Domain Driven Design
+:skill_architecture_2: Clean Architecture
+:skill_architecture_3: Event Driven Architecture
+
+:skill_methods_title: Methoden
+:skill_methods_1: Agile Collaboration
+:skill_methods_2: Coaching / Training
+:skill_methods_docascode: Doc as Code
+:skill_methods_4: Clean Code
+:skill_methods_5: Architektur Kommunikation
+
+:skill_platform_title: Plattform & Auslieferung
+:skill_platform_1: Docker / Kubernetes
+:skill_platform_2: Helm
+:skill_platform_3: CI/CD Pipelines (Jenkins / GitLab / GitHub)
+:skill_platform_4: AWS / Azure
+
+:skill_branches_title: Branchen
+:skill_branches_1: Banken / Versicherungen - Transport - Öffentliche Verwaltung
+
+:htmlmatrix: true
+ifeval::["{backend}" != "html5"]
+:htmlmatrix: false
+endif::[]
+
+ifeval::["{htmlmatrix}" == "true"]
+include::./skills_matrix_site.adoc[]
+endif::[]
+
+ifeval::["{htmlmatrix}" == "false"]
+include::./skills_matrix_pdf.adoc[]
+endif::[]

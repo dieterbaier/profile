@@ -1,0 +1,34 @@
+= Architecture Thinking
+:norevinfo:
+ifdef::buildsite[]
+:basedir: ../..
+endif::[]
+include::{includesdir}/docheader.adoc[]
+:revremark: Some thoughts about arichitectural topics
+:toc:
+
+:active: articles
+include::{includesdir}/menue.adoc[]
+
+include::{includesdir}/author.adoc[]
+
+siehe auch: xref:{basedir}/principles.adoc[Pragmatische Architekturprinzipien]
+
+== System Boundaries
+[.highlight.info]
+A system boundary is probably wrong
+if two teams must deploy together.
+
+== Architecture Simplicity
+[.highlight.info]
+Good architecture reduces the number of things
+developers must think about.
+
+== Documentation
+[.highlight.info]
+Architecture documentation should support
+development, not bureaucracy.
+
+See my thoughts about how to document at xref:{basedir}/articles/documentation/doc-as-code.adoc[Doc as Code].
+
+include::{includesdir}/footer.adoc[]

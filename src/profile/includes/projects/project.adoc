@@ -1,0 +1,22 @@
+ifndef::is-included[]
+:stylesdir: ../../theme
+:stylesheet: style.css
+[cols="1,2", frame=none, grid=none]
+|===
+endif::[]
+a|
+=== [.subtle]#{project-timeframe}#
+a|
+=== {project-company}
+*{project-role}*
+
+ifdef::project-description-file[]
+include::{project-description-file}[]
+endif::[]
+
+[.subtle]#{project-branche}#
+
+[.subtle]#{project-technologies}#
+ifndef::is-included[]
+|===
+endif::[]

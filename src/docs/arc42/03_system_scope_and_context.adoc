@@ -1,0 +1,27 @@
+= System Scope and Context
+
+== Business Context
+
+[plantuml]
+----
+@startuml
+actor User
+
+User --> "Documentation Pipeline" : writes AsciiDoc
+"Documentation Pipeline" --> GitHub
+"Documentation Pipeline" --> GitLab
+"Documentation Pipeline" --> Website
+
+@enduml
+----
+
+== Technical Context
+
+- Input: AsciiDoc files
+- Processing:
+* Asciidoctor
+* Pandoc
+- Output:
+* HTML
+* PDF
+* Markdown

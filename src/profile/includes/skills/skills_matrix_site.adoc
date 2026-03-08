@@ -1,0 +1,81 @@
+ifndef::stylesheet[]
+:stylesheet: style.css
+:stylesdir: ../../theme
+endif::[]
+
+[subs=attributes,macros]
+++++
+<div class="skillrow">
+    <div class="skillbox">
+ifdef::nolinks[]
+<strong>{skill_documentation_title}</strong>
+endif::[]
+ifndef::nolinks[]
+        <a href="{basedir}/articles/documentation/doc-as-code.html"><strong>{skill_documentation_title}</strong></a>
+endif::[]
+<br>
+         {skill_documentation_1}<br>
+    </div>
+</div>
+
+<div class="skillrow">
+    <div class="skillbox">
+        <strong>{skill_integration_title}</strong><br>
+        {skill_integration_1}<br>
+        {skill_integration_1}<br>
+        {skill_integration_3}<br>
+        {skill_integration_4}<br>
+    </div>
+    <div class="skillbox">
+        <strong>{skill_development_title}</strong><br>
+        {skill_development_1}<br>
+        {skill_development_2}<br>
+        {skill_development_3}
+    </div>
+</div>
+
+<div class="skillrow">
+    <div class="skillbox">
+ifdef::nolinks[]
+<strong>{skill_architecture_title}</strong>
+endif::[]
+ifndef::nolinks[]
+        <a href="{basedir}/articles/architecture/architecture-thinking.html"><strong>{skill_architecture_title}</strong></a>
+endif::[]
+<br>
+        {skill_architecture_1}<br>
+        {skill_architecture_2}<br>
+        {skill_architecture_3}<br>
+    </div>
+    <div class="skillbox">
+        <strong>{skill_methods_title}</strong><br>
+        {skill_methods_1}<br>
+        {skill_methods_2}<br>
+ifdef::nolinks[]
+{skill_methods_docascode}
+endif::[]
+ifndef::nolinks[]
+        <a href="{basedir}/articles/documentation/doc-as-code.html">{skill_methods_docascode}</a>
+endif::[]
+        {skill_methods_4}<br>
+        {skill_methods_5}
+    </div>
+</div>
+
+<div class="skillrow">
+    <div class="skillbox">
+        <strong>{skill_platform_title}</strong><br>
+        {skill_platform_1}<br>
+        {skill_platform_2}<br>
+        {skill_platform_3}<br>
+        {skill_platform_4}<br>
+    </div>
+</div>
+
+<div class="skillrow">
+    <div class="skillbox">
+        <strong>{skill_branches_title}</strong><br>
+        {skill_branches_1}
+    </div>
+</div>
+++++

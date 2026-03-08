@@ -1,0 +1,1 @@
+Kafka-based integration backbone enabling asynchronous communication across 40+ services.

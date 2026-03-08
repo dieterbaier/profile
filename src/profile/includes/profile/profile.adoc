@@ -1,0 +1,36 @@
+:includeskillmatrix: true
+ifeval::['{backend}' == 'pdf']
+:includeskillmatrix: false
+endif::[]
+
+[discrete]
+== Profil
+
+Seit über *30 Jahren* arbeite ich in der Softwareentwicklung mit einem Schwerpunkt auf der *Architektur und Integration komplexer Anwendungssysteme*.
+
+Meine Laufbahn begann als Softwareentwickler und führte über internationale Integrationsprojekte zum *Softwarearchitekten und IT-Consultant*. In den 1990er-Jahren war ich für *Uniquare (damals Genesis)* als *Systemintegrator und technischer Coach* bei Bankenprojekten in *Südafrika, Moskau und Kuala Lumpur* im Einsatz.
+
+Heute unterstütze ich Unternehmen bei der Gestaltung und Umsetzung *verteilter, prozessorientierter Systeme* mit Fokus auf *Domain-Driven-Design, Clean Architecture, Event-Driven Architecture und nachhaltige Architekturdokumentation*.
+
+*Seit 2020* unterstütze ich meine Kolleg:Innen beim *Training zum iSAQB Certified Software Architect - Foundation Level*, wann immer ein Trainer gebraucht wird.
+
+Zudem beschäftige ich mich zunehmend mit *Sustainability in der Softwarearchitektur*, insbesondere mit den *Auswirkungen von IT-Systemen auf Energieverbrauch und Umwelt*.
+
+ifeval::['{includeskillmatrix}' == 'true']
+[discrete]
+=== Kenntnisse
+
+include::../skills/skills_matrix.adoc[]
+endif::[]
+
+[discrete]
+=== Arbeitsweise
+
+* Verbindung von *Architekturarbeit und praktischer Entwicklung*
+* *Pragmatischer Einsatz agiler Methoden*
+* *Coaching und Wissensvermittlung* in Entwicklungsteams
+* *Nachhaltige Architekturdokumentation*
+
+Gute Software entsteht im *Dialog zwischen Technik, Fachbereich und Nutzern* – genau an dieser Schnittstelle sehe ich meine Rolle.
+
+Ich verbinde *Architekturarbeit, praktische Entwicklung und verständliche Dokumentation*, um *nachhaltige und wartbare Softwaresysteme* zu schaffen.

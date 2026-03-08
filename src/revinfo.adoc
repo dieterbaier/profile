@@ -1,0 +1,3 @@
+:revdate: 2026-03-07
+:revnumber: v1.0
+:revremark: Softwarearchitekt und IT-Consultant mit Schwerpunkt auf Clean- und Event-Driven Architecture, Domain-Driven Design und nachhaltiger Architekturdokumentation.

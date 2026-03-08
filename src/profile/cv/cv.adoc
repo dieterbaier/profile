@@ -1,0 +1,98 @@
+:subtitle: Software Architekt
+ifeval::["{backend}" == "pdf"]
+:subtitle: {subtitle} - Curriculum Vitae
+endif::[]
+ifeval::["{backend}" != "pdf"]
+:norevinfo:
+endif::[]
+= Dieter Baier
+{subtitle}
+:doctype: book
+ifdef::buildsite[]
+:basedir: .
+endif::[]
+include::{includesdir}/docheader.adoc[]
+:pdf-theme: cv-theme.yml
+:pdf-themesdir: {basedir}/src/profile/theme
+:pdf-fontsdir: {pdf-themesdir}/fonts
+ifndef::cvprint[]
+:title-logo-image: image::dieterbaier_image_cv_rounded.png[Dieter Baier,pdfwidth=10cm,align=top]
+endif::[]
+
+ifeval::["{backend}" == "pdf"]
+:leveloffset: +1
+
+include::{includesdir}/profile/profile.adoc[]
+
+:leveloffset: -1
+endif::[]
+
+ifeval::["{backend}" == "html5"]
+ifdef::buildsite[]
+[subs=attributes,macros]
+++++
+<nav class="mainnav noborder">
+    <ul>
+        <li>
+            <a href="{basedir}/cv/cv.pdf" target="_blank">Download CV</a>
+        </li>
+    </ul>
+</nav>
+++++
+endif::[]
+:active: cv
+include::{includesdir}/menue.adoc[]
+endif::[]
+
+ifeval::["{backend}" == "pdf"]
+== {doctitle}
+:leveloffset: +1
+endif::[]
+
+:type: cv
+include::{includesdir}/contact/contact.adoc[]
+
+== Berufserfahrung
+'''
+
+:is-included:
+include::{includesdir}/professional_experience/listOfProfessionalExperience.adoc[]
+
+<<<
+
+== Selected Projects
+'''
+
+include::{includesdir}/projects/listOfProjects.adoc[]
+
+<<<
+
+== Aus- und Weiterbildung
+'''
+include::{includesdir}/education/meta.adoc[]
+
+== Kenntnisse und Interessen
+'''
+
+ifeval::["{backend}" == "pdf"]
+=== Kenntnisse
+
+include::{includesdir}/skills/skills_matrix.adoc[]
+'''
+endif::[]
+
+[cols="1,1", frame=none, grid=none]
+|===
+
+a|
+=== Languages
+
+include::{includesdir}/languages/languages.adoc[]
+
+a|
+include::{includesdir}/profile/profile_personal.adoc[]
+
+|===
+
+:type: footer
+include::{includesdir}/footer.adoc[]

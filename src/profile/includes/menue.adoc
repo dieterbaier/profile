@@ -1,0 +1,24 @@
+[subs=attributes,macros]
+++++
+<nav class="mainnav" data-active="{active}">
+    <ul>
+        <li>
+            <a data-nav="home" href="{basedir}/index.html">Home</a>
+        </li>
+        <li>
+ifdef::buildsite[]
+<a data-nav="cv" href="{basedir}/cv.html">Curriculum Vitae</a>
+endif::[]
+ifndef::buildsite[]
+<a data-nav="cv" href="{basedir}/cv/cv.html">Curriculum Vitae</a>
+endif::[]
+        </li>
+        <li>
+            <a data-nav="toolkit" href="{basedir}/architecture-toolkit.html">Werkzeugkasten & Kenntnismatrix</a>
+        </li>
+        <li>
+            <a data-nav="articles" href="{basedir}/articles/articles.html">Artikel</a>
+        </li>
+    </ul>
+</nav>
+++++

@@ -1,0 +1,22 @@
+= Sustainable Website
+:norevinfo:
+ifdef::buildsite[]
+:basedir: .
+endif::[]
+include::{includesdir}/docheader.adoc[]
+:revremark: Because greenIT matters
+
+:active: articles
+include::{includesdir}/menue.adoc[]
+
+include::{includesdir}/author.adoc[]
+
+This website follows low-energy web principles.
+
+* static pages
+* no JavaScript
+* minimal CSS
+* small page sizes
+* fast loading times
+
+include::{includesdir}/footer.adoc[]

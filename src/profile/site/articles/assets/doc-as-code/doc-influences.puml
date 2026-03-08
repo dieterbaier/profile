@@ -1,0 +1,30 @@
+@startmindmap
+skinparam backgroundColor transparent
+skinparam shadowing false
+
+* Dokumentation
+-- Stakeholder
+--- Entwickler
+--- Product Owner
+--- Projektleitung
+--- Externe Dienstleister
+** Architektur & Code
+*** Architekturentscheidungen
+*** Code-Struktur
+*** Qualitätsanforderungen
+** Entwicklungsprozess
+*** Reviews
+*** Versionierung
+*** Continuous Integration
+-- Auslieferung
+--- Webseite
+--- PDF
+--- Wiki
+--- Kunden-Dokumentation
+** Prinzipien
+*** Doc-as-Code
+*** DRY
+*** YAGNI
+*** Struktur (z.B. arc42)
+
+@endmindmap

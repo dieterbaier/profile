@@ -1,0 +1,520 @@
+/* noto-sans-regular - latin */
+@font-face {
+    font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+    font-family: 'Noto Sans';
+    font-style: normal;
+    font-weight: 400;
+    src: url('fonts/noto-sans-v42-latin-regular.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+}
+
+/* noto-sans-italic - latin */
+@font-face {
+    font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+    font-family: 'Noto Sans';
+    font-style: italic;
+    font-weight: 400;
+    src: url('fonts/noto-sans-v42-latin-italic.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+}
+
+/* noto-sans-600 - latin */
+@font-face {
+    font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+    font-family: 'Noto Sans';
+    font-style: normal;
+    font-weight: 600;
+    src: url('fonts/noto-sans-v42-latin-600.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+}
+
+/* noto-sans-600italic - latin */
+@font-face {
+    font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+    font-family: 'Noto Sans';
+    font-style: italic;
+    font-weight: 600;
+    src: url('fonts/noto-sans-v42-latin-600italic.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+}
+
+@font-face {
+    font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+    font-family: 'JetBrains Mono';
+    font-style: normal;
+    font-weight: 600;
+    src: url('fonts/JetBrainsMono-Bold.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+}
+
+@font-face {
+    font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+    font-family: 'JetBrains Mono';
+    font-style: normal;
+    src: url('fonts/JetBrainsMono-Regular.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+}
+
+@font-face {
+    font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+    font-family: 'JetBrains Mono';
+    font-style: italic;
+    font-weight: 600;
+    src: url('fonts/JetBrainsMono-BoldItalic.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+}
+
+@font-face {
+    font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+    font-family: 'JetBrains Mono';
+    font-style: italic;
+    src: url('fonts/JetBrainsMono-Italic.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+}
+
+:root {
+    --text-color: #1b4965;
+    --link-color: #5fa8d3;
+    --focus-color: #ffbf47;
+    --bg-color: white;
+    --box-border: #5fa8d3 solid 1px;
+    --border-radius: 6px;
+    --bg-callout: #e6e60a;
+    --font-style-callout: italic;
+    --font-size-callout: larger;
+    --padding-callout: 1rem;
+    --box-shadow-color: rgba(0, 0, 0, 0.19);
+    --box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 var(--box-shadow-color);
+    --highlight-icon-font-size: xx-large;
+    --bg-toc: #f8f8f8;
+    --text-color-subtl: #6c757d;
+}
+
+@page {
+    size: a4;
+    margin: 2cm 2cm 2cm 2.5cm;
+}
+
+body {
+    font-family: "Noto Sans", sans-serif;
+    max-width: 210mm;
+    margin: auto;
+    line-height: 1.6;
+    color: var(--text-color);
+    background: var(--bg-color);
+}
+
+p {
+    margin: 0 0 1rem 0;
+}
+
+h1 {
+    margin-top: 1rem;
+    background: var(--bg-callout);
+    border-radius: var(--border-radius);
+    padding-left: 1rem;
+}
+
+h2 {
+    margin-top: 2rem;
+}
+
+a {
+    color: var(--link-color);
+    text-decoration: underline;
+    text-decoration-thickness: 0.08em;
+    text-underline-offset: 0.18em;
+}
+a:hover {
+    text-decoration-thickness: 0.12em;
+}
+a:focus-visible {
+    outline: 3px solid var(--focus-color);
+    outline-offset: 2px;
+}
+
+#header {
+    display: flex;
+    flex-direction: column;
+    h1 {
+        margin-bottom: unset;
+    }
+    .details {
+        display: flex;
+        flex-direction: column;
+    }
+    #author {
+        font-style: italic;
+        margin-top: 1rem;
+        font-size: larger;
+    }
+    #revnumber, #revdate {
+        font-size: smaller;
+    }
+    #revremark {
+        font-style: var(--font-style-callout);
+        font-size: var(--font-size-callout);
+        padding: var(--padding-callout);
+        background-color: var(--bg-callout);
+        border: var(--box-border);
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        text-align: center;
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+    }
+}
+
+.footer {
+    margin-top: 5rem;
+    padding: 1rem;
+    border: none;
+    background-color: var(--bg-color);
+    font-size: smaller;
+    font-style: italic;
+    text-align: center;
+    * p {
+        margin: 0;
+    }
+}
+.contact_html5 {
+    * {
+        font-style: normal;
+    }
+    ul {
+        display: flex;
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+        gap: 0.5rem;
+        justify-content: center;
+        align-items: baseline;
+    }
+}
+
+.callout {
+    font-style: var(--font-style-callout);
+    font-size: var(--font-size-callout);
+    padding: var(--padding-callout);
+    background-color: var(--bg-callout);
+    border: var(--box-border);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    text-align: center;
+    margin: 2rem 0 2rem 0;
+}
+
+
+.highlight {
+    margin: 2rem 0 2rem 0;
+    font-size: var(--font-size-callout);
+    padding: var(--padding-callout) var(--padding-callout) 0 var(--padding-callout);
+    background-color: var(--bg-color);
+    border: var(--box-border);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+}
+
+.highlight.info::before {
+    content: "💡 ";
+    font-size: var(--highlight-icon-font-size);
+}
+
+.highlight.warning::before {
+    content: "⚠️ ";
+    font-size: var(--highlight-icon-font-size);
+}
+
+.highlight.error::before {
+    content: "❗ ";
+    font-size: var(--highlight-icon-font-size);
+}
+
+.highlight.tip::before {
+    content: "✅ ";
+    font-size: var(--highlight-icon-font-size);
+}
+
+.toc {
+    background: var(--bg-toc);
+    padding: 2rem;
+    max-width: 50%;
+    box-shadow: var(--box-shadow);
+    margin-bottom: 2rem;
+
+    #toctitle {
+        font-size: larger;
+        font-weight: bold;
+    }
+
+    ul {
+        list-style-type: none;
+        li {
+            margin-bottom: 0.5rem;
+        }
+    }
+}
+
+.icon img {
+    max-width: 20px;
+}
+
+.valign-top {
+    vertical-align: top;
+}
+
+.column-header-center h2 {
+    text-align: center;
+}
+
+.education-table {
+    td:first-child {
+        padding-right: 1rem;
+    }
+    td:last-child {
+        padding-left: 1rem;
+    }
+}
+
+.stretch {
+    width: 100%;
+}
+
+.subtle {
+    color: var(--text-color-subtl);
+}
+
+.quoteblock {
+    margin: 0 1em 1.25em 1.5em;
+    display: table
+}
+
+.quoteblock:not(.excerpt) > .title {
+    margin-left: -1.5em;
+    margin-bottom: .75em
+}
+
+.quoteblock blockquote, .quoteblock p {
+    color: var(--text-color);
+    font-size: 1.15rem;
+    line-height: 1.75;
+    word-spacing: .1em;
+    letter-spacing: 0;
+    font-style: italic;
+    text-align: justify
+}
+
+.quoteblock blockquote {
+    margin: 0;
+    padding: 0;
+    border: 0
+}
+
+.quoteblock blockquote::before {
+    content: "\201c";
+    float: left;
+    font-size: 2.75em;
+    font-weight: bold;
+    line-height: .6em;
+    margin-left: -.6em;
+    color: #7a2518;
+    text-shadow: 0 1px 2px var(--box-shadow-color);
+}
+
+.quoteblock blockquote > .paragraph:last-child p {
+    margin-bottom: 0
+}
+
+.quoteblock .attribution {
+    margin-top: .75em;
+    margin-right: .5ex;
+    text-align: right
+}
+
+.quoteblock .attribution, .verseblock .attribution {
+    font-size: .9375em;
+    line-height: 1.45;
+    font-style: italic
+}
+
+.quoteblock .attribution br, .verseblock .attribution br {
+    display: none
+}
+
+.quoteblock .attribution cite, .verseblock .attribution cite {
+    display: block;
+    letter-spacing: -.025em;
+    color: var(--text-color-subtl);
+}
+
+.quoteblock.abstract blockquote::before, .quoteblock.excerpt blockquote::before, .quoteblock .quoteblock blockquote::before {
+    display: none
+}
+
+.quoteblock.abstract blockquote, .quoteblock.abstract p, .quoteblock.excerpt blockquote, .quoteblock.excerpt p, .quoteblock .quoteblock blockquote, .quoteblock .quoteblock p {
+    line-height: 1.6;
+    word-spacing: 0
+}
+
+.quoteblock.abstract {
+    margin: 0 1em 1.25em;
+    display: block
+}
+
+.quoteblock.abstract > .title {
+    margin: 0 0 .375em;
+    font-size: 1.15em;
+    text-align: center
+}
+
+.quoteblock.excerpt > blockquote, .quoteblock .quoteblock {
+    padding: 0 0 .25em 1em;
+    border-left: .25em solid var(--box-shadow-color)
+}
+
+.quoteblock.excerpt, .quoteblock .quoteblock {
+    margin-left: 0
+}
+
+.quoteblock.excerpt blockquote, .quoteblock.excerpt p, .quoteblock .quoteblock blockquote, .quoteblock .quoteblock p {
+    color: inherit;
+    font-size: 1.0625rem
+}
+
+.quoteblock.excerpt .attribution, .quoteblock .quoteblock .attribution {
+    color: inherit;
+    font-size: .85rem;
+    text-align: left;
+    margin-right: 0
+}
+
+.verseblock {
+    margin: 0 1em 1.25em
+}
+
+.verseblock pre {
+    font-family: "Open Sans", "DejaVu Sans", sans-serif;
+    font-size: 1.15rem;
+    color: var(--text-color);
+    font-weight: 300;
+    text-rendering: optimizeLegibility
+}
+
+.verseblock pre strong {
+    font-weight: 400
+}
+
+.verseblock .attribution {
+    margin-top: 1.25rem;
+    margin-left: .5ex
+}
+
+.imageblock.left, .image.right {
+    margin-top: .5rem;
+    margin-bottom: .5rem;
+    display: inline-block;
+    line-height: 0
+}
+
+.imageblock.left {
+    margin-right: 1rem
+}
+
+.imageblock.right {
+    margin-left: 1rem
+}
+
+.left {
+    float: left;
+}
+
+.right {
+    float: right;
+}
+
+.skillrow {
+    display: flex;
+    gap: 1rem; /* Abstand zwischen den Boxen */
+    margin-bottom: 1rem;
+}
+
+.skillbox {
+    border: var(--box-border);
+    border-radius: var(--border-radius);
+    padding: 0.5rem;
+    background: var(--bg-color);
+    text-align: center;
+    p {
+        margin: unset;
+    }
+    strong {
+        font-size: larger;
+    }
+    /* Flexbox-Items gleich hoch */
+    flex: 1;          /* teilt den verfügbaren Platz gleichmäßig auf */
+    display: flex;    /* macht die Box selbst flex */
+    flex-direction: column; /* Inhalt stapeln */
+}
+
+.text-center {
+    text-align: center;
+}
+
+.listingblock {
+    font-family: "JetBrains Mono", monospace;
+
+    .highlight {
+        padding: var(--padding-callout);
+    }
+}
+
+.intro {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+
+    margin: 2rem 0 2rem 0;
+    font-size: var(--font-size-callout);
+    padding: var(--padding-callout);
+    background-color: var(--bg-color);
+    border: var(--box-border);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    }
+
+.mainnav {
+    margin: 2rem 0;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.mainnav.noborder {
+    border: none;
+}
+
+.mainnav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+
+.mainnav a {
+    text-decoration: none;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: #333;
+
+    padding: 0.4rem 0;
+    border-bottom: 2px solid transparent;
+
+    transition: all 0.2s ease;
+}
+
+.mainnav a:hover {
+    color: #000;
+    border-bottom: 2px solid #3a7bd5;
+}
+
+.mainnav[data-active="home"] a[data-nav="home"],
+.mainnav[data-active="cv"] a[data-nav="cv"],
+.mainnav[data-active="articles"] a[data-nav="articles"],
+.mainnav[data-active="toolkit"] a[data-nav="toolkit"] {
+    transform: translateY(1px);
+    border-bottom: 2px solid #000;
+}

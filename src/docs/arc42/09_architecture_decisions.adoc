@@ -1,0 +1,31 @@
+= Architecture Decisions
+
+== ADR-001: Use AsciiDoc as single source
+
+AsciiDoc provides:
+
+- rich structure
+- includes
+- flexibility for multiple outputs
+
+== ADR-002: Use Gradle for orchestration
+
+Gradle allows:
+
+- task orchestration
+- dependency management
+- extensibility
+
+== ADR-003: Use Docker for reproducibility
+
+Docker ensures:
+
+- identical environments
+- no local setup required
+
+== ADR-004: Use Pandoc for Markdown conversion
+
+Pandoc provides:
+
+- reliable format transformation
+- high-quality Markdown output

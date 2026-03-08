@@ -1,0 +1,87 @@
+ifndef::stylesheet[]
+:stylesdir: ../../theme
+:stylesheet: style.css
+endif::[]
+ifndef::is-included[]
+[cols="1", frame=none, grid=none]
+|===
+a|
+endif::[]
+[cols="1,2", frame=none, grid=none]
+!===
+
+a!
+=== [.subtle]#02 / 2026#
+a!
+=== iSAQB Modul AGILA (Agile Softwarearchitektur) - CPSA-A-Level
+*socreatory / embarc / iSAQB* +
+https://web.tresorit.com/l/ZRqvd#7CNKFS0ZiWSsDjAxubGQbw[Nachweis] +
+[.subtle]#online; Softwarearchitektur, Agilität#
+
+a!
+=== [.subtle]#11 / 2025#
+a!
+=== iSAQB Modul GREEN - CPSA-A-Level
+*envite / iSAQB* +
+https://web.tresorit.com/l/W1c7S#5gNvsLyh8cJs3j01SyhMKg[Nachweis] +
+[.subtle]#online; greenIT, Softwarequalität#
+
+a!
+=== [.subtle]#10 / 2023#
+a!
+=== CAST Highlight - Foundation Certification
+*CAST* +
+https://web.tresorit.com/l/JEljc#Jt03yqHlKx1OFTuLyAsSjg[Nachweis] +
+[.subtle]#online; greenIT, Softwarequalität#
+
+a!
+=== [.subtle]#12 / 2022#
+a!
+=== Green Software Practitioner
+*Linux Foundation / Green Software Foundation* +
+https://web.tresorit.com/l/sDXyU#_AFGc3-FD9ysxLrD0qfuYw[Nachweis] +
+[.subtle]#online; greenIT#
+
+a!
+=== [.subtle]#03 / 2020#
+a!
+=== iSAQB Accredited Trainer for CPSA-F
+*iSAQB® – International Software Architecture Qualification Board* +
+https://web.tresorit.com/l/H6PiM#tiiOgHb26taxlf0yUKnBiQ[Nachweis] +
+
+a!
+=== [.subtle]#02 / 2017#
+a!
+=== iSAQB Certified Professional for Software Architecture - Foundation Level
+*iSQI* +
+https://web.tresorit.com/l/9xx9T#73N_jwlKWWrvEzX3c0InRw[Nachweis] +
+[.subtle]#Leinfelden-Echterdingen; Softwarearchitektur#
+
+a!
+=== [.subtle]#12 / 2013#
+a!
+=== Clean Code: Agile Software Craftsmanship
+*Robert C. Martin* +
+https://web.tresorit.com/l/swFLK#5nnnWhnlUomCwnxyRLCjgw[Nachweis] +
+[.subtle]#Frankfurt#
+
+a!
+=== [.subtle]#12 / 2008#
+a!
+=== Certified Projektmanagement Associate (IPMA Level D)
+*GPM Deutsche Gesellschaft für Projektmanagement* +
+https://web.tresorit.com/l/Y781T#CKqmeRjp2dTrXnVWlRf9Sg[Nachweis] +
+[.subtle]#Nürnberg#
+
+a!
+=== [.subtle]#10 / 2007#
+a!
+=== Foundation Certificate in IT  Service Management (ITIL)
+*TÜV Süd* +
+https://web.tresorit.com/l/8aTba#1b4j7SneiW9E8q6Sb7VUtQ[Nachweis] +
+[.subtle]#München#
+
+!===
+ifndef::is-included[]
+|===
+endif::[]

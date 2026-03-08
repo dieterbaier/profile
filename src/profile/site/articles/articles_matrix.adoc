@@ -1,0 +1,43 @@
+ifndef::stylesheet[]
+:stylesheet: style.css
+:stylesdir: ../../theme
+endif::[]
+
+[subs=attributes,macros]
+++++
+<div class="skillrow">
+    <div class="skillbox">
+        <strong><a href="{basedir}/articles/documentation/doc-as-code.html">Dokumentation</a></strong>
+    </div>
+</div>
+
+<div class="skillrow">
+    <div class="skillbox">
+        <strong>Integration</strong>
+    </div>
+    <div class="skillbox">
+        <strong>Entwicklung</strong>
+    </div>
+</div>
+
+<div class="skillrow">
+    <div class="skillbox">
+        <strong><a href="{basedir}/articles/architecture/architecture-thinking.html">Software Architektur</a></strong>
+    </div>
+    <div class="skillbox">
+        <strong>Methoden</strong>
+    </div>
+</div>
+
+<div class="skillrow">
+    <div class="skillbox">
+        <strong>Plattform & Auslieferung</strong>
+    </div>
+</div>
+
+<div class="skillrow">
+    <div class="skillbox">
+        <strong>Branchen</strong>
+    </div>
+</div>
+++++

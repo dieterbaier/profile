@@ -1,0 +1,13 @@
+ifndef::stylesheet[]
+:stylesdir: ../../theme
+:stylesheet: style.css
+endif::[]
+:is-included!:
+
+=== Weiterbildung
+
+include::./certificates.adoc[]
+
+=== Ausbildung
+
+include::./education.adoc[]
