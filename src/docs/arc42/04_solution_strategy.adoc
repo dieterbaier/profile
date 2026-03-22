@@ -1,0 +1,6 @@
+= Solution Strategy
+ifndef::includesdir[]
+:includesdir: .
+endif::[]
+
+include::04_solution_strategy/Build_Pipeline_Strategy.adoc[]

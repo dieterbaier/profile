@@ -1,0 +1,77 @@
+== Build Pipeline Strategy
+
+=== Context
+
+The project uses a GitHub Actions based pipeline to build and deploy documentation artifacts (README, site, architecture).
+
+Goals:
+- Minimize unnecessary builds
+- Ensure reproducibility
+- Reduce resource consumption (Green IT)
+- Keep pipeline maintainable and deterministic
+
+=== Solution
+
+The pipeline is structured into four logical stages:
+
+[plantuml]
+----
+@startuml
+[build-image] --> [detect-changes]
+[detect-changes] --> [build-docs]
+[build-docs] --> [deploy]
+@enduml
+----
+
+==== 1. Immutable Build Environment
+
+A Docker image is used as the build environment.
+
+- Tagged using a hash of Dockerfile and .dockerignore
+- Built only when relevant files change
+- Cached using registry-based layer caching
+
+==== 2. Change Detection
+
+File-based change detection is implemented using path filters.
+
+Categories:
+- README
+- Architecture
+- Site
+
+This enables selective execution of build tasks.
+
+==== 3. Conditional Build Execution
+
+Only required Gradle tasks are executed:
+
+- buildReadme
+- buildArchitecture
+- buildSite
+
+If no relevant changes are detected, the build step is skipped entirely.
+
+==== 4. Artifact-Based Deployment
+
+Artifacts are:
+- generated once
+- uploaded
+- consumed by a dedicated deploy stage
+
+Deployment targets:
+- GitHub profile README
+- GitLab profile README
+- GitHub Pages
+
+=== Consequences
+
+Advantages:
+- Reduced pipeline runtime
+- Lower resource consumption
+- Deterministic builds
+- Clear separation of concerns
+
+Trade-offs:
+- Increased pipeline complexity
+- Additional maintenance for path filters

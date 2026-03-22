@@ -22,6 +22,8 @@ include::{includesdir}/02_architecture_constraints.adoc[]
 
 include::{includesdir}/03_system_scope_and_context.adoc[]
 
+include::{includesdir}/04_solution_strategy.adoc[]
+
 include::{includesdir}/05_building_block_view.adoc[]
 
 include::{includesdir}/06_runtime_view.adoc[]
