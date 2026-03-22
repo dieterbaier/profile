@@ -17,7 +17,7 @@ if [ -z "$ENGINE" ]; then
 fi
 
 # Image-Tag aus Dockerfile ableiten
-DOCKER_HASH=$(sha256sum Dockerfile docker/* | cut -c1-12)
+DOCKER_HASH=$(sha256sum Dockerfile .dockerignore | cut -c1-12)
 IMAGE_NAME="ghcr.io/dieterbaier/docs-pipeline:$DOCKER_HASH"
 
 echo "📦 Verwende Image: $IMAGE_NAME"

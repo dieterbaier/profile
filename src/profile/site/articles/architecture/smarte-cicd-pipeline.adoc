@@ -1,0 +1,217 @@
+= Smarter CI/CD
+:norevinfo:
+ifdef::buildsite[]
+:basedir: ../..
+endif::[]
+include::{includesdir}/docheader.adoc[]
+:revremark: Build only what changed
+:toc:
+
+:active: articles
+include::{includesdir}/menue.adoc[]
+
+include::{includesdir}/author.adoc[]
+
+== Ausgangssituation
+
+Viele CI/CD-Pipelines folgen einem einfachen Prinzip:
+
+*Bei jedem Commit wird einfach alles gebaut.*
+
+Das funktioniert.
+Aber es ist:
+
+- langsam
+- ressourcenintensiv
+- unnötig
+
+Gerade bei unterschiedlichen Ziel-Artefakten, wie auch bei meinem persönlichen Profil (README, Architektur, Website), führt das schnell dazu, dass bei jeder kleinen Änderung die komplette Pipeline läuft – obwohl sich vielleicht nur eine einzige Datei geändert hat.
+
+== Zielbild
+
+Die Idee ist einfach:
+
+[quote]
+Build only what changed. Deploy only what matters.
+
+Das bedeutet konkret:
+
+- Nur die Artefakte bauen, die wirklich betroffen sind
+- Nur deployen, wenn sich tatsächlich etwas geändert hat
+- Die Build-Umgebung reproduzierbar und stabil halten
+- Ressourcenverbrauch reduzieren (greenIT)
+
+== Lösungsstrategie
+
+Die Pipeline basiert auf vier zentralen Bausteinen.
+
+=== 1. Immutable Build Environment
+
+Die gesamte Build-Umgebung wird in ein Docker-Image gepackt.
+
+- Das Image wird über einen Hash versioniert
+- Grundlage sind `Dockerfile` und `.dockerignore`
+- Es wird nur neu gebaut, wenn sich diese Dateien ändern
+
+[source,bash]
+----
+sha256sum Dockerfile .dockerignore | sha256sum | cut -c1-12
+----
+
+Vorteile:
+
+- reproduzierbare Builds
+- keine “works on my machine”-Probleme
+- klare Trennung von Build-Logik und Pipeline
+
+Zusätzlich wird ein `latest`-Tag verwendet, um Docker Layer Cache zu ermöglichen.
+
+=== 2. Change Detection
+
+Statt blind alles zu bauen, wird zuerst analysiert, *was sich geändert hat*.
+
+Dafür wird ein Pfad-basierter Filter verwendet:
+
+[source,yaml]
+----
+filters:
+  readme:
+    - 'README.adoc'
+    - 'profile/**'
+  architecture:
+    - 'docs/**'
+  site:
+    - 'profile/**'
+----
+
+Damit lassen sich Änderungen in Kategorien einteilen:
+
+- README
+- Architektur
+- Website
+
+=== 3. Conditional Build Execution
+
+Auf Basis der erkannten Änderungen wird der Build dynamisch zusammengestellt.
+
+[source,bash]
+----
+CMD="./gradlew --no-daemon"
+
+if [ "$README_CHANGED" == "true" ]; then
+  CMD="$CMD buildReadme"
+fi
+
+if [ "$ARCH_CHANGED" == "true" ]; then
+  CMD="$CMD buildArchitecture"
+fi
+
+if [ "$SITE_CHANGED" == "true" ]; then
+  CMD="$CMD buildSite"
+fi
+----
+
+Wenn keine relevanten Änderungen vorliegen:
+
+[source,bash]
+----
+Nothing to build
+----
+
+→ Die Pipeline endet frühzeitig.
+
+=== 4. Artifact-Based Deployment
+
+Die Pipeline trennt strikt zwischen:
+
+- Build
+- Deploy
+
+Ablauf:
+
+1. Artefakte bauen
+2. Artefakte speichern
+3. Deployment in separatem Schritt
+
+Deploy-Ziele:
+
+- GitHub Profil (README)
+- GitLab Profil (README)
+- GitHub Pages (Architektur)
+- persönliche Domain (Site)
+
+Vorteil:
+
+- Build und Deployment sind entkoppelt
+- Deploy kann unabhängig wiederholt werden
+
+=== 5. Docker Layer Caching
+
+Um Build-Zeiten zu reduzieren, wird ein Registry-basierter Cache genutzt:
+
+[source,bash]
+----
+--cache-from=type=registry,ref=image:latest
+--cache-to=type=registry,ref=image:latest,mode=max
+----
+
+Das reduziert insbesondere:
+
+- Dependency Downloads
+- Package Installationen
+
+== Ergebnis
+
+Die Pipeline hat sich dadurch deutlich verändert:
+
+|===
+|Vorher |Nachher
+
+|Alles wird immer gebaut
+|Nur relevante Teile werden gebaut
+
+|Lange Laufzeiten
+|Deutlich schnellere Builds
+
+|Hoher Ressourcenverbrauch
+|Effizientere Nutzung (greenIT)
+
+|Kaum Struktur
+|Klare Trennung von Verantwortlichkeiten
+|===
+
+== Trade-offs
+
+Natürlich hat der Ansatz auch Nachteile:
+
+- höhere Komplexität in der Pipeline
+- Pflege der Pfad-Filter notwendig
+- etwas mehr Initialaufwand
+
+In der Praxis überwiegen jedoch die Vorteile deutlich.
+
+== Fazit
+
+CI/CD sollte nicht nur funktionieren – sondern mitdenken.
+
+Eine Pipeline, die versteht, *was sich geändert hat*, ist:
+
+- schneller
+- effizienter
+- nachhaltiger
+- robuster
+
+Und ganz nebenbei auch deutlich angenehmer im Alltag.
+
+== Ausblick
+
+Mögliche nächste Schritte:
+
+- Parallelisierung der Builds
+- Preview Deployments für Pull Requests
+- Automatisches Aufräumen alter Docker Images
+- Metriken zur Pipeline-Performance
+
+Die Grundlage dafür ist bereits gelegt.
+
+include::{includesdir}/footer.adoc[]

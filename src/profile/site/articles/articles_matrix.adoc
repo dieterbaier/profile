@@ -31,7 +31,7 @@ endif::[]
 
 <div class="skillrow">
     <div class="skillbox">
-        <strong>Plattform & Auslieferung</strong>
+        <strong><a href="{basedir}/articles/architecture/smarte-cicd-pipeline.html">Plattform & Auslieferung</a></strong>
     </div>
 </div>
 
