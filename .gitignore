@@ -43,3 +43,4 @@ bin/
 
 /build/**/*
 /.env
+/.docs.md
