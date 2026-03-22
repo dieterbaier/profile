@@ -6,7 +6,10 @@ Maintaining a personal profile across multiple platforms (GitHub, GitLab, person
 
 This project provides a unified solution based on the idea:
 
+[.quote]
+____
 "Write once, publish everywhere."
+____
 
 == Goals
 

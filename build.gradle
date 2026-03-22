@@ -193,6 +193,7 @@ asciidoctorBase('buildCVDownload','buildCVSite','src/profile/cv', 'build/site/cv
 // Website
 asciidoctorBase('buildSite','buildCVDownload','src/profile/site', 'build/site', false)
 // Architekturseite
+//asciidoctorBase('buildArchitecture','','src/docs/arc42', 'build/architecture', true, "html5", ['includesdir': 'src/docs/arc42'])
 tasks.register('buildArchitecture', org.asciidoctor.gradle.jvm.AsciidoctorTask) {
     var asciidocAttributes = ['includesdir': 'src/docs/arc42']
 

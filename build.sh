@@ -16,10 +16,7 @@ if [ -z "$ENGINE" ]; then
     exit 0
 fi
 
-# Image-Tag aus Dockerfile ableiten
-DOCKER_HASH=$(sha256sum Dockerfile .dockerignore | cut -c1-12)
-IMAGE_NAME="ghcr.io/dieterbaier/docs-pipeline:$DOCKER_HASH"
-
+IMAGE_NAME="ghcr.io/dieterbaier/docs-toolbox:latest"
 echo "📦 Verwende Image: $IMAGE_NAME"
 
 # Prüfen ob Image existiert
@@ -28,8 +25,9 @@ if ! $ENGINE image exists "$IMAGE_NAME" >/dev/null 2>&1; then
     if $ENGINE pull "$IMAGE_NAME"; then
         echo "✅ Image aus GHCR gezogen"
     else
-        echo "🔨 Baue Docker Image lokal..."
-        $ENGINE build -t "$IMAGE_NAME" .
+        echo "💻 Konnte Image $IMAGE_NAME nicht ziehen. Baue lokal"
+        ./gradlew "$@"
+        exit 0
     fi
 else
     echo "✅ Image bereits vorhanden"
