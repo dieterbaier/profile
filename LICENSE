@@ -1,3 +1,6 @@
+> *Note:* This repository contains both open-source and proprietary content.
+> See the section "Additional Terms for Repository Content" below.
+
 MIT License
 
 Copyright (c) 2026 Dieter Baier
@@ -14,3 +17,24 @@ copies or substantial portions of the Software.
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+
+---
+
+## Additional Terms for Repository Content
+
+The MIT License applies only to the source code, build scripts, and project structure of this repository.
+
+The content located in the following directories is explicitly excluded from the MIT License:
+
+- src/docs/
+- src/profile/
+- revinfo.adoc
+
+This content includes, but is not limited to:
+- personal profile information
+- architectural documentation
+- written texts and descriptions
+
+All such content is proprietary and subject to separate licensing terms.
+
+See the file [CONTENT_LICENSE](./CONTENT_LICENSE) for details.
