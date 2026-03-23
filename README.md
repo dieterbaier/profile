@@ -1,8 +1,21 @@
 # 📄 Documentation Pipeline
 
-A reproducible documentation pipeline built with **Gradle, Asciidoctor, Pandoc, and Docker**.
+![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
+![Content: Proprietary](https://img.shields.io/badge/Content-Proprietary-red.svg)
 
-This project generates multiple documentation artifacts (HTML, PDF, Markdown) from a single source of truth and is designed to run **locally and in CI with identical results**.
+A **single-source documentation pipeline** for generating
+**CVs, websites, and architecture documentation** — fully reproducible and CI-ready.
+
+Maintaining a personal profile across multiple platforms is painful and error-prone.
+
+This project solves that by using a **single source of truth**...
+
+## 🧠 What this demonstrates
+
+- Documentation as Code in practice
+- Reproducible builds across environments
+- Separation of content and presentation
+- Automated personal branding pipeline
 
 ---
 
@@ -19,12 +32,13 @@ This project generates multiple documentation artifacts (HTML, PDF, Markdown) fr
 
 ## 🏗️ Architecture Overview
 
-```
-AsciiDoc
-   │
-   ├── Asciidoctor (HTML / PDF)
-   │
-   └── DocBook → Pandoc → Markdown
+```mermaid
+graph TD
+  A[AsciiDoc] --> B[Asciidoctor]
+  B --> C[HTML / PDF]
+  A --> D[DocBook]
+  D --> E[Pandoc]
+  E --> F[Markdown]
 ```
 
 Additional steps:
@@ -37,70 +51,43 @@ Additional steps:
 
 ## 🚀 Usage
 
+Available tasks:
+
+- buildSite
+- buildReadme
+- buildCVPersonal
+- buildArchitecture
+
 ### Local (with container)
 
 ```bash
-./build.sh buildSite
+./build.sh <task>
 ```
-
-or
-
-```bash
-./build.sh buildReadme
-```
-
-or
-
-```bash
-./build.sh buildCVPersonal
-```
-
----
-
 ### Local (without container)
 
 ```bash
-./gradlew buildSite
-```
-
-or
-
-```bash
-./gradlew buildReadme
-```
-
-or
-
-```bash
-./gradlew buildCVPersonal
+./gradlew <task>
 ```
 
 ---
 
 ## 📦 Outputs
 
-| Target       | Output                     |
-| ------------ |----------------------------|
-| README       | `build/readme/README.md`   |
-| README       | `build/readme/README.html` |
-| Website      | `build/site/index.html`    |
-| CV (HTML)    | `build/site/cv.html`       |
-| CV (PDF)     | `build/site/cv/cv.pdf`     |
-| Personal PDF | `build/cv/`                |
+| Target                     | Output                     |
+|----------------------------|----------------------------|
+| README                     | `build/readme/README.md`   |
+| README                     | `build/readme/README.html` |
+| Website                    | `build/site/index.html`    |
+| CV (HTML)                  | `build/site/cv.html`       |
+| CV (PDF)                   | `build/site/cv/cv.pdf`     |
+| Personal PDF               | `build/cv/`                |
+| Architecture documentation | `build/architecture/`      |
 
 ---
 
 ## 🐳 Docker
 
-The project provides a container image with all prerequisites:
-
-* Java
-* Gradle
-* Asciidoctor
-* Pandoc
-* Graphviz
-
-The image is built automatically in CI and reused locally.
+This project uses the docker image [ghcr.io/dieterbaier/docs-toolbox](https://github.com/dieterbaier/docs-toolbox/pkgs/container/docs-toolbox) to have all necessary tools available.
 
 ---
 
@@ -127,14 +114,15 @@ The build is implemented using Gradle:
 
 ```
 src/
-  profile/
+  docs/                 # Architecture documentation
+  profile/              # Personal profile sources
     cv/
     readme/
     site/
     theme/
     includes/
 
-build/
+build/                  # Destination for the generated target artifacts
 ```
 
 ---
@@ -210,4 +198,37 @@ This project is both:
 
 ## 📄 License
 
-MIT
+This repository is a combination of **open-source code** and **proprietary content**.
+
+### 🧩 Code & Project Structure
+Licensed under the MIT License.
+
+You are free to:
+- use, modify, and distribute the code
+- reuse the project structure and tooling
+
+### 🔒 Content (Important!)
+The content in the following directories is **not open source**:
+
+- `src/docs/`
+- `src/profile/`
+- `revinfo.adoc`
+
+This includes:
+- personal profile information
+- architectural documentation
+- written texts and descriptions
+
+👉 This content is **proprietary** and may not be reused, modified, or redistributed without explicit permission.
+
+### 📚 Summary
+
+| Part | License |
+|------|--------|
+| Code & build tooling | MIT |
+| Project structure | MIT |
+| Personal content | All rights reserved |
+
+For details see:
+- [`LICENSE`](./LICENSE)
+- [`CONTENT_LICENSE`](./CONTENT_LICENSE)

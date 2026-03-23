@@ -1,0 +1,15 @@
+Copyright (c) 2026 Dieter Baier
+
+All rights reserved.
+
+The contents of this repository located in the following directories are not licensed under the MIT License:
+
+- src/docs/
+- src/profile/
+
+These contents include, but are not limited to:
+- personal profile information
+- architectural documentation
+- texts, descriptions, and written content
+
+No part of these contents may be reproduced, distributed, modified, or used for commercial purposes without explicit prior written permission.

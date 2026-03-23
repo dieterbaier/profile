@@ -17,20 +17,13 @@ if [ -z "$ENGINE" ]; then
 fi
 
 IMAGE_NAME="ghcr.io/dieterbaier/docs-toolbox:latest"
-echo "📦 Verwende Image: $IMAGE_NAME"
-
-# Prüfen ob Image existiert
-if ! $ENGINE image exists "$IMAGE_NAME" >/dev/null 2>&1; then
-    echo "📥 Versuche, Image von GHCR zu pullen..."
-    if $ENGINE pull "$IMAGE_NAME"; then
-        echo "✅ Image aus GHCR gezogen"
-    else
-        echo "💻 Konnte Image $IMAGE_NAME nicht ziehen. Baue lokal"
-        ./gradlew "$@"
-        exit 0
-    fi
+echo "📥 Versuche, Image $IMAGE_NAME von GHCR zu pullen..."
+if $ENGINE pull "$IMAGE_NAME"; then
+    echo "✅ Image aus GHCR gezogen"
 else
-    echo "✅ Image bereits vorhanden"
+    echo "💻 Konnte Image $IMAGE_NAME nicht ziehen. Baue lokal"
+    ./gradlew "$@"
+    exit 0
 fi
 
 ENV_FILE=""
