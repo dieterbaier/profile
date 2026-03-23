@@ -221,12 +221,13 @@ This includes:
 
 ### 📚 Summary
 
-| Part | License |
-|------|--------|
-| Code & build tooling | MIT |
-| Project structure | MIT |
-| Personal content | All rights reserved |
+| Part | License                 |
+|------|-------------------------|
+| Code & build tooling | [MIT](./LICENSE.md)     |
+| Project structure | [MIT](./LICENSE.md)     |
+| Personal content | [All rights reserved](./CONTENT_LICENSE.md) |
 
 For details see:
-- [`LICENSE`](./LICENSE)
-- [`CONTENT_LICENSE`](./CONTENT_LICENSE)
+
+- [LICENSE](./LICENSE.md)
+- [CONTENT_LICENSE](./CONTENT_LICENSE.md)

@@ -24,15 +24,16 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 
 The MIT License applies only to the source code, build scripts, and project structure of this repository.
 
-The content located in the following directories is explicitly excluded from the MIT License:
+The content located in the following directories is e**xplicitly excluded from the MIT License**:
 
-- src-content
+- `/src-content`
 
 This content includes, but is not limited to:
+
 - personal profile information
 - architectural documentation
 - written texts and descriptions
 
-All such content is proprietary and subject to separate licensing terms.
+**All such content is proprietary and subject to separate licensing terms.**
 
-See the file [CONTENT_LICENSE](./CONTENT_LICENSE) for details.
+See the file [CONTENT_LICENSE](./CONTENT_LICENSE.md) for details.
