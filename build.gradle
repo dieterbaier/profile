@@ -72,12 +72,13 @@ tasks.register('checkEnvironment') {
         }
 
         if (!missing.isEmpty()) {
-            throw new GradleException("""
+            throw new GradleException('''
 ❌ Missing required tools:
-- ${missing.join('\n- ')}
+- ''' + missing.join('\n' +
+                    '- ') + '''
 
 👉 Bitte installieren und PATH prüfen.
-""")
+''')
         }
 
         println "✅ Environment looks good"
@@ -93,7 +94,7 @@ tasks.register('housekeeping', Delete) {
 
 // gemeinsame Konfiguration
 def asciidoctorBase = { taskName, taskDependsOnTask, sourceDir, outputDir, clean = false, backend = "html5", extraAttrs = [:] ->
-    var asciidocAttributes = ['includesdir': 'src/profile/includes',
+    var asciidocAttributes = ['includesdir': 'src-content/profile/includes',
                       'buildsite': 'true',] + extraAttrs
 
     def taskProvider
@@ -128,16 +129,16 @@ def asciidoctorBase = { taskName, taskDependsOnTask, sourceDir, outputDir, clean
 
         into(taskProvider.map { it.outputDir })
 
-        from("src/profile/theme/fonts") {
+        from("src-content/profile/theme/fonts") {
             include "*.woff2"
             into "stylesheet/fonts"
         }
 
-        from("src/profile/theme/icons") {
+        from("src-content/profile/theme/icons") {
             into "assets/icons"
         }
 
-        from("src/profile/includes/images") {
+        from("src-content/profile/includes/images") {
             into "assets/images"
         }
 
@@ -169,7 +170,7 @@ def asciidoctorBase = { taskName, taskDependsOnTask, sourceDir, outputDir, clean
 }
 
 // Readme
-asciidoctorBase('buildReadmeDocbook','','src/profile/readme', 'build/readme/docbook', true, 'docbook')
+asciidoctorBase('buildReadmeDocbook','','src-content/profile/readme', 'build/readme/docbook', true, 'docbook')
 tasks.register('convertDocBookToMarkdown', PandocTask) {
     dependsOn tasks.named('buildReadmeDocbook')
     dependsOn tasks.named('buildReadmeDocbookCopyAssets')
@@ -177,9 +178,9 @@ tasks.register('convertDocBookToMarkdown', PandocTask) {
     setInputFile(file("build/readme/docbook/README.xml"))
     setOutputFile(file("build/readme/README.md"))
 }
-asciidoctorBase('buildReadme','convertDocBookToMarkdown','src/profile/readme', 'build/readme', false)
+asciidoctorBase('buildReadme','convertDocBookToMarkdown','src-content/profile/readme', 'build/readme', false)
 // CV
-asciidoctorBase('buildCVPersonal','','src/profile/cv', 'build/cv', true, 'pdf', [ // personal PDF (not deployed to the site)
+asciidoctorBase('buildCVPersonal','','src-content/profile/cv', 'build/cv', true, 'pdf', [ // personal PDF (not deployed to the site)
                                                                        'cvprint'       : 'true',
                                                                        'contact-street': env('CONTACT_STREET') ?: '.',
                                                                        'contact-plz'   : env('CONTACT_PLZ') ?: '.',
@@ -188,16 +189,16 @@ asciidoctorBase('buildCVPersonal','','src/profile/cv', 'build/cv', true, 'pdf', 
                                                                        'contact-tel-print': env('CONTACT_TEL_PRINT') ?: '.',
                                                                        'contact-email' : env('CONTACT_EMAIL') ?: '.'
 ])
-asciidoctorBase('buildCVSite','','src/profile/cv', 'build/site', true) // HTML
-asciidoctorBase('buildCVDownload','buildCVSite','src/profile/cv', 'build/site/cv', false, 'pdf') // PDF download
+asciidoctorBase('buildCVSite','','src-content/profile/cv', 'build/site', true) // HTML
+asciidoctorBase('buildCVDownload','buildCVSite','src-content/profile/cv', 'build/site/cv', false, 'pdf') // PDF download
 // Website
-asciidoctorBase('buildSite','buildCVDownload','src/profile/site', 'build/site', false)
+asciidoctorBase('buildSite','buildCVDownload','src-content/profile/site', 'build/site', false)
 // Architekturseite
-//asciidoctorBase('buildArchitecture','','src/docs/arc42', 'build/architecture', true, "html5", ['includesdir': 'src/docs/arc42'])
+//asciidoctorBase('buildArchitecture','','src-content/docs/arc42', 'build/architecture', true, "html5", ['includesdir': 'src-content/docs/arc42'])
 tasks.register('buildArchitecture', org.asciidoctor.gradle.jvm.AsciidoctorTask) {
-    var asciidocAttributes = ['includesdir': 'src/docs/arc42']
+    var asciidocAttributes = ['includesdir': 'src-content/docs/arc42']
 
-    setSourceDir(file('src/docs/arc42'))
+    setSourceDir(file('src-content/docs/arc42'))
     setOutputDir(file('build/architecture'))
     sources {
         include 'index.adoc'

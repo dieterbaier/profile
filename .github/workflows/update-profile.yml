@@ -21,11 +21,11 @@ jobs:
         with:
           filters: |
             readme:
-              - 'src/profile/**'
+              - 'src-content/profile/**'
             architecture:
-              - 'src/docs/**'
+              - 'src-content/docs/**'
             site:
-              - 'src/profile/**'
+              - 'src-content/profile/**'
 
   build-docs:
     runs-on: ubuntu-latest

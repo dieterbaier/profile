@@ -13,7 +13,7 @@ ifdef::buildsite[]
 endif::[]
 include::{includesdir}/docheader.adoc[]
 :pdf-theme: cv-theme.yml
-:pdf-themesdir: {basedir}/src/profile/theme
+:pdf-themesdir: {basedir}/src-content/profile/theme
 :pdf-fontsdir: {pdf-themesdir}/fonts
 ifndef::cvprint[]
 :title-logo-image: image::dieterbaier_image_cv_rounded.png[Dieter Baier,pdfwidth=10cm,align=top]

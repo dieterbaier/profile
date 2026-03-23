@@ -4,9 +4,7 @@ All rights reserved.
 
 The contents of this repository located in the following directories are not licensed under the MIT License:
 
-- src/docs/
-- src/profile/
-- revinfo.adoc
+- src-content/
 
 These contents include, but are not limited to:
 - personal profile information

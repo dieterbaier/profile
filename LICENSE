@@ -26,9 +26,7 @@ The MIT License applies only to the source code, build scripts, and project stru
 
 The content located in the following directories is explicitly excluded from the MIT License:
 
-- src/docs/
-- src/profile/
-- revinfo.adoc
+- src-content
 
 This content includes, but is not limited to:
 - personal profile information

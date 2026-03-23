@@ -27,7 +27,7 @@ ifeval::["{backend}" != "pdf"]
 :imagesdir: {basedir}/assets/images/
 endif::[]
 endif::[]
-:copycss: {basedir}/src/profile/theme/style.css
+:copycss: {basedir}/src-content/profile/theme/style.css
 :icons: image
 :nofooter:
 ifeval::["{backend}" == "pdf"]

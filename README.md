@@ -113,7 +113,7 @@ The build is implemented using Gradle:
 ## 📐 Project Structure
 
 ```
-src/
+src-content/
   docs/                 # Architecture documentation
   profile/              # Personal profile sources
     cv/
@@ -210,9 +210,7 @@ You are free to:
 ### 🔒 Content (Important!)
 The content in the following directories is **not open source**:
 
-- `src/docs/`
-- `src/profile/`
-- `revinfo.adoc`
+- `src-content`
 
 This includes:
 - personal profile information

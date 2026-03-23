@@ -30,7 +30,7 @@ ENV_FILE=""
 [ -f .env ] && ENV_FILE="--env-file .env"
 
 # Run
-$ENGINE run --rm \
+$ENGINE run -m --rm \
     $ENV_FILE \
     -v "$PWD":/app \
     -v gradle-cache:/root/.gradle \
