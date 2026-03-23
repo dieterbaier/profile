@@ -1,0 +1,11 @@
+:project-timeframe: 04/2016 – 07/2016
+:project-role: Lead Developer & Architekt
+:project-branche: Bankwesen
+:project-technologies: Java 7, JPA, Spring Boot, JSF, Primefaces, Maven, Git, Jenkins, Nexus, WebSphere
+:contribution_1: Entwicklung eines mandantenfähigen Testautomaten
+:contribution_2: Verwaltung von 20.000 Testfällen
+:contribution_3: Automatisierte Auswertung und Berichterstattung
+:contribution_4: Integration von SetUp- und TearDown-Schritten
+:project-contribution-file: 18_zahlungsverkehr_testautomat/description.adoc
+
+include::../project.adoc[]

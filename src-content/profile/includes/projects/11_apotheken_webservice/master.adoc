@@ -1,0 +1,14 @@
+:project-timeframe: 9 Monate
+:project-role: Lead Developer & Architekt
+:project-branche: Pharma
+:project-technologies: Java EE 6, WebSphere, SOAP, JMS, MQ, JUnit, PowerMock, Mockito, Maven, Jenkins, Nexus
+
+
+
+:contribution_1: Implementierung der MSV3-Schnittstelle für Apotheken
+:contribution_2: Integration von Backend-Systemen
+:contribution_3: Aufbau eines Continuous-Integration-Prozesses
+:contribution_4: Entwicklung von Querschnittsfunktionalitäten
+:project-contribution-file: 11_apotheken_webservice/description.adoc
+
+include::../project.adoc[]

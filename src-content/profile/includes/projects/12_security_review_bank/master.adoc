@@ -1,0 +1,10 @@
+:project-timeframe: 12 Monate
+:project-role: Security Analyst
+:project-branche: Bankwesen
+:project-technologies: UML, MagicDraw, Interviews
+:contribution_1: Analyse der Anwendungsarchitektur auf Security-Leaks
+:contribution_2: Dokumentation der Anwendungslandschaft
+:contribution_3: Schulung des Architekturboards
+:project-contribution-file: 12_security_review_bank/description.adoc
+
+include::../project.adoc[]

@@ -1,4 +1,0 @@
-* Designed event-driven integration platform
-* Introduced architecture documentation with AsciiDoc
-* Built Kafka-based messaging backbone
-* Mentored development teams

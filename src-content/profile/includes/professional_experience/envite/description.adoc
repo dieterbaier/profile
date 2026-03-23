@@ -1,0 +1,3 @@
+- Aufbau der internen IT-Infrastruktur (HR-, CRM- und Collaboration-Systeme)
+- Mitaufbau des Beratungsfeldes „Sustainable Software Architecture“
+- Beratung von Kunden im Bereich nachhaltiger Softwarearchitekturen

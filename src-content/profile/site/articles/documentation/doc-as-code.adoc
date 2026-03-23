@@ -103,7 +103,7 @@ D.h., ich versuche auf eine *erkennbare Struktur* zu achten. Ich versuche auch i
 
 Ein sehr wichtiger Aspekt hilft mir darüber hinaus auch bei der Entscheidung, welches Medium ich verwende (leider ist das in vielen Kundenprojekten nicht möglich, wenngleich ich schon versuche, darauf einzuwirken): *_Write once, deliver anywhere_*. Das wird aus meiner Sicht im Kontext von Dokumentation oft unterschätzt, ist aber spätestens dann absolut wichtig, wenn ich meine Dokumentation ausliefern muss oder unterschiedlichen Stakeholdern aus unterschiedlichen Abteilungen, vielleicht sogar Firmen zugänglich machen sollte.
 
-Es muss also möglich sein, dass ich meine Dokumentation einmal schreibe, sie aber z.B. als Webseite präsentieren oder auch als PDF verschicken kann. Und dabei soll die Qualität nicht wirklich unterschiedlich sein (die Druckfunktion des Browsers wird i.d.R. kein zufriedenstellendes Ergebnis liefern).
+Es muss also möglich sein, dass ich meine Dokumentation einmal schreibe, sie aber z.B. als Website präsentieren oder auch als PDF verschicken kann. Und dabei soll die Qualität nicht wirklich unterschiedlich sein (die Druckfunktion des Browsers wird i.d.R. kein zufriedenstellendes Ergebnis liefern).
 
 Dann kommen aber auch noch die *unterschiedlichen Sichten* hinzu. Ich muss also meine Dokumentation so aufbereiten können, dass sie je nach Anforderung auch mal Dinge weglässt. Z.b. will man vielleicht keine Abteilungsnamen in dem PDF, das man an den externen Dienstleister schickt, sehen. Im firmeninternen Wiki, in dem die Dokumentation abgelegt ist, jedoch sehrwohl. Vielleicht sogar mit einem direkten Link auf das Abteilungs-Intranet, auf das man _von außen_ gar keinen Zugriff hätte.
 
@@ -122,7 +122,7 @@ Damit man das alles erreicht, muss auch in der Dokumentation rund um die eigentl
 
 Wer Dokumentation also ernst nimmt und einen gewissen Qualitätsanspruch an seine Software (und damit auch auf die Dokumentation) hat, der wird nicht umher kommen, sich Gedanken auf Ebene eines Softwareentwicklers zu machen.
 
-Als direktes Beispiel kann auch diese Seite angewandt werden. Sie präsentiert eigentlich nur statischen Inhalt (ähnlich einer Dokumentation). Aber sie repräsentiert mich in unterschiedlichen Sichten. So enthält sie Seite z.B. auch meinen xref:{basedir}/../cv/cv.adoc[CV]. Neben der Tatsache, dass im CV auch Informationen stehen, die auf der Webseite auch zu finden sind, will ich den CV sowohl als Webseite darstellen, als auch als PDF direkt downloadbar anbieten. Der von der Webseite direkt heruntergeladene CV sollte aber keine persönlichen Daten, wie Adresse, Telefonnummer enthalten. Dafür will ich - aus den gleichen Inhalten - aber mit zusätzlichen Inhalten, bei Bedarf ein anderes PDF generieren lassen können.
+Als direktes Beispiel kann auch diese Seite angewandt werden. Sie präsentiert eigentlich nur statischen Inhalt (ähnlich einer Dokumentation). Aber sie repräsentiert mich in unterschiedlichen Sichten. So enthält sie Seite z.B. auch meinen xref:{basedir}/../cv/cv.adoc[CV]. Neben der Tatsache, dass im CV auch Informationen stehen, die auf der Website auch zu finden sind, will ich den CV sowohl als Website darstellen, als auch als PDF direkt downloadbar anbieten. Der von der Website direkt heruntergeladene CV sollte aber keine persönlichen Daten, wie Adresse, Telefonnummer enthalten. Dafür will ich - aus den gleichen Inhalten - aber mit zusätzlichen Inhalten, bei Bedarf ein anderes PDF generieren lassen können.
 
 Diese Seite ist mit ASCIIDOC geschrieben. Entsprechend gibt es Makros, die mir beim Entscheiden, welche Inhalte wann und wie dargestellt werden sollen, helfen.
 
@@ -132,6 +132,7 @@ Diese Seite ist mit ASCIIDOC geschrieben. Entsprechend gibt es Makros, die mir b
 === Kenntnisse
 
 \include::{includesdir}/skills/skills_matrix.adoc[]
+\
 '''
 \endif::[]
 ----
@@ -149,7 +150,7 @@ An anderer Stelle wird die Matrix nur eingebunden, wenn das Ausgabeformat HTML i
 
 Man sieht: an unterschiedlichen Stellen (_Views_), gleiches Dokument, das eingebunden wird.
 
-Und da ich die Matrix auf der Webseite etwas _fancier_ darstellen kann, als im PDF, entscheide ich im Dokument selbst noch mal, welche Form eingebunden werden soll.
+Und da ich die Matrix auf der Website etwas _fancier_ darstellen kann, als im PDF, entscheide ich im Dokument selbst noch mal, welche Form eingebunden werden soll.
 
 [source,asciidoc]
 ----
@@ -166,11 +167,11 @@ Also: *unterschiedliche Zielgruppe, unterschiedliche Aufbereitung*.
 
 == Wie sieht eine typische Doc-as-Code Pipeline aus?
 
-Die Pipeline für eine Dokumentation kann natürlich im Detail unterschiedlich aussehen. Das hängt stark vom Umfeld ab. Das folgende Bild zeigt als Beispiel die Pipeline für diese Webseite:
+Die Pipeline für eine Dokumentation kann natürlich im Detail unterschiedlich aussehen. Das hängt stark vom Umfeld ab. Das folgende Bild zeigt als Beispiel die Pipeline für diese Website:
 
 plantuml::{includesdir}/../site/articles/assets/doc-as-code/doc-pipeline.puml[format=svg, alt="Dokumentations Build-Pipeline",width=100%]
 
-Man sieht als zentrale Komponente das _Build System_. Diese Webseite wird mit `Gradle` und `asciidoctor` gebaut. Das kann natürlich variieren. Z.B. könnte es noch andere Frameworks, wie z.B. die https://doctoolchain.org[docToolchain^] vor oder rund um `asciidoctor` geben. Die Idee ist aber immer die gleiche:
+Man sieht als zentrale Komponente das _Build System_. Diese Website wird mit `Gradle` und `asciidoctor` gebaut. Das kann natürlich variieren. Z.B. könnte es noch andere Frameworks, wie z.B. die https://doctoolchain.org[docToolchain^] vor oder rund um `asciidoctor` geben. Die Idee ist aber immer die gleiche:
 
 * *Schreibe die Dokumenation* als _Code_
 * Benutze Interpreten deiner Dokumentation, um

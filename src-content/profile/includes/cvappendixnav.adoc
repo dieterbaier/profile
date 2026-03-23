@@ -1,0 +1,13 @@
+[subs=attributes,macros]
+++++
+<nav id="appendixnav" class="mainnav noborder" data-active="{active}">
+    <ul>
+        <li>
+            <a data-nav="projects" href="{basedir}/projects.html">Projekte</a>
+        </li>
+        <li>
+            <a data-nav="education" href="{basedir}/education.html">Weiterbildung</a>
+        </li>
+    </ul>
+</nav>
+++++

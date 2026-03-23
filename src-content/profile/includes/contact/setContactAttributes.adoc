@@ -1,0 +1,15 @@
+:cvcontact: false
+ifeval::["{type}" == "cv"]
+:cvcontact: true
+endif::[]
+ifeval::["{type}" == "readme"]
+:cvcontact: true
+endif::[]
+
+:addwebsite: false
+ifeval::["{backend}" == "pdf"]
+:addwebsite: true
+endif::[]
+ifeval::["{type}" == "readme"]
+:addwebsite: true
+endif::[]

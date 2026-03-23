@@ -1,0 +1,6 @@
+:pe-timeframe: 2010 – 2022
+:pe-company: Novatec Consulting GmbH
+:pe-role: Managing Consultant
+:pe-description-file: Novatec/description.adoc
+
+include::../professionalExperience.adoc[]

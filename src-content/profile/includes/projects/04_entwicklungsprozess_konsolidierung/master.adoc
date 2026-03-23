@@ -1,0 +1,9 @@
+:project-timeframe: 24 Monate
+:project-role: Teilprojektleiter
+:project-branche: Bank - Zahlungsverkehr
+:project-technologies: SUN-JCAPS 5, Eclipse, Java 1.4
+:contribution_1: Analyse und Redesign der EAI-Architektur
+:contribution_2: Teilprojektleitung im EAI-Umfeld
+:project-contribution-file: 04_entwicklungsprozess_konsolidierung/description.adoc
+
+include::../project.adoc[]

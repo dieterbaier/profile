@@ -1,6 +1,6 @@
 [subs=attributes,macros]
 ++++
-<nav class="mainnav" data-active="{active}">
+<nav id="mainnav" class="mainnav" data-active="{active}">
     <ul>
         <li>
             <a data-nav="home" href="{basedir}/index.html">Home</a>

@@ -1,0 +1,10 @@
+:project-timeframe: 1 Monat
+:project-role: Moderator & Coach
+:project-branche: Versicherungen
+:project-technologies: Specification by Example, Confluence, GreenPepper, JIRA
+:contribution_1: Aufbereitung der Spezifikation für agile Entwicklung
+:contribution_2: Einführung von Specification by Example
+:contribution_3: Moderation und Coaching des Teams
+:project-contribution-file: 16_agile_beratung_versicherung/description.adoc
+
+include::../project.adoc[]

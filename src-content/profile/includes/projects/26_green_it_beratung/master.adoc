@@ -1,0 +1,16 @@
+:project-timeframe: 02/2024 – 05/2024
+:project-title: Green IT Assessment
+:project-role: Green IT Beratung der Gechäftsführung
+:project-context: Analyse der IT-Landschaft eines Logistikunternehmens hinsichtlich Energieverbrauch und Emissionen.
+:project-branche: Logistik
+:project-technologies: GreenIT-Assessment, Interviews
+:contribution_1: Durchführung eines strukturierten Green-IT-Assessments
+:contribution_2: Interviews mit Fach- und IT-Abteilungen
+:contribution_3: Identifikation von Optimierungspotenzialen
+:result_1: Konkrete Maßnahmen zur Reduktion von IT-Emissionen
+:result_2: Sensibilisierung des Managements für nachhaltige IT
+:result_3: Positionierung von Green IT als strategisches Thema
+:project-contribution-file: 26_green_it_beratung/contribution.adoc
+:project-result-file: 26_green_it_beratung/result.adoc
+
+include::../project.adoc[]

@@ -1,0 +1,9 @@
+:project-timeframe: 10 Monate
+:project-role: Projektleiter
+:project-branche: Verlage
+:project-technologies: PHP 4, Perl, MySQL, ORACLE
+:contribution_1: Entwicklung einer Webanwendung für Autoren
+:contribution_2: Projektleitung des Web-Entwicklungsteams
+:project-contribution-file: 07_texte_meldung_internet/description.adoc
+
+include::../project.adoc[]

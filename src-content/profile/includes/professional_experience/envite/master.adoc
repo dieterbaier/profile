@@ -1,0 +1,6 @@
+:pe-timeframe: Seit 2022
+:pe-company: envite Consulting GmbH
+:pe-role: greenIT Consultant
+:pe-description-file: envite/description.adoc
+
+include::../professionalExperience.adoc[]

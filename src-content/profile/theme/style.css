@@ -91,7 +91,7 @@ body {
     font-family: "Noto Sans", sans-serif;
     max-width: 210mm;
     margin: auto;
-    line-height: 1.6;
+    line-height: 1.5;
     color: var(--text-color);
     background: var(--bg-color);
 }
@@ -325,7 +325,7 @@ a:focus-visible {
 
 .quoteblock .attribution, .verseblock .attribution {
     font-size: .9375em;
-    line-height: 1.45;
+    line-height: 1.5;
     font-style: italic
 }
 
@@ -344,7 +344,7 @@ a:focus-visible {
 }
 
 .quoteblock.abstract blockquote, .quoteblock.abstract p, .quoteblock.excerpt blockquote, .quoteblock.excerpt p, .quoteblock .quoteblock blockquote, .quoteblock .quoteblock p {
-    line-height: 1.6;
+    line-height: 1.5;
     word-spacing: 0
 }
 
@@ -511,10 +511,33 @@ a:focus-visible {
     border-bottom: 2px solid #3a7bd5;
 }
 
+.mainnav[data-active="education"] a[data-nav="education"],
+.mainnav[data-active="projects"] a[data-nav="projects"],
 .mainnav[data-active="home"] a[data-nav="home"],
 .mainnav[data-active="cv"] a[data-nav="cv"],
 .mainnav[data-active="articles"] a[data-nav="articles"],
 .mainnav[data-active="toolkit"] a[data-nav="toolkit"] {
     transform: translateY(1px);
     border-bottom: 2px solid #000;
+}
+
+.larger {
+    font-size: larger;
+}
+.smaller {
+    font-size: smaller;
+}
+
+.compact {
+    line-height: 1.25;
+    ul * p {
+        margin-bottom: unset;
+    }
+}
+
+.new-section {
+    border-top: 1px solid #e5e5e5;
+    h2 {
+        margin-top: 1rem;
+    }
 }

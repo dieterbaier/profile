@@ -1,20 +1,11 @@
-ifndef::is-included[]
-:stylesdir: ../../theme
-:stylesheet: style.css
-[cols="1,2", frame=none, grid=none]
-|===
+ifeval::["{type}" == "cv"]
+[.compact]
 endif::[]
-a|
-=== [.subtle]#{pe-timeframe}#
-a|
-=== {pe-company}
+--
+[.subtle.larger]#{pe-timeframe}# [.larger]#*{pe-company}*# +
 *{pe-role}*
 
 ifdef::pe-description-file[]
 include::{pe-description-file}[]
 endif::[]
-
-[.subtle]#{pe-subtl}#
-ifndef::is-included[]
-|===
-endif::[]
+--

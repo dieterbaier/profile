@@ -14,7 +14,7 @@ Heute unterstütze ich Unternehmen bei der Gestaltung und Umsetzung *verteilter,
 
 *Seit 2020* unterstütze ich meine Kolleg:Innen beim *Training zum iSAQB Certified Software Architect - Foundation Level*, wann immer ein Trainer gebraucht wird.
 
-Zudem beschäftige ich mich zunehmend mit *Sustainability in der Softwarearchitektur*, insbesondere mit den *Auswirkungen von IT-Systemen auf Energieverbrauch und Umwelt*.
+Zudem beschäftige ich mich zunehmend mit *Nachhaltigkeit in der Softwarearchitektur*, insbesondere mit den *Auswirkungen von IT-Systemen auf Energieverbrauch und Umwelt*.
 
 ifeval::['{includeskillmatrix}' == 'true']
 [discrete]

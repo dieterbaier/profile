@@ -1,0 +1,4 @@
+- Fachliche und disziplinarische Führung eines Teams für Integrationsarchitektur (~5 Personen)
+- Aufbau des Themas „Agile Integration“ (API-Management, Event-Driven Architecture)
+- Lead Developer und Architekt in zahlreichen Projekten (Finanzen, Versicherungen, öffentliche Verwaltung)
+- Durchführung von Workshops und Wissenstransfer (u. a. BDD, Cloud-Native)

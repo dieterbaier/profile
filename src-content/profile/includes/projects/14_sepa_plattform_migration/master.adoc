@@ -1,0 +1,17 @@
+:project-timeframe: 2011 / 2012
+:project-title: SEPA Plattform Migration
+:project-role: Projektleiter & Architekt
+:project-branche: Bankwesen
+:project-context: Migration einer zentralen Zahlungsverkehrsplattform (SEPA) von einer abgekündigten Integrationslösung auf eine neue Middleware
+:cv_technologies: WebMethods, Java, Git, Jenkins, Maven
+:project-technologies: {cv_technologies}, CAPS, Eclipse, Nexus
+:contribution_1: Konzeption und prototypische Validierung der Migrationsstrategie
+:contribution_2: Migration und Konsolidierung einer gewachsenen Integrationslandschaft
+:contribution_3: Einführung agiler Arbeitsweise sowie Aufbau einer CI/CD-Pipeline
+:result_1: Erfolgreiche Modernisierung einer geschäftskritischen Plattform im Bankenumfeld
+:result_2: Reduktion technologischer Risiken durch Ablösung der Altsysteme
+:result_3: Etablierung moderner Entwicklungs- und Integrationsprozesse
+:project-contribution-file: 14_sepa_plattform_migration/contribution.adoc
+:project-result-file: 14_sepa_plattform_migration/result.adoc
+
+include::../project.adoc[]

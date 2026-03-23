@@ -1,0 +1,17 @@
+:project-timeframe: 10/2024 – 12/2024
+:project-title: Systemintegration HR -  ERP
+:project-role:  Softwarearchitekt & Entwickler
+:project-branche: Statistik
+:project-context: Neuentwicklung einer Integrationslösung zur Ablösung einer bestehenden HR–ERP-Synchronisation mit Fokus auf Entkopplung und Wartbarkeit
+:cv_technologies: Python, Flask, Azure, Docker, DDD, Doc-as-Code
+:project-technologies: {cv_technologies}, Poetry, Clean Architecture, arc42, Asciidoc, Confluence, Moco, Personio
+:contribution_1: Architektur und Umsetzung einer abstrahierten Integrationslösung
+:contribution_2: Implementierung und Deployment in der Azure Cloud (Python, Flask)
+:contribution_3: Einführung von Doc-as-Code sowie Schulung von Fach- und IT-Abteilungen
+:result_1: Stabilisierung und nachhaltige Neuausrichtung einer geschäftskritischen Integration
+:result_2: Reduktion von Systemabhängigkeiten durch klare Abstraktion
+:result_3: Transparente und wartbare Lösung durch strukturierte Dokumentation
+:project-contribution-file: 27_datensynchronisation_hr_erp/contribution.adoc
+:project-result-file: 27_datensynchronisation_hr_erp/result.adoc
+
+include::../project.adoc[]

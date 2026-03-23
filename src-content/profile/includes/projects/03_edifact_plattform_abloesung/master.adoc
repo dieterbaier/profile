@@ -1,0 +1,10 @@
+:project-timeframe: 2 Jahre
+:project-role: Projektleiter
+:project-branche: Banke - Zahlungsverkehr
+:project-technologies: UNIX, ORACLE DB, SeeBeyond eGate/JCAPS, Java 1.4, PM nach IPMA, Eclipse, CVS
+:contribution_1: Ablösung der EDIFACT-Plattform durch eine formatunabhängige Drehscheibe
+:contribution_2: Automatisierte Regressionstests
+:contribution_3: Projektierung nach IPMA
+:project-contribution-file: 03_edifact_plattform_abloesung/description.adoc
+
+include::../project.adoc[]

@@ -1,0 +1,11 @@
+:project-timeframe: 02/2015 – 04/2016
+:project-role: Lead Developer & Architekt
+:project-branche: Energieversorgung
+:project-technologies: JEE 6, Camunda, JBoss EAP, Java 7, Git, Jenkins, TeamCity, Maven
+:contribution_1: Aufbau einer BI-Plattform für die Verwaltung des Stromnetzes
+:contribution_2: Entwicklung von Standardkomponenten (BOR, TSDA, GDA)
+:contribution_3: Unterstützung der Architekturgruppe
+:contribution_4: Dokumentation der Architekturentscheidungen
+:project-contribution-file: 17_bi_plattform_stromnetz/description.adoc
+
+include::../project.adoc[]

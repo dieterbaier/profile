@@ -1,0 +1,11 @@
+:project-timeframe: 04/2019 – 02/2021
+:project-role: Lead Developer & Architekt
+:project-branche: Öffentliche Verwaltung
+:project-technologies: JEE 8, Camunda, Oracle, Liquibase, Maven, Git, Jira, Jenkins
+:contribution_1: Entwicklung einer Webanwendung zur Planung von IT-Maßnahmen
+:contribution_2: Modulare Architektur für zukünftige Service-Extraktion
+:contribution_3: Prozessmodellierung mit BPMN und Camunda
+:contribution_4: Einführung von agilen Methoden (Scrum)
+:project-contribution-file: 21_it_planung_bund/description.adoc
+
+include::../project.adoc[]

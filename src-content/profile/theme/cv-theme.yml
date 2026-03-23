@@ -30,7 +30,7 @@ footer:
 base:
   font-family: Noto Sans
   font-size: 10
-  line-height: 1.4
+  line-height: 1
   font-color: #222222
   text-align: left
 
@@ -38,32 +38,27 @@ heading:
   font-family: Noto Sans
   font-style: bold
   font-color: #1b4965
+  margin-top: 0
+  margin-bottom: 2
 
 heading-h1:
   text-transform: uppercase
-  font-size: 30
+  font-size: 20
   font-color: #0b2545
-  margin-bottom: 6
 
 heading-h2:
   text-transform: uppercase
-  font-size: 30
+  font-size: 17
   font-color: #0b2545
-  margin-bottom: 6
 
 heading-h3:
   text-transform: uppercase
   font-size: 14
   font-color: #1b4965
-  margin-top: 16
-  margin-bottom: 6
-
 
 heading-h4:
   font-size: 11
   font-style: bold
-  margin-top: 8
-  margin-bottom: 2
 
 table:
   border-width: 0
@@ -78,9 +73,15 @@ list:
   item-spacing: 2
 
 role:
+  larger:
+    font-size: 12
+
   subtle:
     font-color: #6c757d
     font-size: 9
+
+  compact:
+    line-height: 1
 
   highlight:
     font-color: #1b4965

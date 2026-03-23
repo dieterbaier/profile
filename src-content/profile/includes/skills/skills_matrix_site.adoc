@@ -3,9 +3,14 @@ ifndef::stylesheet[]
 :stylesdir: ../../theme
 endif::[]
 
+:compact-class: compact
+ifeval::["{type}" != "cv"]
+:compact-class!:
+endif::[]
+
 [subs=attributes,macros]
 ++++
-<div class="skillrow">
+<div class="skillrow {compact-class}">
     <div class="skillbox">
 ifdef::nolinks[]
 <strong>{skill_documentation_title}</strong>
@@ -18,7 +23,7 @@ endif::[]
     </div>
 </div>
 
-<div class="skillrow">
+<div class="skillrow {compact-class}">
     <div class="skillbox">
         <strong>{skill_integration_title}</strong><br>
         {skill_integration_1}<br>
@@ -34,7 +39,7 @@ endif::[]
     </div>
 </div>
 
-<div class="skillrow">
+<div class="skillrow {compact-class}">
     <div class="skillbox">
 ifdef::nolinks[]
 <strong>{skill_architecture_title}</strong>
@@ -62,7 +67,7 @@ endif::[]
     </div>
 </div>
 
-<div class="skillrow">
+<div class="skillrow {compact-class}">
     <div class="skillbox">
         <strong>{skill_platform_title}</strong><br>
         {skill_platform_1}<br>
@@ -72,7 +77,7 @@ endif::[]
     </div>
 </div>
 
-<div class="skillrow">
+<div class="skillrow {compact-class}">
     <div class="skillbox">
         <strong>{skill_branches_title}</strong><br>
         {skill_branches_1}

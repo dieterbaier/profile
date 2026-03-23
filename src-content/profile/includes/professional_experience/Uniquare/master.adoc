@@ -1,0 +1,6 @@
+:pe-timeframe: 1989 – 2000
+:pe-company: Uniquare (Genesis)
+:pe-role: Softwareentwickler & Consultant
+:pe-description-file: Uniquare/description.adoc
+
+include::../professionalExperience.adoc[]

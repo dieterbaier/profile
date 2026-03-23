@@ -1,0 +1,53 @@
+:subtitle: Software Architekt
+ifeval::["{backend}" == "pdf"]
+:subtitle: {subtitle} - Curriculum Vitae
+endif::[]
+ifeval::["{backend}" != "pdf"]
+:norevinfo:
+endif::[]
+= Dieter Baier
+{subtitle}
+:doctype: book
+ifdef::buildsite[]
+:basedir: .
+endif::[]
+include::./docheader.adoc[]
+:pdf-theme: cv-theme.yml
+:pdf-themesdir: {basedir}/src-content/profile/theme
+:pdf-fontsdir: {pdf-themesdir}/fonts
+ifndef::cvprint[]
+:title-logo-image: image::dieterbaier_image_cv_rounded.png[Dieter Baier,pdfwidth=5cm,align=top]
+endif::[]
+:type: cv
+
+ifeval::["{backend}" == "pdf"]
+:leveloffset: +1
+
+include::./profile/profile.adoc[]
+
+include::./profile/profile_personal.adoc[]
+
+:leveloffset: -1
+endif::[]
+
+ifeval::["{backend}" == "html5"]
+ifdef::buildsite[]
+[subs=attributes,macros]
+++++
+<nav class="mainnav noborder">
+    <ul>
+        <li>
+            <a href="{basedir}/cv.pdf" target="_blank">Download CV</a>
+        </li>
+    </ul>
+</nav>
+++++
+endif::[]
+:active: cv
+include::./menue.adoc[]
+endif::[]
+
+ifeval::["{backend}" == "pdf"]
+== {doctitle}
+:leveloffset: +1
+endif::[]

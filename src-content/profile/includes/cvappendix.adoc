@@ -1,0 +1,7 @@
+ifeval::["{backend}" == "html5"]
+ifeval::["{type}" == "cv"]
+[.new-section]
+endif::[]
+== Appendix
+include::./cvappendixnav.adoc[]
+endif::[]

@@ -1,57 +1,21 @@
-ifndef::stylesheet[]
-:stylesheet: style.css
-:stylesdir: ../../theme
-endif::[]
 
-[%noheader,cols="1,3", frame=none, grid=none]
-|===
+*{skill_documentation_title}* +
+{skill_documentation_1}
 
-a|
-*{skill_documentation_title}*
-a|
-* {skill_documentation_1}
+*{skill_integration_title}* +
+{skill_integration_1} | {skill_integration_2} | {skill_integration_3} | {skill_integration_4}
 
-|
-*{skill_integration_title}*
-a|
-* {skill_integration_1}
-* {skill_integration_2}
-* {skill_integration_3}
-* {skill_integration_4}
+*{skill_development_title}* +
+{skill_development_1} | {skill_development_2} | {skill_development_3}
 
-a|
-*{skill_development_title}*
-a|
-* {skill_development_1}
-* {skill_development_2}
-* {skill_development_3}
+*{skill_architecture_title}* +
+{skill_architecture_1} | {skill_architecture_2} | {skill_architecture_3}
 
-a|
-*{skill_architecture_title}*
-a|
-* {skill_architecture_1}
-* {skill_architecture_2}
-* {skill_architecture_3}
+*{skill_methods_title}* +
+{skill_methods_1} | {skill_methods_2} | {skill_methods_docascode} | {skill_methods_4} | {skill_methods_5}
 
-a|
-*{skill_methods_title}*
-a|
-* {skill_methods_1}
-* {skill_methods_2}
-* {skill_methods_docascode}
-* {skill_methods_4}
-* {skill_methods_5}
+*{skill_platform_title}* +
+{skill_platform_1} | {skill_platform_2} | {skill_platform_3} | {skill_platform_4}
 
-a|
-*{skill_platform_title}*
-a|
-* {skill_platform_1}
-* {skill_platform_2}
-* {skill_platform_3}
-* {skill_platform_4}
-
-a|
-*{skill_branches_title}*
-a|
-* {skill_branches_1}
-|===
+*{skill_branches_title}* +
+{skill_branches_1}

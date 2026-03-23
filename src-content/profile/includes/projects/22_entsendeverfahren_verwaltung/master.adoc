@@ -1,0 +1,17 @@
+:project-timeframe: 02/2021 – 12/2021
+:project-title: Öffentliche Verwaltung – Prozessplattform
+:project-role: Lead Developer & Architekt
+:project-branche: Öffentliche Verwaltung
+:project-context: Entwicklung einer zentralen Plattform zur Verwaltung von Sozialansprüchen (>800.000 Nutzer) mit Fokus auf Prozessautomatisierung
+:cv_technologies: Java, MicroProfile, Camunda, Angular, DB2
+:project-technologies: {cv_technologies}, JBoss EAP, Liquibase, Maven, Git, Jenkins, Nexus, Confluence, Jira, Doc-as-code, Arc42
+:contribution_1: Architektur und Umsetzung einer BPMN-basierten Prozesslösung mit Camunda
+:contribution_2: Entwicklung zentraler Backend-Services nach Domain-Driven Design
+:contribution_3: Coaching und fachliche Führung von Teammitgliedern
+:result_1: Hoher Automatisierungsgrad bei gleichzeitig komplexer Fachlichkeit
+:result_2: Reduktion manueller Bearbeitung durch prozessgesteuerte Abläufe
+:result_3: Skalierbare Architektur für große Nutzerzahlen
+:project-contribution-file: 22_entsendeverfahren_verwaltung/contribution.adoc
+:project-result-file: 22_entsendeverfahren_verwaltung/result.adoc
+
+include::../project.adoc[]

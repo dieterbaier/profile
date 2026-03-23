@@ -1,0 +1,3 @@
+- Integration von Großkunden in den bargeldlosen Zahlungsverkehr
+- Mitarbeit an zentraler Datendrehscheibe und SEPA-Einführung
+- Zusammenarbeit im Product-Owner-nahen Umfeld

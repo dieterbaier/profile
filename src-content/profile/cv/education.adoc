@@ -1,0 +1,9 @@
+include::{includesdir}/cvheader.adoc[]
+
+:active: education
+:type: site
+include::{includesdir}/cvappendix.adoc[]
+
+include::{includesdir}/education/certificates.adoc[]
+
+include::{includesdir}/footer.adoc[]

@@ -1,0 +1,10 @@
+:project-timeframe: 11 Monate
+:project-role: Lead Developer & Architekt
+:project-branche: Bankwesen
+:project-technologies: JCAPS, JMS, Java 1.3/1.4/5, RAD, ANT, ClearCase
+:contribution_1: Entwicklung eines produktunabhängigen Designs
+:contribution_2: Schulung der Mitarbeiter
+:contribution_3: Integration der geschäftseigenen Komponenten
+:project-contribution-file: 08_jcaps_anwendungsdesign/description.adoc
+
+include::../project.adoc[]

@@ -1,0 +1,27 @@
+:projects-chrono-base: {basedir}/cv/projects.adoc#projects_chrono
+:weitereProjekteText: Weitere Projekte chronologisch sortiert
+ifdef::buildsite[]
+:projects-chrono-base: {basedir}/projects.adoc#projects_chrono
+endif::[]
+ifeval::["{backend}" == "pdf"]
+:projects-chrono-base: https://dieterbaier.eu/projects.html#certificates
+:weitereProjekteText: Weitere Projekte findet man auf meiner Website
+endif::[]
+
+[.text-center.subtle]
+*_Die folgenden Projekte sind nicht nach Zeit sortiert, sondern nach Relevanz zu meinen Schlüsselkompetenzen_*. xref:{projects-chrono-base}[{weitereProjekteText}]
+
+include::clear_attributes.adoc[]
+include::25_camunda_digitalisierung/master.adoc[]
+
+include::clear_attributes.adoc[]
+include::24_event_platform/master.adoc[]
+
+include::clear_attributes.adoc[]
+include::27_datensynchronisation_hr_erp/master.adoc[]
+
+include::clear_attributes.adoc[]
+include::22_entsendeverfahren_verwaltung/master.adoc[]
+
+include::clear_attributes.adoc[]
+include::14_sepa_plattform_migration/master.adoc[]

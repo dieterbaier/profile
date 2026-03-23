@@ -31,7 +31,7 @@
 :skill_platform_4: AWS / Azure
 
 :skill_branches_title: Branchen
-:skill_branches_1: Banken / Versicherungen - Transport - Öffentliche Verwaltung
+:skill_branches_1: Banken / Versicherungen | Transport | Öffentliche Verwaltung
 
 :htmlmatrix: true
 ifeval::["{backend}" != "html5"]

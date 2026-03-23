@@ -1,0 +1,16 @@
+:project-timeframe: Seit 11/2023
+:project-title: Digitalisierung & Prozessautomatisierung
+:project-role:  Full-Stack Entwickler & Architekt
+:project-branche: Öffentliche Verwaltung
+:project-context: Digitalisierung eines bislang analogen, heterogenen Geschäftsprozesses durch eine prozessgesteuerte Anwendung
+:cv_technologies: Camunda 7, Spring Boot, React, BPMN, REST
+:project-technologies: {cv_technologies}, JMS, SOAP, DDD, Clean Architecture
+:contribution_1: Architektur und Umsetzung einer BPMN-basierten Prozesslösung mit Camunda 7
+:contribution_2: Full-Stack Entwicklung (React, Spring Boot)
+:contribution_3: Integration mehrerer externer Systeme (REST, SOAP)
+:result_1: End-to-End-Digitalisierung eines zuvor manuellen Prozesses
+:result_2: Signifikante Reduktion manueller Aufwände und Durchlaufzeiten
+:project-contribution-file: 25_camunda_digitalisierung/contribution.adoc
+:project-result-file: 25_camunda_digitalisierung/result.adoc
+
+include::../project.adoc[]

@@ -1,0 +1,6 @@
+:pe-timeframe: 2000 – 2005
+:pe-company: Commerzbank
+:pe-role: Spezialist
+:pe-description-file: Commerzbank/description.adoc
+
+include::../professionalExperience.adoc[]

@@ -1,22 +1,67 @@
-ifndef::is-included[]
-:stylesdir: ../../theme
-:stylesheet: style.css
-[cols="1,2", frame=none, grid=none]
-|===
+:compact: false
+ifeval::["{type}" == "cv"]
+ifndef::cvprint[]
+:compact: true
 endif::[]
-a|
-=== [.subtle]#{project-timeframe}#
-a|
-=== {project-company}
+ifdef::cv_technologies[]
+:technologies_to_use: {cv_technologies}
+endif::[]
+endif::[]
+ifndef::technologies_to_use[]
+ifdef::project-technologies[]
+:technologies_to_use: {project-technologies}
+endif::[]
+endif::[]
+
+ifeval::["{type}" == "cv"]
+[.compact]
+endif::[]
+--
+ifdef::project-title[]
+[.subtle.larger]#{project-timeframe}# [.larger]#*{project-title}*# +
 *{project-role}*
-
-ifdef::project-description-file[]
-include::{project-description-file}[]
 endif::[]
 
-[.subtle]#{project-branche}#
-
-[.subtle]#{project-technologies}#
-ifndef::is-included[]
-|===
+ifndef::project-title[]
+[.subtle.larger]#{project-timeframe}# [.larger]#*{project-role}*#
 endif::[]
+
+ifdef::project-context[]
+[.subtle]#Kontext#: {project-context}
+endif::[]
+
+ifdef::project-contribution-file[]
+ifeval::["{compact}" == "false"]
+[.subtle]#Beitrag#
+
+include::{project-contribution-file}[]
+endif::[]
+ifeval::["{compact}" == "true"]
+[.subtle]#Beitrag#:
+include::{project-contribution-file}[]
+endif::[]
+endif::[]
+
+ifdef::project-result-file[]
+ifeval::["{compact}" == "false"]
+[.subtle]#Ergebnis#
+
+include::{project-result-file}[]
+endif::[]
+ifeval::["{compact}" == "true"]
+[.subtle]#Ergebnis#:
+include::{project-result-file}[]
+endif::[]
+endif::[]
+
+ifeval::["{type}" != "cv"]
+ifdef::project-branche[]
+[.subtle]#Branche: {project-branche}#
+endif::[]
+endif::[]
+
+ifdef::technologies_to_use[]
+[.subtle]#Tech: {technologies_to_use}#
+endif::[]
+--
+:technologies_to_use!:

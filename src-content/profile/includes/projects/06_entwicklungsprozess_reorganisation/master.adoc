@@ -1,0 +1,9 @@
+:project-timeframe: 2 Monate
+:project-role: Prozessberater
+:project-branche: Verlage
+:project-technologies: SCRUM, Testdriven-Development, PHP 4, Perl, MySQL, ORACLE
+:contribution_1: Review und Reorganisation des Entwicklungsprozesses
+:contribution_2: Architektur-Review und Verbesserungsvorschläge
+:project-contribution-file: 06_entwicklungsprozess_reorganisation/description.adoc
+
+include::../project.adoc[]

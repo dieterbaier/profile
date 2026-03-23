@@ -1,0 +1,8 @@
+ifeval::["{compact}" == "false"]
+- {contribution_1}
+- {contribution_2}
+- {contribution_3}
+endif::[]
+ifeval::["{compact}" == "true"]
+{contribution_1}. {contribution_2}. {contribution_3}.
+endif::[]

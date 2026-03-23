@@ -1,1 +1,0 @@
-Introduced arc42 based architecture documentation using AsciiDoc and automated documentation pipelines.

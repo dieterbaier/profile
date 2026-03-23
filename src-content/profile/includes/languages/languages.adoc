@@ -1,2 +1,9 @@
+=== Sprachen
+
+ifeval::[“{type}" == "cv"]
+[.compact]
+endif::[]
+--
 * Deutsch (Muttersprache)
 * English (fluent)
+--

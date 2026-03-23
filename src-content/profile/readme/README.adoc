@@ -5,6 +5,7 @@ endif::[]
 :norevinfo:
 include::{includesdir}/docheader.adoc[]
 :nolinks:
+:type: readme
 
 == {doctitle}
 [.callout]
@@ -22,15 +23,17 @@ include::{includesdir}/profile/profile_personal.adoc[]
 
 include::{includesdir}/profile/about_me_citations.adoc[]
 
-=== Kontakt
+include::{includesdir}/contact/setContactAttributes.adoc[]
+[cols="2,1", role="compact" frame=none, grid=none]
+|===
 
-:type: readme
+a|
 include::{includesdir}/contact/contact.adoc[]
 
-=== Sprachkenntnisse
-
+a|
 include::{includesdir}/languages/languages.adoc[]
 
-'''
+|===
 
+'''
 include::{includesdir}/footer.adoc[]

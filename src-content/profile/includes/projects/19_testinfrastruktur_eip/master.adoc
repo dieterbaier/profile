@@ -1,0 +1,10 @@
+:project-timeframe: 07/2016 – 12/2017
+:project-role: Solution Architect
+:project-branche: IT-Dienstleistung
+:project-technologies: Java 8, Spring Boot, FitNesse, Jira, Maven, Subversion, Confluence
+:contribution_1: Entwicklung eines Konzepts für automatisierte Tests
+:contribution_2: Aufbau einer Testsuite mit Dashboard-Funktionalität
+:contribution_3: Unterstützung des Teams bei der Umsetzung
+:project-contribution-file: 19_testinfrastruktur_eip/description.adoc
+
+include::../project.adoc[]

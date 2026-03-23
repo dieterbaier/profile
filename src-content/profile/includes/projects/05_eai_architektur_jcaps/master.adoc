@@ -1,0 +1,10 @@
+:project-timeframe: 10 Monate
+:project-role: Lead Developer & Architekt
+:project-branche: Bankwesen
+:project-technologies: SUN-JCAPS 5, Eclipse, Java 1.4
+:contribution_1: Redesign einer heterogenen Dateiroutingplattform
+:contribution_2: Analyse des bestehenden Systems
+:contribution_3: Know-how-Transfer
+:project-contribution-file: 05_eai_architektur_jcaps/description.adoc
+
+include::../project.adoc[]

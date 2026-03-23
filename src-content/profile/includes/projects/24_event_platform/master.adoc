@@ -1,0 +1,18 @@
+:project-timeframe: 07/2022 – 10/2023
+:project-title: Event-Streaming Plattform (Kafka)
+:project-role: Solution Architect
+:project-branche: Logistik
+:project-context: Transformation einer ESB-basierten Integration hin zu einer Event-Driven Architektur
+:cv_technologies: Kafka, Kubernetes, AWS, Terraform, Avro, AsyncAPI
+:project-technologies: {cv_technologies}, Kafka Connect, Confluent Platform, Helm, CloudEvents, Java, GitOps, eventcatalog
+:contribution_1: Architektur einer Event-Streaming-Plattform und Definition von Event-Standards
+:contribution_2: Beratung und Enablement von Teams bei der Migration zu Event-Driven Architecture
+:contribution_3: Mitwirkung bei der Etablierung von Governance und Self-Service-Konzepten
+:result_1: Etablierung eines skalierbaren Event-Driven-Ansatzes
+:result_2: Entkopplung der Systemlandschaft durch asynchrone Integration
+:result_3: Enablement von Teams zur eigenständigen Nutzung der Plattform
+:project-contribution-file: 24_event_platform/contribution.adoc
+:project-result-file: 24_event_platform/result.adoc
+
+include::../project.adoc[]
+

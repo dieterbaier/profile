@@ -1,0 +1,11 @@
+:project-timeframe: 12/2017 – 04/2019
+:project-role: Senior Entwickler & Architekt
+:project-branche: Versicherungen
+:project-technologies: Java 8, Spring Boot, Camunda, JMS, JUnit, Mockito, Maven, Git, Jenkins, Confluence, Jira
+:contribution_1: Neuentwicklung der Anwendung für unstrukturierten Posteingang
+:contribution_2: Automatisierung der Indizierung
+:contribution_3: Integration von Camunda für Prozessautomatisierung
+:contribution_4: Systemanalyse der Altanwendung
+:project-contribution-file: 20_posteingang_neuentwicklung/description.adoc
+
+include::../project.adoc[]

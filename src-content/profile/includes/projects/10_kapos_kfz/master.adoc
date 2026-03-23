@@ -1,0 +1,10 @@
+:project-timeframe: 9 Monate
+:project-role: System Integrator
+:project-branche: Versicherungen
+:project-technologies: SCRUM, Java EE 5, Glassfish, EJB 3.0, WebServices, RMI, JMS, MQ
+:contribution_1: Entwicklung einer ESB-basierten Integrationsplattform
+:contribution_2: Unterstützung der SCRUM-Methodik
+:contribution_3: Auszeichnung mit dem AXA-Innovation-Award
+:project-contribution-file: 10_kapos_kfz/description.adoc
+
+include::../project.adoc[]

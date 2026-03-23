@@ -1,0 +1,10 @@
+:project-timeframe: 4 Jahre
+:project-role: Technischer Berater
+:project-branche: Bank - Zahlungsverkehr
+:project-technologies: UNIX, ORACLE DB, SeeBeyond eGate, Java 1.3, PM nach IPMA, Eclipse, CVS
+:contribution_1: Beratung von Neukunden im internationalen Zahlungsverkehr
+:contribution_2: Projektierung von Neuanbindungen
+:contribution_3: Beschreibung und Umsetzung unterschiedlichster Format-Mappings
+:project-contribution-file: 02_zahlungsverkehr_beratung/description.adoc
+
+include::../project.adoc[]

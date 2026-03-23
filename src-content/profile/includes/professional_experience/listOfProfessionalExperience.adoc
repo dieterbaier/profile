@@ -1,8 +1,5 @@
-ifndef::is-included[]
-:is-included:
-:stylesdir: ../../theme
-:stylesheet: style.css
-endif::[]
-
-include::ACMEInsurance/master.adoc[]
-include::ACMEInsurance1/master.adoc[]
+include::envite/master.adoc[]
+include::Novatec/master.adoc[]
+include::e3AG/master.adoc[]
+include::Commerzbank/master.adoc[]
+include::Uniquare/master.adoc[]

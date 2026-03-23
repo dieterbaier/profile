@@ -1,0 +1,12 @@
+:project-timeframe: 10 Jahre
+:project-role: Entwickler & Coach
+:project-branche: Banken, Versicherungen (u.A. Südafrika, Malaysia, Moskau)
+:project-technologies: OS/2, C, DB/2, LotusNotes, PVCS, OS/2-Rexx
+:contribution_1: Entwicklung von Client/Server-Kassenapplikationen
+:contribution_3: Coaching und Consulting der Kunden
+:contribution_4: Einführung und Überführung der fertigen Applikation
+:contribution_5: Schulung des lokalen Entwicklerteams
+:contribution_6: Steuerung des Changemanagements
+:project-contribution-file: 00_kassenapplikationen_entwicklung/description.adoc
+
+include::../project.adoc[]

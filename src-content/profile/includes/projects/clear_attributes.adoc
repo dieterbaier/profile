@@ -1,0 +1,9 @@
+:project-timeframe!:
+:project-title!:
+:project-role!:
+:project-branche!:
+:project-context!:
+:cv-technologies!:
+:project-technologies!:
+:project-contribution-file!:
+:project-result-file!:

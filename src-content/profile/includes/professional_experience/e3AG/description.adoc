@@ -1,0 +1,3 @@
+- Konzeption und Umsetzung von Integrationslösungen im SOA-Umfeld
+- Fokus auf Finanz- und Versicherungsbranche
+- Beitrag zu Qualitätsverbesserung durch Testautomatisierung (u. a. Fachvortrag)

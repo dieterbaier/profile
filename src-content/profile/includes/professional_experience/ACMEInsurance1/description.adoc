@@ -1,3 +1,0 @@
-* Built microservices using Spring Boot
-* Implemented REST APIs
-* Led modernization of legacy integration layer

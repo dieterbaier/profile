@@ -1,0 +1,10 @@
+:project-timeframe: 3 Monate
+:project-role: Lead Developer & Architekt
+:project-branche: Versicherungen
+:project-technologies: Java EE 5, Glassfish, WebServices, RMI, JMS, MQ
+:contribution_1: Entwicklung eines generischen Nachrichtenformats
+:contribution_2: Integration von SSO und Verschlüsselung
+:contribution_3: Design und Implementierung des ESB
+:project-contribution-file: 09_masterindex_soa/description.adoc
+
+include::../project.adoc[]

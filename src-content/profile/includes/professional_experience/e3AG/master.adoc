@@ -1,0 +1,6 @@
+:pe-timeframe: 2005 – 2010
+:pe-company: e3 AG
+:pe-role: Consultant
+:pe-description-file: e3AG/description.adoc
+
+include::../professionalExperience.adoc[]
