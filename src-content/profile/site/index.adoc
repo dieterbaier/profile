@@ -1,9 +1,12 @@
 = Dieter Baier
-Software Architekt | Integration, Architektur & Dokumentation
+include::{includesdir}/../../revinfo.adoc[]
+:revdate!:
+:revnumber!:
+:revremark: Software Architekt | Integration, Architektur & Dokumentation
 ifdef::buildsite[]
 :basedir: .
 endif::[]
-:norevinfo:
+:active: home
 include::{includesdir}/docheader.adoc[]
 
 [subs=attributes,macros]
@@ -14,14 +17,9 @@ include::{includesdir}/docheader.adoc[]
 </div>
 ++++
 
-:active: home
-include::{includesdir}/menue.adoc[]
-
 [.highlight]
 --
 include::{includesdir}/profile/profile.adoc[]
 --
 
 include::{includesdir}/profile/about_me_citations.adoc[]
-
-include::{includesdir}/footer.adoc[]

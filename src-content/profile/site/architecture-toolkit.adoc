@@ -1,16 +1,13 @@
 = Werkzeuge and Kenntnisse
-:norevinfo:
+include::{includesdir}/../../revinfo.adoc[]
+:revdate!:
+:revnumber!:
+:revremark: Mein Werkzeugkasten und meine Kenntnisse (u.A.)
 ifdef::buildsite[]
 :basedir: .
 endif::[]
-include::{includesdir}/docheader.adoc[]
-:revremark: Mein Werkzeugkasten und meine Kenntnisse (u.A.)
-
+:norevinfo:
 :active: toolkit
-include::{includesdir}/menue.adoc[]
-
-include::{includesdir}/author.adoc[]
+include::{includesdir}/docheader.adoc[]
 
 include::{includesdir}/skills/skills_matrix.adoc[]
-
-include::{includesdir}/footer.adoc[]

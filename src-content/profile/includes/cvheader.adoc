@@ -2,15 +2,17 @@
 ifeval::["{backend}" == "pdf"]
 :subtitle: {subtitle} - Curriculum Vitae
 endif::[]
-ifeval::["{backend}" != "pdf"]
-:norevinfo:
-endif::[]
 = Dieter Baier
 {subtitle}
 :doctype: book
 ifdef::buildsite[]
 :basedir: .
 endif::[]
+:revremark: {subtitle}
+:revnumber!: 1.0
+:revdate!: 03/2026
+:author!:
+:active: cv
 include::./docheader.adoc[]
 :pdf-theme: cv-theme.yml
 :pdf-themesdir: {basedir}/src-content/profile/theme
@@ -34,7 +36,7 @@ ifeval::["{backend}" == "html5"]
 ifdef::buildsite[]
 [subs=attributes,macros]
 ++++
-<nav class="mainnav noborder">
+<nav class="subnav noborder">
     <ul>
         <li>
             <a href="{basedir}/cv.pdf" target="_blank">Download CV</a>
@@ -43,8 +45,6 @@ ifdef::buildsite[]
 </nav>
 ++++
 endif::[]
-:active: cv
-include::./menue.adoc[]
 endif::[]
 
 ifeval::["{backend}" == "pdf"]

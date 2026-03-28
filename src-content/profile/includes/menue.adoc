@@ -1,3 +1,5 @@
+// don't delete next empty line
+
 [subs=attributes,macros]
 ++++
 <nav id="mainnav" class="mainnav" data-active="{active}">

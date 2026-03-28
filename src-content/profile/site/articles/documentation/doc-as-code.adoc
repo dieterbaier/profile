@@ -1,27 +1,29 @@
 = Dokumentation als Code
-:norevinfo:
 ifdef::buildsite[]
 :basedir: ../..
 endif::[]
-include::{includesdir}/docheader.adoc[]
+include::{includesdir}/../../revinfo.adoc[]
+:author: Dieter Baier
+:author_page: index.html
 :revremark: So kann Dokumentation stabil bleiben UND: 'Doc as Code' ist nicht gleich 'Code as Doc'
+:revdate: 03/2023
+:revnumber: 1.0
+:active: articles
+include::{includesdir}/docheader.adoc[]
+
 :include_next_articles_variante1: false
 :include_next_articles_variante2: false
-:toc:
 
-:active: articles
-include::{includesdir}/menue.adoc[]
-
-include::{includesdir}/author.adoc[]
-
-[.callout]
-====
-Doc-as-Code bedeutet nicht, dass Code die Dokumentation ersetzt.
+[.highlight.info]
+--
+Doc-as-Code bedeutet nicht, dass Code die Dokumentation ersetzt. Warum auch? Es müsste dann ja Code-as-Doc heißen.
 
 Es bedeutet, Dokumentation mit denselben Prinzipien zu behandeln wie Software: strukturiert, versioniert, automatisiert und nahe am Code.
 
 Dieser Artikel erklärt, warum klassische Dokumentation oft scheitert und wie ein Doc-as-Code-Ansatz helfen kann, sie dauerhaft aktuell und nutzbar zu halten.
-====
+--
+
+toc::[]
 
 == Zwei Mythen über Dokumentation
 
@@ -59,9 +61,9 @@ Je nach Umfeld kann es durchaus unterschiedliche Anforderungen an eine Dokumenta
 Wie auch immer. Sobald man ein System bauen muss, dass aus mehreren Bausteinen besteht, wird man sich Gedanken über die Architektur machen und die gehört dokumentiert. Und wenn man es _richtig_ macht, entsteht Architektur immer vor dem Code.
 
 [.highlight.info]
-====
+--
 Natürlich entsteht die Architektur heut zutage und Gott sei Dank nicht _upfront_. Gute Architektur ist evolutionär und wächst mit den Anforderungen. Aber trotzdem steht vor dem Code immer ein Design und es gibt immer Gründe, warum man Code schreibt (fachliche Anforderungen, Qualitätsanforderungen, etc.). All das gehört dokumentiert.
-====
+--
 
 D.h. aus Sicht eines Softwareentwicklers und / oder Softwarearchitekten wird das *WAS* mindestens mit einer Dokumentation der Architektur beantwortet werden. Wie diese Dokumentation aussehen soll, ist individuell und kann sich von Projekt zu Projekt unterscheiden. Aus Bequemlichkeit halte ich mich bei solchen Sachen an Bewährtes und von Fachleuten entwickelte _Best practices_. Daher halte ich mich in Sachen Architekturdokumentation an die https://arc42.org/[arc42-Struktur^]. Aber darum geht es in diesem Artikel gar nicht.
 
@@ -78,11 +80,11 @@ Nun, meine Erfahrung sagt, dass es sowenig _Mediumwechsel_ wie möglich geben so
 Ich versuche daher, jegliche Dokumentation im ASCII-Format (wie es der Code auch ist) zu schreiben und so nahe am Code, wie möglich abzulegen. Wenn möglich und sinnvoll, sogar im gleichen Source-Repository.
 
 [.highlight.info]
-====
+--
 Wenn ich erst gar nicht suchen muss, wo die Dokumentation abgelegt ist, sondern direkt mit meinem Code bekomme, habe ich alles an einem Platz und kann zwischen Dokumentieren und Codieren ohne Medienbruch leicht hin- und herwechseln.
 
 Außerdem ist so eher sichergestellt, dass Code und Dokumentation nicht zu sehr auseinander läuft. Der Entwicklungsprozess kann dies auch leichter sicherstellen, da er sich nur mit einem Medium beschäftigen muss.
-====
+--
 
 *Ist das nun schon _Doc-as-Code_?*
 
@@ -95,9 +97,9 @@ Ablageort der Dokumentation oder Medium ist nicht entscheidend für _Doc-as-Code
 Aber ich kann _Doc-as-Code_ in einem Git-Repository genauso leben, wie in Confluence oder ähnliche Plattformen.
 
 [.highlight.info]
-====
+--
 *Doc-as-Code* bedeutet für mich, dass ich nicht nur Text schreibe und Bilder einfüge, sondern, dass ich die Dokumentation genauso pflege, wie ich meinen Code Pflege.
-====
+--
 
 D.h., ich versuche auf eine *erkennbare Struktur* zu achten. Ich versuche auch in der Dokumentation das *Single Responsible Principle* einzuhalten. Und ich versuche *Duplizierungen zu vermeiden* und nichts zu schreiben, was nicht gebraucht wird (*YAGNI*).
 
@@ -112,11 +114,11 @@ Es wirken also unterschiedliche Dinge auf eine Dokumentation ein:
 plantuml::{includesdir}/../site/articles/assets/doc-as-code/doc-influences.puml[format=svg, alt="Einflussfaktoren auf die Dokumentation",width=100%]
 
 [.highlight.info]
-====
+--
 Dokumentation entsteht nicht im luftleeren Raum. Sie wird von technischen, organisatorischen und prozessualen Faktoren beeinflusst.
 
 Doc-as-Code bedeutet daher nicht nur ein bestimmtes Tool oder Format zu wählen, sondern diese Einflüsse bewusst in eine strukturierte und wartbare Dokumentation zu übersetzen.
-====
+--
 
 Damit man das alles erreicht, muss auch in der Dokumentation rund um die eigentliche Dokumentation echter Code geschrieben werden. Meist sind das Makros, die während des Generierens des Ausgabeformates interpretiert werden. Es können aber auch Pre-Prozessoren vonnöten sein, die vielleicht erst mal die Dokumentation scannen muss, um vielleicht zusätzliche Artefakte zu generieren.
 
@@ -180,7 +182,7 @@ Man sieht als zentrale Komponente das _Build System_. Diese Website wird mit `Gr
 == Key Takeaways
 
 [.callout]
-====
+--
 * **Code allein ist keine Dokumentation.**
 Gute Software braucht auch Kontext, Entscheidungen und Architektur.
 
@@ -192,7 +194,7 @@ Dokumentation wird strukturiert, versioniert, automatisiert und wie Code gepfleg
 
 * **Automatisierung macht Dokumentation nachhaltig.**
 Eine Build-Pipeline ermöglicht es, aus denselben Quellen verschiedene Ausgabeformate zu generieren.
-====
+--
 
 == Fazit
 
@@ -214,7 +216,7 @@ ____
 
 ifeval::["{include_next_articles_variante1}" == "true"]
 [.highlight.tip]
-====
+--
 Dieser Artikel ist Teil einer kleinen Reihe über **Doc-as-Code**.
 
 Weitere Artikel:
@@ -222,7 +224,7 @@ Weitere Artikel:
 * Architekturdokumentation, die Entwickler wirklich pflegen
 * Doc-as-Code mit AsciiDoc und Gradle
 * Eine Dokumentation – mehrere Sichten
-====
+--
 endif::[]
 
 ifeval::["{include_next_articles_variante2}" == "true"]
@@ -238,5 +240,3 @@ Im nächsten Teil der Serie bauen wir Schritt für Schritt eine **Doc-as-Code Pi
 
 Am Ende steht eine Dokumentation, die sich wie Software bauen, versionieren und ausliefern lässt.
 endif::[]
-
-include::{includesdir}/footer.adoc[]

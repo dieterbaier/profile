@@ -5,5 +5,3 @@ include::{includesdir}/cvheader.adoc[]
 include::{includesdir}/cvappendix.adoc[]
 
 include::{includesdir}/education/certificates.adoc[]
-
-include::{includesdir}/footer.adoc[]

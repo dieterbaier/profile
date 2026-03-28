@@ -1,16 +1,18 @@
 = Smarter CI/CD
-:norevinfo:
 ifdef::buildsite[]
 :basedir: ../..
 endif::[]
-include::{includesdir}/docheader.adoc[]
+include::{includesdir}/../../revinfo.adoc[]
+:author: Dieter Baier
+:author_page: {basedir}/index.html
+:author_page: index.html
 :revremark: Build only what changed
-:toc:
-
+:revnumber: 1.0
+:revdate: 03/2026
 :active: articles
-include::{includesdir}/menue.adoc[]
+include::{includesdir}/docheader.adoc[]
 
-include::{includesdir}/author.adoc[]
+toc::[]
 
 == Ausgangssituation
 
@@ -213,5 +215,3 @@ Mögliche nächste Schritte:
 - Metriken zur Pipeline-Performance
 
 Die Grundlage dafür ist bereits gelegt.
-
-include::{includesdir}/footer.adoc[]

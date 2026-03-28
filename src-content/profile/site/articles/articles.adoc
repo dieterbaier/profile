@@ -1,13 +1,12 @@
 = Artikel
+include::{includesdir}/../../revinfo.adoc[]
+:revdate!:
+:revnumber!:
+:revremark!:
 ifdef::buildsite[]
 :basedir: ..
 endif::[]
-:norevinfo:
+:active: articles
 include::{includesdir}/docheader.adoc[]
 
-:active: articles
-include::{includesdir}/menue.adoc[]
-
 include::{includesdir}/../site/articles/articles_matrix.adoc[Artikel Matrix]
-
-include::{includesdir}/footer.adoc[]

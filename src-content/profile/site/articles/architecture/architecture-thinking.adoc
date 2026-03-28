@@ -1,18 +1,20 @@
 = Architecture Thinking
-:norevinfo:
 ifdef::buildsite[]
 :basedir: ../..
 endif::[]
-include::{includesdir}/docheader.adoc[]
+include::{includesdir}/../../revinfo.adoc[]
+:author!: Dieter Baier
+:author_page: index.html
 :revremark: Some thoughts about arichitectural topics
-:toc:
-
+:revdate!: 03/2023
+:revnumber!: 1.0
 :active: articles
-include::{includesdir}/menue.adoc[]
+include::{includesdir}/docheader.adoc[]
 
-include::{includesdir}/author.adoc[]
 
-siehe auch: xref:{basedir}/principles.adoc[Pragmatische Architekturprinzipien]
+siehe auch: xref:{basedir}/articles/architecture/principles.adoc[Pragmatische Architekturprinzipien]
+
+toc::[]
 
 == System Boundaries
 [.highlight.info]
@@ -30,5 +32,3 @@ Architecture documentation should support
 development, not bureaucracy.
 
 See my thoughts about how to document at xref:{basedir}/articles/documentation/doc-as-code.adoc[Doc as Code].
-
-include::{includesdir}/footer.adoc[]

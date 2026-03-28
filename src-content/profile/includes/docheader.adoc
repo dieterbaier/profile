@@ -4,12 +4,6 @@ endif::[]
 ifndef::lang[]
 :lang: de
 endif::[]
-include::../../revinfo.adoc[]
-ifdef::norevinfo[]
-:revdate!:
-:revnumber!:
-:revremark!:
-endif::[]
 :docinfo: shared
 :docinfodir: {includesdir}/docinfo/
 ifndef::basedir[]
@@ -29,10 +23,31 @@ endif::[]
 endif::[]
 :copycss: {basedir}/src-content/profile/theme/style.css
 :icons: image
+:toc-title: Inhalt
+ifndef::toc[]
+:toc:
+endif::[]
+ifeval::["{toc}" == ""]
+:toc: macro
+endif::[]
 :nofooter:
+:noheader:
+ifeval::["{toc}" == "left"]
+:noheader!:
+endif::[]
+ifeval::["{toc}" == "right"]
+:noheader!:
+endif::[]
 ifeval::["{backend}" == "pdf"]
 :icons: font
 :nofooter!:
 :copycss!:
 :stylesdir!:
 endif::[]
+ifeval::["{type}" != "readme"]
+ifeval::["{backend}" != "pdf"]
+include::./menue.adoc[]
+include::./doctitle.adoc[]
+endif::[]
+endif::[]
+include::../../revinfo.adoc[]

@@ -6,5 +6,3 @@ include::{includesdir}/cvappendix.adoc[]
 
 :is-included:
 include::{includesdir}/projects/listOfProjects.adoc[]
-
-include::{includesdir}/footer.adoc[]

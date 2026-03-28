@@ -1,103 +1,133 @@
-/* noto-sans-regular - latin */
-@font-face {
-    font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
-    font-family: 'Noto Sans';
-    font-style: normal;
-    font-weight: 400;
-    src: url('fonts/noto-sans-v42-latin-regular.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
-}
+@import url("./asciidoctor.css"); /* Default asciidoc style framework - important */
 
-/* noto-sans-italic - latin */
-@font-face {
-    font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
-    font-family: 'Noto Sans';
-    font-style: italic;
-    font-weight: 400;
-    src: url('fonts/noto-sans-v42-latin-italic.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
-}
-
-/* noto-sans-600 - latin */
-@font-face {
-    font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
-    font-family: 'Noto Sans';
-    font-style: normal;
-    font-weight: 600;
-    src: url('fonts/noto-sans-v42-latin-600.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
-}
-
-/* noto-sans-600italic - latin */
-@font-face {
-    font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
-    font-family: 'Noto Sans';
-    font-style: italic;
-    font-weight: 600;
-    src: url('fonts/noto-sans-v42-latin-600italic.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
-}
-
-@font-face {
-    font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
-    font-family: 'JetBrains Mono';
-    font-style: normal;
-    font-weight: 600;
-    src: url('fonts/JetBrainsMono-Bold.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
-}
-
-@font-face {
-    font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
-    font-family: 'JetBrains Mono';
-    font-style: normal;
-    src: url('fonts/JetBrainsMono-Regular.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
-}
-
-@font-face {
-    font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
-    font-family: 'JetBrains Mono';
-    font-style: italic;
-    font-weight: 600;
-    src: url('fonts/JetBrainsMono-BoldItalic.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
-}
-
-@font-face {
-    font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
-    font-family: 'JetBrains Mono';
-    font-style: italic;
-    src: url('fonts/JetBrainsMono-Italic.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
-}
+/* =========================================================
+   Design Tokens
+   ========================================================= */
 
 :root {
-    --text-color: #1b4965;
-    --link-color: #5fa8d3;
-    --focus-color: #ffbf47;
-    --bg-color: white;
-    --box-border: #5fa8d3 solid 1px;
-    --border-radius: 6px;
-    --bg-callout: #e6e60a;
-    --font-style-callout: italic;
-    --font-size-callout: larger;
-    --padding-callout: 1rem;
-    --box-shadow-color: rgba(0, 0, 0, 0.19);
-    --box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 var(--box-shadow-color);
+    --text-color: #244055;
+    --link-color: #3f6f8c;
+    --focus-color: #d9a441;
+
+    --bg-color: #ffffff;
+    --bg-surface: #f7f9fb;
+    --bg-callout: #f3eddc;
+    --bg-highlight: #f8fafb;
+    --bg-toc: #f5f7f9;
+
+    --box-border-color: #d6dee5;
+    --box-border-strong: #9fb4c3;
+
+    --border-radius: 10px;
+
+    --box-shadow: 0 8px 24px rgba(23, 43, 58, 0.10);
+
+    --text-color-subtle: #6b7280;
+
     --highlight-icon-font-size: xx-large;
-    --bg-toc: #f8f8f8;
-    --text-color-subtl: #6c757d;
+
+    --page-width: 62.5em;      /* kommt von Asciidoctor */
+    --page-gutter: 0.9375em;   /* kommt von Asciidoctor */
 }
 
-@page {
-    size: a4;
-    margin: 2cm 2cm 2cm 2.5cm;
+/* =========================================================
+   Base
+   ========================================================= */
+
+#header,
+#content,
+#footnotes,
+footer {
+    width: 100%;
+    max-width: var(--page-width);
+    margin-left: auto;
+    margin-right: auto;
 }
 
 body {
     font-family: "Noto Sans", sans-serif;
-    max-width: 210mm;
-    margin: auto;
-    line-height: 1.5;
     color: var(--text-color);
     background: var(--bg-color);
+    line-height: 1.6;
 }
 
-p {
-    margin: 0 0 1rem 0;
+a {
+    color: var(--link-color);
+    text-decoration: underline;
+    text-decoration-thickness: 0.06em;
+    text-underline-offset: 0.14em;
+}
+
+a:hover {
+    color: #2f5d77;
+    text-decoration-thickness: 0.1em;
+}
+
+a:focus-visible {
+    outline: 3px solid var(--focus-color);
+    outline-offset: 2px;
+}
+
+/* =========================================================
+   Header
+   ========================================================= */
+
+#header h1, #header .details {
+    display: none;
+}
+
+header{
+    display: flex;
+    flex-direction: column;
+}
+
+header > h1 {
+    margin-top: 1rem;
+    margin-bottom: 0;
+    padding: 0.75rem 1rem;
+
+    background: linear-gradient(180deg, #f3ede0 0%, #ece3c8 100%);
+    border-radius: var(--border-radius);
+    color: var(--text-color);
+}
+
+header .details {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    font-style: italic;
+    padding: 1rem;
+    background: var(--bg-callout);
+    border: 1px solid var(--box-border-color);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    text-align: center;
+    margin: 1rem 0;
+}
+
+header .details .versioninfo {
+    display: flex;
+    font-size: smaller
+}
+
+.author + .revnumber::before {
+    content: "-";
+    margin: 0 8px;
+}
+
+.author + .revdate::before {
+    content: "-";
+    margin: 0 8px;
+}
+
+.revnumber + .revdate::before {
+    content: "-";
+    margin: 0 8px;
+}
+
+header .details .revremark {
+    font-weight: bold;
 }
 
 h1 {
@@ -105,106 +135,134 @@ h1 {
     background: var(--bg-callout);
     border-radius: var(--border-radius);
     padding-left: 1rem;
+    color: var(--text-color);
 }
 
 h2 {
     margin-top: 2rem;
+    color: var(--text-color);
 }
 
-a {
-    color: var(--link-color);
-    text-decoration: underline;
-    text-decoration-thickness: 0.08em;
-    text-underline-offset: 0.18em;
-}
-a:hover {
-    text-decoration-thickness: 0.12em;
-}
-a:focus-visible {
-    outline: 3px solid var(--focus-color);
-    outline-offset: 2px;
+h3 {
+    margin-top: 1.5rem;
+    color: var(--text-color);
 }
 
-#header {
-    display: flex;
-    flex-direction: column;
-    h1 {
-        margin-bottom: unset;
-    }
-    .details {
-        display: flex;
-        flex-direction: column;
-    }
-    #author {
-        font-style: italic;
-        margin-top: 1rem;
-        font-size: larger;
-    }
-    #revnumber, #revdate {
-        font-size: smaller;
-    }
-    #revremark {
-        font-style: var(--font-style-callout);
-        font-size: var(--font-size-callout);
-        padding: var(--padding-callout);
-        background-color: var(--bg-callout);
-        border: var(--box-border);
-        border-radius: var(--border-radius);
-        box-shadow: var(--box-shadow);
-        text-align: center;
-        margin-top: 1rem;
-        margin-bottom: 1rem;
-    }
+h4 {
+    margin-top: 1rem;
+    color: var(--text-color);
 }
 
-.footer {
-    margin-top: 5rem;
-    padding: 1rem;
-    border: none;
-    background-color: var(--bg-color);
-    font-size: smaller;
+h5 {
+    color: var(--text-color);
+}
+
+/* =========================================================
+   TOC
+   ========================================================= */
+
+#toc,
+.toc {
+    background: var(--bg-toc);
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    margin-bottom: 2rem;
+}
+
+#toc #toctitle,
+.toc #toctitle {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: var(--text-color);
+}
+
+#toc ul,
+.toc ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+#toc li,
+.toc li {
+    margin-bottom: 0.5rem;
+}
+
+/* =========================================================
+   Content Elements
+   ========================================================= */
+
+p {
+    margin-bottom: 1rem;
+}
+
+/* =========================================================
+   Code
+   ========================================================= */
+
+code,
+.listingblock .content pre,
+.literalblock pre {
+    font-family: "JetBrains Mono", monospace;
+}
+
+/* =========================================================
+   Quote Blocks
+   ========================================================= */
+
+.quoteblock blockquote,
+.quoteblock p {
     font-style: italic;
-    text-align: center;
-    * p {
-        margin: 0;
-    }
+    color: var(--text-color);
 }
-.contact_html5 {
-    * {
-        font-style: normal;
-    }
-    ul {
-        display: flex;
-        list-style-type: none;
-        padding: 0;
-        margin: 0;
-        gap: 0.5rem;
-        justify-content: center;
-        align-items: baseline;
-    }
+
+.quoteblock .attribution cite {
+    color: var(--text-color-subtle);
 }
+
+.quoteblock blockquote::before {
+    color: var(--text-color);
+}
+
+/* =========================================================
+   Box System (✨ dein Signature-Look)
+   ========================================================= */
+
+.callout,
+.highlight,
+.intro,
+.skillbox {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    border: 1px solid var(--box-border-color);
+
+    margin: 2rem 0;
+    padding: 1rem 1.25rem;
+}
+
+/* --- Intro and Callout with the same background --- */
+.intro, .callout {
+    background: linear-gradient(180deg, #f6f1e4 0%, #efe7cf 100%);
+}
+
+/* --- Callout (zentral, emotional) --- */
 
 .callout {
-    font-style: var(--font-style-callout);
-    font-size: var(--font-size-callout);
-    padding: var(--padding-callout);
-    background-color: var(--bg-callout);
-    border: var(--box-border);
-    border-radius: var(--border-radius);
-    box-shadow: var(--box-shadow);
     text-align: center;
-    margin: 2rem 0 2rem 0;
+    font-style: italic;
+
+    border-left: 6px solid #c7a85a;
 }
 
+/* --- Highlight (inhaltlich wichtig) --- */
 
 .highlight {
-    margin: 2rem 0 2rem 0;
-    font-size: var(--font-size-callout);
-    padding: var(--padding-callout) var(--padding-callout) 0 var(--padding-callout);
-    background-color: var(--bg-color);
-    border: var(--box-border);
-    border-radius: var(--border-radius);
-    box-shadow: var(--box-shadow);
+    background: var(--bg-highlight);
+    border-left: 6px solid var(--box-border-strong);
 }
 
 .highlight.info::before {
@@ -227,203 +285,7 @@ a:focus-visible {
     font-size: var(--highlight-icon-font-size);
 }
 
-.toc {
-    background: var(--bg-toc);
-    padding: 2rem;
-    max-width: 50%;
-    box-shadow: var(--box-shadow);
-    margin-bottom: 2rem;
-
-    #toctitle {
-        font-size: larger;
-        font-weight: bold;
-    }
-
-    ul {
-        list-style-type: none;
-        li {
-            margin-bottom: 0.5rem;
-        }
-    }
-}
-
-.icon img {
-    max-width: 20px;
-}
-
-.valign-top {
-    vertical-align: top;
-}
-
-.column-header-center h2 {
-    text-align: center;
-}
-
-.education-table {
-    td:first-child {
-        padding-right: 1rem;
-    }
-    td:last-child {
-        padding-left: 1rem;
-    }
-}
-
-.stretch {
-    width: 100%;
-}
-
-.subtle {
-    color: var(--text-color-subtl);
-}
-
-.quoteblock {
-    margin: 0 1em 1.25em 1.5em;
-    display: table
-}
-
-.quoteblock:not(.excerpt) > .title {
-    margin-left: -1.5em;
-    margin-bottom: .75em
-}
-
-.quoteblock blockquote, .quoteblock p {
-    color: var(--text-color);
-    font-size: 1.15rem;
-    line-height: 1.75;
-    word-spacing: .1em;
-    letter-spacing: 0;
-    font-style: italic;
-    text-align: justify
-}
-
-.quoteblock blockquote {
-    margin: 0;
-    padding: 0;
-    border: 0
-}
-
-.quoteblock blockquote::before {
-    content: "\201c";
-    float: left;
-    font-size: 2.75em;
-    font-weight: bold;
-    line-height: .6em;
-    margin-left: -.6em;
-    color: #7a2518;
-    text-shadow: 0 1px 2px var(--box-shadow-color);
-}
-
-.quoteblock blockquote > .paragraph:last-child p {
-    margin-bottom: 0
-}
-
-.quoteblock .attribution {
-    margin-top: .75em;
-    margin-right: .5ex;
-    text-align: right
-}
-
-.quoteblock .attribution, .verseblock .attribution {
-    font-size: .9375em;
-    line-height: 1.5;
-    font-style: italic
-}
-
-.quoteblock .attribution br, .verseblock .attribution br {
-    display: none
-}
-
-.quoteblock .attribution cite, .verseblock .attribution cite {
-    display: block;
-    letter-spacing: -.025em;
-    color: var(--text-color-subtl);
-}
-
-.quoteblock.abstract blockquote::before, .quoteblock.excerpt blockquote::before, .quoteblock .quoteblock blockquote::before {
-    display: none
-}
-
-.quoteblock.abstract blockquote, .quoteblock.abstract p, .quoteblock.excerpt blockquote, .quoteblock.excerpt p, .quoteblock .quoteblock blockquote, .quoteblock .quoteblock p {
-    line-height: 1.5;
-    word-spacing: 0
-}
-
-.quoteblock.abstract {
-    margin: 0 1em 1.25em;
-    display: block
-}
-
-.quoteblock.abstract > .title {
-    margin: 0 0 .375em;
-    font-size: 1.15em;
-    text-align: center
-}
-
-.quoteblock.excerpt > blockquote, .quoteblock .quoteblock {
-    padding: 0 0 .25em 1em;
-    border-left: .25em solid var(--box-shadow-color)
-}
-
-.quoteblock.excerpt, .quoteblock .quoteblock {
-    margin-left: 0
-}
-
-.quoteblock.excerpt blockquote, .quoteblock.excerpt p, .quoteblock .quoteblock blockquote, .quoteblock .quoteblock p {
-    color: inherit;
-    font-size: 1.0625rem
-}
-
-.quoteblock.excerpt .attribution, .quoteblock .quoteblock .attribution {
-    color: inherit;
-    font-size: .85rem;
-    text-align: left;
-    margin-right: 0
-}
-
-.verseblock {
-    margin: 0 1em 1.25em
-}
-
-.verseblock pre {
-    font-family: "Open Sans", "DejaVu Sans", sans-serif;
-    font-size: 1.15rem;
-    color: var(--text-color);
-    font-weight: 300;
-    text-rendering: optimizeLegibility
-}
-
-.verseblock pre strong {
-    font-weight: 400
-}
-
-.verseblock .attribution {
-    margin-top: 1.25rem;
-    margin-left: .5ex
-}
-
-.imageblock.left, .image.right {
-    margin-top: .5rem;
-    margin-bottom: .5rem;
-    display: inline-block;
-    line-height: 0
-}
-
-.imageblock.left {
-    margin-right: 1rem
-}
-
-.imageblock.right {
-    margin-left: 1rem
-}
-
-.left {
-    float: left;
-}
-
-.right {
-    float: right;
-}
-
+/* --- Skillbox --- */
 .skillrow {
     display: flex;
     gap: 1rem; /* Abstand zwischen den Boxen */
@@ -431,60 +293,169 @@ a:focus-visible {
 }
 
 .skillbox {
-    border: var(--box-border);
-    border-radius: var(--border-radius);
-    padding: 0.5rem;
-    background: var(--bg-color);
+    background: linear-gradient(180deg, #ffffff 0%, #f8fafb 100%);
+    padding: 0.75rem;
+
     text-align: center;
-    p {
-        margin: unset;
-    }
-    strong {
-        font-size: larger;
-    }
-    /* Flexbox-Items gleich hoch */
-    flex: 1;          /* teilt den verfügbaren Platz gleichmäßig auf */
-    display: flex;    /* macht die Box selbst flex */
-    flex-direction: column; /* Inhalt stapeln */
-}
-
-.text-center {
-    text-align: center;
-}
-
-.listingblock {
-    font-family: "JetBrains Mono", monospace;
-
-    .highlight {
-        padding: var(--padding-callout);
-    }
-}
-
-.intro {
+    flex: 1;
     display: flex;
-    align-items: center;
-    gap: 2rem;
+    flex-direction: column;
+}
 
-    margin: 2rem 0 2rem 0;
-    font-size: var(--font-size-callout);
-    padding: var(--padding-callout);
-    background-color: var(--bg-color);
-    border: var(--box-border);
+.skillbox p {
+    margin: 0;
+}
+
+.skillbox strong {
+    font-size: 1.05rem;
+}
+
+/* =========================================================
+   Tables
+   ========================================================= */
+
+table {
+    border-collapse: collapse;
+}
+
+td, th {
+    padding: 0.5rem;
+}
+
+.education-table td:first-child {
+    white-space: nowrap;
+    vertical-align: top;
+}
+
+/* =========================================================
+   Footer
+   ========================================================= */
+
+footer {
+    margin-top: 3rem;
+    margin-bottom: 2rem;
+    padding-left: var(--page-gutter);
+    padding-right: var(--page-gutter);
+}
+
+footer .footer-box {
+    display: grid;
+    grid-template-columns: 1fr 4fr 1fr;
+    grid-template-areas: "left center right";
+    gap: 1rem 2rem;
+    align-items: start;
+
+    padding: 1.25rem 1.5rem;
+
+    background: linear-gradient(180deg, #ffffff 0%, #f7f9fb 100%);
+    border: 1px solid var(--box-border-color);
     border-radius: var(--border-radius);
     box-shadow: var(--box-shadow);
+
+    text-align: center;
+    font-size: 0.9rem;
+    color: var(--text-color-subtle);
+}
+
+footer .column1 {
+    grid-area: left;
+    justify-self: start;
+    text-align: left;
+    font-style: italic;
+}
+
+footer .column2 {
+    grid-area: center;
+    justify-self: center;
+    text-align: center;
+    font-style: normal;
+    font-weight: 500;
+    color: var(--text-color);
+}
+
+footer .column3 {
+    grid-area: right;
+    justify-self: end;
+    text-align: right;
+    font-style: italic;
+}
+
+footer .column1,
+footer .column2,
+footer .column3 {
+    min-width: 0;
+}
+
+footer p {
+    margin: 0;
+}
+
+/* Mobile: Mitte nach oben, dann links, dann rechts */
+@media (max-width: 700px) {
+    footer .footer-box {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+            "center"
+            "left"
+            "right";
+        gap: 0.75rem;
+        padding: 1rem;
     }
+
+
+    footer .column1,
+    footer .column2,
+    footer .column3 {
+        justify-self: center;
+        text-align: center;
+    }
+}
+
+/* =========================================================
+   Utilities
+   ========================================================= */
+
+.left { float: left; }
+.right { float: right; }
+.stretch { width: 100%; }
+
+.text-center { text-align: center; }
+.subtle { color: var(--text-color-subtle); }
+
+.larger { font-size: larger; }
+.smaller { font-size: smaller; }
+.bold { font-weight: bold;}
+.italic { font-style: italic;}
+
+.valign-top { vertical-align: top; }
+
+.icon img {
+    max-width: 20px;
+}
+
+/* ===========================================================
+    Navigation
+ ============================================================= */
+
+.mainnav, .subnav {
+    border-bottom: 1px solid #e5e5e5;
+}
 
 .mainnav {
     margin: 2rem 0;
     padding-bottom: 1rem;
-    border-bottom: 1px solid #e5e5e5;
 }
 
-.mainnav.noborder {
+.subnav {
+    margin: unset;
+    padding-bottom: unset;
+}
+
+.mainnav.noborder, .subnav.noborder {
     border: none;
 }
 
-.mainnav ul {
+.mainnav ul, .subnav ul {
     list-style: none;
     padding: 0;
     margin: 0;
@@ -494,7 +465,7 @@ a:focus-visible {
     flex-wrap: wrap;
 }
 
-.mainnav a {
+.mainnav a, .subnav a {
     text-decoration: none;
     font-weight: 600;
     letter-spacing: 0.02em;
@@ -506,7 +477,7 @@ a:focus-visible {
     transition: all 0.2s ease;
 }
 
-.mainnav a:hover {
+.mainnav a:hover, .subnav a:hover {
     color: #000;
     border-bottom: 2px solid #3a7bd5;
 }
@@ -519,25 +490,4 @@ a:focus-visible {
 .mainnav[data-active="toolkit"] a[data-nav="toolkit"] {
     transform: translateY(1px);
     border-bottom: 2px solid #000;
-}
-
-.larger {
-    font-size: larger;
-}
-.smaller {
-    font-size: smaller;
-}
-
-.compact {
-    line-height: 1.25;
-    ul * p {
-        margin-bottom: unset;
-    }
-}
-
-.new-section {
-    border-top: 1px solid #e5e5e5;
-    h2 {
-        margin-top: 1rem;
-    }
 }

@@ -1,0 +1,57 @@
+:showdetails!:
+ifdef::revremark[]
+:showdetails:
+endif::[]
+ifdef::author[]
+:showdetails:
+endif::[]
+ifdef::revnumber[]
+:showdetails:
+endif::[]
+ifdef::revdate[]
+:showdetails:
+endif::[]
+ifdef::nodetails[]
+:showdetails!:
+endif::[]
+ifeval::["{backend}" == "html5"]
+[subs="attributes"]
+++++
+<header>
+
+ifndef::notitle[]
+<h1>{doctitle}</h1>
+endif::[]
+
+ifdef::showdetails[]
+<div class="details">
+
+ifdef::revremark[]
+    <div class="revremark">{revremark}</div>
+endif::[]
+
+    <div class="versioninfo">
+ifdef::author[]
+ifdef::author_page[]
+    <a class="author" href="{basedir}/{author_page}">{author}</a>
+endif::[]
+ifndef::author_page[]
+    <div class="author">{author}</div>
+endif::[]
+endif::[]
+
+ifdef::revnumber[]
+    <div class="revnumber">{revnumber}</div>
+endif::[]
+
+ifdef::revdate[]
+    <div class="revdate">{revdate}</div>
+endif::[]
+
+    </div>
+</div>
+endif::[]
+
+</header>
+++++
+endif::[]

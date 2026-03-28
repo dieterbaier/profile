@@ -1,0 +1,72 @@
+= dieterbaier.eu
+include::{includesdir}/../../revinfo.adoc[]
+:revdate!:
+:revnumber!:
+:revremark: Rechtliches
+ifdef::buildsite[]
+:basedir: .
+endif::[]
+include::{includesdir}/docheader.adoc[]
+
+:toclevels: 1
+toc::[]
+
+== Impressum
+
+Angaben gemäß § 5 TMG
+
+Dieter Baier +
+{site-street} +
+{site-plz} {site-city}
+
+Kontakt: +
+E-Mail: {site-email} +
+Telefon: {site-tel}
+
+Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV: +
+Dieter Baier (Anschrift wie oben)
+
+[.small]#Hinweis: Diese Website dient der Darstellung meines beruflichen Profils als Softwarearchitekt und IT-Consultant.#
+
+
+== Datenschutzerklärung
+
+Diese Website dient ausschließlich der Bereitstellung von Informationen zu meinem beruflichen Profil.
+
+Es werden keine personenbezogenen Daten aktiv erhoben, gespeichert oder ausgewertet, es sei denn, Sie kontaktieren mich aktiv (z. B. per E-Mail).
+
+
+=== Hosting
+==== Noch ein Thema
+
+Diese Website wird bei einem externen Dienstleister (Strato AG) gehostet.
+
+Beim Aufruf der Website werden durch den Hosting-Anbieter automatisch Informationen erfasst (z. B. IP-Adresse, Zeitpunkt des Zugriffs, angeforderte Ressourcen).
+
+Diese Daten dienen ausschließlich dem technischen Betrieb und der Sicherheit der Website und werden nicht zur Analyse oder Profilbildung verwendet.
+
+
+=== Kontaktaufnahme
+
+Wenn Sie mich per E-Mail kontaktieren, werden die von Ihnen übermittelten Daten ausschließlich zur Bearbeitung Ihrer Anfrage verwendet.
+
+Eine Weitergabe an Dritte erfolgt nicht.
+
+
+=== Externe Inhalte und Links
+
+Diese Website enthält Links zu externen Websites Dritter.
+
+Auf deren Inhalte habe ich keinen Einfluss. Für die Inhalte der verlinkten Seiten ist stets der jeweilige Anbieter oder Betreiber verantwortlich.
+
+
+=== Verzicht auf Tracking und Cookies
+
+Diese Website verwendet keine Tracking- oder Analyse-Tools.
+
+Es werden keine Cookies gesetzt, die über die technisch notwendigen Funktionen hinausgehen.
+
+
+== Haftungsausschluss
+
+Die Inhalte dieser Website wurden mit größter Sorgfalt erstellt. Für die Richtigkeit, Vollständigkeit und Aktualität der Inhalte kann jedoch keine Gewähr übernommen werden.

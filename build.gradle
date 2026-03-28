@@ -140,6 +140,11 @@ def asciidoctorBase = { taskName, taskDependsOnTask, sourceDir, outputDir, List<
 
         into(taskProvider.map { it.outputDir })
 
+        from("src-content/profile/theme") {
+            include "*.css"
+            into "stylesheet"
+        }
+
         from("src-content/profile/theme/fonts") {
             include "*.woff2"
             into "stylesheet/fonts"
@@ -203,6 +208,20 @@ asciidoctorBase('buildCVPersonal','','src-content/profile/cv', 'build/cv', ['cv.
 asciidoctorBase('buildCVSite','','src-content/profile/cv', 'build/site', [],true) // HTML
 asciidoctorBase('buildCVDownload','buildCVSite','src-content/profile/cv', 'build/site', ['cv.adoc'],false, 'pdf') // PDF download
 // Website
-asciidoctorBase('buildSite','buildCVDownload','src-content/profile/site', 'build/site', [],false)
+asciidoctorBase('buildSite','buildCVDownload','src-content/profile/site', 'build/site', [],false, "html5",[
+                                                                        'site-street': env('SITE_STREET') ?: '.',
+                                                                        'site-plz'   : env('SITE_PLZ') ?: '.',
+                                                                        'site-city'  : env('SITE_CITY') ?: '.',
+                                                                        'site-tel'   : env('SITE_TEL') ?: '.',
+                                                                        'site-email' : env('SITE_EMAIL') ?: '.',
+                                                                        'site-email' : env('SITE_EMAIL') ?: '.'
+])
 // Architekturseite
 asciidoctorBase('buildArchitecture','','src-content/docs/arc42', 'build/architecture', ['index.adoc'],true, "html5", ['includesdir': 'src-content/docs/arc42'])
+
+tasks.register('buildAll') {
+    dependsOn tasks.named('buildSite')
+    dependsOn tasks.named('buildCVPersonal')
+    dependsOn tasks.named('buildReadme')
+    dependsOn tasks.named('buildArchitecture')
+}

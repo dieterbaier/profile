@@ -2,20 +2,20 @@
 ifdef::buildsite[]
 :basedir: .
 endif::[]
-:norevinfo:
+:type: readme
 include::{includesdir}/docheader.adoc[]
 :nolinks:
-:type: readme
+:docinfo: private-footer
 
 == {doctitle}
 [.callout]
-====
+--
 ifeval::["{backend}" == "html5"]
 image::dieterbaier_image_site_rounded_200.png[]
 endif::[]
 
 *Software Architekt | Integration, Architektur & Dokumentation*
-====
+--
 
 include::{includesdir}/profile/profile.adoc[]
 
@@ -35,5 +35,4 @@ include::{includesdir}/languages/languages.adoc[]
 
 |===
 
-'''
-include::{includesdir}/footer.adoc[]
+[.footer]#Dieses README wurde aus den Inhalten des Repositories https://github.com/dieterbaier/profile[Dieter Baier - Profile^] generiert.#

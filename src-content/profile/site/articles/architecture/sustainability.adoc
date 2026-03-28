@@ -1,15 +1,16 @@
 = Sustainable Website
-:norevinfo:
 ifdef::buildsite[]
-:basedir: .
+:basedir: ../..
 endif::[]
-include::{includesdir}/docheader.adoc[]
+include::{includesdir}/../../revinfo.adoc[]
+:author: Dieter Baier
+:author_page: {basedir}/index.html
+:author_page: index.html
 :revremark: Because greenIT matters
-
+:revnumber: WiP
+:revdate!: 03/2026
 :active: articles
-include::{includesdir}/menue.adoc[]
-
-include::{includesdir}/author.adoc[]
+include::{includesdir}/docheader.adoc[]
 
 This website follows low-energy web principles.
 
@@ -18,5 +19,3 @@ This website follows low-energy web principles.
 * minimal CSS
 * small page sizes
 * fast loading times
-
-include::{includesdir}/footer.adoc[]

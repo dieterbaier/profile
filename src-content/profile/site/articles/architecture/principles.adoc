@@ -1,16 +1,18 @@
 = Pragmatic Architecture Principles
-:norevinfo:
 ifdef::buildsite[]
-:basedir: .
+:basedir: ../..
 endif::[]
-include::{includesdir}/docheader.adoc[]
+include::{includesdir}/../../revinfo.adoc[]
+:author!: Dieter Baier
+:author_page: {basedir}/index.html
+:author_page: index.html
 :revremark: Principcles in a nutshell
-:toc:
-
+:revdate!: 03/2023
+:revnumber!: 1.0
 :active: articles
-include::{includesdir}/menue.adoc[]
+include::{includesdir}/docheader.adoc[]
 
-include::{includesdir}/author.adoc[]
+toc::[]
 
 == Clear Ownership
 [.highlight.info]
@@ -43,5 +45,3 @@ Architecture must support change.
 == Explicit Decisions
 [.highlight.info]
 Important architectural decisions should be documented.
-
-include::{includesdir}/footer.adoc[]
