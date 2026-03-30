@@ -1,4 +1,4 @@
-= dieterbaier.eu UND *.dieterbaier.eu
+= [architecture.]dieterbaier.[eu,at,net,info,com]
 include::{includesdir}/../../revinfo.adoc[]
 :revdate!:
 :revnumber!:
@@ -24,6 +24,15 @@ Kontakt: +
 E-Mail: {site-email} +
 Telefon: {site-tel}
 
+Dieses Impressum gilt für die unter folgenden Domains erreichbaren Inhalte:
+
+- dieterbaier.eu
+- dieterbaier.com
+- dieterbaier.net
+- dieterbaier.info
+- dieterbaier.at
+- architecture.dieterbaier.eu
+
 Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV: +
 Dieter Baier (Anschrift wie oben)
 
@@ -38,7 +47,6 @@ Es werden keine personenbezogenen Daten aktiv erhoben, gespeichert oder ausgewer
 
 
 === Hosting
-==== Noch ein Thema
 
 Diese Website wird bei einem externen Dienstleister (Strato AG) gehostet.
 
