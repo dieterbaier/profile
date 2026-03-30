@@ -10,9 +10,11 @@ ifndef::basedir[]
 :basedir: .
 endif::[]
 :stylesheet: style.css
-:stylesdir: {basedir}/theme
+:stylesdir: {basedir}/../theme
 :iconsdir: {stylesdir}/icons
 :imagesdir: {includesdir}/images/
+:copycss: {basedir}/src-content/theme/style.css
+:icons: image
 ifdef::buildsite[]
 :stylesdir: {basedir}/stylesheet
 :iconsdir: {basedir}/assets/icons
@@ -21,8 +23,6 @@ ifeval::["{backend}" != "pdf"]
 :imagesdir: {basedir}/assets/images/
 endif::[]
 endif::[]
-:copycss: {basedir}/src-content/theme/style.css
-:icons: image
 :toc-title: Inhalt
 ifndef::toc[]
 :toc:
@@ -47,7 +47,7 @@ endif::[]
 ifeval::["{type}" != "readme"]
 ifeval::["{backend}" != "pdf"]
 include::./menue.adoc[]
-include::./doctitle.adoc[]
+include::../../theme/doctitle.adoc[]
 endif::[]
 endif::[]
 include::../../revinfo.adoc[]

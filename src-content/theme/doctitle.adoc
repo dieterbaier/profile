@@ -33,6 +33,10 @@ endif::[]
     <div class="versioninfo">
 ifdef::author[]
 ifdef::author_page[]
+ifndef::basedir[]
+    <a class="author" href="{author_page}">{author}</a>
+endif::[]
+ifdef::basedir[]
     <a class="author" href="{basedir}/{author_page}">{author}</a>
 endif::[]
 ifndef::author_page[]
