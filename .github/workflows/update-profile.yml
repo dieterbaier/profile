@@ -2,8 +2,12 @@ name: Build Docs
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, uploadToPrivateSpace]
   workflow_dispatch:
+
+concurrency:
+  group: deploy-private-space-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   detect-changes:
@@ -30,6 +34,15 @@ jobs:
   build-docs:
     runs-on: ubuntu-latest
     needs: [detect-changes]
+    environment:
+      name: production
+    env:
+      SITE_EMAIL: ${{ secrets.SITE_EMAIL }}
+      SITE_ADDRESS_NAME: ${{ secrets.SITE_ADDRESS_NAME }}
+      SITE_STREET: ${{ secrets.SITE_STREET }}
+      SITE_PLZ: ${{ secrets.SITE_PLZ }}
+      SITE_CITY: ${{ secrets.SITE_CITY }}
+      SITE_TEL: ${{ secrets.SITE_TEL }}
     outputs:
       isBuilt: ${{ steps.run_build.outputs.IS_BUILT }}
     if: needs.detect-changes.outputs.readme == 'true' || needs.detect-changes.outputs.architecture == 'true' || needs.detect-changes.outputs.site == 'true'
@@ -41,15 +54,8 @@ jobs:
         id: set_image
         run: echo "IMAGE_NAME=ghcr.io/dieterbaier/docs-toolbox:latest" >> $GITHUB_OUTPUT
 
-      - name: Pull runtime image if missing
-        run: |
-          IMAGE=${{ steps.set_image.outputs.IMAGE_NAME }}
-          if ! docker image inspect "$IMAGE" >/dev/null 2>&1; then
-            echo "📥 Pull $IMAGE from GHCR..."
-            docker pull "$IMAGE"
-          else
-            echo "✅ Image $IMAGE already exists"
-          fi
+      - name: Pull runtime image
+        run: docker pull ${{ steps.set_image.outputs.IMAGE_NAME }}
 
       - name: Cache Gradle
         uses: actions/cache@v4
@@ -87,6 +93,12 @@ jobs:
           docker run --rm \
             -v ${{ github.workspace }}:/app \
             -v $HOME/.gradle:/root/.gradle \
+            -e SITE_EMAIL \
+            -e SITE_ADDRESS_NAME \
+            -e SITE_STREET \
+            -e SITE_PLZ \
+            -e SITE_CITY \
+            -e SITE_TEL \
             -w /app \
             ${{ steps.set_image.outputs.IMAGE_NAME }} \
             $CMD
@@ -103,10 +115,14 @@ jobs:
     needs: [build-docs, detect-changes]
     runs-on: ubuntu-latest
     if: needs.build-docs.outputs.isBuilt == 'true'
-
-    permissions:
-      pages: write
-      id-token: write
+    environment:
+      name: production
+    env:
+      SFTP_HOST: ${{ vars.SFTP_HOST }}
+      SFTP_PORT: ${{ vars.SFTP_PORT }}
+      SFTP_USER: ${{ vars.SFTP_USER }}
+      SFTP_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
+      SFTP_REMOTE_BASE: ${{ vars.SFTP_REMOTE_BASE }}
 
     steps:
       - uses: actions/download-artifact@v4
@@ -114,14 +130,37 @@ jobs:
           name: docs
           path: build
 
+      - name: Install lftp
+        if: needs.detect-changes.outputs.site == 'true' || needs.detect-changes.outputs.architecture == 'true'
+        run: sudo apt-get update && sudo apt-get install -y lftp
+
       # --- Upload Site ---
-      - name: Deploy Site (only debug yet)
+      - name: Deploy site to private webspace
         if: needs.detect-changes.outputs.site == 'true'
         run: |
-          find ./build -type f
+          lftp -u "$SFTP_USER","$SFTP_PASSWORD" sftp://$SFTP_HOST:$SFTP_PORT <<EOF
+          set sftp:auto-confirm yes
+          set net:max-retries 2
+          set net:timeout 20
+          mirror -R --delete --verbose ./build/site ${SFTP_REMOTE_BASE}/site
+          bye
+          EOF
+
+      # --- Upload Architecture ---
+      - name: Deploy architecture to private webspace
+        if: needs.detect-changes.outputs.architecture == 'true'
+        run: |
+          lftp -u "$SFTP_USER","$SFTP_PASSWORD" sftp://$SFTP_HOST:$SFTP_PORT <<EOF
+          set sftp:auto-confirm yes
+          set net:max-retries 2
+          set net:timeout 20
+          mirror -R --delete --verbose ./build/architecture ${SFTP_REMOTE_BASE}/architecture
+          bye
+          EOF
 
       # --- GitHub README ---
       - name: checkout github profile repo
+        if: needs.detect-changes.outputs.readme == 'true'
         uses: actions/checkout@v4
         with:
           repository: dieterbaier/dieterbaier
@@ -151,14 +190,3 @@ jobs:
           git add README.md
           git commit -m "update README" || echo "no changes"
           git push origin HEAD:main
-
-      # --- Pages ---
-      - name: Upload Pages artifact
-        if: needs.detect-changes.outputs.architecture == 'true'
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: build/architecture
-
-      - name: Deploy to GitHub Pages
-        if: needs.detect-changes.outputs.architecture == 'true'
-        uses: actions/deploy-pages@v4

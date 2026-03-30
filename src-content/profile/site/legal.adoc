@@ -16,6 +16,7 @@ toc::[]
 Angaben gemäß § 5 TMG
 
 Dieter Baier +
+{site-address-name} +
 {site-street} +
 {site-plz} {site-city}
 

@@ -209,11 +209,11 @@ asciidoctorBase('buildCVSite','','src-content/profile/cv', 'build/site', [],true
 asciidoctorBase('buildCVDownload','buildCVSite','src-content/profile/cv', 'build/site', ['cv.adoc'],false, 'pdf') // PDF download
 // Website
 asciidoctorBase('buildSite','buildCVDownload','src-content/profile/site', 'build/site', [],false, "html5",[
+                                                                        'site-address-name': env('SITE_ADDRESS_NAME') ?: '.',
                                                                         'site-street': env('SITE_STREET') ?: '.',
                                                                         'site-plz'   : env('SITE_PLZ') ?: '.',
                                                                         'site-city'  : env('SITE_CITY') ?: '.',
                                                                         'site-tel'   : env('SITE_TEL') ?: '.',
-                                                                        'site-email' : env('SITE_EMAIL') ?: '.',
                                                                         'site-email' : env('SITE_EMAIL') ?: '.'
 ])
 // Architekturseite

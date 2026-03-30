@@ -18,6 +18,8 @@ ifdef::buildsite[]
 :iconsdir: ./assets/icons
 :linkcss:
 endif::[]
+:docinfo: shared
+:docinfodir: {includesdir}/../docinfo/
 
 include::{includesdir}/../../theme/doctitle.adoc[]
 
