@@ -39,6 +39,7 @@ endif::[]
 ifdef::basedir[]
     <a class="author" href="{basedir}/{author_page}">{author}</a>
 endif::[]
+endif::[]
 ifndef::author_page[]
     <div class="author">{author}</div>
 endif::[]

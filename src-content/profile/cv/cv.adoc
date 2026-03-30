@@ -45,5 +45,5 @@ include::{includesdir}/skills/skills_matrix.adoc[]
 include::{includesdir}/cvappendix.adoc[]
 
 ifeval::["{backend}" == "pdf"]
-[.footer]#Dieses Dokument wurde aus den Inhalten der Website von https://dieterbaier.eu[dieterbaier.eu] erstellt und nach dem https://dieterbaier.eu/articles/documentation/doc-as-code.html[Doc as Code Ansatz] in https://asciidoc.org/[AsciiDoc] geschrieben. https://dieterbaier.github.io/profile/[Dive into the architecture]#
+[.footer]#Dieses Dokument wurde aus den Inhalten der Website von https://dieterbaier.eu[dieterbaier.eu] erstellt und nach dem https://dieterbaier.eu/articles/documentation/doc-as-code.html[Doc as Code Ansatz] in https://asciidoc.org/[AsciiDoc] geschrieben. https://architecture.dieterbaier.eu[Dive into the architecture]#
 endif::[]
