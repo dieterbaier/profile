@@ -145,6 +145,11 @@ def asciidoctorBase = { taskName, taskDependsOnTask, sourceDir, outputDir, List<
             into "stylesheet"
         }
 
+        from("src-content/theme") {
+            include "favicon.ico"
+            into "."
+        }
+
         from("src-content/theme/fonts") {
             include "*.woff2"
             into "stylesheet/fonts"
