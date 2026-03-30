@@ -11,7 +11,7 @@ include::{includesdir}/docheader.adoc[]
 
 [subs=attributes,macros]
 ++++
-<div class="intro">
+<div class="callout">
     <img src="{imagesdir}/dieterbaier_image_site_rounded_200.png" alt="Dieter Baier">
     <p>Ich unterstütze Teams dabei, komplexe Softwaresysteme zu strukturieren, Integrationen beherrschbar zu machen und Architekturentscheidungen nachvollziehbar zu dokumentieren und zu kommunizieren.</p>
 </div>
