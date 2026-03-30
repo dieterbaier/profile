@@ -150,6 +150,11 @@ def asciidoctorBase = { taskName, taskDependsOnTask, sourceDir, outputDir, List<
             into "."
         }
 
+        from("src-content/theme") {
+            include ".htaccess"
+            into "."
+        }
+
         from("src-content/theme/fonts") {
             include "*.woff2"
             into "stylesheet/fonts"
