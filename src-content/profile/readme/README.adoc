@@ -24,15 +24,23 @@ include::{includesdir}/profile/profile_personal.adoc[]
 include::{includesdir}/profile/about_me_citations.adoc[]
 
 include::{includesdir}/contact/setContactAttributes.adoc[]
+ifeval::["{backend}" == "html5"]
+[subs="attributes"]
+++++
+<div class="cvcontactlanguage">
+include::{includesdir}/contact/contact.adoc[]
+include::{includesdir}/languages/languages.adoc[]
+</div>
+++++
+endif::[]
+ifeval::["{backend}" != "html5"]
 [cols="2,1", role="compact" frame=none, grid=none]
 |===
-
 a|
 include::{includesdir}/contact/contact.adoc[]
-
 a|
 include::{includesdir}/languages/languages.adoc[]
-
 |===
+endif::[]
 
 [.footer]#Dieses README wurde aus den Inhalten des Repositories https://github.com/dieterbaier/profile[Dieter Baier - Profile^] generiert.#

@@ -1,0 +1,20 @@
+ifeval::["{backend}" == "html5"]
+<div class="icon gitlab">
+<a href="https://gitlab.com/brdietdidi" target="_blank">
+<img src="{iconsdir}/gitlab.png" alt="GitLab">
+</a>
+</div>
+endif::[]
+ifeval::["{backend}" != "html5"]
+ifeval::["{type}" == "readme"]
+* https://gitlab.com/brdietdidi[GitLab^]
+endif::[]
+ifeval::["{type}" != "readme"]
+ifeval::["{cvcontact}" == "true"]
+icon:gitlab[link=https://gitlab.com/brdietdidi, window=_blank,role='gitlab',title=gitlab]
+endif::[]
+ifeval::["{cvcontact}" != "true"]
+* icon:gitlab[link=https://gitlab.com/brdietdidi, window=_blank,role='gitlab',title=gitlab]
+endif::[]
+endif::[]
+endif::[]

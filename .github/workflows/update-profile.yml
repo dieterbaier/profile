@@ -2,7 +2,7 @@ name: Build Docs
 
 on:
   push:
-    branches: [ main, uploadToPrivateSpace]
+    branches: [ main ]
   workflow_dispatch:
 
 concurrency:

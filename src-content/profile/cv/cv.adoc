@@ -1,16 +1,24 @@
 include::{includesdir}/cvheader.adoc[]
 
 include::{includesdir}/contact/setContactAttributes.adoc[]
+ifeval::["{backend}" == "html5"]
+[subs="attributes"]
+++++
+<div class="cvcontactlanguage">
+include::{includesdir}/contact/contact.adoc[]
+include::{includesdir}/languages/languages.adoc[]
+</div>
+++++
+endif::[]
+ifeval::["{backend}" != "html5"]
 [cols="2,1", role="compact" frame=none, grid=none]
 |===
-
 a|
 include::{includesdir}/contact/contact.adoc[]
-
 a|
 include::{includesdir}/languages/languages.adoc[]
-
 |===
+endif::[]
 
 [.new-section]
 == Berufserfahrung

@@ -391,27 +391,6 @@ footer p {
     margin: 0;
 }
 
-/* Mobile: Mitte nach oben, dann links, dann rechts */
-@media (max-width: 700px) {
-    footer .footer-box {
-        grid-template-columns: 1fr;
-        grid-template-areas:
-            "center"
-            "left"
-            "right";
-        gap: 0.75rem;
-        padding: 1rem;
-    }
-
-
-    footer .column1,
-    footer .column2,
-    footer .column3 {
-        justify-self: center;
-        text-align: center;
-    }
-}
-
 /* =========================================================
    Utilities
    ========================================================= */
@@ -491,4 +470,67 @@ footer p {
 .mainnav[data-active="toolkit"] a[data-nav="toolkit"] {
     transform: translateY(1px);
     border-bottom: 2px solid #000;
+}
+
+.cvcontactlanguage {
+    margin-top: 1rem;
+    display: flex;
+    gap: 2rem;
+}
+
+.cvcontactlanguage > *:last-child {
+    margin-left: auto;
+}
+
+.contact {
+    display: flex;
+    flex-flow: column;
+}
+
+.contactrow {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.contactrow > *:last-child {
+    margin-left: auto;
+}
+
+.contactcolumn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.languages ul {
+    margin-bottom: unset;
+}
+
+@media (max-width: 700px) {
+    footer .footer-box {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+            "center"
+            "left"
+            "right";
+        gap: 0.75rem;
+        padding: 1rem;
+    }
+
+
+    footer .column1,
+    footer .column2,
+    footer .column3 {
+        justify-self: center;
+        text-align: center;
+    }
+
+    .cvcontactlanguage {
+        flex-flow: column;
+    }
+
+    .cvcontactlanguage > *:last-child {
+        margin-left: unset;
+    }
 }

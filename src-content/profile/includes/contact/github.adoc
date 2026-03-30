@@ -1,3 +1,11 @@
+ifeval::["{backend}" == "html5"]
+<div class="icon">
+<a href="https://github.com/dieterbaier" target="_blank">
+<img src="{iconsdir}/github.png" alt="GitHub">
+</a>
+</div>
+endif::[]
+ifeval::["{backend}" != "html5"]
 ifeval::["{type}" == "readme"]
 * https://github.com/dieterbaier[GitHub^]
 endif::[]
@@ -7,5 +15,6 @@ icon:github[link=https://github.com/dieterbaier, window=_blank,role='github',tit
 endif::[]
 ifeval::["{cvcontact}" != "true"]
 * icon:github[link=https://github.com/dieterbaier, window=_blank,role='github',title=github]
+endif::[]
 endif::[]
 endif::[]

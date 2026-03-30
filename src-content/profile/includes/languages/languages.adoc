@@ -1,9 +1,27 @@
+ifeval::["{backend}" == "html5"]
+<div class="languages">
+    <div class="bold large">Sprachen</div>
+ifeval::[“{type}" == "cv"]
+    <div class="compact">
+endif::[]
+ifeval::[“{type}" != "cv"]
+    <div>
+endif::[]
+        <ul>
+            <li>Deutsch (Muttersprache)</li>
+            <li>English (fluent)</li>
+        </ul>
+    </div>
+</div>
+endif::[]
+
+
+ifeval::["{backend}" != "html5"]
 === Sprachen
 
 ifeval::[“{type}" == "cv"]
 [.compact]
 endif::[]
---
 * Deutsch (Muttersprache)
 * English (fluent)
---
+endif::[]

@@ -1,3 +1,11 @@
+ifeval::["{backend}" == "html5"]
+<div class="icon">
+    <a href="https://www.linkedin.com/in/brdietdidi/" target="_blank">
+        <img src="{iconsdir}/linkedin-in.png" alt="linkedIn">
+    </a>
+</div>
+endif::[]
+ifeval::["{backend}" != "html5"]
 ifeval::["{type}" == "readme"]
 * https://www.linkedin.com/in/brdietdidi/[linkedIn^]
 endif::[]
@@ -7,5 +15,6 @@ icon:linkedin-in[link=https://www.linkedin.com/in/brdietdidi/, window=_blank,rol
 endif::[]
 ifeval::["{cvcontact}" != "true"]
 * icon:linkedin-in[link=https://www.linkedin.com/in/brdietdidi/, window=_blank,role='linkedIn',title=linkedIn]
+endif::[]
 endif::[]
 endif::[]

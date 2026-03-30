@@ -1,0 +1,66 @@
+ifeval::["{backend}" == "html5"]
+<div class="contact">
+ifeval::["{type}" != "readme"]
+    <div class="contactrow">
+        <div class="bold contactcolumn icon">
+            <img src="{iconsdir}/calendar.png" alt="calendar">
+            <div>Geburtsdatum</div>
+        </div>
+        <div class="contactcolumn">
+            16.12.1971
+        </div>
+    </div>
+endif::[]
+
+ifndef::cvprint[]
+    <div class="contactrow">
+ifeval::["{type}" != "readme"]
+        <div class="bold contactcolumn icon">
+            <img src="{iconsdir}/home.png" alt="home">
+            <div>Adresse</div>
+        </div>
+endif::[]
+ifeval::["{type}" == "readme"]
+        <div class="bold">Adresse</div>
+endif::[]
+        <div class="contactcolumn">
+            Deutschland
+        </div>
+    </div>
+
+ifeval::["{addwebsite}" == "true"]
+    <div class="contactrow">
+ifeval::["{type}" != "readme"]
+        <div class="bold contactcolumn icon">
+            <img src="{iconsdir}/globe.png" alt="globe">
+            <div>Website</div>
+        </div>
+endif::[]
+ifeval::["{type}" == "readme"]
+        <div class="bold">Website</div>
+endif::[]
+        <div class="contactcolumn">
+            <a href="dieterbaier.eu" target="_blank">dieterbaier.eu</a>
+        </div>
+    </div>
+endif::[]
+
+    <div class="contactrow">
+ifeval::["{type}" != "readme"]
+        <div class="bold contactcolumn icon">
+            <img src="{iconsdir}/network-wired.png" alt="network">
+            <div>Netzwerk</div>
+        </div>
+endif::[]
+ifeval::["{type}" == "readme"]
+         <div class="bold">Netzwerk</div>
+endif::[]
+        <div class="contactcolumn">
+include::./linkedin.adoc[]
+include::./github.adoc[]
+include::./gitlab.adoc[]
+        </div>
+    </div>
+endif::[]
+</div>
+endif::[]
