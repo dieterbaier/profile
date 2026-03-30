@@ -140,17 +140,17 @@ def asciidoctorBase = { taskName, taskDependsOnTask, sourceDir, outputDir, List<
 
         into(taskProvider.map { it.outputDir })
 
-        from("src-content/profile/theme") {
+        from("src-content/theme") {
             include "*.css"
             into "stylesheet"
         }
 
-        from("src-content/profile/theme/fonts") {
+        from("src-content/theme/fonts") {
             include "*.woff2"
             into "stylesheet/fonts"
         }
 
-        from("src-content/profile/theme/icons") {
+        from("src-content/theme/icons") {
             into "assets/icons"
         }
 

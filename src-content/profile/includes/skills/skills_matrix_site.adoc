@@ -1,6 +1,6 @@
 ifndef::stylesheet[]
 :stylesheet: style.css
-:stylesdir: ../../theme
+:stylesdir: ../../../theme
 endif::[]
 
 :compact-class: compact

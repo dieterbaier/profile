@@ -15,7 +15,7 @@ endif::[]
 :active: cv
 include::./docheader.adoc[]
 :pdf-theme: cv-theme.yml
-:pdf-themesdir: {basedir}/src-content/profile/theme
+:pdf-themesdir: {basedir}/src-content/theme
 :pdf-fontsdir: {pdf-themesdir}/fonts
 ifndef::cvprint[]
 :title-logo-image: image::dieterbaier_image_cv_rounded.png[Dieter Baier,pdfwidth=5cm,align=top]

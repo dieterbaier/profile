@@ -21,7 +21,7 @@ ifeval::["{backend}" != "pdf"]
 :imagesdir: {basedir}/assets/images/
 endif::[]
 endif::[]
-:copycss: {basedir}/src-content/profile/theme/style.css
+:copycss: {basedir}/src-content/theme/style.css
 :icons: image
 :toc-title: Inhalt
 ifndef::toc[]
