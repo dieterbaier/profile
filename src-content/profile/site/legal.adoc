@@ -1,4 +1,4 @@
-= dieterbaier.eu
+= dieterbaier.eu, *.dieterbaier.eu
 include::{includesdir}/../../revinfo.adoc[]
 :revdate!:
 :revnumber!:
