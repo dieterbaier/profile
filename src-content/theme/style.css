@@ -445,6 +445,7 @@ footer p {
 
     display: flex;
     gap: 2rem;
+    row-gap: 0.5rem;
     flex-wrap: wrap;
 }
 
