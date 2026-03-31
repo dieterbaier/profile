@@ -58,6 +58,9 @@ Available tasks:
 - buildCVPersonal
 - buildArchitecture
 
+
+- buildAll (uses the above tasks to build everything at once)
+
 ### Local (with container)
 
 ```bash
@@ -73,15 +76,17 @@ Available tasks:
 
 ## 📦 Outputs
 
-| Target                     | Output                     |
-|----------------------------|----------------------------|
-| README                     | `build/readme/README.md`   |
-| README                     | `build/readme/README.html` |
-| Website                    | `build/site/index.html`    |
-| CV (HTML)                  | `build/site/cv.html`       |
-| CV (PDF)                   | `build/site/cv/cv.pdf`     |
-| Personal PDF               | `build/cv/`                |
-| Architecture documentation | `build/architecture/`      |
+| Target                     | Output                          |
+|----------------------------|---------------------------------|
+| README                     | `build/readme/README.md`        |
+| README                     | `build/readme/README.html`      |
+| Website                    | `build/site/index.html`         |
+| CV (on the website, HTML)  | `build/site/cv.html`            |
+| CV (on the website, PDF)   | `build/site/cv.pdf`             |
+| Personalized CV (PDF)      | `build/cv/cv.pdf`               |
+| Architecture documentation | `build/architecture/index.html` |
+
+Additional needed artifacts are copied during the build process to the according directories.
 
 ---
 
@@ -108,21 +113,57 @@ The build is implemented using Gradle:
 * Cleanup (Delete tasks)
 * Environment checks
 
+### 🏗️ CI/CD Pipeline
+
+The CI/CD Pipeline is implemented as GitHub Actions. It uses the same docker image and gradle tasks as you would use locally.
+
+For deploying the site, it is using SFTP.
+
+To enable the pipeline to use personal information (which is included in the documentation or required during deployment), the following secrets and variables must be defined:
+
+    secrets.SITE_EMAIL                # for personal information injected to the content
+    secrets.SITE_ADDRESS_NAME
+    secrets.SITE_STREET
+    secrets.SITE_PLZ
+    secrets.SITE_CITY
+    secrets.SITE_TEL
+
+    secrets.GITLAB_TOKEN              # To be able to deploy the README.md files
+    secrets.PROFILE_REPO_TOKEN
+
+    secrets.SFTP_PASSWORD             # To deploy the website and architcture documentation to the personal webspace
+    vars.SFTP_REMOTE_BASE
+    vars.SFTP_HOST
+    vars.SFTP_PORT
+    vars.SFTP_USER
+
+The pipeline builds and deployes
+
+- README.md to https://github.com/dieterbaier (has to be improved so it is not fixed)
+- README.md to https://gitlab.com/brdietdidi (has to be improved so it is not fixed)
+- The profile website (including the cv.pdf, which can be downloaded from the website) to `<vars.SFTP_REMOTE_BASE>/site`
+- The architecture documentation to `<vars.SFTP_REMOTE_BASE>/architecture`
+
 ---
 
 ## 📐 Project Structure
 
 ```
+.github/
+  workflows/
+    update-profile.yml  # The CI/CD github action description
 src-content/
-  docs/                 # Architecture documentation
+  docs/ 
+    arc42/              # Architecture documentation
   profile/              # Personal profile sources
     cv/
     readme/
     site/
-    theme/
     includes/
+  theme/                # The theme for the docs and the profile
 
 build/                  # Destination for the generated target artifacts
+.env-example            # A file that defines the environment variables needed to populate personal information in the documentation. If this file exists as a .env file containing custom values, those values will be used during the build (locally). Of course, the .env file must not be checked in.
 ```
 
 ---
@@ -184,7 +225,6 @@ This project is both:
 
 * [ ] Link validation
 * [ ] Build verification tests
-* [ ] Improved theming
 * [ ] Multi-tenant site generation
 
 ---
@@ -192,7 +232,7 @@ This project is both:
 ## 🌐 Live
 
 - Website: https://dieterbaier.eu
-- Architecture: https://dieterbaier.github.io/profile
+- Architecture: https://architecture.dieterbaier.eu
 
 ---
 
