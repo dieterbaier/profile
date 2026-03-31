@@ -38,4 +38,7 @@ ____
 
 |Flexibility
 |Different outputs from same source
+
+|Sustainability
+|The site has as less as possible of bad impact to the environment (see <<ADR005, ADR-005 Nothing is used on the site that isn't absolutely necessary>>)
 |===

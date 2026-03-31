@@ -25,3 +25,6 @@ include::22_entsendeverfahren_verwaltung/master.adoc[]
 
 include::clear_attributes.adoc[]
 include::14_sepa_plattform_migration/master.adoc[]
+
+include::clear_attributes.adoc[]
+include::28_this_website/master.adoc[]

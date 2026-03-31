@@ -18,12 +18,19 @@ ifeval::["{type}" == "cv"]
 endif::[]
 --
 ifdef::project-title[]
+ifdef::project-role[]
 [.subtle.larger]#{project-timeframe}# [.larger]#*{project-title}*# +
 *{project-role}*
 endif::[]
+ifndef::project-role[]
+[.subtle.larger]#{project-timeframe}# [.larger]#*{project-title}*#
+endif::[]
+endif::[]
 
 ifndef::project-title[]
+ifdef::project-role[]
 [.subtle.larger]#{project-timeframe}# [.larger]#*{project-role}*#
+endif::[]
 endif::[]
 
 ifdef::project-context[]

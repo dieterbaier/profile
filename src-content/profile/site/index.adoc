@@ -2,7 +2,7 @@
 include::{includesdir}/../../revinfo.adoc[]
 :revdate!:
 :revnumber!:
-:revremark: Software Architekt | Integration, Architektur & Dokumentation
+:revremark: {home_revremark}
 ifdef::buildsite[]
 :basedir: .
 endif::[]

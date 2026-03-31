@@ -45,3 +45,10 @@ Architecture must support change.
 == Explicit Decisions
 [.highlight.info]
 Important architectural decisions should be documented.
+
+== Static where possible
+[.smaller.italic]
+Primarily (but not exclusively) with a focus on web design - for the *environmental impact*
+
+[.highlight.info]
+Dynamic only where necessary.

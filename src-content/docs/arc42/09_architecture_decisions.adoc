@@ -29,3 +29,12 @@ Pandoc provides:
 
 - reliable format transformation
 - high-quality Markdown output
+
+[#ADR005]
+== ADR-005: Nothing is used on the site that isn't absolutely necessary
+
+- keine Tracker
+- keine Third-Party-Scripte
+- keine nachgelagerten Frameworks
+
+👉 https://dieterbaier.eu/articles/architecture/sustainability.html[see implemented example]

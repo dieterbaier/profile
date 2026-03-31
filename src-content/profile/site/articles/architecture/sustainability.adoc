@@ -1,4 +1,4 @@
-= Sustainable Website
+= Why this website is intentionally simple
 ifdef::buildsite[]
 :basedir: ../..
 endif::[]
@@ -7,15 +7,118 @@ include::{includesdir}/../../revinfo.adoc[]
 :author_page: {basedir}/index.html
 :author_page: index.html
 :revremark: Because greenIT matters
-:revnumber: WiP
+:revnumber: 1.0
 :revdate!: 03/2026
 :active: articles
 include::{includesdir}/docheader.adoc[]
 
-This website follows low-energy web principles.
+[.highlight.info]
+--
+Diese Website wird das Klima nicht retten.
 
-* static pages
-* no JavaScript
-* minimal CSS
-* small page sizes
-* fast loading times
+Und trotzdem ist sie nicht zufällig so gebaut, wie sie ist.
+
+In der Softwareentwicklung sprechen wir oft über große Hebel: effizientere Algorithmen, bessere Infrastruktur, skalierbare Systeme.
+Aber Nachhaltigkeit entsteht selten durch eine einzelne große Entscheidung. Meist sind es viele kleine.
+
+Diese Seite ist mein Versuch, genau das sichtbar zu machen.
+--
+
+toc::[]
+
+== Weniger ist eine Architekturentscheidung
+
+Diese Website hat kein Backend.
+Keine Datenbank.
+Keine Laufzeitlogik.
+
+Was sie stattdessen hat, ist eine bewusste Entscheidung:
+*so wenig wie möglich zur Laufzeit passieren zu lassen.* (siehe dazu den https://architecture.dieterbaier.eu#ADR005[ADR-005 Nothing is used on the site that isn't absolutely necessary] in der Architekturdokumentation dieser Seite)
+
+Die Inhalte werden statisch generiert und als einfache HTML-Seiten ausgeliefert.
+Keine Serverlogik, die bei jedem Request ausgeführt werden muss.
+Keine unnötigen Abhängigkeiten.
+Keine versteckten Kosten.
+
+Das reduziert nicht nur den Ressourcenverbrauch.
+Es reduziert vor allem die Komplexität.
+
+== Effizienz entsteht nicht durch nachträgliche Optimierung
+
+Die Seite ist klein.
+Die Assets sind komprimiert.
+Caching ist aktiviert.
+Es gibt keine externen Tracker, keine Third-Party-Skripte, keine nachgeladenen Frameworks.
+
+Nicht, weil ich jedes Byte gezählt habe.
+Sondern weil ich von Anfang an entschieden habe, nichts einzubauen, was ich nicht wirklich brauche.
+
+Das ist ein Unterschied.
+
+== Doc-as-Code: Nachhaltigkeit beginnt vor dem Deployment
+
+Die Inhalte dieser Seite entstehen nicht im Browser und auch nicht in einem CMS.
+Sie werden als Text gepflegt – in AsciiDoc.
+
+Aus dieser einen Quelle entstehen:
+
+- die Website
+- mein CV als PDF
+- Inhalte für andere Plattformen
+
+Einmal schreiben. Mehrfach nutzen.
+
+Das reduziert Redundanz.
+Und Redundanz ist nicht nur ein Wartungsproblem – sie ist auch Verschwendung.
+
+Was ich im Detail unter 'Doc-as-Code' verstehe, versuche ich in meinem Artikel xref:{basedir}/articles/documentation/doc-as-code.adoc[Dokumentation als Code] zu erklären.
+
+== Reproduzierbare Builds statt "works on my machine"
+
+Der Build-Prozess ist containerisiert und reproduzierbar.
+
+Das bedeutet:
+
+- gleiche Umgebung lokal und in der CI
+- keine versteckten Abhängigkeiten
+- keine Überraschungen beim Generieren der Artefakte
+
+Das spart keine Millisekunden in der Auslieferung.
+Aber es spart Zeit, Fehler und unnötige Iterationen im Entwicklungsprozess.
+
+Und auch das ist eine Form von Nachhaltigkeit.
+
+Lesen Sie, wie die Pipeline dieser Seite aufgebaut ist und auf welchen Prinzipien sie beruht auf der Seite xref:{basedir}/articles/architecture/smarte-cicd-pipeline.adoc[Smarter CI/CD - Build only what changed].
+
+== Was diese Seite bewusst nicht hat
+
+Es gibt kein Tracking.
+Keine Analytics.
+Keine externen Skripte, die mehr Daten laden als die Seite selbst.
+
+Nicht, weil das grundsätzlich "schlecht" ist.
+Sondern weil es für diese Seite keinen Mehrwert bringt.
+
+Und alles, was keinen Mehrwert bringt, hat hier keinen Platz.
+
+== Viele kleine Entscheidungen
+
+[quote]
+____
+Ein einzelner Tropfen füllt keinen Eimer.
+
+Aber ohne Tropfen bleibt er leer.
+____
+
+Diese Website ist nur ein kleiner Baustein.
+Ein Beispiel dafür, wie sich Architekturentscheidungen auf Einfachheit, Effizienz und Nachhaltigkeit auswirken können.
+
+Nicht als Dogma.
+Sondern als bewusste Wahl.
+
+[.callout]
+--
+Nachhaltigkeit bei Software ist selten eine einzige große Entscheidung.
+
+Sie ist das Ergebnis vieler kleiner Entscheidungen.
+--

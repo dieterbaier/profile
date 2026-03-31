@@ -534,3 +534,20 @@ footer p {
         margin-left: unset;
     }
 }
+
+.sustainability-note {
+    color: var(--text-color-subtle);
+}
+
+.sustainability-note strong {
+    color: var(--text-color);
+}
+
+.sustainability-note a {
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.sustainability-note a:hover {
+    text-decoration: underline;
+}
