@@ -1,0 +1,13 @@
+= Shorts
+include::{includesdir}/../../revinfo.adoc[]
+:revdate!:
+:revnumber!:
+:revremark: Einfache, kurze Gedanken - zu unterschiedlichen Themen
+ifdef::buildsite[]
+:basedir: ..
+endif::[]
+:active: shorts
+include::{includesdir}/docheader.adoc[]
+
+* xref:./architecture-thinking.adoc[Architekturgedanken]
+* xref:./principles.adoc[Pragmatische Architekturprinzipien]

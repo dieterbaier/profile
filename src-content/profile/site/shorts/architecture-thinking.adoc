@@ -1,6 +1,6 @@
 = Architecture Thinking
 ifdef::buildsite[]
-:basedir: ../..
+:basedir: ..
 endif::[]
 include::{includesdir}/../../revinfo.adoc[]
 :author!: Dieter Baier
@@ -8,11 +8,11 @@ include::{includesdir}/../../revinfo.adoc[]
 :revremark: Some thoughts about arichitectural topics
 :revdate!: 03/2023
 :revnumber!: 1.0
-:active: articles
+:active: shorts
 include::{includesdir}/docheader.adoc[]
 
 
-siehe auch: xref:{basedir}/articles/architecture/principles.adoc[Pragmatische Architekturprinzipien]
+siehe auch: xref:{basedir}/shorts/principles.adoc[Pragmatische Architekturprinzipien]
 
 toc::[]
 

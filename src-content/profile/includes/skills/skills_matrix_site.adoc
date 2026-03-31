@@ -12,13 +12,7 @@ endif::[]
 ++++
 <div class="skillrow {compact-class}">
     <div class="skillbox">
-ifdef::nolinks[]
-<strong>{skill_documentation_title}</strong>
-endif::[]
-ifndef::nolinks[]
-        <a href="{basedir}/articles/documentation/doc-as-code.html"><strong>{skill_documentation_title}</strong></a>
-endif::[]
-<br>
+        <strong>{skill_documentation_title}</strong><br>
          {skill_documentation_1}<br>
     </div>
 </div>
@@ -26,7 +20,6 @@ endif::[]
 <div class="skillrow {compact-class}">
     <div class="skillbox">
         <strong>{skill_integration_title}</strong><br>
-        {skill_integration_1}<br>
         {skill_integration_1}<br>
         {skill_integration_3}<br>
         {skill_integration_4}<br>
@@ -45,7 +38,7 @@ ifdef::nolinks[]
 <strong>{skill_architecture_title}</strong>
 endif::[]
 ifndef::nolinks[]
-        <a href="{basedir}/articles/architecture/architecture-thinking.html"><strong>{skill_architecture_title}</strong></a>
+        <a href="{basedir}/articles/architecture/sustainability.html"><strong>{skill_architecture_title}</strong></a>
 endif::[]
 <br>
         {skill_architecture_1}<br>
@@ -72,7 +65,12 @@ endif::[]
         <strong>{skill_platform_title}</strong><br>
         {skill_platform_1}<br>
         {skill_platform_2}<br>
-        {skill_platform_3}<br>
+ifdef::nolinks[]
+{skill_platform_cicd}
+endif::[]
+ifndef::nolinks[]
+        <a href="{basedir}/articles/architecture/smarte-cicd-pipeline.html">{skill_platform_cicd}</a>
+endif::[]
         {skill_platform_4}<br>
     </div>
 </div>

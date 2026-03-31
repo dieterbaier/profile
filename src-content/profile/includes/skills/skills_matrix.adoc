@@ -27,7 +27,7 @@
 :skill_platform_title: Plattform & Auslieferung
 :skill_platform_1: Docker / Kubernetes
 :skill_platform_2: Helm
-:skill_platform_3: CI/CD Pipelines (Jenkins / GitLab / GitHub)
+:skill_platform_cicd: CI/CD Pipelines (Jenkins / GitLab / GitHub)
 :skill_platform_4: AWS / Azure
 
 :skill_branches_title: Branchen

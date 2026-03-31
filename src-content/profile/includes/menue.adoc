@@ -21,6 +21,9 @@ endif::[]
         <li>
             <a data-nav="articles" href="{basedir}/articles/articles.html">Artikel</a>
         </li>
+        <li>
+            <a data-nav="shorts" href="{basedir}/shorts/shorts.html">Shorts</a>
+        </li>
     </ul>
 </nav>
 ++++

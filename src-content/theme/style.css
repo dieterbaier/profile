@@ -235,14 +235,17 @@ code,
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 2rem;
 
     border-radius: var(--border-radius);
     box-shadow: var(--box-shadow);
     border: 1px solid var(--box-border-color);
 
-    margin: 2rem 0;
+    margin: 0.5rem 0;
     padding: 1rem 1.25rem;
+}
+
+.skillbox > *:first-child {
+    margin-bottom: 1rem;
 }
 
 /* --- Intro and Callout with the same background --- */
@@ -467,6 +470,7 @@ footer p {
 .mainnav[data-active="home"] a[data-nav="home"],
 .mainnav[data-active="cv"] a[data-nav="cv"],
 .mainnav[data-active="articles"] a[data-nav="articles"],
+.mainnav[data-active="shorts"] a[data-nav="shorts"],
 .mainnav[data-active="toolkit"] a[data-nav="toolkit"] {
     transform: translateY(1px);
     border-bottom: 2px solid #000;

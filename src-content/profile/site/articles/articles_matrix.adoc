@@ -7,7 +7,7 @@ endif::[]
 ++++
 <div class="skillrow">
     <div class="skillbox">
-        <strong><a href="{basedir}/articles/documentation/doc-as-code.html">Dokumentation</a></strong>
+        <strong>Dokumentation</strong>
     </div>
 </div>
 
@@ -22,16 +22,18 @@ endif::[]
 
 <div class="skillrow">
     <div class="skillbox">
-        <strong><a href="{basedir}/articles/architecture/architecture-thinking.html">Software Architektur</a></strong>
+        <strong><a href="{basedir}/articles/architecture/sustainability.html">Software Architektur</a></strong>
     </div>
     <div class="skillbox">
         <strong>Methoden</strong>
+        <a href="{basedir}/articles/documentation/doc-as-code.html">Doc as Code</a>
     </div>
 </div>
 
 <div class="skillrow">
     <div class="skillbox">
-        <strong><a href="{basedir}/articles/architecture/smarte-cicd-pipeline.html">Plattform & Auslieferung</a></strong>
+        <strong>Plattform & Auslieferung</strong>
+<a href="{basedir}/articles/architecture/smarte-cicd-pipeline.html">CI/CD Pipelines (Jenkins / GitLab / GitHub)</a>
     </div>
 </div>
 
