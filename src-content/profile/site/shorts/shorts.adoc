@@ -1,4 +1,4 @@
-= Shorts
+= Dieter Baier
 include::{includesdir}/../../revinfo.adoc[]
 :revdate!:
 :revnumber!:

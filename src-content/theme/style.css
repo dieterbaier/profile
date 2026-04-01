@@ -253,6 +253,12 @@ code,
     background: linear-gradient(180deg, #f6f1e4 0%, #efe7cf 100%);
 }
 
+.introtext {
+    max-width: 60%;
+    margin-left: 2rem;
+    text-align: center;
+}
+
 /* --- Callout (zentral, emotional) --- */
 
 .callout {
@@ -420,11 +426,55 @@ footer p {
     Navigation
  ============================================================= */
 
+/* ===========================================================
+   Mobile Navigation (Toaster)
+ ============================================================= */
+.nav-toggle,
+.nav-close {
+    background: none;
+    border: 1px solid transparent;
+    color: var(--text-color);
+    cursor: pointer;
+    line-height: 1;
+}
+
+.nav-toggle {
+    display: none;
+    font-size: 1.8rem;
+    padding: 0.25rem 0.5rem;
+}
+
+.nav-close {
+    display: none;
+    font-size: 1.6rem;
+    padding: 0.25rem;
+    margin-left: auto;
+    margin-bottom: 1.5rem;
+}
+
+.nav-drawer {
+    position: static;
+    width: auto;
+    max-width: none;
+    height: auto;
+    background: transparent;
+    box-shadow: none;
+    padding: 0;
+    transition: none;
+}
+
+.nav-overlay {
+    display: none;
+}
+/* ********************
+ Ende des Toasters
+ */
 .mainnav, .subnav {
     border-bottom: 1px solid #e5e5e5;
 }
 
 .mainnav {
+    position: relative;
     margin: 2rem 0;
     padding-bottom: 1rem;
 }
@@ -513,6 +563,92 @@ footer p {
 }
 
 @media (max-width: 700px) {
+    .intro {
+        justify-content: center;
+    }
+    .introtext {
+        max-width: unset;
+        margin-left: unset;
+    }
+
+    .mainnav ul {
+        flex-direction: column;
+        position: relative;
+    }
+
+    .mainnav {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        margin: unset;
+        padding-bottom: 0;
+        border-bottom: none;
+    }
+
+    .nav-toggle {
+        display: block;
+        margin-left: auto;
+    }
+
+    .nav-close {
+        display: block;
+    }
+
+    .nav-drawer {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: min(75%, 320px);
+        height: 100vh;
+        overflow-y: auto;
+
+        background: var(--bg-color);
+        box-shadow: -8px 0 24px rgba(0, 0, 0, 0.15);
+
+        padding: 1.25rem 1.25rem 2rem;
+        z-index: 1000;
+
+        transition: right 0.3s ease;
+    }
+
+    .nav-overlay {
+        display: block;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.3);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+        z-index: 999;
+    }
+
+    .mainnav.open .nav-drawer {
+        right: 0;
+    }
+
+    .mainnav.open .nav-overlay {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    .mainnav .nav-drawer ul {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+        flex-wrap: nowrap;
+    }
+
+    .mainnav .nav-drawer a {
+        display: inline-block;
+        padding: 0.25rem 0;
+    }
+
+    /* Desktop Nav ausblenden */
+    .mainnav > ul {
+        display: none;
+    }
+
     footer .footer-box {
         grid-template-columns: 1fr;
         grid-template-areas:

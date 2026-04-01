@@ -1,6 +1,6 @@
 [subs=attributes,macros]
 ++++
-<nav id="appendixnav" class="mainnav noborder" data-active="{active}">
+<nav id="appendixnav" class="subnav noborder" data-active="{active}">
     <ul>
         <li>
             <a data-nav="projects" href="{basedir}/projects.html">Projekte</a>

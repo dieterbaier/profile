@@ -1,8 +1,8 @@
-= Werkzeuge and Kenntnisse
+= Dieter Baier
 include::{includesdir}/../../revinfo.adoc[]
 :revdate!:
 :revnumber!:
-:revremark: Mein Werkzeugkasten und meine Kenntnisse (u.A.)
+:revremark: Werkzeuge and Kenntnisse
 ifdef::buildsite[]
 :basedir: .
 endif::[]

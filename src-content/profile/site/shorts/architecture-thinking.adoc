@@ -1,11 +1,11 @@
-= Architecture Thinking
+= Dieter Baier
 ifdef::buildsite[]
 :basedir: ..
 endif::[]
 include::{includesdir}/../../revinfo.adoc[]
 :author!: Dieter Baier
 :author_page: index.html
-:revremark: Some thoughts about arichitectural topics
+:revremark: Architecture Thinking
 :revdate!: 03/2023
 :revnumber!: 1.0
 :active: shorts

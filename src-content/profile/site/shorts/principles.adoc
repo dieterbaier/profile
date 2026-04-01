@@ -1,4 +1,4 @@
-= Pragmatic Architecture Principles
+= Dieter Baier
 ifdef::buildsite[]
 :basedir: ..
 endif::[]
@@ -6,7 +6,7 @@ include::{includesdir}/../../revinfo.adoc[]
 :author!: Dieter Baier
 :author_page: {basedir}/index.html
 :author_page: index.html
-:revremark: Principcles in a nutshell
+:revremark: Pragmatic Architecture Principles
 :revdate!: 03/2023
 :revnumber!: 1.0
 :active: shorts

@@ -11,15 +11,18 @@ include::{includesdir}/docheader.adoc[]
 
 [subs=attributes,macros]
 ++++
-<div class="callout">
+<div class="intro">
     <img src="{imagesdir}/dieterbaier_image_site_rounded_200.png" alt="Dieter Baier">
-    <p>Ich unterstütze Teams dabei, komplexe Softwaresysteme zu strukturieren, Integrationen beherrschbar zu machen und Architekturentscheidungen nachvollziehbar zu dokumentieren und zu kommunizieren.</p>
+    <p class="introtext">Ich unterstütze Teams dabei, komplexe Softwaresysteme zu strukturieren, Integrationen beherrschbar zu machen und Architekturentscheidungen nachvollziehbar zu dokumentieren und zu kommunizieren.</p>
 </div>
 ++++
 
 [.highlight]
 --
 include::{includesdir}/profile/profile.adoc[]
+include::{includesdir}/profile/profile_personal.adoc[]
 --
 
 include::{includesdir}/profile/about_me_citations.adoc[]
+
+xref:{basedir}/cv.adoc[Curriculum Vitae →]
