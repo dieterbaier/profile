@@ -92,7 +92,7 @@ Additional needed artifacts are copied during the build process to the according
 
 ## 🐳 Docker
 
-This project uses the docker image [ghcr.io/dieterbaier/docs-toolbox](https://github.com/dieterbaier/docs-toolbox/pkgs/container/docs-toolbox) to have all necessary tools available.
+This project uses the docker image [ghcr.io/docs-as-code-toolkit/docs-toolbox](https://github.com/docs-as-code-toolkit/docs-toolbox/pkgs/container/docs-toolbox) to have all necessary tools available.
 
 ---
 

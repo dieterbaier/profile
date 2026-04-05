@@ -52,7 +52,7 @@ jobs:
 
       - name: Set image
         id: set_image
-        run: echo "IMAGE_NAME=ghcr.io/dieterbaier/docs-toolbox:latest" >> $GITHUB_OUTPUT
+        run: echo "IMAGE_NAME=ghcr.io/docs-as-code-toolkit/docs-toolbox:v1.0.2" >> $GITHUB_OUTPUT
 
       - name: Pull runtime image
         run: docker pull ${{ steps.set_image.outputs.IMAGE_NAME }}
