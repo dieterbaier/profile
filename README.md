@@ -2,6 +2,10 @@
 
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 ![Content: Proprietary](https://img.shields.io/badge/Content-Proprietary-red.svg)
+![Docs-as-Code](https://img.shields.io/badge/Docs--as--Code-Toolkit-blue)
+
+> Part of the **Docs-as-Code Toolkit**  
+> → https://github.com/docs-as-code-toolkit
 
 A **single-source documentation pipeline** for generating
 **CVs, websites, and architecture documentation** — fully reproducible and CI-ready.
