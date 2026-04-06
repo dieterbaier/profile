@@ -1,0 +1,14 @@
+:project-timeframe: laufend
+:project-title: https://github.com/docs-as-code-toolkit[^]
+:project-context: Aufbau und Pflege eines Open-Source-Projektes
+:cv_technologies: asciidoctor, github Actions, docker, asciidoc custom style
+:project-technologies: {cv_technologies}
+:contribution_1: Bereitstellen eines docs-as-code Werkzeugkasten als Open-Source-Projekt
+:result_1: docs-as-code-toolbox - ein Docker-Image mit den notwendigen Tools
+:result_2: Custom styles für asciidoc-Dokumentationen
+:result_3: Generatoren zum Erstellen von variablen Übersichten, um eine Art 'Living doc' mit asciidoc erstellen zu können
+:result_4: ...
+:project-contribution-file: 29_docs-as-code-toolkit/contribution.adoc
+:project-result-file: 29_docs-as-code-toolkit/result.adoc
+
+include::../project.adoc[]

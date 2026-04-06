@@ -12,6 +12,9 @@ include::listOfCvProjects.adoc[]
 *_Ab hier sind die Projekte zeitlich absteigend sortiert_*
 
 include::clear_attributes.adoc[]
+include::28_this_website/master.adoc[]
+
+include::clear_attributes.adoc[]
 include::26_green_it_beratung/master.adoc[]
 
 include::clear_attributes.adoc[]

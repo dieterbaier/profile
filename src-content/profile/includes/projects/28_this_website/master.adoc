@@ -1,7 +1,7 @@
 :project-timeframe: laufend
-:project-title: dieterbaier.eu
+:project-title: https://dieterbaier.eu[dieterbaier[.eu | .at | .com | .net | .info]]
 :project-context: Entwicklung und Umsetzung meiner persönlichen Website – einer auf Nachhaltigkeit ausgerichteten statischen Website mit einer reproduzierbaren „Docs-as-Code“-Pipeline
-:cv_technologies: asciidoctor, gradle, github Actions, asciidoctor, pandoc, plantUML, docker
+:cv_technologies: gradle, github Actions, docs-as-code-toolkit
 :project-technologies: {cv_technologies}, asciidoc
 
 include::../project.adoc[]

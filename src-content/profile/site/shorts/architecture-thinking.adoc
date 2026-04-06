@@ -31,4 +31,4 @@ developers must think about.
 Architecture documentation should support
 development, not bureaucracy.
 
-See my thoughts about how to document at xref:{basedir}/articles/documentation/doc-as-code.adoc[Doc as Code].
+See my thoughts about how to document at xref:{basedir}/articles/documentation/doc-as-code.adoc[Docs as Code].

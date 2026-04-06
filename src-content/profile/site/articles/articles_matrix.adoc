@@ -26,7 +26,7 @@ endif::[]
     </div>
     <div class="skillbox">
         <strong>Methoden</strong>
-        <a href="{basedir}/articles/documentation/doc-as-code.html">Doc as Code</a>
+        <a href="{basedir}/articles/documentation/doc-as-code.html">Docs as Code</a>
     </div>
 </div>
 

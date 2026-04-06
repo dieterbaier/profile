@@ -4,7 +4,7 @@
 :project-branche: Öffentliche Verwaltung
 :project-context: Entwicklung einer zentralen Plattform zur Verwaltung von Sozialansprüchen (>800.000 Nutzer) mit Fokus auf Prozessautomatisierung
 :cv_technologies: Java, MicroProfile, Camunda, Angular, DB2
-:project-technologies: {cv_technologies}, JBoss EAP, Liquibase, Maven, Git, Jenkins, Nexus, Confluence, Jira, Doc-as-code, Arc42
+:project-technologies: {cv_technologies}, JBoss EAP, Liquibase, Maven, Git, Jenkins, Nexus, Confluence, Jira, Docs-as-code, Arc42
 :contribution_1: Architektur und Umsetzung einer BPMN-basierten Prozesslösung mit Camunda
 :contribution_2: Entwicklung zentraler Backend-Services nach Domain-Driven Design
 :contribution_3: Coaching und fachliche Führung von Teammitgliedern

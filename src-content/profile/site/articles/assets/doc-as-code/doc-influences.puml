@@ -22,7 +22,7 @@ skinparam shadowing false
 --- Wiki
 --- Kunden-Dokumentation
 ** Prinzipien
-*** Doc-as-Code
+*** Docs-as-Code
 *** DRY
 *** YAGNI
 *** Struktur (z.B. arc42)

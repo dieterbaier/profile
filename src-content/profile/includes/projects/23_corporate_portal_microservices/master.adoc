@@ -1,7 +1,7 @@
 :project-timeframe: 01/2022 – 06/2022
 :project-role: Lead Developer & Architekt
 :project-branche: Bankwesen
-:project-technologies: Apiomat, Java, Kotlin, JUnit5, Mockito, Wiremock, Maven, Git, Jenkins, Nexus, Confluence, Jira, Doc-as-code, Arc42
+:project-technologies: Apiomat, Java, Kotlin, JUnit5, Mockito, Wiremock, Maven, Git, Jenkins, Nexus, Confluence, Jira, Docs-as-code, Arc42
 :contribution_1: Weiterentwicklung der Anwendung und Bewertung der Architektur
 :contribution_2: Lead Developer der Backend-Funktionalitäten
 :contribution_3: Führung von unerfahrenen Teammitgliedern

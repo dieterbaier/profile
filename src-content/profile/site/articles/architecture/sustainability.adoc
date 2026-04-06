@@ -55,7 +55,7 @@ Sondern weil ich von Anfang an entschieden habe, nichts einzubauen, was ich nich
 
 Das ist ein Unterschied.
 
-== Doc-as-Code: Nachhaltigkeit beginnt vor dem Deployment
+== Docs-as-Code: Nachhaltigkeit beginnt vor dem Deployment
 
 Die Inhalte dieser Seite entstehen nicht im Browser und auch nicht in einem CMS.
 Sie werden als Text gepflegt – in AsciiDoc.
@@ -71,7 +71,7 @@ Einmal schreiben. Mehrfach nutzen.
 Das reduziert Redundanz.
 Und Redundanz ist nicht nur ein Wartungsproblem – sie ist auch Verschwendung.
 
-Was ich im Detail unter 'Doc-as-Code' verstehe, versuche ich in meinem Artikel xref:{basedir}/articles/documentation/doc-as-code.adoc[Dokumentation als Code] zu erklären.
+Was ich im Detail unter 'Docs-as-Code' verstehe, versuche ich in meinem Artikel xref:{basedir}/articles/documentation/doc-as-code.adoc[Dokumentation als Code] zu erklären.
 
 == Reproduzierbare Builds statt "works on my machine"
 

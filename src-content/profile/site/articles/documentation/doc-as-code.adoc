@@ -6,8 +6,8 @@ include::{includesdir}/../../revinfo.adoc[]
 :author: Dieter Baier
 :author_page: index.html
 :revremark: So kann Dokumentation stabil bleiben UND: 'Doc as Code' ist nicht gleich 'Code as Doc'
-:revdate: 03/2023
-:revnumber: 1.0
+:revdate: 04/2026
+:revnumber: 1.1
 :active: articles
 include::{includesdir}/docheader.adoc[]
 
@@ -16,11 +16,11 @@ include::{includesdir}/docheader.adoc[]
 
 [.highlight.info]
 --
-Doc-as-Code bedeutet nicht, dass Code die Dokumentation ersetzt. Warum auch? Es müsste dann ja Code-as-Doc heißen.
+Docs-as-Code bedeutet nicht, dass Code die Dokumentation ersetzt. Warum auch? Es müsste dann ja Code-as-Doc heißen.
 
 Es bedeutet, Dokumentation mit denselben Prinzipien zu behandeln wie Software: strukturiert, versioniert, automatisiert und nahe am Code.
 
-Dieser Artikel erklärt, warum klassische Dokumentation oft scheitert und wie ein Doc-as-Code-Ansatz helfen kann, sie dauerhaft aktuell und nutzbar zu halten.
+Dieser Artikel erklärt, warum klassische Dokumentation oft scheitert und wie ein Docs-as-Code-Ansatz helfen kann, sie dauerhaft aktuell und nutzbar zu halten.
 --
 
 toc::[]
@@ -86,19 +86,19 @@ Wenn ich erst gar nicht suchen muss, wo die Dokumentation abgelegt ist, sondern 
 Außerdem ist so eher sichergestellt, dass Code und Dokumentation nicht zu sehr auseinander läuft. Der Entwicklungsprozess kann dies auch leichter sicherstellen, da er sich nur mit einem Medium beschäftigen muss.
 --
 
-*Ist das nun schon _Doc-as-Code_?*
+*Ist das nun schon _Docs-as-Code_?*
 
 *NEIN*.
 
-== Was bedeutet Doc-as-Code wirklich?
+== Was bedeutet Docs-as-Code wirklich?
 
-Ablageort der Dokumentation oder Medium ist nicht entscheidend für _Doc-as-Code_. Wenngleich es sicherlich Medien gibt, die sich besser eignen, wirklich _Doc-as-Code_ zu leben, als es andere Medien tun.
+Ablageort der Dokumentation oder Medium ist nicht entscheidend für _Docs-as-Code_. Wenngleich es sicherlich Medien gibt, die sich besser eignen, wirklich _Docs-as-Code_ zu leben, als es andere Medien tun.
 
-Aber ich kann _Doc-as-Code_ in einem Git-Repository genauso leben, wie in Confluence oder ähnliche Plattformen.
+Aber ich kann _Docs-as-Code_ in einem Git-Repository genauso leben, wie in Confluence oder ähnliche Plattformen.
 
 [.highlight.info]
 --
-*Doc-as-Code* bedeutet für mich, dass ich nicht nur Text schreibe und Bilder einfüge, sondern, dass ich die Dokumentation genauso pflege, wie ich meinen Code Pflege.
+*Docs-as-Code* bedeutet für mich, dass ich nicht nur Text schreibe und Bilder einfüge, sondern, dass ich die Dokumentation genauso pflege, wie ich meinen Code Pflege.
 --
 
 D.h., ich versuche auf eine *erkennbare Struktur* zu achten. Ich versuche auch in der Dokumentation das *Single Responsible Principle* einzuhalten. Und ich versuche *Duplizierungen zu vermeiden* und nichts zu schreiben, was nicht gebraucht wird (*YAGNI*).
@@ -117,7 +117,7 @@ plantuml::{includesdir}/../site/articles/assets/doc-as-code/doc-influences.puml[
 --
 Dokumentation entsteht nicht im luftleeren Raum. Sie wird von technischen, organisatorischen und prozessualen Faktoren beeinflusst.
 
-Doc-as-Code bedeutet daher nicht nur ein bestimmtes Tool oder Format zu wählen, sondern diese Einflüsse bewusst in eine strukturierte und wartbare Dokumentation zu übersetzen.
+Docs-as-Code bedeutet daher nicht nur ein bestimmtes Tool oder Format zu wählen, sondern diese Einflüsse bewusst in eine strukturierte und wartbare Dokumentation zu übersetzen.
 --
 
 Damit man das alles erreicht, muss auch in der Dokumentation rund um die eigentliche Dokumentation echter Code geschrieben werden. Meist sind das Makros, die während des Generierens des Ausgabeformates interpretiert werden. Es können aber auch Pre-Prozessoren vonnöten sein, die vielleicht erst mal die Dokumentation scannen muss, um vielleicht zusätzliche Artefakte zu generieren.
@@ -167,7 +167,7 @@ Und da ich die Matrix auf der Website etwas _fancier_ darstellen kann, als im PD
 
 Also: *unterschiedliche Zielgruppe, unterschiedliche Aufbereitung*.
 
-== Wie sieht eine typische Doc-as-Code Pipeline aus?
+== Wie sieht eine typische Docs-as-Code Pipeline aus?
 
 Die Pipeline für eine Dokumentation kann natürlich im Detail unterschiedlich aussehen. Das hängt stark vom Umfeld ab. Das folgende Bild zeigt als Beispiel die Pipeline für diese Website:
 
@@ -189,7 +189,7 @@ Gute Software braucht auch Kontext, Entscheidungen und Architektur.
 * **Dokumentation funktioniert nur ohne Medienbruch.**
 Je näher sie am Code und am Entwicklungsprozess liegt, desto eher bleibt sie aktuell.
 
-* **Doc-as-Code ist kein Tool – sondern eine Arbeitsweise.**
+* **Docs-as-Code ist kein Tool – sondern eine Arbeitsweise.**
 Dokumentation wird strukturiert, versioniert, automatisiert und wie Code gepflegt.
 
 * **Automatisierung macht Dokumentation nachhaltig.**
@@ -201,7 +201,7 @@ Eine Build-Pipeline ermöglicht es, aus denselben Quellen verschiedene Ausgabefo
 Dokumentation scheitert selten daran, dass Menschen nicht dokumentieren wollen.
 Sie scheitert meist daran, dass der Prozess nicht zu ihrem Arbeitsalltag passt.
 
-Der *Doc-as-Code* Ansatz versucht genau dieses Problem zu lösen:
+Der *Docs-as-Code* Ansatz versucht genau dieses Problem zu lösen:
 Dokumentation wird dort geschrieben, wo auch der Code entsteht, mit denselben Werkzeugen, denselben Prinzipien und derselben Automatisierung.
 
 So wird Dokumentation nicht zu einer lästigen Zusatzaufgabe – sondern zu einem natürlichen Teil der Softwareentwicklung.
@@ -214,23 +214,30 @@ Der *Code* zeigt *was* ein System tut.
 *Dokumentation* erklärt *warum*.
 ____
 
+[.highlight.info]
+--
+Diese Gedanken haben mich dazu gebracht, einen Werkzeugkasten zusammenzustellen, der mir beim Erstellen meiner Dokumentationen jene Werkzeuge liefert, um meine Philosophie des Dokumentierens einfach und konsistent _leben_ zu können.
+
+Zu finden ist dieser Werkzeugkasten unter https://github.com/docs-as-code-toolkit[^] als Open-Source-Projekt.
+--
+
 ifeval::["{include_next_articles_variante1}" == "true"]
 [.highlight.tip]
 --
-Dieser Artikel ist Teil einer kleinen Reihe über **Doc-as-Code**.
+Dieser Artikel ist Teil einer kleinen Reihe über **Docs-as-Code**.
 
 Weitere Artikel:
 
 * Architekturdokumentation, die Entwickler wirklich pflegen
-* Doc-as-Code mit AsciiDoc und Gradle
+* Docs-as-Code mit AsciiDoc und Gradle
 * Eine Dokumentation – mehrere Sichten
 --
 endif::[]
 
 ifeval::["{include_next_articles_variante2}" == "true"]
-Dieser Artikel hat gezeigt, warum klassische Dokumentation oft scheitert und was hinter dem Begriff *Doc-as-Code* wirklich steckt.
+Dieser Artikel hat gezeigt, warum klassische Dokumentation oft scheitert und was hinter dem Begriff *Docs-as-Code* wirklich steckt.
 
-Im nächsten Teil der Serie bauen wir Schritt für Schritt eine **Doc-as-Code Pipeline** auf:
+Im nächsten Teil der Serie bauen wir Schritt für Schritt eine **Docs-as-Code Pipeline** auf:
 
 * AsciiDoc als Dokumentationsformat
 * Diagramme mit PlantUML

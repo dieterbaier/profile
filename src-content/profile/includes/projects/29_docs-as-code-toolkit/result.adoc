@@ -1,0 +1,9 @@
+ifeval::["{compact}" == "false"]
+- {result_1}
+- {result_2}
+- {result_3}
+- {result_4}
+endif::[]
+ifeval::["{compact}" == "true"]
+{result_1}. {result_2}. {result_3}. {result_4}
+endif::[]
