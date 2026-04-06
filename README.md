@@ -102,9 +102,9 @@ This project uses the docker image [ghcr.io/docs-as-code-toolkit/docs-toolbox](h
 
 ## ⚙️ Requirements (without Docker)
 
-* Java 17+
-* Pandoc
-* Graphviz
+* Java 17+ (because the build uses gradle and the [asciidoctor gradle plugin](https://asciidoctor.org/docs/asciidoctor-gradle-plugin/))
+* Pandoc (to generate markdown from asciidoc)
+* Graphviz (for generating graphics)
 
 ---
 
