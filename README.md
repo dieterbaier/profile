@@ -1,11 +1,13 @@
-# 📄 Documentation Pipeline
+# 📄 Personal Profile of Dieter Baier as running example of a Documentation Pipeline
 
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 ![Content: Proprietary](https://img.shields.io/badge/Content-Proprietary-red.svg)
-![Docs-as-Code](https://img.shields.io/badge/Docs--as--Code-Toolkit-blue)
 
+![Docs-as-Code](https://img.shields.io/badge/Docs--as--Code-Toolkit-blue)
+> ![docs-as-code-toolkit-logo](https://docs-as-code-toolkit.github.io/docs-as-code/assets/logo/toolkit-logo_160.png)
+> 
 > Part of the **Docs-as-Code Toolkit**  
-> → https://github.com/docs-as-code-toolkit
+> → [https://github.com/docs-as-code-toolkit](https://github.com/docs-as-code-toolkit)
 
 A **single-source documentation pipeline** for generating
 **CVs, websites, and architecture documentation** — fully reproducible and CI-ready.
