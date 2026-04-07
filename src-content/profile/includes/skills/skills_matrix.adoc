@@ -1,37 +1,67 @@
+:badge_color: blue
+
 :skill_documentation_title: Dokumentation
+:skill_documentation_badge_color: green
 :skill_documentation_1: arc42 - Confluence / Notion / docToolchain
+:skill_documentation_1_badge: arc42_Confluence_Notion_docToolchain
 
 :skill_integration_title: Integration
+:skill_integration_badge_color: yellow
 :skill_integration_1: Apache Kafka
+:skill_integration_1_badge: Apache_Kafka
 :skill_integration_2: Messaging
+:skill_integration_2_badge: Messaging
 :skill_integration_3: REST / APIs
+:skill_integration_3_badge: REST_APIs
 :skill_integration_4: BPM - Camunda
+:skill_integration_4_badge: BPM_Camunda
 
 :skill_development_title: Entwicklung
+:skill_development_badge_color: orange
 :skill_development_1: Java / Spring Boot
+:skill_development_1_badge: Java,_Spring_Boot
 :skill_development_2: React / Typescript
+:skill_development_2_badge: React_Typescript
 :skill_development_3: REST Services
+:skill_development_3_badge: REST_Services
 
 :skill_architecture_title: Software Architektur
+:skill_architecture_badge_color: {badge_color}
 :skill_architecture_1: Domain Driven Design
+:skill_architecture_1_badge: Domain_Driven_Design
 :skill_architecture_2: Clean Architecture
+:skill_architecture_2_badge: Clean_Architecture
 :skill_architecture_3: Event Driven Architecture
+:skill_architecture_3_badge: Event_Driven_Architecture
 
 :skill_methods_title: Methoden
+:skill_methods_badge_color: grey
 :skill_methods_1: Agile Collaboration
+:skill_methods_1_badge: Agile_Collaboration
 :skill_methods_2: Coaching / Training
+:skill_methods_2_badge: Coaching,_Training
 :skill_methods_docascode: Doc as Code
+:skill_methods_docascode_badge: Doc_as_Code
 :skill_methods_4: Clean Code
+:skill_methods_4_badge: Clean_Code
 :skill_methods_5: Architektur Kommunikation
+:skill_methods_5_badge: Architektur_Kommunikation
 
 :skill_platform_title: Plattform & Auslieferung
+:skill_platform_badge_color: yellowgreen
 :skill_platform_1: Docker / Kubernetes
+:skill_platform_1_badge: Docker,_Kubernetes
 :skill_platform_2: Helm
+:skill_platform_2_badge: Helm
 :skill_platform_cicd: CI/CD Pipelines (Jenkins / GitLab / GitHub)
+:skill_platform_cicd_badge: CI_CD,_Pipelines_Jenkins_GitLab_GitHub
 :skill_platform_4: AWS / Azure
+:skill_platform_4_badge: AWS_Azure
 
 :skill_branches_title: Branchen
+:skill_branches_badge_color: lightgrey
 :skill_branches_1: Banken / Versicherungen | Transport | Öffentliche Verwaltung
+:skill_branches_1_badge: Banken_Versicherungen_Transport_Oeffentliche_Verwaltung
 
 :htmlmatrix: true
 ifeval::["{backend}" != "html5"]
@@ -43,5 +73,9 @@ include::./skills_matrix_site.adoc[]
 endif::[]
 
 ifeval::["{htmlmatrix}" == "false"]
+ifeval::["{type}" == "readme"]
+include::./skills_matrix_readme.adoc[]
+endif::[]
+ifeval::["{type}" != "readme"]
 include::./skills_matrix_pdf.adoc[]
 endif::[]

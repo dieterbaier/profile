@@ -18,9 +18,16 @@ endif::[]
 *{home_revremark}*
 --
 
+[.highlight]
+--
+!link:https://img.shields.io/badge/Docs_as_Code-Toolkit-blue[Docs-as-Code Toolkit] +
+Initiator des Open-Source-Projektes
+→ https://github.com/docs-as-code-toolkit[https://github.com/docs-as-code-toolkit^]
+--
+
 include::{includesdir}/profile/profile.adoc[]
 
-include::{includesdir}/profile/profile_personal.adoc[]
+include::{includesdir}/profile/profile_personal.adoc[type=readme]
 
 include::{includesdir}/profile/about_me_citations.adoc[]
 

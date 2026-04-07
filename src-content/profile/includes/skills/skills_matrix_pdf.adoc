@@ -15,7 +15,7 @@
 {skill_methods_1} | {skill_methods_2} | {skill_methods_docascode} | {skill_methods_4} | {skill_methods_5}
 
 *{skill_platform_title}* +
-{skill_platform_1} | {skill_platform_2} | {skill_platform_3} | {skill_platform_4}
+{skill_platform_1} | {skill_platform_2} | {skill_platform_cicd} | {skill_platform_4}
 
 *{skill_branches_title}* +
 {skill_branches_1}
