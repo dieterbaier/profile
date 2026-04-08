@@ -631,6 +631,18 @@ footer p {
 
 .languages ul {
     margin-bottom: unset;
+    margin-left: unset;
+    list-style-type: none;
+}
+
+.languages ul li.flag-at:before {
+    content: "🇦🇹";
+    margin-right: 0.25rem;
+}
+
+.languages ul li.flag-gb:before {
+    content: "🇬🇧";
+    margin-right: 0.25rem;
 }
 
 @media (max-width: 700px) {

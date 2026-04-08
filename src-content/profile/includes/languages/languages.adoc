@@ -8,8 +8,8 @@ ifeval::[“{type}" != "cv"]
     <div>
 endif::[]
         <ul>
-            <li>Deutsch (Muttersprache)</li>
-            <li>English (fluent)</li>
+            <li class="flag-at">Deutsch (Muttersprache)</li>
+            <li class="flag-gb">English (fluent)</li>
         </ul>
     </div>
 </div>
