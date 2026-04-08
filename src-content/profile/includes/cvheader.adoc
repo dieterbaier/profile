@@ -39,7 +39,7 @@ ifdef::buildsite[]
 <nav class="subnav noborder">
     <ul>
         <li>
-            <a href="{basedir}/cv.pdf" target="_blank">Download CV</a>
+            <a class="fingerPointsTo" href="{basedir}/cv.pdf" target="_blank">Download CV</a>
         </li>
     </ul>
 </nav>

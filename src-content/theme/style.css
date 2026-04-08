@@ -1,5 +1,15 @@
 @import url("./asciidoctor.css"); /* Default asciidoc style framework - important */
 
+/* noto-color-emoji-regular - emoji */
+@font-face {
+    font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+    font-family: 'Noto Color Emoji';
+    font-style: normal;
+    font-weight: 400;
+    src: url('fonts/noto-color-emoji-v39-emoji-regular.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+}
+
+
 @font-face {
     font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
     font-family: 'Noto Sans';
@@ -35,36 +45,23 @@
     src: url('fonts/noto-sans-v42-latin-600italic.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
 }
 
+/* noto-sans-mono-regular - latin */
 @font-face {
     font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
-    font-family: 'JetBrains Mono';
+    font-family: 'Noto Sans Mono';
+    font-style: normal;
+    font-weight: 400;
+    src: url('fonts/noto-sans-mono-v37-latin-regular.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+}
+
+/* noto-sans-mono-600 - latin */
+@font-face {
+    font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+    font-family: 'Noto Sans Mono';
     font-style: normal;
     font-weight: 600;
-    src: url('fonts/JetBrainsMono-Bold.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+    src: url('fonts/noto-sans-mono-v37-latin-600.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
 }
-
-@font-face {
-    font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
-    font-family: 'JetBrains Mono';
-    font-style: normal;
-    src: url('fonts/JetBrainsMono-Regular.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
-}
-
-@font-face {
-    font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
-    font-family: 'JetBrains Mono';
-    font-style: italic;
-    font-weight: 600;
-    src: url('fonts/JetBrainsMono-BoldItalic.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
-}
-
-@font-face {
-    font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
-    font-family: 'JetBrains Mono';
-    font-style: italic;
-    src: url('fonts/JetBrainsMono-Italic.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
-}
-
 
 :root {
     --text-color: #244055;
@@ -95,6 +92,27 @@
 /* =========================================================
    Base
    ========================================================= */
+
+h1,
+h2,
+h3,
+#toctitle,
+.sidebarblock > .content > .title,
+h4,
+h5,
+h6 ,
+#toc ul,
+.admonitionblock > table td.icon .title,
+.verseblock pre,
+.conum[data-value] {
+    font-family: "Noto Sans", sans-serif;
+}
+
+code,
+.listingblock .content pre,
+.literalblock pre, pre, kbd{
+    font-family: "Noto Sans Mono", monospace;
+}
 
 #header,
 #content,
@@ -259,16 +277,6 @@ p {
 }
 
 /* =========================================================
-   Code
-   ========================================================= */
-
-code,
-.listingblock .content pre,
-.literalblock pre {
-    font-family: "JetBrains Mono", monospace;
-}
-
-/* =========================================================
    Quote Blocks
    ========================================================= */
 
@@ -324,10 +332,18 @@ code,
 /* --- Callout (zentral, emotional) --- */
 
 .callout {
-    text-align: center;
     font-style: italic;
-
     border-left: 6px solid #c7a85a;
+}
+
+.fingerPointsTo::before {
+    content: "👉";
+    font-family: "Noto Color Emoji", "Noto Sans", sans-serif;
+    margin-right: 0.25rem;
+}
+a.fingerPointsTo::before {
+    text-decoration: none;
+    display: inline-block;
 }
 
 /* --- Highlight (inhaltlich wichtig) --- */
@@ -340,21 +356,25 @@ code,
 .highlight.info::before {
     content: "💡 ";
     font-size: var(--highlight-icon-font-size);
+    font-family: "Noto Color Emoji", "Noto Sans", sans-serif;
 }
 
 .highlight.warning::before {
     content: "⚠️ ";
     font-size: var(--highlight-icon-font-size);
+    font-family: "Noto Color Emoji", "Noto Sans", sans-serif;
 }
 
 .highlight.error::before {
     content: "❗ ";
     font-size: var(--highlight-icon-font-size);
+    font-family: "Noto Color Emoji", "Noto Sans", sans-serif;
 }
 
 .highlight.tip::before {
     content: "✅ ";
     font-size: var(--highlight-icon-font-size);
+    font-family: "Noto Color Emoji", "Noto Sans", sans-serif;
 }
 
 /* --- Skillbox --- */

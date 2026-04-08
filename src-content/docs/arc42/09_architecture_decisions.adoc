@@ -37,4 +37,4 @@ Pandoc provides:
 - keine Third-Party-Scripte
 - keine nachgelagerten Frameworks
 
-👉 https://dieterbaier.eu/articles/architecture/sustainability.html[see implemented example]
+https://dieterbaier.eu/articles/architecture/sustainability.html[see implemented example,role="fingerPointsTo"]

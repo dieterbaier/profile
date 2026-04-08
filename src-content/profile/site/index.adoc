@@ -25,4 +25,4 @@ include::{includesdir}/profile/profile_personal.adoc[]
 
 include::{includesdir}/profile/about_me_citations.adoc[]
 
-xref:{basedir}/cv.adoc[Curriculum Vitae →]
+xref:{basedir}/cv.adoc[Curriculum Vitae,role="fingerPointsTo"]
