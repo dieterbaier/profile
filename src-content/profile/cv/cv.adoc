@@ -2,11 +2,14 @@ include::{includesdir}/cvheader.adoc[]
 
 include::{includesdir}/contact/setContactAttributes.adoc[]
 ifeval::["{backend}" == "html5"]
-[subs="attributes"]
+[subs="attributes,macros"]
 ++++
-<div class="cvcontactlanguage">
+<div class="intro">
+    <img src="{imagesdir}/dieterbaier_image_cv_rounded_comic_200.png" alt="Dieter Baier">
+    <div class="cvcontactlanguage">
 include::{includesdir}/contact/contact.adoc[]
 include::{includesdir}/languages/languages.adoc[]
+</div>
 </div>
 ++++
 endif::[]
