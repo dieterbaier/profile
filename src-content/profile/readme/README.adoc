@@ -12,7 +12,7 @@ include::{includesdir}/docheader.adoc[]
 [.callout]
 --
 ifeval::["{backend}" == "html5"]
-image::dieterbaier_image_site_rounded_200.png[]
+image::dieterbaier_image_site_rounded_comic_200.png[]
 endif::[]
 
 *{home_revremark}*
