@@ -7,13 +7,15 @@
 </style>
 
 <nav id="mainnav" class="mainnav" data-active="{active}">
-    <button class="nav-toggle" aria-label="Menu öffnen">☰</button>
-    <div class="nav-drawer" id="mainnav-drawer">
-    <button class="nav-close" aria-label="Menü schließen">✕</button>
     <ul>
         <li>
             <a data-nav="home" href="{basedir}/index.html">Home</a>
         </li>
+    </ul>
+    <button class="nav-toggle" aria-label="Menu öffnen">☰</button>
+    <div class="nav-drawer" id="mainnav-drawer">
+    <button class="nav-close" aria-label="Menü schließen">✕</button>
+    <ul>
         <li>
 ifdef::buildsite[]
 <a data-nav="cv" href="{basedir}/cv.html">Curriculum Vitae</a>

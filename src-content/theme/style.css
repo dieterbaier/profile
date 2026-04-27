@@ -561,6 +561,10 @@ footer p {
     padding-bottom: 1rem;
 }
 
+.mainnav > ul:first-child {
+    margin-bottom: 1rem;
+}
+
 .subnav {
     margin: unset;
     padding-bottom: unset;
@@ -736,9 +740,14 @@ footer p {
     }
 
     /* Desktop Nav ausblenden */
-    .mainnav > ul {
+    .mainnav > not:first-child ul {
         display: none;
     }
+
+    .mainnav > ul:first-child {
+        margin-bottom: unset;
+    }
+
 
     footer .footer-box {
         grid-template-columns: 1fr;
