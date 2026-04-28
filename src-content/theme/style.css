@@ -621,17 +621,27 @@ footer p {
 .contactrow {
     display: flex;
     gap: 1rem;
+    row-gap: 0;
     margin-bottom: 0.5rem;
+    flex-wrap: wrap;
 }
 
 .contactrow > *:last-child {
     margin-left: auto;
 }
 
-.contactcolumn {
+.contactlabel, .contactvalue {
     display: flex;
     align-items: center;
     gap: 0.5rem;
+}
+
+.contactlabel {
+    white-space: nowrap;
+}
+
+.contactvalue {
+    word-break: break-word;
 }
 
 .languages ul {
