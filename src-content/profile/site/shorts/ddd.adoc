@@ -1,0 +1,178 @@
+= Dieter Baier
+ifdef::buildsite[]
+:basedir: ..
+endif::[]
+include::{includesdir}/../../revinfo.adoc[]
+:author!: Dieter Baier
+:author_page: {basedir}/index.html
+:author_page: index.html
+:revremark: Domain Driven Design
+:revdate: 04/2026
+:revnumber: 1.0
+:active: shorts
+include::{includesdir}/docheader.adoc[]
+
+:shorts_active: ddd
+include::{includesdir}/../site/shorts/shortsnav.adoc[]
+
+[quote, nach Allen Holub]
+Der Schlüssel für eine evolutionäre Architektur ist die Fähigkeit, die Domäne zu verstehen und zu modellieren. Domain-Driven Design (DDD) bietet einen Ansatz, um dies zu erreichen, indem es die Zusammenarbeit zwischen Domänenexperten und Entwicklern fördert und eine gemeinsame Sprache schafft, um komplexe Geschäftsprobleme zu lösen.
+
+toc::[]
+
+== Kultur und Werte
+
+[.highlight.info]
+--
+DDD ist mehr als nur eine Sammlung von Techniken und Mustern.
+
+Es ist eine Denkweise, die auf einer engen Zusammenarbeit zwischen Domänenexperten und Entwicklern basiert. Es erfordert eine Kultur des Lernens, der Offenheit und der kontinuierlichen Verbesserung.
+
+Es ermutigt Teams, sich auf die Bedürfnisse der Benutzer zu konzentrieren und Lösungen zu entwickeln, die echten Mehrwert bieten.
+--
+
+== Implizite Annahmen werden zu explizitem Wissen
+
+[.highlight.info]
+--
+DDD hilft dabei, implizites Wissen über die Domäne in explizites Wissen umzuwandeln.
+
+Durch die Zusammenarbeit zwischen Domänenexperten und Entwicklern können Teams ein tiefes Verständnis der Geschäftsprozesse und -regeln entwickeln, was zu besseren Softwarelösungen führt.
+--
+
+== Ohne Zugriff auf Fachwissen, kein DDD
+
+[.highlight.info]
+--
+DDD erfordert den Zugriff auf Domänenexperten, um ein tiefes Verständnis der Geschäftsprozesse und -regeln zu entwickeln.
+
+Ohne diesen Zugriff ist es schwierig, die Prinzipien von DDD effektiv anzuwenden.
+--
+
+Gemeint sind hiermit nicht nur die klassischen Domänenexperten, sondern auch alle anderen Stakeholder, die wertvolles Wissen über die Domäne haben, wie z.B. Endbenutzer, Kunden oder andere Interessengruppen.
+
+Auch eine Bereichssekretärin, die seit Jahren in einem Unternehmen arbeitet, kann wertvolles Wissen über die Abläufe und Prozesse haben, das für die Entwicklung von Softwarelösungen von entscheidender Bedeutung sein kann.
+
+**Besonders wichtige Rollen** sind:
+
+- Entwickler:innen
+- Fachexpert:innen
+
+== Ein gemeinsames Verständnis der Domäne aufzubauen, erfordert niedrige Einstiegshürden für die Modellierung
+
+[.highlight.info]
+--
+Um ein gemeinsames Verständnis der Domäne aufzubauen, ist es wichtig, niedrige Einstiegshürden für die Modellierung zu schaffen.
+
+Jeder Wissensträger sollte in der Lage sein, seine Ideen und Erkenntnisse in das Modell einzubringen, ohne sich mit komplexen technischen Details bezüglich der Modellierungssprache auseinandersetzen zu müssen.
+--
+
+== Identifizieren von fachlichen Grenzen (Bounded Contexts)
+
+[.highlight.info]
+--
+Das Identifizieren von fachlichen Grenzen, auch bekannt als Bounded Contexts, ist ein wichtiger Schritt im DDD-Prozess.
+
+Es hilft dabei, die Komplexität der Domäne zu reduzieren und ermöglicht es Teams, sich auf spezifische Teile der Domäne zu konzentrieren, um bessere Lösungen zu entwickeln.
+--
+
+DDD stellt einen methodischen Baukasten bereit, um diese fachlichen Grenzen zu identifizieren und zu modellieren, was zu einer besseren Softwarearchitektur führt.
+
+== Kontextübergreifende Kommunikation
+
+[.highlight.info]
+--
+Die Kommunikation zwischen verschiedenen Bounded Contexts ist entscheidend, um sicherzustellen, dass die verschiedenen Teile der Softwarelösung nahtlos zusammenarbeiten.
+--
+
+DDD bietet verschiedene Muster und Techniken, um die Kommunikation zwischen Bounded Contexts zu erleichtern, wie z.B. Anticorruption Layers oder Shared Kernels.
+
+== Kontinuierliches Refactoring
+
+[.highlight.info]
+--
+DDD betont die Bedeutung von kontinuierlichem Refactoring, um sicherzustellen, dass die Softwarelösung immer an die sich ändernden Anforderungen und Erkenntnisse angepasst wird.
+--
+
+Durch kontinuierliches Refactoring können Teams sicherstellen, dass die Softwarelösung immer auf dem neuesten Stand bleibt und den Bedürfnissen der Benutzer entspricht.
+
+== Ziel: Austrucksstarke, flexible Softwarelösungen
+
+[.highlight.info]
+--
+Das Ziel von DDD ist es, ausdrucksstarke und flexible Softwarelösungen zu entwickeln, die den Bedürfnissen der Benutzer entsprechen und sich an die sich ändernden Anforderungen anpassen können.
+--
+Durch die Anwendung der Prinzipien von DDD können Teams Softwarelösungen entwickeln, die nicht nur funktional, sondern auch wartbar und erweiterbar sind, was langfristig zu einem erfolgreichen Softwareprojekt beiträgt.
+
+== Ausrucksstarke Softwarelösungen und lose gekoppelte Komponenten
+
+[.highlight.info]
+--
+Ausdrucksstarke Softwarelösungen sind solche, die die Geschäftsprozesse und -regeln klar und verständlich darstellen, was es einfacher macht, die Software zu verstehen und zu warten.
+
+Lose gekoppelte Komponenten sind solche, die unabhängig voneinander entwickelt und geändert werden können, was die Flexibilität und Wartbarkeit der Software erhöht.
+--
+
+Durch die Anwendung der Prinzipien von DDD können Teams Softwarelösungen entwickeln, die sowohl ausdrucksstark als auch lose gekoppelt sind, was zu einer besseren Softwarearchitektur führt.
+
+== DDD bietet die Offenheit in Richtung anderer Paradigmen
+
+[.highlight.info]
+--
+DDD ist nicht auf ein bestimmtes Paradigma beschränkt, sondern bietet die Offenheit, verschiedene Paradigmen und Technologien zu integrieren (wie z.B. DevOps, Agile, Enterprise Architecture oder auch Organisationsentwicklung), um die besten Lösungen für die spezifischen Anforderungen der Domäne zu entwickeln.
+--
+Durch die Anwendung der Prinzipien von DDD können Teams Softwarelösungen entwickeln, die nicht nur funktional, sondern auch flexibel und anpassungsfähig sind, was langfristig zu einem erfolgreichen Softwareprojekt beiträgt.
+
+== DDD ist eine Reise, kein Ziel
+
+[.highlight.info]
+--
+DDD ist eine kontinuierliche Reise, die ständiges Lernen, Anpassen und Verbessern erfordert.
+
+Es ist kein einmaliges Ziel, sondern ein fortlaufender Prozess, der es Teams ermöglicht, sich ständig weiterzuentwickeln und bessere Softwarelösungen zu entwickeln, die den Bedürfnissen der Benutzer entsprechen und sich an die sich ändernden Anforderungen anpassen können.
+--
+
+== DDD gibt keinen Hinweis auf einer Deployment Architektur oder Teamorganisation
+
+[.highlight.info]
+--
+DDD gibt keinen spezifischen Hinweis darauf, wie die Deployment-Architektur oder die Teamorganisation aussehen sollte. Es konzentriert sich vielmehr auf die Modellierung der Domäne und die Zusammenarbeit zwischen Domänenexperten und Entwicklern, um eine gemeinsame Sprache zu schaffen und komplexe Geschäftsprobleme zu lösen.
+--
+Die Entscheidung über die Deployment-Architektur und die Teamorganisation hängt von den spezifischen Anforderungen der Domäne, den verfügbaren Ressourcen und den Präferenzen des Teams ab.
+
+DDD bietet jedoch Prinzipien und Muster, die bei der Gestaltung der Softwarearchitektur und der Teamorganisation berücksichtigt werden können, um sicherzustellen, dass sie gut mit der Domäne und den Geschäftsprozessen übereinstimmen.
+
+== Domänen spiegeln wieder, wie eine Organisation ihre Tätigkeits- und Fachwissensbereiche wahrnimmt
+
+[.highlight.info]
+--
+Eine Domäne ist ein spezifischer Bereich oder Kontext, in dem bestimmte Geschäftsprozesse und -regeln gelten. Es ist der Bereich, in dem die Softwarelösung entwickelt wird und in dem die Geschäftsprobleme gelöst werden sollen.
+--
+- Eine Domäne ist etwas, das man sich **auf die Fahnen schreibt**
+- Eine Domäne ist etwas, wovon man **explizites Fachwissen** hat
+- Eine Domäne ist etwas, worin man **eine bestimmte Arbeitsweise** hat
+
+[quote, Vaughn Vernon]
+A Domain in the broad sense, is what an organization does and the world it does it in. ... Each kind of organization has its own unique realm of know-how and way of doing things. That realm of understanding and its methods for carrying out its operations is its domain.
+
+== Problemdomäne
+
+[.highlight.info]
+--
+Die Problemdomäne ist der Bereich, in dem die Geschäftsprobleme und -anforderungen liegen, die durch die Softwarelösung gelöst werden sollen.
+
+Es ist der Bereich, in dem die Geschäftsprozesse und -regeln definiert sind, die die Softwarelösung unterstützen soll.
+--
+
+- Im Kontext von DDD ist die Domäne KEIN direktes Abbild der Aufbauorganisation oder der Teamorganisation, sondern vielmehr ein Abbild der Geschäftsprozesse und -regeln, die in der Softwarelösung modelliert werden sollen.
+- Es ist wichtig, die Domäne so zu modellieren, dass sie die Geschäftsprozesse und -regeln klar und verständlich darstellt, um sicherzustellen, dass die Softwarelösung den Bedürfnissen der Benutzer entspricht und sich an die sich ändernden Anforderungen anpassen kann.
+
+== Strategisches DDD hilft dabei die Softwarearchitektur nach der Geschäftsdomäne und den Teams auszurichten
+
+[.highlight.info]
+--
+Strategisches DDD konzentriert sich auf die Identifizierung von Bounded Contexts und die Gestaltung der Softwarearchitektur, um sicherzustellen, dass sie gut mit der Domäne und den Geschäftsprozessen übereinstimmt.
+--
+Durch die Anwendung der Prinzipien von strategischem DDD können Teams sicherstellen, dass die Softwarearchitektur gut mit der Domäne und den Geschäftsprozessen übereinstimmt, was zu einer besseren Softwarelösung führt, die den Bedürfnissen der Benutzer entspricht und sich an die sich ändernden Anforderungen anpassen kann.
+
+include::{includesdir}/../site/shorts/EventStorming.adoc[]

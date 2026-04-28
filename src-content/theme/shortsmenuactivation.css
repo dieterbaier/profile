@@ -1,0 +1,6 @@
+.subnav[data-active="ddd"] a[data-nav="ddd"],
+.subnav[data-active="architecture"] a[data-nav="architecture"],
+.subnav[data-active="principles"] a[data-nav="principles"]{
+    transform: translateY(1px);
+    border-bottom: 2px solid #000;
+}

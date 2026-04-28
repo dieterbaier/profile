@@ -9,5 +9,15 @@ endif::[]
 :active: shorts
 include::{includesdir}/docheader.adoc[]
 
-* xref:./architecture-thinking.adoc[Architekturgedanken]
-* xref:./principles.adoc[Pragmatische Architekturprinzipien]
+include::{includesdir}/../site/shorts/shortsnav.adoc[]
+
+[.highlight.info]
+--
+Keine langen Artikel. Keine akademischen Abhandlungen.
+
+Sondern kurze, klare Aussagen rund um Softwarearchitektur und gute Softwareentwicklung – direkt, zugespitzt und nicht immer bequem.
+
+Genau die Art von Gedanken, die man im Alltag schnell wieder braucht.
+
+Einstieg über das Submenü.
+--

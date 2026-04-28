@@ -1,0 +1,28 @@
+== EventStorming: Ein Ansatz zur Domänenmodellierung
+
+[quote, nach Alberto Brandolini]
+EventStorming ist eine kollaborative Workshop-Methode, die darauf abzielt, ein tiefes Verständnis der Geschäftsprozesse und -regeln zu entwickeln, indem sie die Teilnehmer dazu ermutigt, die Ereignisse, die in der Domäne auftreten, zu identifizieren und zu modellieren.
+
+link:https://github.com/ddd-crew/eventstorming-glossary-cheat-sheet[EventStorming Glossary Cheat Sheet der DDD-Crew^, role="fingerPointsTo"]
+
+[.highlight.info]
+--
+Kann auch gut für ein Onboarding genutzt werden, um neue Teammitglieder schnell in die Domäne einzuführen und ein gemeinsames Verständnis zu entwickeln.
+--
+
+=== _Big Picture_ Event Storming
+[.highlight.info]
+--
+Das Big Picture Event Storming ist eine Methode, um ein umfassendes Verständnis der Geschäftsprozesse und -regeln zu entwickeln, indem alle relevanten Ereignisse in der Domäne identifiziert und modelliert werden.
+
+Es geht nicht darum, ein detailliertes Modell zu erstellen, sondern vielmehr darum, ein gemeinsames Verständnis der Domäne zu entwickeln und die wichtigsten Ereignisse und Zusammenhänge zu identifizieren. **Die Detaillierung erfolgt in späteren Workshops, wie z.B. dem Process Level Event Storming oder dem Design Level Event Storming.**
+--
+
+Folgende Schritte sind typisch für einen Big Picture Event Storming Workshop:
+
+1. **Vorbereitung**: Der Moderator bereitet den Workshop vor, indem er die Teilnehmer einlädt, den Raum (ein Raum, in dem man sich frei bewegen können und eine freie Wand von 4 bis 5 Metern bereitstellt) vorbereitet und die notwendigen Materialien bereitstellt.
+2. **Ereignisse identifizieren** (Chaotic Exploration): Die Teilnehmer identifizieren die Ereignisse, die in der Domäne auftreten, und schreiben sie auf Haftnotizen.
+3. **Ereignisse gruppieren**: Die Teilnehmer gruppieren die Ereignisse, um Muster und Zusammenhänge zu erkennen.
+4. **Pivotal Events identifizieren**: Die Teilnehmer identifizieren die wichtigsten Ereignisse, die den Ablauf der Geschäftsprozesse maßgeblich beeinflussen.
+5. **Ereignisse ordnen**: Die Teilnehmer ordnen die Ereignisse in einer zeitlichen Reihenfolge, um den Ablauf der Geschäftsprozesse zu verstehen.
+6. **Ereignisse analysieren**: Die Teilnehmer analysieren die Ereignisse, um die Geschäftsregeln und -prozesse zu verstehen und zu dokumentieren.

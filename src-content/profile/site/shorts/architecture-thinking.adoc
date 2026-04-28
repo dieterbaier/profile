@@ -11,8 +11,8 @@ include::{includesdir}/../../revinfo.adoc[]
 :active: shorts
 include::{includesdir}/docheader.adoc[]
 
-
-siehe auch: xref:{basedir}/shorts/principles.adoc[Pragmatische Architekturprinzipien]
+:shorts_active: architecture
+include::{includesdir}/../site/shorts/shortsnav.adoc[]
 
 toc::[]
 

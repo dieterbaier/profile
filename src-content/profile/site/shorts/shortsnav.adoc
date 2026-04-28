@@ -1,0 +1,21 @@
+
+[subs=attributes,macros]
+++++
+<style>
+@import "{basedir}/stylesheet/shortsmenuactivation.css";
+</style>
+
+<nav id="shortsnav" class="subnav noborder" data-active="{shorts_active}" style="margin-bottom: 2rem">
+    <ul>
+        <li>
+            <a data-nav="architecture" href="{basedir}/shorts/architecture-thinking.html">Architekturgedanken</a>
+        </li>
+        <li>
+            <a data-nav="principles" href="{basedir}/shorts/principles.html">Prinzipien</a>
+        </li>
+        <li>
+            <a data-nav="ddd" href="{basedir}/shorts/ddd.html">Domain Driven Design</a>
+        </li>
+    </ul>
+</nav>
+++++
