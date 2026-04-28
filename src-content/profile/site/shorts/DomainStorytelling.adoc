@@ -1,0 +1,13 @@
+== Domain Storytelling
+
+link:https://egon.io[egon.io^, role="fingerPointsTo"]
+
+[quote, nach Markus Voelter]
+Domain Storytelling ist eine Methode, um ein tiefes Verständnis der Geschäftsprozesse und -regeln zu entwickeln, indem die Teilnehmer dazu ermutigt werden, die Geschäftsprozesse in Form von Geschichten zu erzählen und zu modellieren. Es ist eine kollaborative Methode, die darauf abzielt, ein gemeinsames Verständnis der Domäne zu entwickeln und die Kommunikation zwischen Domänenexperten und Entwicklern zu verbessern.
+
+[.highlight.info]
+--
+Eine Domain Story ist eine narrative Beschreibung eines Geschäftsprozesses oder einer Geschäftsregel, die von einem Domänenexperten erzählt wird.
+
+Sie enthält Informationen über die beteiligten Akteure, die Schritte des Prozesses und die Entscheidungen, die getroffen werden müssen in einfachen Sätzen und ohne technische Details (Subjekt, Prädikat, Objekt).
+--

@@ -8,7 +8,7 @@ include::{includesdir}/../../revinfo.adoc[]
 :author_page: index.html
 :revremark: Domain Driven Design
 :revdate: 04/2026
-:revnumber: 1.0
+:revnumber: 1.1
 :active: shorts
 include::{includesdir}/docheader.adoc[]
 
@@ -73,10 +73,33 @@ Jeder Wissensträger sollte in der Lage sein, seine Ideen und Erkenntnisse in da
 --
 Das Identifizieren von fachlichen Grenzen, auch bekannt als Bounded Contexts, ist ein wichtiger Schritt im DDD-Prozess.
 
+Man befindet sich beim Identifizieren von fachlichen Grenzen im **Lösungsraum** und nicht mehr im Problemraum, da es darum geht, die Softwarearchitektur so zu gestalten, dass sie gut mit der Domäne und den Geschäftsprozessen übereinstimmt.
+
 Es hilft dabei, die Komplexität der Domäne zu reduzieren und ermöglicht es Teams, sich auf spezifische Teile der Domäne zu konzentrieren, um bessere Lösungen zu entwickeln.
 --
 
 DDD stellt einen methodischen Baukasten bereit, um diese fachlichen Grenzen zu identifizieren und zu modellieren, was zu einer besseren Softwarearchitektur führt.
+
+[.highlight]
+--
+Ein Bounded Context ist ein spezifischer Bereich der Domäne, in dem bestimmte Geschäftsprozesse und -regeln gelten.
+
+Es ist eine Art "Blase", in der ein bestimmtes Modell der Domäne gilt und in der die Kommunikation zwischen verschiedenen Teilen der Softwarelösung stattfindet.
+--
+
+== Bounded Contexts sollten mit der zugehörigen Subdomäne übereinstimmen
+
+[.highlight.info]
+--
+Es ist wichtig, dass die Bounded Contexts mit den zugehörigen Subdomänen übereinstimmen, um sicherzustellen, dass die Softwarearchitektur gut mit der Domäne und den Geschäftsprozessen übereinstimmt.
+--
+
+Vorteile, wenn die Grenzen des Bounded Contextes (Lösungsraum) mit den Grenzen der Subdomäne (Problemraum) übereinstimmen:
+
+- Software und Domänen entwickeln sich im Einklang, was zu einer besseren Softwarelösung führt, die den Bedürfnissen der Benutzer entspricht und sich an die sich ändernden Anforderungen anpassen kann.
+- Mehr Arbeit bleibt innerhalb eines Teams, teamübergreifende Kommunikation wird reduziert, was die Effizienz und die Qualität der Softwarelösung erhöht.
+- Autonome, crossfunktionale Teams mit Ende-zu-Ende Verantwortung werden möglich, was die Motivation und die Produktivität der Teams erhöht.
+- Architektur und Teamgröße können linear mit der Komplexität der Subdomäne wachsen, was die Wartbarkeit und Erweiterbarkeit der Softwarelösung verbessert.
 
 == Kontextübergreifende Kommunikation
 
@@ -167,6 +190,42 @@ Es ist der Bereich, in dem die Geschäftsprozesse und -regeln definiert sind, di
 - Im Kontext von DDD ist die Domäne KEIN direktes Abbild der Aufbauorganisation oder der Teamorganisation, sondern vielmehr ein Abbild der Geschäftsprozesse und -regeln, die in der Softwarelösung modelliert werden sollen.
 - Es ist wichtig, die Domäne so zu modellieren, dass sie die Geschäftsprozesse und -regeln klar und verständlich darstellt, um sicherzustellen, dass die Softwarelösung den Bedürfnissen der Benutzer entspricht und sich an die sich ändernden Anforderungen anpassen kann.
 
+=== Es gibt unterschiedliche Arten von Subdomänen
+
+[.highlight.info]
+--
+Es gibt verschiedene Arten von Subdomänen, die in einer Domäne identifiziert werden können, wie z.B. Kern-Subdomänen, unterstützende Subdomänen und generische Subdomänen.
+
+Jede Art von Subdomäne hat unterschiedliche Anforderungen und Herausforderungen, die bei der Modellierung und Entwicklung der Softwarelösung berücksichtigt werden müssen.
+--
+
+- [.underline]#Kern-Subdomänen (Core Subdomain)# sind diejenigen, die den größten Mehrwert für die Benutzer bieten und die wichtigsten Geschäftsprozesse und -regeln repräsentieren.
++
+**Heuristik**: hohe Differenzierung am Markt, hohe Komplexität, hohe strategische Bedeutung.
++
+[.highlight]
+--
+Das muss richtig gut sein. Heißt: eigenes Team, sehr hoher Qualitätsanspruch, kontinuierliches Refactoring, hohe Investitionen in die Wartbarkeit und Erweiterbarkeit.
+--
+
+- [.underline]#Unterstützende Subdomänen (Supporting Subdomain)# sind diejenigen, die die Kern-Subdomänen unterstützen und ergänzen, aber nicht den gleichen Mehrwert bieten.
++
+**Heuristik**: alles was nicht Kern- oder generische Subdomäne ist, ist eine unterstützende Subdomäne.
++
+[.highlight]
+--
+Diese Subdomänen sollten so gestaltet werden, dass sie die Kern-Subdomänen effektiv unterstützen, ohne zu viel Komplexität oder Wartungsaufwand zu verursachen.
+--
+
+- [.underline]#Generische Subdomänen (Generic Subdomain)# sind diejenigen, die allgemeine Funktionen oder Dienste bereitstellen, die von verschiedenen Teilen der Domäne genutzt werden können, aber nicht spezifisch für die Geschäftsprozesse und -regeln der Domäne sind.
++
+**Heuristik**: keine Differenzierung am Markt, niedrige Komplexität, niedrige strategische Bedeutung.
++
+[.highlight]
+--
+Diese Subdomänen können oft durch Standardsoftware oder externe Dienste abgedeckt werden, was es ermöglicht, sich auf die Kern-Subdomänen zu konzentrieren und Ressourcen effizienter zu nutzen.
+--
+
 == Strategisches DDD hilft dabei die Softwarearchitektur nach der Geschäftsdomäne und den Teams auszurichten
 
 [.highlight.info]
@@ -176,3 +235,4 @@ Strategisches DDD konzentriert sich auf die Identifizierung von Bounded Contexts
 Durch die Anwendung der Prinzipien von strategischem DDD können Teams sicherstellen, dass die Softwarearchitektur gut mit der Domäne und den Geschäftsprozessen übereinstimmt, was zu einer besseren Softwarelösung führt, die den Bedürfnissen der Benutzer entspricht und sich an die sich ändernden Anforderungen anpassen kann.
 
 include::{includesdir}/../site/shorts/EventStorming.adoc[]
+include::{includesdir}/../site/shorts/DomainStorytelling.adoc[]

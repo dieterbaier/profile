@@ -26,3 +26,21 @@ Folgende Schritte sind typisch für einen Big Picture Event Storming Workshop:
 4. **Pivotal Events identifizieren**: Die Teilnehmer identifizieren die wichtigsten Ereignisse, die den Ablauf der Geschäftsprozesse maßgeblich beeinflussen.
 5. **Ereignisse ordnen**: Die Teilnehmer ordnen die Ereignisse in einer zeitlichen Reihenfolge, um den Ablauf der Geschäftsprozesse zu verstehen.
 6. **Ereignisse analysieren**: Die Teilnehmer analysieren die Ereignisse, um die Geschäftsregeln und -prozesse zu verstehen und zu dokumentieren.
+
+==== Subdomains identifizieren
+[.highlight.info]
+--
+Die Teilnehmer identifizieren die Subdomains, indem sie die Ereignisse gruppieren und die Zusammenhänge zwischen den Ereignissen analysieren. Subdomains sind Bereiche der Domäne, die bestimmte Geschäftsprozesse oder -regeln repräsentieren und können als Grundlage für die weitere Detaillierung in späteren Workshops dienen.
+--
+
+Heuristiken zur Identifikation von Subdomains:
+
+* Pivotal Events: Ereignisse, die den Ablauf der Geschäftsprozesse maßgeblich beeinflussen, können auf wichtige Subdomains hinweisen.
+* Swimlanes: Das Einführen von Swimlanes (vertikale oder horizontale Linien) kann helfen, die Ereignisse in verschiedene Bereiche zu gruppieren und so Subdomains zu identifizieren.
+* Kohäsion: Ereignisse, die eng miteinander verbunden sind und ähnliche Geschäftsprozesse oder -regeln repräsentieren, können auf eine gemeinsame Subdomain hinweisen.
+* Purpose: Ereignisse, die einen bestimmten Zweck oder ein bestimmtes Ziel verfolgen, können auf eine Subdomain hinweisen, die sich auf diesen Zweck oder dieses Ziel konzentriert.
+
+[.highlight.info]
+--
+Die Identifikation von Subdomains ist ein wichtiger Schritt im EventStorming, da sie die Grundlage für die weitere Detaillierung in späteren Workshops bildet. Subdomains helfen dabei, die Komplexität der Domäne zu reduzieren und ein besseres Verständnis der Geschäftsprozesse und -regeln zu entwickeln.
+--
