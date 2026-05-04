@@ -1,7 +1,7 @@
 ifeval::["{type}" == "cv"]
 [.compact]
 --
-- *iSAQB CPSA-A* [.subtle]#(Agile & Green Software Architecture)#
+- *iSAQB CPSA-A* [.subtle]#(DDD, Agile & Green Software Architecture)#
 - *iSAQB CPSA-F*
 - *Green Software Practitioner*
 --
@@ -29,6 +29,14 @@ ifeval::["{type}" != "cv"]
 [#certificates]
 [cols="1,2", frame=none, grid=none]
 |===
+
+a|
+=== [.subtle]#04 / 2026#
+a|
+=== iSAQB Modul DDD (Domain Driven Architecture) - CPSA-A-Level
+*socreatory / embarc / iSAQB* +
+https://web.tresorit.com/l/8l1U5#DpDtpOl2cjPM3NpR4-RCYw[Nachweis] +
+[.subtle]#online; Softwarearchitektur, DDD#
 
 a|
 === [.subtle]#02 / 2026#
