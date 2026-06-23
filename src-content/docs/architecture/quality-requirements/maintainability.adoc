@@ -1,0 +1,202 @@
+= Wartbarkeit
+include::../../../revinfo.adoc[]
+:lang: de
+Dieter Baier
+:author_page: https://dieterbaier.eu
+:revremark: Qualitätskriterium – Wartbarkeit (QA-MNT)
+:nofooter:
+:toc: left
+:stylesheet: style.css
+:stylesdir: ../../../theme
+:iconsdir: {stylesdir}/icons
+:icons: image
+ifdef::buildsite[]
+:stylesdir: ./stylesheet
+:iconsdir: ./assets/icons
+:linkcss:
+endif::[]
+:docinfo: shared
+:docinfodir: ../../../docinfo/
+
+include::../../../../theme/doctitle.adoc[]
+
+[.callout]
+---
+*Dieses Dokument beschreibt das **Qualitätskriterium Wartbarkeit** für das `profile-dieterbaier`-Projekt.*
+
+*Verknüpft mit:*
+
+* <<../07-quality-requirements.adoc,07. Qualitätsanforderungen (Überblick)>>
+* <<../architecture-canvas.adoc,Architecture Canvas>>
+* <<../04-solution-strategy.adoc,04. Lösungsstrategie>>
+* <<../05-building-blocks.adoc,05. Bausteine>>
+---
+
+== Definition und Ziel
+
+=== 🎯 Qualitätsziel
+
+Wartbarkeit (Maintainability) beschreibt, wie einfach ein System zu **pflegen, zu erweitern und zu reparieren** ist. Gute Wartbarkeit reduziert den Aufwand für Anpassungen und Fehlerbehebungen.
+
+=== Kontext
+
+Im `profile-dieterbaier`-Projekt betrifft Wartbarkeit:
+
+* Dokumentationsstruktur (AsciiDoc-Dateien)
+* Build-System (Gradle-Tasks)
+* Themes und Styling (CSS, Icons)
+* Docker-Images und Skripte
+
+=== Priorität
+
+⭐⭐⭐⭐⭐ (Kritisch) – Gute Wartbarkeit ist essenziell für langfristige Pflegbarkeit des Profils.
+
+== Detaillierte Anforderungen
+
+[cols="1,3,1,1", options="header"]
+|=== 
+|ID |Anforderung |Messkriterium |Verantwortlicher 
+
+|QA-MNT-001 
+|Klare Trennung von Content, Präsentation und Build-Logik (Separation of Concerns). 
+|Jede Datei hat einen klaren Verantwortungsbereich 
+|Architektur 
+
+|QA-MNT-002 
+|Modulare Gradle-Tasks ermöglichen einfache Änderungen und Erweiterungen. 
+|Neue Output-Formate können durch Hinzufügen eines Tasks unterstützt werden 
+|Build-System 
+
+|QA-MNT-003 
+|Dokumentation der Architekturentscheidungen (ADRs) für nachvollziehbare Entscheidungen. 
+|Jede signifikante Entscheidung ist als ADR dokumentiert 
+|Dokumentation 
+
+|QA-MNT-004 
+|Verwendung von Standards und Best Practices (AsciiDoc, Gradle, arc42). 
+|Einhaltung etablierter Konventionen 
+|Alle Contributor 
+
+|QA-MNT-005 
+|Automatisierte Validierung der Dokumentationsstruktur. 
+|CI-Pipeline prüft auf gebrochene Links, fehlerhafte Includes 
+|CI/CD-Pipeline 
+
+|=== 
+
+== Implementierungsstrategie
+
+=== Lösungsansatz
+
+. **Separation of Concerns**: Strenge Trennung von Content, Themes und Build-Logik
+. **Modularer Aufbau**: Gradle-Tasks als unabhängige Module
+. **ADR-Dokumentation**: Alle Architekturentscheidungen werden als ADRs dokumentiert
+. **Standard-Konformität**: Verwendung etablierter Standards und Tools
+. **Automatisierte Validierung**: CI-Pipeline prüft Dokumentationsqualität
+
+=== Technische Umsetzung
+
+[plantuml]
+----
+@startuml
+left to right direction
+
+package "Dokumentation" {
+  [Content]
+  [Themes]
+  [Build]
+}
+
+package "Standards" {
+  [AsciiDoc]
+  [Gradle]
+  [arc42]
+}
+
+[Content] --> [Themes] : "verwendet"
+[Content] --> [Build] : "wird verarbeitet von"
+[Build] --> [Gradle] : "nutzt"
+[Themes] --> [AsciiDoc] : "basiert auf"
+
+note right of [Content]
+  Modularer Aufbau
+  ermöglicht einfache
+  Wartung
+end note
+
+@enduml
+----
+
+=== Verknüpfungen zu Architekturentscheidungen
+
+* <<../decisions/ADR-002-use-gradle.adoc,ADR-002: Use Gradle for orchestration>>
+  **→ Modularer Build-Prozess**
+* <<../04-solution-strategy.adoc,Strategie Modularer Build>>
+  **→ Detaillierte Beschreibung der Strategie**
+* <<../05-building-blocks.adoc#baustein-gradle-build,Baustein Gradle Build>>
+  **→ Technische Implementierung**
+* <<../05-building-blocks.adoc#baustein-content,Baustein Content>>
+  **→ Content-Struktur**
+* <<../05-building-blocks.adoc#baustein-themes,Baustein Themes>>
+  **→ Theme-System**
+
+== Verifikationsmethoden
+
+=== Automatisierte Tests
+
+. **Link-Validierung**: CI prüft alle internen und externen Links
+. **Include-Validierung**: Alle AsciiDoc-Includes werden auf Existenz geprüft
+. **Struktur-Validierung**: Dateistruktur wird gegen Expected Structure geprüft
+
+=== Manuelle Prüfungen
+
+. **Code-Review**: alle Änderungen werden vor Merge geprüft
+. **Wartbarkeits-Audit**: Regelmäßige Bewertung der Wartbarkeit
+
+== Metriken und Monitoring
+
+[cols="1,2,1", options="header"]
+|=== 
+|Metrik |Zielwert |Aktueller Status 
+
+|Anzahl offener Wartungs-Tickets 
+|< 5 
+|Zu messen 
+
+|Durchschnittliche Zeit für Änderungen 
+|< 30 Minuten pro Änderung 
+|Zu messen 
+
+|Anzahl gebrochener Links 
+|0 
+|Zu messen 
+
+|ADR-Abstimmung 
+|100% der Entscheidungen dokumentiert 
+|Zu messen 
+
+|=== 
+
+== Abhängigkeiten und Konflikte
+
+=== Abhängigkeiten
+
+* <<reproducibility.adoc,Reproduzierbarkeit>>: Gute Wartbarkeit unterstützt reproduzierbare Builds
+* <<automability.adoc,Automatisierbarkeit>>: Automatisierung vereinfacht Wartung
+* <<flexibility.adoc,Flexibilität>>: Modularer Aufbau ermöglicht Flexibilität
+
+=== Potenzielle Konflikte
+
+* *Flexibilität vs. Wartbarkeit*: Zu viele Optionen können Wartbarkeit erschweren
+  **Lösung**: Flexibilität durch modulare, gut dokumentierte Komponenten
+
+== Historische Entwicklung
+
+| Version | Datum | Änderung | Autor |
+| 1.0 | 2025-06-23 | Initiales Dokument | Dieter Baier |
+
+== Referenzen
+
+* https://quality.arc42.org[quality.arc42.org] – Wartbarkeit
+* https://martinfowler.com/articles/architecture-decision-record.html[Architecture Decision Records]
+* https://12factor.net/[The Twelve-Factor App] (Separation of Concerns)

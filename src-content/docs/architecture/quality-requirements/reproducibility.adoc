@@ -1,0 +1,180 @@
+= Reproduzierbarkeit
+include::../../../revinfo.adoc[]
+:lang: de
+Dieter Baier
+:author_page: https://dieterbaier.eu
+:revremark: Qualitätskriterium – Reproduzierbarkeit (QA-REP)
+:nofooter:
+:toc: left
+:stylesheet: style.css
+:stylesdir: ../../../theme
+:iconsdir: {stylesdir}/icons
+:icons: image
+ifdef::buildsite[]
+:stylesdir: ./stylesheet
+:iconsdir: ./assets/icons
+:linkcss:
+endif::[]
+:docinfo: shared
+:docinfodir: ../../../docinfo/
+
+include::../../../../theme/doctitle.adoc[]
+
+[.callout]
+---
+*Dieses Dokument beschreibt das **Qualitätskriterium Reproduzierbarkeit** für das `profile-dieterbaier`-Projekt.*
+
+*Verknüpft mit:*
+
+* <<../07-quality-requirements.adoc,07. Qualitätsanforderungen (Überblick)>>
+* <<../architecture-canvas.adoc,Architecture Canvas>>
+* <<../04-solution-strategy.adoc,04. Lösungsstrategie>>
+* <<../05-building-blocks.adoc,05. Bausteine>>
+---
+
+== Definition und Ziel
+
+=== 🎯 Qualitätsziel
+
+Reproduzierbarkeit (Reproducibility) stellt sicher, dass **identische Inputs zu identischen Outputs führen**, unabhängig von der Umgebung oder dem Zeitpunkt der Ausführung. Dies ist essenziell für Vertrauen in Build-Prozesse und generierte Artefakte.
+
+=== Kontext
+
+Im `profile-dieterbaier`-Projekt betrifft Reproduzierbarkeit primär:
+
+* Build-Prozesse (Gradle, Docker)
+* Generierte Dokumente (HTML, PDF, Markdown)
+* Docker-Images
+* Deployment-Artefakte
+
+=== Priorität
+
+⭐⭐⭐⭐⭐ (Kritisch) – Ohne Reproduzierbarkeit sind Builds und Deployments nicht vertrauenswürdig.
+
+== Detaillierte Anforderungen
+
+[cols="1,3,1,1", options="header"]
+|=== 
+|ID |Anforderung |Messkriterium |Verantwortlicher 
+
+|QA-REP-001 
+|Gleiche Input-Dateien und Umgebung führen zu identischen Output-Dateien. 
+|Build-Hash Prüfsumme stimmt bei wiederholten Läufen überein 
+|Build-System (Gradle/Docker) 
+
+|QA-REP-002 
+|Build-Ergebnisse sind unabhängig von der Host-Umgebung (Betriebssystem, installierte Tools). 
+|Build in Docker-Container und lokal (mit gleichem Image) produziert identische Ergebnisse 
+|Docker-Image 
+
+|QA-REP-003 
+|Versionierte Docker-Images ermöglichen deterministische Builds. 
+|Image-Tags sind unveränderlich (immutable) 
+|CI/CD-Pipeline 
+
+|=== 
+
+== Implementierungsstrategie
+
+=== Lösungsansatz
+
+. **Docker-basierte Builds**: Alle Builds laufen in Container-Umgebungen
+. **Versionierte Images**: Jedes Docker-Image hat einen unveränderlichen Tag
+. **Deterministische Builds**: Gradle nutzt Caching und reproduzierbare Abhängigkeiten
+. **Hash-Verifikation**: Build-Artefakte werden mit Prüfsummen validiert
+
+=== Technische Umsetzung
+
+[plantuml]
+----
+@startuml
+left to right direction
+
+rectangle "Build-Prozess" as Build {
+  [Gradle]
+  [Docker]
+  [GitHub Actions]
+}
+
+rectangle "Version Control" as VCS {
+  [Git]
+  [Tags]
+}
+
+Build --> VCS : "verwendet"
+VCS --> Build : "liefert Input"
+
+note right of Build
+  Deterministische Builds
+  durch versionierte
+  Docker-Images
+end note
+
+@enduml
+----
+
+=== Verknüpfungen zu Architekturentscheidungen
+
+* <<../decisions/ADR-003-use-docker.adoc,ADR-003: Use Docker for reproducibility>>
+  **→ Grundlegend für reproduzierbare Umgebung**
+* <<../04-solution-strategy.adoc,Strategie Reproduzierbare Umgebung>>
+  **→ Detaillierte Beschreibung der Strategie**
+* <<../05-building-blocks.adoc#baustein-docker-image,Baustein Docker-Image>>
+  **→ Technische Implementierung**
+
+== Verifikationsmethoden
+
+=== Automatisierte Tests
+
+. **Build-Hash-Validierung**: Vergleich der Prüfsummen mehrerer Build-Läufe
+. **Docker-Image-Verifikation**: Prüfung der Image-Immutability
+. **Umgebungsunabhängigkeit**: Builds in verschiedenen Umgebungen vergleichen
+
+=== Manuelle Prüfungen
+
+. **Visuelle Inspektion**: Generierte Dokumente auf Konsistenz prüfen
+. **Spot-Checks**: Regelmäßige Stichproben-Validierung
+
+== Metriken und Monitoring
+
+[cols="1,2,1", options="header"]
+|=== 
+|Metrik |Zielwert |Aktueller Status 
+
+|Build-Reproduzierbarkeitsrate 
+|100% (alle Builds identisch) 
+|Zu messen 
+
+|Docker-Image-Immutability 
+|100% (keine Mutationen) 
+|Zu messen 
+
+|Cross-Plattform-Konsistenz 
+|100% (Linux/Windows/macOS) 
+|Zu messen 
+
+|=== 
+
+== Abhängigkeiten und Konflikte
+
+=== Abhängigkeiten
+
+* <<maintainability.adoc,Wartbarkeit>>: Reproduzierbare Builds vereinfachen Wartung
+* <<automability.adoc,Automatisierbarkeit>>: Automatisierte Builds erfordern Reproduzierbarkeit
+* <<security.adoc,Sicherheit>>: Deterministische Builds verbessern Sicherheit
+
+=== Potenzielle Konflikte
+
+* *Performance vs. Reproduzierbarkeit*: Caching kann Reproduzierbarkeit beeinflussen
+  **Lösung**: Cache nur unveränderliche Abhängigkeiten
+
+== Historische Entwicklung
+
+| Version | Datum | Änderung | Autor |
+| 1.0 | 2025-06-23 | Initiales Dokument | Dieter Baier |
+
+== Referenzen
+
+* https://quality.arc42.org[quality.arc42.org] – Reproduzierbarkeit
+* https://reproducible-builds.org[Reproducible Builds Project]
+* https://docs.docker.com/engine/reference/commandline/build/[Docker Build Dokumentation]

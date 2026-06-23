@@ -1,0 +1,268 @@
+= ADR-001: Use AsciiDoc as single source
+include::../../../revinfo.adoc[]
+:lang: en
+Dieter Baier
+:author_page: https://dieterbaier.eu
+:revremark: Architecture Decision Record
+:nofooter:
+:toc: left
+:stylesheet: style.css
+:stylesdir: ../../../theme
+:iconsdir: {stylesdir}/icons
+:icons: image
+ifdef::buildsite[]
+:stylesdir: ./stylesheet
+:iconsdir: ./assets/icons
+:linkcss:
+endif::[]
+:docinfo: shared
+:docinfodir: ../../../docinfo/
+
+include::../../../../theme/doctitle.adoc[]
+
+[.callout]
+---
+*This ADR follows the template by **Mark Nygard** (https://adr.github.io/) with **Pugh Matrix** extension as per AGENTS.md.*
+
+*Status:* Accepted
+
+*Date:* 2024-XX-XX (TBD)
+
+*Related:* <<../01-vision-and-goals,Vision & Goals>> | <<../05-building-blocks,Building Blocks>> | <<../08-principles-and-rules,Principles>> | <<../09-risks-and-constraints,Chapter 11 (Risks)>>
+---
+
+== Status
+
+Accepted
+
+== Kontext
+
+Maintaining a personal profile across multiple platforms (GitHub, GitLab, personal website, CV) leads to **duplication and inconsistencies**.
+Each platform has different requirements for format, length, and content, resulting in:
+
+* **Redundancy:** Same information must be maintained in multiple places
+* **Inconsistencies:** Changes are not applied everywhere
+* **Error-proneness:** Manual synchronization is prone to mistakes
+* **Time consumption:** High maintenance effort for simple updates
+
+We needed a **single source of truth** that could serve as the basis for all outputs, eliminating these problems.
+
+== Entscheidungsgrundlage
+
+=== Pugh Matrix (3-Point: -1/0/+1)
+
+[.callout]
+---
+*Bewertungskriterien und Optionen für die Single Source-Entscheidung.*
+
+*Datum:* 2024-XX-XX
+*Team:* Dieter Baier
+
+*Legende:* +1 = gut, 0 = neutral, -1 = schlecht, ? = Bewertung offen
+---
+
+[cols="1,1,1,1,1,1,1", options="header"]
+|===
+|Kriterium |Gewicht |AsciiDoc |Markdown |RST |Custom |Referenz 
+
+|Rich Features (Tables, X-Refs, Includes) 
+|⭐⭐⭐⭐⭐ 
+|+1 
+|-1 
+|+1 
+|0 
+|Funktionale Eignung (ISO 25010) 
+
+|Learning Curve 
+|⭐⭐⭐⭐ 
+|-1 
+|+1 
+|-1 
+|-1 
+|Wartbarkeit (ISO 25010) 
+
+|Tooling Support (Asciidoctor, Pandoc) 
+|⭐⭐⭐⭐⭐ 
+|+1 
+|0 
+|+1 
+|-1 
+|Kompatibilität 
+
+|Community/Adoption 
+|⭐⭐⭐ 
+|0 
+|+1 
+|0 
+|-1 
+|Marktakzeptanz 
+
+|Multi-Output Capability (HTML/PDF/MD) 
+|⭐⭐⭐⭐⭐ 
+|+1 
+|0 
+|+1 
+|+1 
+|Flexibilität 
+
+|Diagram Support (PlantUML, Graphviz) 
+|⭐⭐⭐⭐ 
+|+1 
+|-1 
+|+1 
+|0 
+|Funktionale Eignung 
+
+|**Summe (gewichtet)** 
+|- 
+|**+3** 
+|**-1** 
+|**0** 
+|**-1** 
+|=
+
+*Gewichtung: ⭐⭐⭐⭐⭐ = 5, ⭐⭐⭐⭐ = 4, ⭐⭐⭐ = 3, ⭐⭐ = 2, ⭐ = 1*
+
+[.small]
+*Detaillierte Bewertung pro Option: AsciiDoc: +5+0-3-3+5+4 = +3; Markdown: -5+4+0+3+0-4-3 = -1; RST: +5-4+5+0+5+4-3 = +2; Custom: 0-4-5+0+5+0-4 = -4*
+
+=== Optionen
+
+==== Option 1: AsciiDoc
+
+* **Pros:**
+  - Rich markup capabilities (tables, cross-references, includes)
+  - Native support for diagrams (PlantUML, Graphviz)
+  - Flexible output generation (HTML, PDF, DocBook, Markdown via Pandoc)
+  - Strong tooling support (Asciidoctor, Gradle plugins)
+  - Used by major documentation projects (e.g., Spring, Eclipse)
+  - Mature and actively maintained
+  - Supports attributes and conditional content
+
+* **Cons:**
+  - Learning curve for new contributors
+  - Less widespread than Markdown
+  - Requires specific tooling (Asciidoctor)
+
+==== Option 2: Markdown
+
+* **Pros:**
+  - Very widespread and familiar
+  - Simple syntax for basic use cases
+  - Native support on GitHub/GitLab
+
+* **Cons:**
+  - Limited features (no native tables, cross-references, includes)
+  - No standard for extensions (CommonMark, GFM, etc.)
+  - Limited diagram support
+  - Less suitable for complex documentation
+  - Harder to generate multiple output formats
+
+==== Option 3: reStructuredText (RST)
+
+* **Pros:**
+  - Very powerful and feature-rich
+  - Native support in Python ecosystem (Sphinx)
+  - Good for complex documentation
+
+* **Cons:**
+  - Very steep learning curve
+  - Less tooling support outside Python ecosystem
+  - Verbose syntax
+  - Not as widely adopted as Markdown or AsciiDoc
+
+==== Option 4: Custom Format
+
+* **Pros:**
+  - Tailored exactly to our needs
+  - Maximum flexibility
+
+* **Cons:**
+  - High development effort
+  - No existing tooling
+  - Maintenance burden
+  - Not portable
+
+== Entscheidung
+
+We chose **AsciiDoc** as the single source format for all content in this project.
+
+**Pugh Matrix Ergebnis:** AsciiDoc erreicht die höchste gewichtete Punktzahl (+3), gefolgt von RST (+2). Markdown (-1) und Custom (-4) schneiden schlechter ab.
+
+== Konsequenzen
+
+=== Vorteile
+
+Accepted (direct from Pugh analysis)
+
+* Functional Suitability: Single Source of Truth: One AsciiDoc file can generate multiple outputs (HTML, PDF, Markdown)
+* Functional Suitability: Rich Features: Support for tables, cross-references, includes, diagrams, and conditional content
+* Flexibility: Flexible Output: Can be converted to HTML (Asciidoctor), PDF (Asciidoctor PDF), and Markdown (Pandoc via DocBook)
+* Maintainability: Modularity: Includes allow for reusable content components (e.g., projects, contact info)
+* Compatibility: Tooling Support: Good integration with Gradle and Docker
+* Maintainability: Maturity: Actively maintained with strong community support
+
+=== Nachteile
+
+* Maintainability: Learning Curve: New contributors need to learn AsciiDoc syntax
+* Compatibility: Tool Dependency: Requires Asciidoctor and potentially Pandoc
+* Maintainability: Less Common: Less widespread than Markdown in some communities
+
+=== Risiken und Mitigation (Referenz auf Kapitel 11)
+
+[cols="1,2,2", options="header"]
+|===
+|Risiko-ID |Risiko |Mitigation 
+
+|<<../09-risks-and-constraints#RISK-101,RISK-101>> 
+|AsciiDoc-Lernkurve für neue Mitwirkende 
+|Tutorials und Templates bereitstellen; AsciiDoc-Cheat-Sheet im Repository 
+
+|<<../09-risks-and-constraints#RISK-004,RISK-004>> 
+|Asciidoctor oder Pandoc werden nicht mehr gewartet 
+|Alternative Tools evaluieren; eigene Forks pflegen 
+
+|=== 
+
+== Alternativen
+
+* **Markdown:** Rejected due to limited features and harder multi-output generation (Pugh: -1)
+* **RST:** Rejected due to steep learning curve and limited tooling outside Python (Pugh: +2, but community adoption -1)
+* **Custom Format:** Rejected due to high development and maintenance effort (Pugh: -4)
+
+== Verknüpfungen
+
+* **Unterstützt Vision & Ziele:**
+  - <<../01-vision-and-goals#_mission_statement,Mission Statement>> ("Write once, publish everywhere")
+  - <<../01-vision-and-goals#_primäre_ziele,Primäres Ziel Single Source of Truth>> (Z-001)
+  - <<../01-vision-and-goals#_sekundäre_ziele,Sekundäres Ziel Konsistenz>> (Z-003)
+
+* **Definiert Baustein:**
+  - <<../05-building-blocks#_1_content_asciidoc,Baustein Content (AsciiDoc)>>
+
+* **Implementiert Prinzipien:**
+  - <<../08-principles-and-rules#_docs_as_code_prinzipien,PR-DCC-002 (Single Source of Truth)>>
+  - <<../08-principles-and-rules#_software_architektur_prinzipien,PR-SA-002 (DRY)>>
+
+* **Unterstützt Qualitätsanforderungen:**
+  - <<../07-quality-requirements,QA-MNT-001 (Separation of Concerns)>>
+  - <<../07-quality-requirements,QA-MNT-002 (Modularität)>>
+  - <<../07-quality-requirements,QA-FLEX-001 (Multi-Output)>>
+  - <<../07-quality-requirements,QA-CORR-001 (Korrektheit)>>
+
+* **Beeinflusst Lösungsstrategien:**
+  - <<../04-solution-strategy#_1_single_source_strategy,Strategie Single Source>>
+  - <<../04-solution-strategy#_5_multi_output_strategy,Strategie Multi-Output>>
+
+* **Verwandte Entscheidungen:**
+  - <<ADR-004-use-pandoc.adoc,ADR-004: Use Pandoc for Markdown conversion>> (ergänzt die Multi-Output-Fähigkeiten)
+
+* **Top-Level Qualitätsziele (Kapitel 1.2):**
+  - Unterstützt <<../01-vision-and-goals#_1_2_top_level_qualitätsziele,Q-002 (Wartbarkeit)>> durch modolare Struktur
+
+== Revision History
+
+| Date | Author | Changes |
+|------|--------|---------|
+| 2024-XX-XX | Dieter Baier | Initial version |
+| 2025-06-23 | Dieter Baier | Added Pugh Matrix per AGENTS.md | Added risk references per AGENTS.md |

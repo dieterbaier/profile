@@ -61,11 +61,12 @@ Available tasks:
 
 - buildSite
 - buildReadme
+- buildArticlesMarkdown
 - buildCVPersonal
 - buildArchitecture
 
 
-- buildAll (uses the above tasks to build everything at once)
+- buildAll (builds the main profile outputs at once)
 
 ### Local (with container)
 
@@ -86,6 +87,8 @@ Available tasks:
 |----------------------------|---------------------------------|
 | README                     | `build/readme/README.md`        |
 | README                     | `build/readme/README.html`      |
+| Articles (Markdown)        | `build/articles/**/*.md`        |
+| Article media              | `build/articles/media/**`       |
 | Website                    | `build/site/index.html`         |
 | CV (on the website, HTML)  | `build/site/cv.html`            |
 | CV (on the website, PDF)   | `build/site/cv.pdf`             |
@@ -115,9 +118,20 @@ This project uses the docker image [ghcr.io/docs-as-code-toolkit/docs-toolbox](h
 The build is implemented using Gradle:
 
 * Custom tasks (e.g. Pandoc integration)
+* Directory-based Pandoc conversion for article Markdown exports
 * Asset pipeline (Copy tasks)
 * Cleanup (Delete tasks)
 * Environment checks
+
+---
+
+## 🤖 AI Workflows
+
+Project-local AI instructions live in `AGENTS.md`.
+
+Repeatable AI-assisted work is described with contracts under `.agents/ai-contracts/`. The first contract is `article-summary-pack`, which defines how article summaries for LinkedIn, Substack, and listed.io should be created.
+
+The matching Codex skill lives in `.codex/skills/article-summary-pack` and provides the workflow plus platform templates.
 
 ### 🏗️ CI/CD Pipeline
 
@@ -150,6 +164,8 @@ The pipeline builds and deployes
 - The profile website (including the cv.pdf, which can be downloaded from the website) to `<vars.SFTP_REMOTE_BASE>/site`
 - The architecture documentation to `<vars.SFTP_REMOTE_BASE>/architecture`
 
+When article sources change, the pipeline also builds Markdown exports under `build/articles` as part of the uploaded build artifact.
+
 ---
 
 ## 📐 Project Structure
@@ -165,6 +181,7 @@ src-content/
     cv/
     readme/
     site/
+      articles/         # Website articles and Markdown export sources
     includes/
   theme/                # The theme for the docs and the profile
 
@@ -206,6 +223,7 @@ All of these share the same core information — but differ in format, level of 
     * Public CV
     * Private CV (with personal data)
     * README files
+    * Article Markdown exports
 * Inject environment-specific data (e.g. contact details; check `.env-example` to get an idea what personal information can be injected via the environment; if you rename `.env-example` to `.env` and insert your personal info, `./build.sh buildCVPersonal` will inject these values into the `build/cv/cv.pdf`) only when needed
 
 ---

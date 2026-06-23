@@ -1,0 +1,301 @@
+= 02. Stakeholder & Nutzer
+include::../../revinfo.adoc[]
+:lang: de
+Dieter Baier
+:author_page: https://dieterbaier.eu
+:revremark: Stakeholder und Nutzer der profile-dieterbaier-Architektur
+:nofooter:
+:toc: left
+:stylesheet: style.css
+:stylesdir: ../../theme
+:iconsdir: {stylesdir}/icons
+:icons: image
+ifdef::buildsite[]
+:stylesdir: ./stylesheet
+:iconsdir: ./assets/icons
+:linkcss:
+endif::[]
+:docinfo: shared
+:docinfodir: {includesdir}/../docinfo/
+
+include::{includesdir}/../../theme/doctitle.adoc[]
+
+[.callout]
+---
+*Dieses Dokument ist Teil der Architekturdokumentation und detailliert den Abschnitt <<architecture-canvas#2-stakeholder-nutzer,2. Stakeholder & Nutzer>> aus dem <<architecture-canvas,Architecture Canvas>>.*
+
+*Verknüpfte Dokumente:*
+
+* <<architecture-canvas,Architecture Canvas>> (Überblick)
+* <<01-vision-and-goals,01. Vision & Ziele>> (wer profitiert von den Zielen?)
+* <<05-building-blocks,05. Bausteine>> (welche Komponenten werden von wem genutzt?)
+* <<09-risks-and-constraints,09. Risiken & Constraints>> (Risiken für Stakeholder)
+---
+
+== Stakeholder-Übersicht
+
+[.text-center]
+[plantuml]
+----
+@startuml
+left to right direction
+
+actor "Dieter Baier" as Author
+actor "Arbeitgeber" as Employer
+actor "Kunde" as Customer
+actor "Community" as Community
+
+rectangle "profile-dieterbaier" as System {
+  [AsciiDoc]
+  [Gradle]
+  [Docker]
+  [GitHub Actions]
+}
+
+Author --> System : "entwickelt & pflegt"
+Employer --> System : "nutzt (CV/Website)"
+Customer --> System : "nutzt (CV/Website)"
+Community --> System : "nutzt (READMEs)"
+
+cloud "Externe Dienste" as Services {
+  [GitHub]
+  [GitLab]
+  [SFTP Server]
+}
+
+System --> Services : "deployt zu"
+@enduml
+----
+
+== Stakeholder-Matrix
+
+[cols="1,2,2,1,1", options="header"]
+|=== 
+|ID |Rolle |Interessen |Einfluss |Betroffenheit 
+
+|ST-001 |**Dieter Baier (Autor)** 
+|- Einfache Pflege der Inhalte  
+- Konsistente Darstellung über alle Plattformen  
+- Professionelles Erscheinungsbild  
+- Zeitersparnis durch Automatisierung 
+|⭐⭐⭐⭐⭐ (Hoch) 
+|⭐⭐⭐⭐⭐ 
+
+|ST-002 |**Arbeitgeber (aktuell/zukünftig)** 
+|- Aktuelle und vollständige Informationen im CV  
+- Professionelle Präsentation  
+- Einfacher Zugriff auf Profil-Dokumente 
+|⭐⭐ (Mittel) 
+|⭐⭐⭐⭐ 
+
+|ST-003 |**Kunden (Freelance/Projekte)** 
+|- Aktuelle Projektinformationen  
+- Referenzen und Skills übersichtlich dargestellt  
+- Kontaktmöglichkeiten 
+|⭐⭐ (Mittel) 
+|⭐⭐⭐⭐ 
+
+|ST-004 |**Community (GitHub/GitLab)** 
+|- Klare und informative READMEs  
+- Transparenz über Aktivitäten  
+- Einfache Navigation 
+|⭐ (Niedrig) 
+|⭐⭐ 
+
+|ST-005 |**GitHub Actions (CI/CD)** 
+|- Deterministische Ausführung  
+- Ressourcen-Optimierung  
+- Zuverlässige Builds 
+|⭐⭐⭐⭐ (Hoch) 
+|⭐⭐⭐ 
+
+|ST-006 |**Docker / docs-toolbox** 
+|- Reproduzierbare Umgebung  
+- Konsistente Tool-Versionen  
+- Geringer Wartungsaufwand 
+|⭐⭐⭐⭐ (Hoch) 
+|⭐⭐⭐ 
+
+|ST-007 |**SFTP-Provider (Hosting)** 
+|- Zuverlässiger Upload  
+- Geringe Latenz  
+- Sicherheitsstandards 
+|⭐ (Niedrig) 
+|⭐⭐ 
+
+|=== 
+
+== Detaillierte Stakeholder-Analyse
+
+=== ST-001: Dieter Baier (Autor)
+
+[cols="1,2", options="header"]
+|=== 
+|Aspekt |Beschreibung 
+
+|**Rolle** 
+|Primärer Nutzer und Entwickler des Systems 
+
+|**Ziele** 
+|- **Effizienz:** Minimaler Aufwand für Pflege der Profile  
+- **Qualität:** Hohe Qualität der generierten Dokumente  
+- **Flexibilität:** Einfache Anpassung an neue Anforderungen  
+- **Lernbereitschaft:** Nutzung moderner Technologien (AsciiDoc, Gradle, Docker) 
+
+|**Erwartungen** 
+|- Einfache Bedienung (z. B. `./build.sh buildAll`)  
+- Schnelle Build-Zeiten  
+- Klare Fehlerbedingungen  
+- Gute Dokumentation 
+
+|**Befürchtungen** 
+|- Zu hohe Komplexität  
+- Wartungsaufwand für Docker-Images  
+- Abhängigkeit von externen Tools 
+
+|**Einfluss auf Architektur** 
+|- Wahl von AsciiDoc als Format (vertraut mit Markup-Sprachen)  
+- Entscheidung für Gradle (Erfahrung mit Java-Build-Tools)  
+- Fokus auf Automatisierung (CI/CD-Erfahrung) 
+
+|**Verweise** 
+|- siehe <<01-vision-and-goals,Vision & Ziele>> (primärer Nutzer der Ziele)  
+- siehe <<05-building-blocks,Bausteine>> (alle Komponenten werden von ihm genutzt)  
+- siehe <<decisions/ADR-001-use-asciidoc.adoc,ADR-001>> (seine Entscheidung für AsciiDoc)  
+|=== 
+
+=== ST-002 & ST-003: Arbeitgeber & Kunden
+
+[cols="1,2", options="header"]
+|=== 
+|Aspekt |Beschreibung 
+
+|**Rolle** 
+|Externe Nutzer der generierten Outputs (CV, Website) 
+
+|**Ziele** 
+|- Aktuelle und korrekte Informationen  
+- Professionelle Darstellung  
+- Einfacher Zugriff (Website, PDF-Download) 
+
+|**Erwartungen** 
+|- Konsistente Inhalte über alle Kanäle  
+- Schnelle Ladezeiten der Website  
+- Druckfreundliche PDFs 
+
+|**Befürchtungen** 
+|- Veraltete Informationen  
+- Gebrochene Links  
+- Schlechte Lesbarkeit 
+
+|**Einfluss auf Architektur** 
+|- Entscheidung für **mehrere Output-Formate** (HTML, PDF)  
+- Fokus auf **Qualität der Präsentation** (Themes)  
+- **Separation of Concerns** (Inhalt ≠ Präsentation) für einfache Anpassungen 
+
+|**Verweise** 
+|- siehe <<07-quality-requirements,Qualitätsanforderungen>> (Benutzerfreundlichkeit, Korrektheit)  
+- siehe <<05-building-blocks,Bausteine>> (Themes für Präsentation)  
+|=== 
+
+=== ST-004: Community (GitHub/GitLab)
+
+[cols="1,2", options="header"]
+|=== 
+|Aspekt |Beschreibung 
+
+|**Rolle** 
+|Leser der README-Dateien auf GitHub und GitLab 
+
+|**Ziele** 
+|- Klare Information über das Profil  
+- Einfache Navigation zu relevanten Ressourcen  
+- Transparenz über Aktivitäten 
+
+|**Erwartungen** 
+|- Kurze, prägnante READMEs  
+- Aktuelle Links  
+- Konsistente Informationen 
+
+|**Befürchtungen** 
+|- Zu lange READMEs  
+- Veraltete Informationen  
+- Unklare Struktur 
+
+|**Einfluss auf Architektur** 
+|- **Multi-Output** (Markdown für READMEs und Artikel-Exporte)  
+- **Automatisiertes Deployment** zu GitHub/GitLab  
+- **Inhaltsfilterung** (nur öffentliche Infos in READMEs) 
+
+|**Verweise** 
+|- siehe <<04-solution-strategy,Lösungsstrategie>> (Multi-Output-Strategie)  
+- siehe <<decisions/ADR-004-use-pandoc.adoc,ADR-004>> (Pandoc für Markdown-Konvertierung)  
+|=== 
+
+=== ST-005: GitHub Actions (CI/CD)
+
+[cols="1,2", options="header"]
+|=== 
+|Aspekt |Beschreibung 
+
+|**Rolle** 
+|Ausführende Umgebung für Builds und Deployments 
+
+|**Ziele** 
+|- Deterministische Ausführung  
+- Ressourcen-Optimierung  
+- Zuverlässige Builds 
+
+|**Erwartungen** 
+|- Schnelle Build-Zeiten  
+- Geringer Speicherbedarf  
+- Klare Fehlerbedingungen 
+
+|**Befürchtungen** 
+|- Hohe Kosten bei vielen Builds  
+- Unvorhersehbares Verhalten  
+- Abhängigkeit von GitHub 
+
+|**Einfluss auf Architektur** 
+|- **Change Detection** für effiziente Builds  
+- **Caching** von Abhängigkeiten (Gradle, Docker-Layers)  
+- **Modularisierung** der Build-Tasks 
+
+|**Verweise** 
+|- siehe <<04-solution-strategy,Lösungsstrategie>> (Change Detection)  
+- siehe <<07-quality-requirements,Qualitätsanforderungen>> (Performance, Reproduzierbarkeit)  
+- siehe <<09-risks-and-constraints,Risiken & Constraints>> (GitHub Actions Limits)  
+|=== 
+
+== Einfluss der Stakeholder auf die Architektur
+
+=== Entscheidungen beeinflusst durch Stakeholder
+
+| Stakeholder | Architekturentscheidung | Begründung |
+|-------------|------------------------|------------|
+| ST-001 (Dieter Baier) | <<decisions/ADR-001-use-asciidoc.adoc,ADR-001: AsciiDoc>> | Erfahrung mit Markup-Sprachen, Flexibilität |
+| ST-001 (Dieter Baier) | <<decisions/ADR-002-use-gradle.adoc,ADR-002: Gradle>> | Java-Ökosystem, Erweiterbarkeit |
+| ST-001 (Dieter Baier) | <<decisions/ADR-003-use-docker.adoc,ADR-003: Docker>> | Reproduzierbarkeit, experiencia con Docker |
+| ST-002/ST-003 | Multi-Output (HTML, PDF, Markdown) | Unterschiedliche Nutzeranforderungen |
+| ST-004 | <<decisions/ADR-004-use-pandoc.adoc,ADR-004: Pandoc>> | Markdown für READMEs und Artikel-Exporte benötigt |
+| ST-005 | Change Detection | Ressourcen-Optimierung |
+| ST-006 | docs-toolbox Docker-Image | Konsistente Umgebung |
+
+=== Qualitätsanforderungen beeinflusst durch Stakeholder
+
+| Stakeholder | Qualitätskriterium | Priorität | Begründung |
+|-------------|-------------------|----------|------------|
+| ST-001 | Wartbarkeit | ⭐⭐⭐⭐⭐ | Langfristige Pflege |
+| ST-001 | Automatisierbarkeit | ⭐⭐⭐⭐⭐ | Zeitersparnis |
+| ST-002/ST-003 | Benutzerfreundlichkeit | ⭐⭐⭐⭐ | Professionelle Darstellung |
+| ST-002/ST-003 | Korrektheit | ⭐⭐⭐⭐⭐ | Aktuelle Informationen |
+| ST-004 | Konsistenz | ⭐⭐⭐⭐ | Gleiches Erscheinungsbild |
+| ST-005 | Performance | ⭐⭐⭐⭐ | Schnelle Builds |
+| ST-005 | Reproduzierbarkeit | ⭐⭐⭐⭐⭐ | Deterministische Builds |
+
+== Verwandte Dokumente
+
+* <<architecture-canvas,Architecture Canvas>>:: Kompakte Übersicht
+* <<01-vision-and-goals,01. Vision & Ziele>>:: Warum existieren die Stakeholder?
+* <<03-system-context,03. Systemkontext>>:: Welche externen Systeme sind betroffen?
+* <<09-risks-and-constraints,09. Risiken & Constraints>>:: Welche Risiken bestehen für Stakeholder?

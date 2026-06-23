@@ -1,0 +1,197 @@
+= Automatisierbarkeit
+include::../../../revinfo.adoc[]
+:lang: de
+Dieter Baier
+:author_page: https://dieterbaier.eu
+:revremark: Qualitätskriterium – Automatisierbarkeit (QA-AUT)
+:nofooter:
+:toc: left
+:stylesheet: style.css
+:stylesdir: ../../../theme
+:iconsdir: {stylesdir}/icons
+:icons: image
+ifdef::buildsite[]
+:stylesdir: ./stylesheet
+:iconsdir: ./assets/icons
+:linkcss:
+endif::[]
+:docinfo: shared
+:docinfodir: ../../../docinfo/
+
+include::../../../../theme/doctitle.adoc[]
+
+[.callout]
+---
+*Dieses Dokument beschreibt das **Qualitätskriterium Automatisierbarkeit** für das `profile-dieterbaier`-Projekt.*
+
+*Verknüpft mit:*
+
+* <<../07-quality-requirements.adoc,07. Qualitätsanforderungen (Überblick)>>
+* <<../architecture-canvas.adoc,Architecture Canvas>>
+* <<../01-vision-and-goals.adoc,01. Vision und Ziele>>
+* <<../04-solution-strategy.adoc,04. Lösungsstrategie>>
+* <<../05-building-blocks.adoc,05. Bausteine>>
+---
+
+== Definition und Ziel
+
+=== 🎯 Qualitätsziel
+
+Automatisierbarkeit (Automability) beschreibt, inwieweit Prozesse **ohne manuelles Eingreifen** ausgeführt werden können. Vollständige Automatisierung reduziert menschliche Fehler und erhöht die Effizienz.
+
+=== Kontext
+
+Im `profile-dieterbaier`-Projekt betrifft Automatisierbarkeit:
+
+* Build-Prozesse (Gradle, Docker)
+* Deployment-Prozesse (GitHub Pages, SFTP)
+* CI/CD-Pipeline (GitHub Actions)
+* Dokumentationsgenerierung
+
+=== Priorität
+
+⭐⭐⭐⭐⭐ (Kritisch) – Automatisierung ist essenziell für zuverlässige und effiziente Build- und Deployment-Prozesse.
+
+== Detaillierte Anforderungen
+
+[cols="1,3,1,1", options="header"]
+|=== 
+|ID |Anforderung |Messkriterium |Verantwortlicher 
+
+|QA-AUT-001 
+|100% der Build- und Deployment-Prozesse sind automatisiert. 
+|Keine manuellen Schritte im Normalbetrieb nötig 
+|CI/CD-Pipeline 
+
+|QA-AUT-002 
+|CI/CD-Pipeline führt alle Builds und Deployments aus. 
+|Push zu main löst automatisch Build und Deployment aus 
+|GitHub Actions 
+
+|QA-AUT-003 
+|Lokale Entwicklungsumgebung unterstützt die gleichen Kommandos wie CI. 
+|`./build.sh` und `./gradlew` funktionieren lokal und in CI 
+|Build-Skripte 
+
+|QA-AUT-004 
+|Fehler in der Pipeline führen zu klaren Fehlermeldungen. 
+|Jeder Fehler hat eine verständliche Meldung und Logs 
+|CI/CD-Pipeline 
+
+|=== 
+
+== Implementierungsstrategie
+
+=== Lösungsansatz
+
+. **CI/CD-Pipeline**: GitHub Actions für automatisierte Builds und Deployments
+. **Lokale Parität**: Lokale Entwicklungsumgebung spiegelt CI-Umgebung
+. **Fehlerbehandlung**: Klare Fehlermeldungen und Logging in allen Prozessen
+. **Skript-basiert**: Alle Prozesse durch Skripte steuerbar
+
+=== Technische Umsetzung
+
+[plantuml]
+----
+@startuml
+left to right direction
+
+rectangle "Lokale Entwicklung" as Local {
+  [Developer]
+  [./build.sh]
+  [./gradlew]
+}
+
+rectangle "CI/CD" as CI {
+  [GitHub Actions]
+  [Docker Container]
+}
+
+rectangle "Deployment" as Deploy {
+  [GitHub Pages]
+  [SFTP Server]
+}
+
+Local --> CI : "gleiche Kommandos"
+CI --> Deploy : "automatisches Deployment"
+Local --> Deploy : "manuell möglich"
+
+note top of CI
+  Trigger: Push zu main
+  oder Pull Request
+end note
+
+@enduml
+----
+
+=== Verknüpfungen zu Architekturentscheidungen
+
+* <<../01-vision-and-goals.adoc,Sekundäres Ziel Automatisierung>>
+  **→ Vision: Automatisierte Prozesse**
+* <<../04-solution-strategy.adoc,Strategie Automatisierter Build>>
+  **→ Detaillierte Beschreibung der Strategie**
+* <<../05-building-blocks.adoc#baustein-github-actions,Baustein GitHub Actions>>
+  **→ CI/CD-Implementierung**
+* <<../05-building-blocks.adoc#baustein-gradle-build,Baustein Gradle Build>>
+  **→ Build-System**
+
+== Verifikationsmethoden
+
+=== Automatisierte Tests
+
+. **Pipeline-Status**: Jeder Push löst Pipeline aus
+. **Fehler-Detection**: Pipeline erkennt und meldet Fehler
+. **Deployment-Validierung**: Deployment-Artefakte werden geprüft
+
+=== Manuelle Prüfungen
+
+. **Pipeline-Review**: Regelmäßige Überprüfung der Pipeline-Konfiguration
+. **Lokale Tests**: Lokale Builds vor Push durchführen
+
+== Metriken und Monitoring
+
+[cols="1,2,1", options="header"]
+|=== 
+|Metrik |Zielwert |Aktueller Status 
+
+|Pipeline-Erfolgsrate 
+|> 99% 
+|Zu messen 
+
+|Durchschnittliche Pipeline-Dauer 
+|< 5 Minuten 
+|Zu messen 
+
+|Manuelle Eingriffe pro Monat 
+|0 
+|Zu messen 
+
+|Fehler-Detection-Rate 
+|100% (alle Fehler erkannt) 
+|Zu messen 
+
+|=== 
+
+== Abhängigkeiten und Konflikte
+
+=== Abhängigkeiten
+
+* <<reproducibility.adoc,Reproduzierbarkeit>>: Automatisierte Builds erfordern reproduzierbare Prozesse
+* <<maintainability.adoc,Wartbarkeit>>: Automatisierung vereinfacht Wartung
+* <<flexibility.adoc,Flexibilität>>: Automatisierung ermöglicht flexible Ausgaben
+
+=== Potenzielle Konflikte
+
+* *Sicherheit vs. Automatisierung*: Automatisiertes Deployment kann Sicherheitsrisiken bergen
+  **Lösung**: Sichere Authentifizierung und Autorisierung in Deployment-Prozess
+
+== Historische Entwicklung
+
+| Version | Datum | Änderung | Autor |
+| 1.0 | 2025-06-23 | Initiales Dokument | Dieter Baier |
+
+== Referenzen
+
+* https://quality.arc42.org[quality.arc42.org] – Automatisierbarkeit
+* https://docs.github.com/en/actions[GitHub Actions Dokumentation]
+* https://about.gitlab.com/topics/ci-cd/[CI/CD Best Practices]

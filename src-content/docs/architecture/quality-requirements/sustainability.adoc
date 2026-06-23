@@ -1,0 +1,216 @@
+= Nachhaltigkeit
+include::../../../revinfo.adoc[]
+:lang: de
+Dieter Baier
+:author_page: https://dieterbaier.eu
+:revremark: Qualitätskriterium – Nachhaltigkeit (QA-SUS)
+:nofooter:
+:toc: left
+:stylesheet: style.css
+:stylesdir: ../../../theme
+:iconsdir: {stylesdir}/icons
+:icons: image
+ifdef::buildsite[]
+:stylesdir: ./stylesheet
+:iconsdir: ./assets/icons
+:linkcss:
+endif::[]
+:docinfo: shared
+:docinfodir: ../../../docinfo/
+
+include::../../../../theme/doctitle.adoc[]
+
+[.callout]
+---
+*Dieses Dokument beschreibt das **Qualitätskriterium Nachhaltigkeit** für das `profile-dieterbaier`-Projekt.*
+
+*Verknüpft mit:*
+
+* <<../07-quality-requirements.adoc,07. Qualitätsanforderungen (Überblick)>>
+* <<../architecture-canvas.adoc,Architecture Canvas>>
+* <<../01-vision-and-goals.adoc,01. Vision und Ziele>>
+* <<../04-solution-strategy.adoc,04. Lösungsstrategie>>
+* <<../05-building-blocks.adoc,05. Bausteine>>
+---
+
+== Definition und Ziel
+
+=== 🎯 Qualitätsziel
+
+Nachhaltigkeit (Sustainability) beschreibt den **verantwortungsvollen Umgang mit Ressourcen** und die Minimierung negativer Auswirkungen auf die Umwelt. Im Kontext von Software-Projekten bedeutet dies Green IT: effizienter Ressourcenverbrauch und Verzicht auf unnötige Belastungen.
+
+=== Kontext
+
+Im `profile-dieterbaier`-Projekt betrifft Nachhaltigkeit:
+
+* Ressourcenverbrauch in CI/CD (CPU, Speicher, Build-Zeit)
+* Optimierung der generierten Artefakte (Asset-Größen)
+* Effiziente Docker-Images (keine unnötigen Tools)
+* Verzicht auf Third-Party-Tracking und unnötige Skripte
+
+=== Priorität
+
+⭐⭐⭐⭐ (Hoch) – Nachhaltigkeit ist ein wichtiges Ziel im Rahmen von Green IT.
+
+== Detaillierte Anforderungen
+
+[cols="1,3,1,1", options="header"]
+|=== 
+|ID |Anforderung |Messkriterium |Verantwortlicher 
+
+|QA-SUS-001 
+|Minimaler Ressourcenverbrauch (Green IT). 
+|Change Detection reduziert CI/CD-Ressourcen 
+|CI/CD-Pipeline 
+
+|QA-SUS-002 
+|Keine unnötigen Third-Party-Skripte oder Tracker. 
+|Audit der generierten HTML-Dateien 
+|Content 
+
+|QA-SUS-003 
+|Optimierte Assets (Bilder, CSS, JS). 
+|CSS/JS-Dateien sind minifiziert, Bilder komprimiert 
+|Themes 
+
+|QA-SUS-004 
+|Effiziente Docker-Images (keine unnötigen Tools). 
+|Image-Größe < 500 MB 
+|Docker-Images 
+
+|=== 
+
+== Implementierungsstrategie
+
+=== Lösungsansatz
+
+. **Green IT-Prinzipien**: Ressourcen nur nutzen, wenn notwendig
+. **Optimierte Assets**: Minifizierung und Komprimierung aller statischen Ressourcen
+. **Effiziente Images**: Schlanke Docker-Images mit nur notwendigen Tools
+. **Change Detection**: Keine unnötigen Builds bei unkritischen Änderungen
+
+=== Technische Umsetzung
+
+[plantuml]
+----
+@startuml
+left to right direction
+
+package "Green IT" {
+  [Change Detection]
+  [Resource Limits]
+  [Efficient Caching]
+}
+
+package "Asset Optimization" {
+  [Minification]
+  [Compression]
+  [Tree Shaking]
+}
+
+package "Docker Optimization" {
+  [Multi-Stage Builds]
+  [Alpine Base Images]
+  [Layer Caching]
+}
+
+[Change Detection] --> [Resource Limits] : "reduziert"
+[Resource Limits] --> [Efficient Caching] : "unterstützt"
+[Minification] --> [Compression] : "ergänzt"
+[Multi-Stage Builds] --> [Alpine Base Images] : "nutzt"
+
+note top of [Green IT]
+  Green IT:
+  Minimaler
+  Ressourcen-
+  verbrauch
+end note
+
+note right of [Docker Optimization]
+  Image-Größe < 500 MB
+  durch Optimierung
+end note
+
+@enduml
+----
+
+=== Verknüpfungen zu Architekturentscheidungen
+
+* <<../decisions/ADR-005-green-it.adoc,ADR-005: Nothing is used on the site that isn't absolutely necessary>>
+  **→ Grundlegendes Green IT-Prinzip**
+* <<../01-vision-and-goals.adoc,Sekundäres Ziel Green IT>>
+  **→ Vision: Nachhaltige Entwicklung**
+* <<../04-solution-strategy.adoc,Strategie Change Detection>>
+  **→ Reduzierung unnötiger Builds**
+* <<../05-building-blocks.adoc#baustein-docker-image,Baustein Docker-Image>>
+  **→ Optimierte Docker-Images**
+* <<../05-building-blocks.adoc#baustein-themes,Baustein Themes>>
+  **→ Optimierte Assets**
+
+== Verifikationsmethoden
+
+=== Automatisierte Tests
+
+. **Image-Größen-Prüfung**: CI prüft Docker-Image-Größe
+. **Asset-Optimierung-Check**: CI prüft, ob Assets minifiziert sind
+. **Third-Party-Audit**: Automatisierte Prüfung auf unnötige Skripte
+
+=== Manuelle Prüfungen
+
+. **Nachhaltigkeits-Audit**: Regelmäßige Überprüfung des Ressourcenverbrauchs
+. **Green IT-Review**: Bewertung der Green IT-Konformität
+
+== Metriken und Monitoring
+
+[cols="1,2,1", options="header"]
+|=== 
+|Metrik |Zielwert |Aktueller Status 
+
+|CI/CD Ressourcenverbrauch 
+|< 10 Minuten CPU pro Build 
+|Zu messen 
+
+|Docker-Image-Größe 
+|< 500 MB 
+|Zu messen 
+
+|HTML-Seitengröße (average) 
+|< 100 KB 
+|Zu messen 
+
+|CSS/JS-Dateigröße (average) 
+|< 50 KB (uncompressed) 
+|Zu messen 
+
+|Third-Party-Skripte 
+|0 
+|Zu messen 
+
+|=== 
+
+== Abhängigkeiten und Konflikte
+
+=== Abhängigkeiten
+
+* <<performance.adoc,Performance>>: Performance-Optimierung unterstützt Nachhaltigkeit
+* <<sustainability.adoc,Nachhaltigkeit>>: Nachhaltigkeit ist Selbstzweck
+* <<security.adoc,Sicherheit>>: Keine unnötigen Skripte verbessern auch Sicherheit
+
+=== Potenzielle Konflikte
+
+* *Benutzerfreundlichkeit vs. Nachhaltigkeit*: Optimierte Assets können Funktionalität einschränken
+  **Lösung**: Optimierung ohne Funktionalitätsverlust
+* *Performance vs. Nachhaltigkeit*: Cache kann Ressourcenverbrauch erhöhen
+  **Lösung**: Intelligentes Caching mit TTL
+
+== Historische Entwicklung
+
+| Version | Datum | Änderung | Autor |
+| 1.0 | 2025-06-23 | Initiales Dokument | Dieter Baier |
+
+== Referenzen
+
+* https://quality.arc42.org[quality.arc42.org] – Nachhaltigkeit
+* https://greenit.fr/[Green IT Analyse]
+* https://www.greenit-analytics.fr/[GreenIT-Analytics]
+* https://sustainablewebdesign.com/[Sustainable Web Design]

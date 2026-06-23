@@ -14,6 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       readme: ${{ steps.filter.outputs.readme }}
+      articles: ${{ steps.filter.outputs.articles }}
       architecture: ${{ steps.filter.outputs.architecture }}
       site: ${{ steps.filter.outputs.site }}
 
@@ -26,6 +27,8 @@ jobs:
           filters: |
             readme:
               - 'src-content/profile/**'
+            articles:
+              - 'src-content/profile/site/articles/**'
             architecture:
               - 'src-content/docs/**'
             site:
@@ -45,7 +48,7 @@ jobs:
       SITE_TEL: ${{ secrets.SITE_TEL }}
     outputs:
       isBuilt: ${{ steps.run_build.outputs.IS_BUILT }}
-    if: needs.detect-changes.outputs.readme == 'true' || needs.detect-changes.outputs.architecture == 'true' || needs.detect-changes.outputs.site == 'true'
+    if: needs.detect-changes.outputs.readme == 'true' || needs.detect-changes.outputs.articles == 'true' || needs.detect-changes.outputs.architecture == 'true' || needs.detect-changes.outputs.site == 'true'
 
     steps:
       - uses: actions/checkout@v4
@@ -70,6 +73,10 @@ jobs:
 
           if [ "${{ needs.detect-changes.outputs.readme }}" == "true" ]; then
             CMD="$CMD buildReadme"
+          fi
+
+          if [ "${{ needs.detect-changes.outputs.articles }}" == "true" ]; then
+            CMD="$CMD buildArticlesMarkdown"
           fi
 
           if [ "${{ needs.detect-changes.outputs.architecture }}" == "true" ]; then

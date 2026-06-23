@@ -1,0 +1,219 @@
+= Performance
+include::../../../revinfo.adoc[]
+:lang: de
+Dieter Baier
+:author_page: https://dieterbaier.eu
+:revremark: Qualitätskriterium – Performance (QA-PERF)
+:nofooter:
+:toc: left
+:stylesheet: style.css
+:stylesdir: ../../../theme
+:iconsdir: {stylesdir}/icons
+:icons: image
+ifdef::buildsite[]
+:stylesdir: ./stylesheet
+:iconsdir: ./assets/icons
+:linkcss:
+endif::[]
+:docinfo: shared
+:docinfodir: ../../../docinfo/
+
+include::../../../../theme/doctitle.adoc[]
+
+[.callout]
+---
+*Dieses Dokument beschreibt das **Qualitätskriterium Performance** für das `profile-dieterbaier`-Projekt.*
+
+*Verknüpft mit:*
+
+* <<../07-quality-requirements.adoc,07. Qualitätsanforderungen (Überblick)>>
+* <<../architecture-canvas.adoc,Architecture Canvas>>
+* <<../01-vision-and-goals.adoc,01. Vision und Ziele>>
+* <<../04-solution-strategy.adoc,04. Lösungsstrategie>>
+* <<../05-building-blocks.adoc,05. Bausteine>>
+---
+
+== Definition und Ziel
+
+=== 🎯 Qualitätsziel
+
+Performance beschreibt die **Effizienz und Geschwindigkeit** von Build-Prozessen, Deployment und generierten Artefakten. Gute Performance stellt sicher, dass Prozesse schnell genug sind für eine gute Developer Experience.
+
+=== Kontext
+
+Im `profile-dieterbaier`-Projekt betrifft Performance:
+
+* Build-Dauer (lokal und in CI/CD)
+* Generierungsgeschwindigkeit der Dokumente
+* Ladezeit der generierten Website
+* Ressourcenverbrauch während Build und Deployment
+
+=== Priorität
+
+⭐⭐⭐⭐ (Hoch) – Gute Performance ist wichtig für effiziente Entwicklung und zufriedene Nutzer.
+
+== Detaillierte Anforderungen
+
+[cols="1,3,1,1", options="header"]
+|=== 
+|ID |Anforderung |Messkriterium |Verantwortlicher 
+
+|QA-PERF-001 
+|Build-Dauer für lokale Entwicklung < 2 Minuten. 
+|Gemessen mit `time ./gradlew buildAll` 
+|Build-System 
+
+|QA-PERF-002 
+|Build-Dauer in CI/CD < 5 Minuten. 
+|Gemessen über GitHub Actions Logs 
+|CI/CD-Pipeline 
+
+|QA-PERF-003 
+|Change Detection reduziert unnötige Builds. 
+|Builds werden nur bei relevanten Änderungen ausgeführt 
+|CI/CD-Pipeline 
+
+|QA-PERF-004 
+|Gradle nutzt Caching für Abhängigkeiten. 
+|`.gradle`-Verzeichnis wird zwischen Builds gecached 
+|Build-System 
+
+|QA-PERF-005 
+|Website-Ladezeit < 2 Sekunden (First Contentful Paint). 
+|Gemessen mit Lighthouse oder WebPageTest 
+|Website 
+
+|=== 
+
+== Implementierungsstrategie
+
+=== Lösungsansatz
+
+. **Caching**: Gradle- und Docker-Caches für Abhängigkeiten
+. **Change Detection**: Nur geänderte Komponenten neu bauen
+. **Optimierte Images**: Schlanke Docker-Images
+. **Performance-Monitoring**: Regelmäßige Messung der Performance
+
+=== Technische Umsetzung
+
+[plantuml]
+----
+@startuml
+left to right direction
+
+package "Build Performance" {
+  [Gradle Caching]
+  [Change Detection]
+  [Parallel Builds]
+}
+
+package "Deployment Performance" {
+  [Optimized Docker Images]
+  [CDN Caching]
+}
+
+package "Website Performance" {
+  [Minified CSS/JS]
+  [Optimized Images]
+  [Lazy Loading]
+}
+
+[Gradle Caching] --> [Change Detection] : "ergänzt"
+[Change Detection] --> [Parallel Builds] : "ermöglicht"
+[Optimized Docker Images] --> [CDN Caching] : "unterstützt"
+
+note top of [Gradle Caching]
+  Reduziert Build-Zeit
+  durch Caching von
+  Abhängigkeiten
+end note
+
+note right of [Website Performance]
+  Schnelle Ladezeiten
+  durch Optimierung
+  der Assets
+end note
+
+@enduml
+----
+
+=== Verknüpfungen zu Architekturentscheidungen
+
+* <<../01-vision-and-goals.adoc,Erfolgsmetrik Build-Dauer>>
+  **→ Vision: Schnelle Builds**
+* <<../04-solution-strategy.adoc,Strategie Change Detection>>
+  **→ Detaillierte Beschreibung der Change Detection**
+* <<../04-solution-strategy.adoc,Strategie Reproduzierbare Umgebung>> (Caching)
+  **→ Caching-Strategie**
+* <<../05-building-blocks.adoc#baustein-github-actions,Baustein GitHub Actions>>
+  **→ CI/CD-Performance**
+* <<../05-building-blocks.adoc#baustein-docker-image,Baustein Docker-Image>>
+  **→ Optimierte Docker-Images**
+
+== Verifikationsmethoden
+
+=== Automatisierte Tests
+
+. **Performance-Monitoring**: CI misst Build-Dauer bei jedem Run
+. **Threshold-Checks**: Builds scheitern, wenn Dauer zu hoch
+. **Lighthouse-Checks**: Website-Performance wird automatisch geprüft
+
+=== Manuelle Prüfungen
+
+. **Performance-Audit**: Regelmäßige Überprüfung der Performance-Metriken
+. **Lokale Tests**: Build-Dauer wird lokal überwacht
+
+== Metriken und Monitoring
+
+[cols="1,2,1", options="header"]
+|=== 
+|Metrik |Zielwert |Aktueller Status 
+
+|Lokale Build-Dauer 
+|< 2 Minuten 
+|Zu messen 
+
+|CI/CD Build-Dauer 
+|< 5 Minuten 
+|Zu messen 
+
+|Website Ladezeit (FCP) 
+|< 2 Sekunden 
+|Zu messen 
+
+|Cache-Hit-Rate 
+|> 90% 
+|Zu messen 
+
+|Builds pro Tag 
+|< 5 (durch Change Detection) 
+|Zu messen 
+
+|=== 
+
+== Abhängigkeiten und Konflikte
+
+=== Abhängigkeiten
+
+* <<reproducibility.adoc,Reproduzierbarkeit>>: Caching unterstützt reproduzierbare Builds
+* <<sustainability.adoc,Nachhaltigkeit>>: Effiziente Builds reduzieren Ressourcenverbrauch
+* <<automability.adoc,Automatisierbarkeit>>: Automatisierung unterstützt Performance-Optimierung
+
+=== Potenzielle Konflikte
+
+* *Reproduzierbarkeit vs. Performance*: Caching kann Reproduzierbarkeit beeinflussen
+  **Lösung**: Cache nur unveränderliche Abhängigkeiten mit Hash-Verifikation
+* *Flexibilität vs. Performance*: Mehr Formate können Build-Zeit erhöhen
+  **Lösung**: Change Detection, um nur benötigte Formate zu bauen
+
+== Historische Entwicklung
+
+| Version | Datum | Änderung | Autor |
+| 1.0 | 2025-06-23 | Initiales Dokument | Dieter Baier |
+
+== Referenzen
+
+* https://quality.arc42.org[quality.arc42.org] – Performance
+* https://docs.github.com/en/actions/monitoring-and-troubleshooting-workflows/about-monitoring-and-troubleshooting[GitHub Actions Monitoring]
+* https://developers.google.com/web/fundamentals/performance[Web Performance Best Practices]
+* https://gradle.org/docs/current/userguide/performance.html[Gradle Performance]

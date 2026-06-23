@@ -1,0 +1,439 @@
+= 08. Prinzipien & Regeln
+include::../../revinfo.adoc[]
+:lang: de
+Dieter Baier
+:author_page: https://dieterbaier.eu
+:revremark: Prinzipien und Regeln der profile-dieterbaier-Architektur
+:nofooter:
+:toc: left
+:stylesheet: style.css
+:stylesdir: ../../theme
+:iconsdir: {stylesdir}/icons
+:icons: image
+ifdef::buildsite[]
+:stylesdir: ./stylesheet
+:iconsdir: ./assets/icons
+:linkcss:
+endif::[]
+:docinfo: shared
+:docinfodir: {includesdir}/../docinfo/
+
+include::{includesdir}/../../theme/doctitle.adoc[]
+
+[.callout]
+---
+*Dieses Dokument ist Teil der Architekturdokumentation und detailliert den Abschnitt <<architecture-canvas#8-prinzipien-regeln,8. Prinzipien & Regeln>> aus dem <<architecture-canvas,Architecture Canvas>>.*
+
+*Verknüpfte Dokumente:*
+
+* <<architecture-canvas,Architecture Canvas>> (Überblick)
+* <<01-vision-and-goals,01. Vision & Ziele>> (welche Ziele unterstützen die Prinzipien?)
+* <<07-quality-requirements,07. Qualitätsanforderungen>> (welche Anforderungen leiten sich aus den Prinzipien ab?)
+* <<decisions/README.adoc,ADRs>> (konkrete Entscheidungen basierend auf den Prinzipien)
+---
+
+== Einleitung
+
+Die Prinzipien und Regeln dieses Projekts basieren auf den **Docs-as-Code-Philosophien** von Ralf D. Müller und den **Best Practices** für Softwarearchitektur.
+Sie dienen als **Leitfaden für alle Architekturentscheidungen** und helfen, **Konsistenz** und **Wartbarkeit** zu gewährleisten.
+
+== Architekturprinzipien
+
+Die folgenden Prinzipien sind **fundamental** für das Projekt und beeinflussen **alle Entscheidungen**.
+
+=== 1. Docs-as-Code Prinzipien
+
+[cols="1,2,1,1", options="header"]
+|=== 
+|ID |Prinzip |Beschreibung |Verknüpfungen 
+
+|PR-DCC-001 
+|**Dokumentation ist Code** 
+|Dokumentation wird wie Sourcecode behandelt: versioniert in Git, Peer-Review, Branch-Schutz. 
+|<<07-quality-requirements,Qualitätsanforderung Wartbarkeit>> 
+
+|PR-DCC-002 
+|**Single Source of Truth** 
+|Es gibt genau eine Quelle für jede Information. Duplikate werden vermieden. 
+|<<01-vision-and-goals,Mission Statement>>, <<decisions/ADR-001-use-asciidoc.adoc,ADR-001>> 
+
+|PR-DCC-003 
+|**Automatisierung** 
+|Alle repetitiven Prozesse (Build, Test, Deploy) werden automatisiert. 
+|<<01-vision-and-goals,Sekundäres Ziel Automatisierung>>, <<07-quality-requirements,Qualitätsanforderung Automatisierbarkeit>> 
+
+|PR-DCC-004 
+|**Versionierung** 
+|Alle Artefakte (Dokumente, Images, Tools) sind versioniert und reproduzierbar. 
+|<<07-quality-requirements,Qualitätsanforderung Reproduzierbarkeit>>, <<decisions/ADR-003-use-docker.adoc,ADR-003>> 
+
+|PR-DCC-005 
+|**Modularität** 
+|Dokumentation und Build-Prozess bestehen aus wiederverwendbaren Bausteinen. 
+|<<07-quality-requirements,Qualitätsanforderung Wartbarkeit>>, <<decisions/ADR-002-use-gradle.adoc,ADR-002>> 
+
+|PR-DCC-006 
+|**Separation of Concerns** 
+|Inhalt, Präsentation und Logik sind strikt getrennt. 
+|<<01-vision-and-goals,Mission Statement>>, <<05-building-blocks,Baustein Content>>, <<05-building-blocks,Baustein Themes>>, <<05-building-blocks,Baustein Gradle Build>> 
+
+|=== 
+
+*Einfluss auf:*
+
+* Alle <<decisions/README.adoc,ADRs>>
+* <<07-quality-requirements,Qualitätsanforderung Wartbarkeit>>
+* <<07-quality-requirements,Qualitätsanforderung Automatisierbarkeit>>
+
+---
+
+=== 2. Software-Architektur Prinzipien
+
+[cols="1,2,1,1", options="header"]
+|=== 
+|ID |Prinzip |Beschreibung |Verknüpfungen 
+
+|PR-SA-001 
+|**KISS (Keep It Simple, Stupid)** 
+|Einfache Lösungen sind komplexen vorzuziehen. 
+|<<decisions/ADR-005-green-it.adoc,ADR-005>>, <<07-quality-requirements,Qualitätsanforderung Wartbarkeit>> 
+
+|PR-SA-002 
+|**DRY (Don't Repeat Yourself)** 
+|Wiederholter Code oder Inhalte werden vermieden. 
+|<<01-vision-and-goals,Mission Statement>>, <<05-building-blocks,Baustein Content>> (Includes) 
+
+|PR-SA-003 
+|**YAGNI (You Aren't Gonna Need It)** 
+|Es wird nur das implementiert, was aktuell benötigt wird. 
+|<<decisions/ADR-005-green-it.adoc,ADR-005>>, <<07-quality-requirements,Qualitätsanforderung Nachhaltigkeit>> 
+
+|PR-SA-004 
+|**Separation of Concerns** 
+|Jede Komponente hat genau eine Verantwortung. 
+|<<PR-DCC-006,PR-DCC-006>>, <<05-building-blocks,Alle Bausteine>> 
+
+|PR-SA-005 
+|**Loose Coupling** 
+|Bausteine sind so weit wie möglich entkoppelt. 
+|<<06-interfaces,Alle Schnittstellen>>, <<05-building-blocks,Alle Bausteine>> 
+
+|PR-SA-006 
+|**High Cohesion** 
+|Verwandte Funktionalität ist in einer Komponente gebündelt. 
+|<<05-building-blocks,Baustein Gradle Build>>, <<05-building-blocks,Baustein Themes>> 
+
+|=== 
+
+*Einfluss auf:*
+
+* <<04-solution-strategy,Lösungsstrategien>>
+* <<05-building-blocks,Bausteine>>
+* <<06-interfaces,Schnittstellen>>
+
+---
+
+=== 3. DevOps & CI/CD Prinzipien
+
+[cols="1,2,1,1", options="header"]
+|=== 
+|ID |Prinzip |Beschreibung |Verknüpfungen 
+
+|PR-DEV-001 
+|**Infrastructure as Code** 
+|Infrastruktur (Docker-Image, CI/CD) wird als Code behandelt. 
+|<<decisions/ADR-003-use-docker.adoc,ADR-003>>, <<05-building-blocks,Baustein GitHub Actions>> 
+
+|PR-DEV-002 
+|**Shift Left** 
+|Qualitätssicherung findet so früh wie möglich statt. 
+|<<07-quality-requirements,Qualitätsanforderung Korrektheit>>, <<05-building-blocks,Baustein GitHub Actions>> 
+
+|PR-DEV-003 
+|**Fail Fast** 
+|Fehler werden so früh wie möglich erkannt. 
+|<<07-quality-requirements,Qualitätsanforderung Automatisierbarkeit>>, <<04-solution-strategy,Strategie Change Detection>> 
+
+|PR-DEV-004 
+|**Immutable Artifacts** 
+|Build-Ergebnisse sind unveränderlich. 
+|<<07-quality-requirements,Qualitätsanforderung Reproduzierbarkeit>>, <<decisions/ADR-003-use-docker.adoc,ADR-003>> 
+
+|PR-DEV-005 
+|**Everything as Code** 
+|Konfiguration, Infrastruktur, Dokumentation – alles ist Code. 
+|<<PR-DCC-001,PR-DCC-001>>, <<PR-DCC-004,PR-DCC-004>> 
+
+|=== 
+
+*Einfluss auf:*
+
+* <<04-solution-strategy,Strategie Reproduzierbare Umgebung>>
+* <<05-building-blocks,Baustein Docker-Image>>
+* <<05-building-blocks,Baustein GitHub Actions>>
+
+---
+
+=== 4. Green IT Prinzipien
+
+[cols="1,2,1,1", options="header"]
+|=== 
+|ID |Prinzip |Beschreibung |Verknüpfungen 
+
+|PR-GIT-001 
+|**Energy Efficiency** 
+|Ressourcenverbrauch wird minimiert. 
+|<<07-quality-requirements,Qualitätsanforderung Nachhaltigkeit>>, <<decisions/ADR-005-green-it.adoc,ADR-005>> 
+
+|PR-GIT-002 
+|**Minimalism** 
+|Nur das Nötigste wird verwendet. 
+|<<decisions/ADR-005-green-it.adoc,ADR-005>>, <<01-vision-and-goals,Sekundäres Ziel Green IT>> 
+
+|PR-GIT-003 
+|**Sustainable Tools** 
+|Es werden nachhaltige, Open-Source-Tools bevorzugt. 
+|<<decisions/ADR-001-use-asciidoc.adoc,ADR-001>>, <<decisions/ADR-002-use-gradle.adoc,ADR-002>>, <<decisions/ADR-003-use-docker.adoc,ADR-003>> 
+
+|PR-GIT-004 
+|**Efficient Processes** 
+|Build- und Deployment-Prozesse sind ressourcenschonend. 
+|<<04-solution-strategy,Strategie Change Detection>>, <<07-quality-requirements,Qualitätsanforderung Performance>> 
+
+|=== 
+
+*Einfluss auf:*
+
+* <<01-vision-and-goals,Sekundäres Ziel Green IT>>
+* <<04-solution-strategy,Strategie Change Detection>>
+* <<decisions/ADR-005-green-it.adoc,ADR-005>>
+
+== Regeln (Konkrete Umsetzung der Prinzipien)
+
+Regeln sind **spezifische, überprüfbare** Vorgaben, die aus den Prinzipien abgeleitet werden.
+
+=== Regeln für Content
+
+[cols="1,2,1,1", options="header"]
+|=== 
+|ID |Regel |Begründung |Verknüpfungen 
+
+|RU-CNT-001 
+|Alle Inhalte müssen in AsciiDoc geschrieben sein. 
+|Single Source of Truth 
+|<<PR-DCC-002,PR-DCC-002>>, <<decisions/ADR-001-use-asciidoc.adoc,ADR-001>> 
+
+|RU-CNT-002 
+|Wiederverwendbare Inhalte müssen als Includes realisiert sein. 
+|DRY-Prinzip 
+|<<PR-SA-002,PR-SA-002>>, <<05-building-blocks,Baustein Content>> 
+
+|RU-CNT-003 
+|Includes müssen relative Pfade verwenden. 
+|Portabilität 
+|<<PR-DCC-004,PR-DCC-004>>, <<05-building-blocks,Baustein Content>> 
+
+|RU-CNT-004 
+|Jede AsciiDoc-Datei muss eine klare Verantwortung haben. 
+|Separation of Concerns 
+|<<PR-DCC-006,PR-DCC-006>>, <<07-quality-requirements,Qualitätsanforderung Wartbarkeit>> 
+
+|RU-CNT-005 
+|Öffentliche und private Inhalte müssen strikt getrennt sein. 
+|Sicherheit 
+|<<05-building-blocks,Baustein Environment Management>>, <<07-quality-requirements,Qualitätsanforderung Sicherheit>> 
+
+|=== 
+
+=== Regeln für Themes
+
+[cols="1,2,1,1", options="header"]
+|=== 
+|ID |Regel |Begründung |Verknüpfungen 
+
+|RU-THM-001 
+|Themes müssen im `theme/` Verzeichnis abgelegt sein. 
+|Separation of Concerns 
+|<<PR-DCC-006,PR-DCC-006>>, <<05-building-blocks,Baustein Themes>> 
+
+|RU-THM-002 
+|CSS muss valide und minifiziert sein. 
+|Performance 
+|<<07-quality-requirements,Qualitätsanforderung Performance>>, <<07-quality-requirements,Qualitätsanforderung Nachhaltigkeit>> 
+
+|RU-THM-003 
+|Themes müssen responsive sein. 
+|Benutzerfreundlichkeit 
+|<<07-quality-requirements,Qualitätsanforderung Benutzerfreundlichkeit>> 
+
+|RU-THM-004 
+|Keine Third-Party-Skripte oder Tracker. 
+|Green IT, Sicherheit 
+|<<decisions/ADR-005-green-it.adoc,ADR-005>>, <<07-quality-requirements,Qualitätsanforderung Nachhaltigkeit>> 
+
+|RU-THM-005 
+|Assets (Bilder, Fonts) müssen optimiert sein. 
+|Performance 
+|<<07-quality-requirements,Qualitätsanforderung Performance>>, <<07-quality-requirements,Qualitätsanforderung Nachhaltigkeit>> 
+
+|=== 
+
+=== Regeln für Build & CI/CD
+
+[cols="1,2,1,1", options="header"]
+|=== 
+|ID |Regel |Begründung |Verknüpfungen 
+
+|RU-BLD-001 
+|Alle Build-Tasks müssen in `build.gradle` definiert sein. 
+|Modularität, Wartbarkeit 
+|<<PR-DCC-005,PR-DCC-005>>, <<05-building-blocks,Baustein Gradle Build>> 
+
+|RU-BLD-002 
+|Jeder Task muss eine klare Verantwortung haben. 
+|Separation of Concerns 
+|<<PR-DCC-006,PR-DCC-006>>, <<07-quality-requirements,Qualitätsanforderung Wartbarkeit>> 
+
+|RU-BLD-003 
+|Builds müssen in Docker-Containern ausgeführt werden. 
+|Reproduzierbarkeit 
+|<<PR-DCC-004,PR-DCC-004>>, <<07-quality-requirements,Qualitätsanforderung Reproduzierbarkeit>> 
+
+|RU-BLD-004 
+|CI/CD-Pipeline muss Change Detection nutzen. 
+|Effizienz, Green IT 
+|<<04-solution-strategy,Strategie Change Detection>>, <<07-quality-requirements,Qualitätsanforderung Performance>> 
+
+|RU-BLD-005 
+|Alle Secrets müssen in GitHub Secrets gespeichert sein. 
+|Sicherheit 
+|<<07-quality-requirements,Qualitätsanforderung Sicherheit>>, <<05-building-blocks,Baustein Environment Management>> 
+
+|RU-BLD-006 
+|Builds müssen deterministisch sein. 
+|Reproduzierbarkeit 
+|<<07-quality-requirements,Qualitätsanforderung Reproduzierbarkeit>>, <<05-building-blocks,Baustein Docker-Image>> 
+
+|=== 
+
+=== Regeln für Dokumentation
+
+[cols="1,2,1,1", options="header"]
+|=== 
+|ID |Regel |Begründung |Verknüpfungen 
+
+|RU-DOC-001 
+|Architekturentscheidungen müssen als ADRs dokumentiert sein. 
+|Nachvollziehbarkeit 
+|<<PR-DCC-003,PR-DCC-003>>, <<decisions/README.adoc,ADRs>> 
+
+|RU-DOC-002 
+|ADRs müssen der Nygard-Vorlage folgen. 
+|Standardisierung 
+|<<RU-DOC-001,RU-DOC-001>> 
+
+|RU-DOC-003 
+|Dokumentation muss aktuell sein. 
+|Korrektheit 
+|<<07-quality-requirements,Qualitätsanforderung Korrektheit>> 
+
+|RU-DOC-004 
+|Alle Dokumente müssen verlinkt sein (Traceability). 
+|Wartbarkeit 
+|<<07-quality-requirements,Qualitätsanforderung Wartbarkeit>>, <<architecture-canvas,Architecture Canvas>> 
+
+|RU-DOC-005 
+|Dokumentation muss in AsciiDoc geschrieben sein. 
+|Docs-as-Code 
+|<<PR-DCC-001,PR-DCC-001>>, <<decisions/ADR-001-use-asciidoc.adoc,ADR-001>> 
+
+|=== 
+
+== Prinzipien-Hierarchie
+
+[.text-center]
+[graphviz]
+----
+digraph G {
+  rankdir=TB;
+  node [shape=box, style="rounded,filled"];
+  
+  // Prinzipien
+  docs_as_code [label="Docs-as-Code", fillcolor=lightblue];
+  software_arch [label="Software-Architektur", fillcolor=lightblue];
+  devops [label="DevOps & CI/CD", fillcolor=lightblue];
+  green_it [label="Green IT", fillcolor=lightgreen];
+  
+  // Regeln
+  content [label="Content-Regeln", fillcolor=lightyellow];
+  themes [label="Theme-Regeln", fillcolor=lightyellow];
+  build [label="Build-Regeln", fillcolor=lightyellow];
+  doc [label="Dokumentations-Regeln", fillcolor=lightyellow];
+  
+  // Entscheidungen
+  adrs [label="ADRs", fillcolor=lightpink];
+  
+  // Verknüpfungen
+  docs_as_code -> content;
+  docs_as_code -> doc;
+  software_arch -> content;
+  software_arch -> themes;
+  software_arch -> build;
+  devops -> build;
+  green_it -> themes;
+  green_it -> build;
+  
+  content -> adrs;
+  themes -> adrs;
+  build -> adrs;
+  doc -> adrs;
+  
+  {rank=same; docs_as_code; software_arch; devops; green_it;}
+  {rank=same; content; themes; build; doc;}
+}
+----
+
+*Legende:*
+
+* Blau: Prinzipien-Kategorien
+* Gelb: Regeln
+* Pink: Architekturentscheidungen (ADRs)
+
+== Einfluss auf andere Architekturentscheidungen
+
+=== Verweise auf Entscheidungen
+
+| Prinzip/Regel | Architekturentscheidung | Beziehung |
+|---------------|------------------------|-----------|
+| PR-DCC-001 | Alle ADRs | Grundlagenprinzip |
+| PR-DCC-002 | <<decisions/ADR-001-use-asciidoc.adoc,ADR-001>> | Direkte Umsetzung |
+| PR-DCC-003 | Alle CI/CD-Entscheidungen | Grundlagenprinzip |
+| PR-DCC-004 | <<decisions/ADR-003-use-docker.adoc,ADR-003>> | Direkte Umsetzung |
+| PR-DCC-005 | <<decisions/ADR-002-use-gradle.adoc,ADR-002>> | Unterstützung |
+| PR-DCC-006 | Alle Bausteine | Grundlagenprinzip |
+| PR-SA-002 | <<decisions/ADR-001-use-asciidoc.adoc,ADR-001>> | DRY |
+| PR-DEV-001 | <<decisions/ADR-003-use-docker.adoc,ADR-003>> | IaC |
+| PR-GIT-002 | <<decisions/ADR-005-green-it.adoc,ADR-005>> | Minimalismus |
+
+=== Verweise auf Qualitätsanforderungen
+
+| Prinzip/Regel | Qualitätskriterium | Priorität |
+|---------------|-------------------|----------|
+| PR-DCC-001 | Wartbarkeit | ⭐⭐⭐⭐⭐ |
+| PR-DCC-002 | Konsistenz | ⭐⭐⭐⭐⭐ |
+| PR-DCC-003 | Automatisierbarkeit | ⭐⭐⭐⭐⭐ |
+| PR-DCC-004 | Reproduzierbarkeit | ⭐⭐⭐⭐⭐ |
+| PR-DCC-005 | Wartbarkeit | ⭐⭐⭐⭐⭐ |
+| PR-DCC-006 | Wartbarkeit | ⭐⭐⭐⭐⭐ |
+| PR-SA-001 | Wartbarkeit | ⭐⭐⭐⭐ |
+| PR-SA-002 | Wartbarkeit | ⭐⭐⭐⭐⭐ |
+| PR-DEV-001 | Wartbarkeit | ⭐⭐⭐⭐ |
+| PR-GIT-001 | Nachhaltigkeit | ⭐⭐⭐⭐ |
+| PR-GIT-002 | Nachhaltigkeit | ⭐⭐⭐⭐⭐ |
+
+== Verwandte Dokumente
+
+* <<architecture-canvas,Architecture Canvas>>:: Kompakte Übersicht
+* <<01-vision-and-goals,01. Vision & Ziele>>:: Welche Ziele werden durch die Prinzipien unterstützt?
+* <<07-quality-requirements,07. Qualitätsanforderungen>>:: Welche Anforderungen leiten sich aus den Prinzipien ab?
+* <<decisions/README.adoc,ADRs>>:: Konkrete Entscheidungen basierend auf den Prinzipien

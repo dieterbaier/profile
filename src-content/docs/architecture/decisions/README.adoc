@@ -1,0 +1,224 @@
+= Architekturentscheidungen (ADRs)
+include::../../../revinfo.adoc[]
+:lang: de
+Dieter Baier
+:author_page: https://dieterbaier.eu
+:revremark: Übersicht aller Architekturentscheidungen
+:nofooter:
+:toc: left
+:stylesheet: style.css
+:stylesdir: ../../../theme
+:iconsdir: {stylesdir}/icons
+:icons: image
+ifdef::buildsite[]
+:stylesdir: ./stylesheet
+:iconsdir: ./assets/icons
+:linkcss:
+endif::[]
+:docinfo: shared
+:docinfodir: ../../../docinfo/
+
+include::../../../../theme/doctitle.adoc[]
+
+[.callout]
+---
+*Dieses Verzeichnis enthält alle **Architecture Decision Records (ADRs)** des `profile-dieterbaier`-Projekts.*
+
+*ADRs folgen der **Vorlage von Mark Nygard** (https://adr.github.io/):
+
+* Jede Entscheidung ist eine **eigenständige Datei**
+* Jede Datei dokumentiert eine **signifikante Architekturentscheidung**
+* ADRs sind **unveränderlich** (immutable) - neue Erkenntnisse führen zu neuen ADRs, nicht zu Änderungen
+
+*Verknüpfte Dokumente:*
+
+* <<../architecture-canvas,Architecture Canvas>> (Überblick aller Entscheidungen)
+* <<../08-principles-and-rules,08. Prinzipien & Regeln>> (Grundlagen für die Entscheidungen)
+* <<../07-quality-requirements,07. Qualitätsanforderungen>> (Anforderungen, die die Entscheidungen beeinflussen)
+---
+
+== ADR-Übersicht
+
+Die folgenden ADRs sind für dieses Projekt dokumentiert:
+
+[cols="1,2,1,1,1", options="header"]
+|=== 
+|ADR |Titel |Status |Datum |Verknüpfungen 
+
+|<<ADR-001-use-asciidoc.adoc,ADR-001>> 
+|Use AsciiDoc as single source 
+|✅ Akzeptiert 
+|2024-XX-XX 
+|<<../01-vision-and-goals,Mission Statement>>, <<../05-building-blocks,Baustein Content>> 
+
+|<<ADR-002-use-gradle.adoc,ADR-002>> 
+|Use Gradle for orchestration 
+|✅ Akzeptiert 
+|2024-XX-XX 
+|<<../01-vision-and-goals,Sekundäres Ziel Automatisierung>>, <<../05-building-blocks,Baustein Gradle Build>> 
+
+|<<ADR-003-use-docker.adoc,ADR-003>> 
+|Use Docker for reproducibility 
+|✅ Akzeptiert 
+|2024-XX-XX 
+|<<../01-vision-and-goals,Sekundäres Ziel Reproduzierbarkeit>>, <<../05-building-blocks,Baustein Docker-Image>> 
+
+|<<ADR-004-use-pandoc.adoc,ADR-004>> 
+|Use Pandoc for Markdown conversion 
+|✅ Akzeptiert 
+|2024-XX-XX 
+|<<../04-solution-strategy,Strategie Multi-Output>>, <<../05-building-blocks,Baustein Gradle Build>> 
+
+|<<ADR-005-green-it.adoc,ADR-005>> 
+|Nothing is used on the site that isn't absolutely necessary 
+|✅ Akzeptiert 
+|2024-XX-XX 
+|<<../01-vision-and-goals,Sekundäres Ziel Green IT>>, <<../07-quality-requirements,Qualitätsanforderung Nachhaltigkeit>> 
+
+|=== 
+
+== ADR-Lebenszyklus
+
+[.text-center]
+[plantuml]
+----
+@startuml
+left to right direction
+
+[Proposed] --> [Accepted] : "Entscheidung getroffen"
+[Accepted] --> [Deprecated] : "Bessere Alternative\ngefunden"
+[Accepted] --> [Superseded] : "Ersetzt durch\nneuen ADR"
+[Deprecated] --> [Rejected] : "Zurückgewiesen"
+
+legend right
+  |✅ Accepted | Aktiv und umgesetzt |
+  |⚠️ Proposed | Vorschlag, noch nicht beschlossen |
+  |❌ Deprecated | Veraltet, aber noch sichtbar |
+  |❌ Superseded | Ersetzt durch neueren ADR |
+  |❌ Rejected | Abgelehnt |
+endlegend
+
+@enduml
+----
+
+== ADR-Vorlage (Mark Nygard)
+
+Jeder ADR folgt dieser Struktur:
+
+```adoc
+= ADR-XXX: Titel der Entscheidung
+
+== Status
+✅ Akzeptiert | ⚠️ Vorschlag | ❌ Veraltet | ❌ Ersetzt | ❌ Abgelehnt
+
+== Kontext
+// Hintergrund und Problemstellung
+
+== Entscheidungsgrundlage
+// Welche Optionen wurden in Betracht gezogen?
+
+== Entscheidung
+// Welche Option wurde gewählt?
+
+== Konsequenzen
+// Positive und negative Konsequenzen
+// == Vorteile
+// == Nachteile
+
+== Alternativen
+// Welche Alternativen wurden verworfen? Warum?
+
+== Verknüpfungen
+// Links zu anderen Dokumenten, die von dieser Entscheidung betroffen sind
+```
+
+== Entscheidungsmatrix
+
+Die folgende Matrix zeigt, wie die ADRs die **Qualitätsanforderungen** und **Prinzipien** unterstützen:
+
+[cols="1,2,1,1,1,1", options="header"]
+|=== 
+|ADR |Entscheidung |Reproduzierbarkeit |Wartbarkeit |Automatisierung |Flexibilität |Nachhaltigkeit 
+
+|<<ADR-001-use-asciidoc.adoc,ADR-001>> 
+|AsciiDoc als Single Source 
+|✅ 
+|✅✅✅ 
+|✅✅ 
+|✅✅✅ 
+|✅ 
+
+|<<ADR-002-use-gradle.adoc,ADR-002>> 
+|Gradle für Orchestrierung 
+|✅ 
+|✅✅✅ 
+|✅✅✅ 
+|✅✅✅ 
+|✅ 
+
+|<<ADR-003-use-docker.adoc,ADR-003>> 
+|Docker für Reproduzierbarkeit 
+|✅✅✅ 
+|✅✅ 
+|✅✅ 
+|✅ 
+|✅✅ 
+
+|<<ADR-004-use-pandoc.adoc,ADR-004>> 
+|Pandoc für Markdown-Konvertierung 
+|✅ 
+|✅✅ 
+|✅✅ 
+|✅✅✅ 
+|✅ 
+
+|<<ADR-005-green-it.adoc,ADR-005>> 
+|Minimalismus (Green IT) 
+|✅ 
+|✅ 
+|✅ 
+|✅ 
+|✅✅✅ 
+
+|=== 
+
+== Einfluss der ADRs auf die Architektur
+
+=== Verknüpfungen zu Canvas-Abschnitten
+
+| ADR | Canvas-Abschnitt | Beziehung |
+|-----|------------------|-----------|
+| <<ADR-001-use-asciidoc.adoc,ADR-001>> | <<../architecture-canvas#1-vision-ziele,Vision & Ziele>> | Umsetzung von Single Source of Truth |
+| <<ADR-001-use-asciidoc.adoc,ADR-001>> | <<../architecture-canvas#5-bausteine-building-blocks,Bausteine>> | Definiert Baustein Content |
+| <<ADR-002-use-gradle.adoc,ADR-002>> | <<../architecture-canvas#4-lösungsstrategie,Lösungsstrategie>> | Umsetzung von Modularer Build |
+| <<ADR-002-use-gradle.adoc,ADR-002>> | <<../architecture-canvas#5-bausteine-building-blocks,Bausteine>> | Definiert Baustein Gradle Build |
+| <<ADR-003-use-docker.adoc,ADR-003>> | <<../architecture-canvas#3-systemkontext,Systemkontext>> | Umgebung für Build |
+| <<ADR-003-use-docker.adoc,ADR-003>> | <<../architecture-canvas#4-lösungsstrategie,Lösungsstrategie>> | Umsetzung von Reproduzierbare Umgebung |
+| <<ADR-004-use-pandoc.adoc,ADR-004>> | <<../architecture-canvas#4-lösungsstrategie,Lösungsstrategie>> | Unterstützung von Multi-Output |
+| <<ADR-005-green-it.adoc,ADR-005>> | <<../architecture-canvas#7-qualitätsanforderungen,Qualitätsanforderungen>> | Umsetzung von Nachhaltigkeit |
+
+=== Verknüpfungen zu Prinzipien
+
+| ADR | Prinzip | Beziehung |
+|-----|---------|-----------|
+| <<ADR-001-use-asciidoc.adoc,ADR-001>> | <<../08-principles-and-rules#_docs_as_code_prinzipien,PR-DCC-002 (Single Source of Truth)>> | Direkte Umsetzung |
+| <<ADR-001-use-asciidoc.adoc,ADR-001>> | <<../08-principles-and-rules#_software_architektur_prinzipien,PR-SA-002 (DRY)>> | Unterstützung |
+| <<ADR-002-use-gradle.adoc,ADR-002>> | <<../08-principles-and-rules#_docs_as_code_prinzipien,PR-DCC-005 (Modularität)>> | Direkte Umsetzung |
+| <<ADR-002-use-gradle.adoc,ADR-002>> | <<../08-principles-and-rules#_docs_as_code_prinzipien,PR-DCC-006 (Separation of Concerns)>> | Unterstützung |
+| <<ADR-003-use-docker.adoc,ADR-003>> | <<../08-principles-and-rules#_devops_ci_cd_prinzipien,PR-DEV-001 (Infrastructure as Code)>> | Unterstützung |
+| <<ADR-003-use-docker.adoc,ADR-003>> | <<../08-principles-and-rules#_devops_ci_cd_prinzipien,PR-DEV-004 (Immutable Artifacts)>> | Direkte Umsetzung |
+| <<ADR-005-green-it.adoc,ADR-005>> | <<../08-principles-and-rules#_green_it_prinzipien,PR-GIT-001 (Energy Efficiency)>> | Direkte Umsetzung |
+| <<ADR-005-green-it.adoc,ADR-005>> | <<../08-principles-and-rules#_green_it_prinzipien,PR-GIT-002 (Minimalism)>> | Direkte Umsetzung |
+
+== Nächste Schritte
+
+* [ ] **ADR-001 bis ADR-005** finalisieren (Datum eintragen)
+* [ ] **Weitere ADRs** für zukünftige Entscheidungen erstellen
+* [ ] **ADR-Template** für neue Entscheidungen bereitstellen
+* [ ] **Automatisierte Validierung** der ADRs in CI/CD integrieren (z. B. Link-Checker)
+
+== Referenzen
+
+* https://adr.github.io/[Architecture Decision Records (Mark Nygard)]
+* https://github.com/joel-costigliola/adr-tools[ADR-Tools für Automatisierung]
+* https://adr.log/[ADR-Log – Sammlung von ADR-Beispielen]

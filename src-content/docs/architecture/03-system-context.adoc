@@ -1,0 +1,358 @@
+= 03. Systemkontext
+include::../../revinfo.adoc[]
+:lang: de
+Dieter Baier
+:author_page: https://dieterbaier.eu
+:revremark: Systemkontext der profile-dieterbaier-Architektur
+:nofooter:
+:toc: left
+:stylesheet: style.css
+:stylesdir: ../../theme
+:iconsdir: {stylesdir}/icons
+:icons: image
+ifdef::buildsite[]
+:stylesdir: ./stylesheet
+:iconsdir: ./assets/icons
+:linkcss:
+endif::[]
+:docinfo: shared
+:docinfodir: {includesdir}/../docinfo/
+
+include::{includesdir}/../../theme/doctitle.adoc[]
+
+[.callout]
+---
+*Dieses Dokument ist Teil der Architekturdokumentation und detailliert den Abschnitt <<architecture-canvas#3-systemkontext,3. Systemkontext>> aus dem <<architecture-canvas,Architecture Canvas>>.*
+
+*Verknüpfte Dokumente:*
+
+* <<architecture-canvas,Architecture Canvas>> (Überblick)
+* <<02-stakeholders,02. Stakeholder>> (wer ist am Systemkontext beteiligt?)
+* <<05-building-blocks,05. Bausteine>> (interne Struktur)
+* <<06-interfaces,06. Schnittstellen>> (detaillierte Schnittstellenbeschreibung)
+* <<04-solution-strategy,04. Lösungsstrategie>> (wie das System mit dem Kontext interagiert)
+---
+
+== Business-Kontext
+
+[.text-center]
+[plantuml]
+----
+@startuml
+left to right direction
+
+actor "Dieter Baier" as Author
+rectangle "profile-dieterbaier" as System {
+  component "Dokumentations-Pipeline"
+}
+
+Author --> System : "1. Pflegt AsciiDoc-Inhalte"
+System --> "GitHub Profile" : "2. Deployt README.md"
+System --> "GitLab Profile" : "2. Deployt README.md"
+System --> "Website (dieterbaier.eu)" : "2. Deployt HTML/CSS/JS"
+System --> "Architektur-Dokus" : "2. Deployt HTML"
+
+cloud "Plattformen" as Platforms {
+  [GitHub]
+  [GitLab]
+  [SFTP Server]
+}
+
+System --> Platforms : "Nutzt für Deployment"
+
+@enduml
+----
+
+Das `profile-dieterbaier`-System hat folgende **Geschäftliche Wechselwirkungen**:
+
+| Wechselwirkung | Beschreibung | Richtung | Häufigkeit |
+|---------------|--------------|----------|------------|
+| **Inhaltspflege** | Dieter Baier bearbeitet AsciiDoc-Dateien | → System | Hoch (täglich/wöchentlich) |
+| **README-Deployment** | Automatisches Hochladen der READMEs zu GitHub/GitLab | System → | Bei Änderungen |
+| **Website-Deployment** | Automatisches Hochladen der Website | System → | Bei Änderungen |
+| **Architektur-Deployment** | Automatisches Hochladen der Architektur-Dokus | System → | Bei Änderungen |
+
+== Technischer Kontext
+
+=== Eingaben (Inputs)
+
+[cols="1,2,1", options="header"]
+|=== 
+|Typ |Beschreibung |Format 
+
+|**AsciiDoc-Quelldateien** 
+|Alle Inhalte (Profil, CV, Projekte, Architektur) 
+|`.adoc` 
+
+|**Theme-Dateien** 
+|CSS, JavaScript, Assets für Präsentation 
+|`.css`, `.js`, `.png`, `.ico` 
+
+|**Build-Konfiguration** 
+|Gradle-Skripte und Eigenschaften 
+|`.gradle`, `.properties` 
+
+|**Environment-Variablen** 
+|Sensible Daten (Kontaktdaten für CV) 
+|`.env` 
+
+|**Docker-Image** 
+|Runtime-Umgebung mit allen Tools 
+|Docker Image 
+
+|=== 
+
+=== Verarbeitung (Processing)
+
+[cols="1,2,1,1", options="header"]
+|=== 
+|Tool |Verantwortung |Version |Quelle 
+
+|**Asciidoctor** 
+|Konvertierung von AsciiDoc nach HTML/PDF 
+|4.0.5 
+|Gradle Plugin 
+
+|**Pandoc** 
+|Konvertierung von DocBook nach Markdown 
+|Aktuelle 
+|System (Docker-Image) 
+
+|**Graphviz** 
+|Generierung von Diagrammen (PlantUML) 
+|Aktuelle 
+|System (Docker-Image) 
+
+|**Gradle** 
+|Build-Orchestrierung 
+|8.x 
+|Wrapper 
+
+|**Java** 
+|Runtime für Asciidoctor 
+|17+ 
+|System (Docker-Image) 
+
+|**lftp** 
+|SFTP-Client für Deployment 
+|Aktuelle 
+|GitHub Actions 
+
+|=== 
+
+=== Ausgaben (Outputs)
+
+[cols="1,2,1,1", options="header"]
+|=== 
+|Typ |Beschreibung |Format |Ziel 
+
+|**Website** 
+|Persönliche Website mit CV 
+|HTML, CSS, JS 
+|dieterbaier.eu (SFTP) 
+
+|**CV (HTML)** 
+|Online-CV auf der Website 
+|HTML 
+|dieterbaier.eu/site/cv.html 
+
+|**CV (PDF)** 
+|Downloadbares PDF-Dokument 
+|PDF 
+|dieterbaier.eu/site/cv.pdf 
+
+|**Persönliches CV (PDF)** 
+|CV mit privaten Kontaktdaten 
+|PDF 
+|lokal (build/cv/cv.pdf) 
+
+|**GitHub README** 
+|Profil-README für GitHub 
+|Markdown 
+|github.com/dieterbaier/README.md 
+
+|**GitLab README** 
+|Profil-README für GitLab 
+|Markdown 
+|gitlab.com/brdietdidi/README.md 
+
+|**Architekturdokumentation** 
+|Dokumentation der Pipeline-Architektur 
+|HTML 
+|architecture.dieterbaier.eu 
+
+|=== 
+
+=== Externe Systeme
+
+[cols="1,2,1,1", options="header"]
+|=== 
+|System |Zweck |Schnittstelle |Verantwortung 
+
+|**GitHub** 
+|- Sourcecode-Hosting 
+- CI/CD-Execution (Actions) 
+- Profil-README 
+|REST API, Git 
+|GitHub 
+
+|**GitLab** 
+|- Profil-README 
+|REST API, Git 
+|GitLab 
+
+|**SFTP-Server** 
+|- Hosting der Website 
+- Hosting der Architektur-Dokus 
+|SFTP 
+|Hoster (z. B. All-inkl) 
+
+|**GitHub Container Registry** 
+|- Hosting des `docs-toolbox`-Images 
+|Docker Registry API 
+|GitHub 
+
+|**Docker Hub** 
+|- Fallback für Base-Images 
+|Docker Registry API 
+|Docker 
+
+|=== 
+
+== Kontextdiagramm
+
+[.text-center]
+[plantuml]
+----
+@startuml
+left to right direction
+
+actor "Dieter Baier" as Author
+
+rectangle "profile-dieterbaier" as System {
+  component "AsciiDoc Quellen" as asciidoc
+  component "Gradle Build" as gradle
+  component "Docker Container" as docker
+}
+
+cloud "Externe Dienste" as Services {
+  [GitHub] as github
+  [GitLab] as gitlab
+  [SFTP Server] as sftp
+  [GHCR] as ghcr
+}
+
+cloud "Externe Tools" as Tools {
+  [Asciidoctor]
+  [Pandoc]
+  [Graphviz]
+  [Java]
+}
+
+Author --> asciidoc : "1. bearbeitet"
+asciidoc --> gradle : "2. wird verarbeitet durch"
+gradle --> docker : "3. läuft in"
+docker --> Tools : "4. nutzt"
+
+System --> github : "5a. Deployt README"
+System --> gitlab : "5b. Deployt README"
+System --> sftp : "5c. Deployt Website & Architektur"
+System --> ghcr : "6. Nutzt Docker-Image"
+
+@enduml
+----
+
+== Technische Abhängigkeiten
+
+=== Obligatorische Abhängigkeiten
+
+[cols="1,2,1,1", options="header"]
+|=== 
+|Abhängigkeit |Zweck |Quelle |Kritikalität 
+
+|**Asciidoctor** 
+|AsciiDoc → HTML/PDF Conversion 
+|Gradle Plugin 
+|⭐⭐⭐⭐⭐ (kritisch) 
+
+|**Pandoc** 
+|DocBook → Markdown Conversion 
+|System-Paket 
+|⭐⭐⭐⭐ (für README-Generierung) 
+
+|**Graphviz** 
+|Diagramm-Generierung (PlantUML) 
+|System-Paket 
+|⭐⭐⭐ (für Diagramme) 
+
+|**Java 17+** 
+|Runtime für Asciidoctor 
+|System/Docker 
+|⭐⭐⭐⭐⭐ (kritisch) 
+
+|**Docker** 
+|Container-Runtime 
+|System 
+|⭐⭐⭐⭐⭐ (für Reproduzierbarkeit) 
+
+|**lftp** 
+|SFTP-Client 
+|GitHub Actions 
+|⭐⭐⭐⭐ (für Deployment) 
+
+|=== 
+
+=== Optionale Abhängigkeiten
+
+[cols="1,2,1", options="header"]
+|=== 
+|Abhängigkeit |Zweck |Quelle 
+
+|**PlantUML Server** 
+|Alternative zu Graphviz 
+|Externer Service 
+
+|**Asciidoctor PDF** 
+|Alternative PDF-Generierung 
+|Ruby Gem 
+
+|=== 
+
+== Einfluss auf andere Architekturentscheidungen
+
+=== Verweise auf Entscheidungen
+
+| Kontext-Element | Architekturentscheidung | Begründung |
+|----------------|------------------------|------------|
+| AsciiDoc als Input-Format | <<decisions/ADR-001-use-asciidoc.adoc,ADR-001: Use AsciiDoc>> | Zentrale Entscheidung für das Format |
+| Gradle als Build-Tool | <<decisions/ADR-002-use-gradle.adoc,ADR-002: Use Gradle>> | Orchestrierung der Verarbeitung |
+| Docker für Runtime | <<decisions/ADR-003-use-docker.adoc,ADR-003: Use Docker>> | Bereitstellung der Tools |
+| Pandoc für Markdown | <<decisions/ADR-004-use-pandoc.adoc,ADR-004: Use Pandoc>> | Konvertierung für READMEs und Artikel-Exporte |
+| SFTP für Deployment | (implizit in Pipeline) | Hosting der Outputs |
+
+=== Verweise auf Qualitätsanforderungen
+
+| Kontext-Element | Qualitätskriterium | Priorität | Begründung |
+|----------------|-------------------|----------|------------|
+| Externe Tools (Pandoc, Graphviz) | Reproduzierbarkeit | ⭐⭐⭐⭐⭐ | Docker-Container stellt Tools bereit |
+| GitHub Actions | Automatisierbarkeit | ⭐⭐⭐⭐⭐ | CI/CD-Pipeline |
+| SFTP-Deployment | Zuverlässigkeit | ⭐⭐⭐⭐ | Deployment muss funktionieren |
+| Docker-Image | Wartbarkeit | ⭐⭐⭐⭐ | Image muss aktuell gehalten werden |
+
+=== Verweise auf Bausteine
+
+| Kontext-Element | Baustein | Beziehung |
+|----------------|----------|-----------|
+| AsciiDoc-Dateien | Content (AsciiDoc) | Input |
+| Theme-Dateien | Themes | Input |
+| Gradle-Skripte | Gradle Build | Konfiguration |
+| Docker-Image | Docker-Container | Runtime |
+| GitHub Actions | GitHub Actions | CI/CD |
+
+== Verwandte Dokumente
+
+* <<architecture-canvas,Architecture Canvas>>:: Kompakte Übersicht
+* <<02-stakeholders,02. Stakeholder>>:: Wer interagiert mit dem System?
+* <<04-solution-strategy,04. Lösungsstrategie>>:: Wie wird mit dem Kontext umgegangen?
+* <<05-building-blocks,05. Bausteine>>:: Interne Struktur des Systems
+* <<06-interfaces,06. Schnittstellen>>:: Detaillierte Beschreibung der Schnittstellen

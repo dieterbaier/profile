@@ -29,6 +29,44 @@ abstract class PandocTask extends DefaultTask {
     }
 }
 
+abstract class PandocDirectoryTask extends DefaultTask {
+
+    @InputDirectory
+    abstract DirectoryProperty getInputDirectory()
+
+    @OutputDirectory
+    abstract DirectoryProperty getOutputDirectory()
+
+    @TaskAction
+    void runPandoc() {
+        def sourceDirectory = inputDirectory.get().asFile
+        def targetDirectory = outputDirectory.get().asFile
+
+        project.fileTree(sourceDirectory) {
+            include '**/*.xml'
+        }.each { File input ->
+            def relativePath = sourceDirectory.toPath().relativize(input.toPath()).toString()
+            def markdownPath = relativePath.replaceFirst(/\.xml$/, '.md')
+            def output = new File(targetDirectory, markdownPath)
+            def mediaDirectory = new File(targetDirectory, 'media')
+            def relativeMediaPath = output.parentFile.toPath().relativize(mediaDirectory.toPath()).toString()
+            output.parentFile.mkdirs()
+
+            project.exec {
+                workingDir output.parentFile
+                commandLine 'pandoc',
+                        input.absoluteFile,
+                        '-f', 'docbook',
+                        '-t', 'gfm',
+                        '--wrap=none',
+                        '--resource-path', input.parentFile.absoluteFile,
+                        '--extract-media', relativeMediaPath,
+                        '-o', output.name
+            }
+        }
+    }
+}
+
 def commandExists = { String command, String versionArgument ->
     try {
         def result = new ByteArrayOutputStream()
@@ -210,6 +248,24 @@ tasks.register('convertDocBookToMarkdown', PandocTask) {
     setOutputFile(file("build/readme/README.md"))
 }
 asciidoctorBase('buildReadme','convertDocBookToMarkdown','src-content/profile/readme', 'build/readme', [],false)
+// Articles Markdown
+def articleSources = fileTree('src-content/profile/site/articles') {
+    include '**/*.adoc'
+    exclude '**/.asciidoctorconfig.adoc'
+    exclude 'articles.adoc'
+    exclude 'articles_matrix.adoc'
+}.files.collect {
+    file('src-content/profile/site/articles').toPath().relativize(it.toPath()).toString()
+}.sort()
+
+asciidoctorBase('buildArticlesDocbook','','src-content/profile/site/articles', 'build/articles/docbook', articleSources,true, 'docbook', ['type': 'readme'])
+tasks.register('buildArticlesMarkdown', PandocDirectoryTask) {
+    dependsOn tasks.named('buildArticlesDocbook')
+    dependsOn tasks.named('buildArticlesDocbookCopyAssets')
+
+    setInputDirectory(layout.buildDirectory.dir("articles/docbook"))
+    setOutputDirectory(layout.buildDirectory.dir("articles"))
+}
 // CV
 asciidoctorBase('buildCVPersonal','','src-content/profile/cv', 'build/cv', ['cv.adoc'],true, 'pdf', [ // personal PDF (not deployed to the site)
                                                                        'cvprint'       : 'true',
