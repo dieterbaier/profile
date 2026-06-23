@@ -39,6 +39,7 @@ File-based change detection is implemented using path filters.
 Categories::
 
 - README
+- Articles
 - Architecture
 - Site
 
@@ -49,6 +50,7 @@ This enables selective execution of build tasks.
 Only required Gradle tasks are executed::
 
 - buildReadme
+- buildArticlesMarkdown
 - buildArchitecture
 - buildSite
 

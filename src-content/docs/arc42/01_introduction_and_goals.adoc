@@ -17,7 +17,7 @@ ____
 - Generation of multiple output formats:
 * HTML (website)
 * PDF (CV)
-* Markdown (README)
+* Markdown (README and article exports)
 - Environment-specific data injection (e.g. private contact details)
 - Fully reproducible builds
 

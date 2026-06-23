@@ -1,0 +1,178 @@
+= 01. Vision & Ziele
+include::../../revinfo.adoc[]
+:lang: de
+Dieter Baier
+:author_page: https://dieterbaier.eu
+:revremark: Vision und Ziele der profile-dieterbaier-Architektur
+:nofooter:
+:toc: left
+:stylesheet: style.css
+:stylesdir: ../../theme
+:iconsdir: {stylesdir}/icons
+:icons: image
+ifdef::buildsite[]
+:stylesdir: ./stylesheet
+:iconsdir: ./assets/icons
+:linkcss:
+endif::[]
+:docinfo: shared
+:docinfodir: {includesdir}/../docinfo/
+
+include::{includesdir}/../../theme/doctitle.adoc[]
+
+[.callout]
+---
+*Dieses Dokument ist Teil der Architekturdokumentation und detailliert den Abschnitt <<architecture-canvas#1-vision-ziele,1. Vision & Ziele>> aus dem <<architecture-canvas,Architecture Canvas>>.*
+
+*Verknüpfte Dokumente:*
+
+* <<architecture-canvas,Architecture Canvas>> (Überblick)
+* <<04-solution-strategy,04. Lösungsstrategie>> (Umsetzung der Ziele)
+* <<07-quality-requirements,07. Qualitätsanforderungen>> (beeinflusst durch diese Ziele)
+* <<10-quality-scenarios,10. Qualitätsszenarien>> (detaillierte Qualitätsszenarien)
+---
+
+== Motivation
+
+Maintaining a personal profile across multiple platforms (GitHub, GitLab, personal website, CV) leads to **duplication and inconsistencies**. 
+Jede Plattform hat eigene Anforderungen an Format, Länge und Inhalt, was zu:
+
+* **Redundanz:** Gleiche Informationen müssen mehrfach gepflegt werden
+* **Inkonsistenzen:** Änderungen werden nicht überall vorgenommen
+* **Fehleranfälligkeit:** Manuelle Synchronisation ist fehlerbehaftet
+* **Zeitaufwand:** Hoher Wartungsaufwand für einfache Aktualisierungen
+
+== Mission Statement
+
+[.quote]
+____
+*"Write once, publish everywhere."*
+____
+
+Eine **zentrale Quelle** (AsciiDoc) für alle Ausgaben (Website, CV, READMEs). 
+Die Dokumentation wird wie Code behandelt und durch eine **automatisierte Pipeline** in die verschiedenen Zielformate transformiert.
+
+== Primäre Ziele
+
+| ID | Ziel | Beschreibung | Erfolgsindikator |
+|----|------|--------------|------------------|
+| Z-001 | Single Source of Truth | Eine Quelle für alle Ausgaben | Anzahl manuell gepflegter Dokumente = 0 |
+| Z-002 | Eliminierung von Redundanz | Keine doppelten Inhalte | Redundanz-Quote < 5% |
+| Z-003 | Konsistenz | Alle Ausgaben sind synchron | Differenz-Check erfolgreich |
+
+== Sekundäre Ziele
+
+| ID | Ziel | Beschreibung | Priorität |
+|----|------|--------------|----------|
+| Z-010 | Reproduzierbare Builds | "Works on my machine" vermeiden | ★★★★★ |
+| Z-011 | Automatisierte Generierung | Keine manuellen Schritte | ★★★★★ |
+| Z-012 | Automatisiertes Deployment | CI/CD-Pipeline | ★★★★★ |
+| Z-013 | Green IT | Ressourcen-sparende Pipelines | ★★★★ |
+| Z-014 | Flexibilität | Unterstützung neuer Formate | ★★★ |
+| Z-015 | Benutzerfreundlichkeit | Einfache Nutzung für andere | ★★ |
+
+== Qualitätsziele
+
+*Siehe <<07-quality-requirements,07. Qualitätsanforderungen>> für die vollständige Liste aller Qualitätskriterien.*
+
+=== 1.2 Top-Level Qualitätsziele
+
+[.callout]
+---
+*Diese 5 Qualitätsziele bestimmen die architektonischen Entscheidungen und sind in <<04-solution-strategy,Kapitel 4 (Lösungsstrategie)>> konkretisiert.*
+
+*Traceability:* Jedes dieser Ziele wird in <<04-solution-strategy,Kapitel 4>> einem benannten Lösungsansatz zugeordnet.
+
+*Cross-reference:* Die detaillierten Qualitätsszenarien finden sich in <<10-quality-scenarios,Kapitel 10>>.
+---
+
+Die folgenden **5 Qualitätsziele** (nach AGENTS.md und arc42) sind die wichtigsten für das `profile-dieterbaier`-Projekt und treiben die Architekturentscheidungen:
+
+[cols="1,3,2,1,1", options="header"]
+|===
+|ID |Qualitätsziel |Beschreibung |Messkriterium |Lösungsansatz in Kapitel 4 
+
+|Q-001 
+|**Reproduzierbarkeit** 
+|Gleiche Inputs und Umgebung führen zu identischen Outputs. Ermöglicht deterministische Builds und vertrauenswürdige Deployments. 
+|Build-Hash ist in jeder Umgebung identisch (100% Determinismus) 
+|<<04-solution-strategy#strategie-reproduzierbare-umgebung,Strategie Reproduzierbare Umgebung>> 
+
+|Q-002 
+|**Wartbarkeit** 
+|Klare Trennung von Content, Präsentation und Build-Logik (Separation of Concerns). Ermöglicht einfache Änderungen und Erweiterungen. 
+|Jede Datei hat einen klaren Verantwortungsbereich; neue Formate können durch Hinzufügen eines Gradle-Tasks unterstützt werden 
+|<<04-solution-strategy#strategie-modularer-build,Strategie Modularer Build>> 
+
+|Q-003 
+|**Automatisierbarkeit** 
+|100% der Build- und Deployment-Prozesse laufen ohne manuelles Eingreifen. Reduziert menschliche Fehler und erhöht Effizienz. 
+|Keine manuellen Schritte im Normalbetrieb; Push zu main löst automatisch Build und Deployment aus 
+|<<04-solution-strategy#strategie-automatisierter-build,Strategie Automatisierter Build>> 
+
+|Q-004 
+|**Sicherheit** 
+|Schutz von Secrets und privaten Daten im Repository und Deployment. Verhindert Datenlecks und unbefugten Zugriff. 
+|Keine Secrets im Repository; alle Deployment-Tokens in GitHub Secrets gespeichert 
+|<<04-solution-strategy#strategie-sichere-umgebung,Strategie Sichere Umgebung>> 
+
+|Q-005 
+|**Korrektheit** 
+|Generierte Outputs sind inhaltlich und technisch korrekt. Grundlage für Vertrauen der Stakeholder. 
+|Alle Includes funktionieren; alle Links sind valide; alle Diagramme rendern ohne Fehler 
+|<<04-solution-strategy#strategie-qualitätsvalidierung,Strategie Qualitätsvalidierung>> 
+
+|===
+
+[.small]
+*Weitergehende Qualitätscharakteristiken (Flexibilität, Performance, Nachhaltigkeit, Benutzerfreundlichkeit) und detaillierte Qualitätsszenarien finden sich in <<10-quality-scenarios,Kapitel 10 (Qualitätsszenarien)>>.*
+
+
+== Erfolgsmetriken
+
+| Metrik | Zielwert | Aktueller Wert | Messmethode |
+|--------|----------|----------------|--------------|
+| Anzahl manuell gepflegter Dokumente | 0 | 0 | manuelle Prüfung |
+| Build-Dauer (lokale Entwicklung) | < 2 Min. | TBD | Gradle Build Zeit |
+| Build-Dauer (CI/CD) | < 5 Min. | TBD | GitHub Actions Logs |
+| Determinismus-Quote | 100% | TBD | Build-Hash Vergleich |
+| Redundanz-Quote | < 5% | TBD | Code-Analyse |
+| Anzahl unterstützter Output-Formate | >= 3 | 3 (HTML, PDF, Markdown) | manuelle Prüfung |
+
+== Einfluss auf andere Architekturentscheidungen
+
+Die hier definierten Ziele haben direkten Einfluss auf:
+
+* <<04-solution-strategy,Lösungsstrategie>>:
+  - **Single Source**-Ansatz führt zu AsciiDoc als zentralem Format
+  - **Automatisierung** erfordert CI/CD-Pipeline
+  - **Reproduzierbarkeit** erfordert Docker-Container
+
+* <<05-building-blocks,Bausteine>>:
+  - **Asciidoctor** für Conversion (Ziel: Flexibilität)
+  - **Gradle** für Orchestrierung (Ziel: Wartbarkeit)
+  - **Docker** für Runtime (Ziel: Reproduzierbarkeit)
+
+* <<07-quality-requirements,Qualitätsanforderungen>>:
+  - Alle Qualitätskriterien leiten sich aus diesen Zielen ab
+
+* <<10-quality-scenarios,Qualitätsszenarien>>:
+  - Detaillierte Qualitätsszenarien konkretisieren diese Ziele
+
+* <<decisions/ADR-001-use-asciidoc.adoc,ADR-001: Use AsciiDoc as single source>>:
+  - Direkte Umsetzung von Z-001 (Single Source of Truth)
+
+* <<decisions/ADR-002-use-gradle.adoc,ADR-002: Use Gradle for orchestration>>:
+  - Unterstützung von Z-011 und Z-012 (Automatisierung)
+
+* <<decisions/ADR-003-use-docker.adoc,ADR-003: Use Docker for reproducibility>>:
+  - Umsetzung von Z-010 (Reproduzierbare Builds)
+
+* <<decisions/ADR-005-green-it.adoc,ADR-005: Nothing is used on the site that isn't absolutely necessary>>:
+  - Umsetzung von Z-013 (Green IT)
+
+== Verwandte Dokumente
+
+* <<architecture-canvas,Architecture Canvas>>:: Kompakte Übersicht
+* <<02-stakeholders,02. Stakeholder>>:: Wer profitiert von diesen Zielen?
+* <<09-risks-and-constraints,09. Risiken & Constraints>>:: Welche Hindernisse gibt es?

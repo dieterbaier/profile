@@ -19,7 +19,7 @@ end note
 
 :Run Pandoc;
 note right
-Convert to Markdown
+Convert README and articles to Markdown
 end note
 
 :Copy Assets;

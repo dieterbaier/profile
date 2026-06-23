@@ -1,0 +1,378 @@
+= ADR-004: Use Pandoc for Markdown conversion
+include::../../../revinfo.adoc[]
+:lang: en
+Dieter Baier
+:author_page: https://dieterbaier.eu
+:revremark: Architecture Decision Record
+:nofooter:
+:toc: left
+:stylesheet: style.css
+:stylesdir: ../../../theme
+:iconsdir: {stylesdir}/icons
+:icons: image
+ifdef::buildsite[]
+:stylesdir: ./stylesheet
+:iconsdir: ./assets/icons
+:linkcss:
+endif::[]
+:docinfo: shared
+:docinfodir: ../../../docinfo/
+
+include::../../../../theme/doctitle.adoc[]
+
+[.callout]
+---
+*This ADR follows the template by **Mark Nygard** (https://adr.github.io/) with **Pugh Matrix** extension as per AGENTS.md.*
+
+*Status:* Accepted
+
+*Date:* 2024-XX-XX (TBD)
+
+*Related:* <<../01-vision-and-goals,Vision & Goals>> | <<../04-solution-strategy,Solution Strategy>> | <<../05-building-blocks,Building Blocks>> | <<../06-interfaces,Schnittstellen>> | <<../09-risks-and-constraints,Chapter 11 (Risks)>>
+---
+
+== Status
+
+Accepted
+
+== Kontext
+
+With our decision to use <<ADR-001-use-asciidoc.adoc,AsciiDoc as the single source format>>, we needed to generate **multiple output formats** for different use cases:
+
+* **HTML** for the website and online CV (via Asciidoctor)
+* **PDF** for downloadable CV (via Asciidoctor PDF)
+* **Markdown** for GitHub and GitLab READMEs
+* **Markdown** exports for articles
+
+While Asciidoctor can generate HTML and PDF directly from AsciiDoc, **Markdown generation is not natively supported**. We needed a solution to convert AsciiDoc to Markdown for the README outputs and reusable article exports.
+
+Two main approaches were considered:
+
+1. **Direct AsciiDoc to Markdown:** Use a tool that converts AsciiDoc directly to Markdown
+2. **AsciiDoc → DocBook → Markdown:** Use Asciidoctor to generate DocBook, then convert DocBook to Markdown
+
+== Entscheidungsgrundlage
+
+=== Pugh Matrix (3-Point: -1/0/+1)
+
+[.callout]
+---
+*Bewertungskriterien und Optionen für die Markdown-Konvertierung.*
+
+*Datum:* 2024-XX-XX
+*Team:* Dieter Baier
+
+*Legende:* +1 = gut, 0 = neutral, -1 = schlecht, ? = Bewertung offen
+
+*Kontext:* Konvertierung von AsciiDoc zu Markdown für GitHub/GitLab READMEs und Artikel-Exporte
+---
+
+[cols="1,1,1,1,1,1", options="header"]
+|===
+|Kriterium |Gewicht |Asciidoctor.js |Pandoc Direct |AsciiDoc→DocBook→Pandoc |Custom Script |Referenz 
+
+|Feature Completeness (All AsciiDoc) 
+|⭐⭐⭐⭐⭐ 
+|-1 
+|-1 
+|+1 
+|0 
+|Funktionale Eignung 
+
+|Conversion Quality/Accuracy 
+|⭐⭐⭐⭐⭐ 
+|-1 
+|-1 
+|+1 
+|? 
+|Korrektheit 
+
+|Tool Maturity/Stability 
+|⭐⭐⭐⭐ 
+|0 
+|+1 
+|+1 
+|-1 
+|Zuverlässigkeit 
+
+|Ecosystem/Community Support 
+|⭐⭐⭐⭐ 
+|-1 
+|+1 
+|+1 
+|-1 
+|Marktakzeptanz 
+
+|Flexibility (Future Formats) 
+|⭐⭐⭐⭐ 
+|0 
+|0 
+|+1 
+|-1 
+|Wartbarkeit 
+
+|Performance (Conversion Speed) 
+|⭐⭐⭐ 
+|+1 
+|+1 
+|-1 
+|+1 
+|Effizienz 
+
+|Dependency Complexity 
+|⭐⭐⭐ 
+|-1 
+|+1 
+|-1 
+|-1 
+|Wartbarkeit 
+
+|Maintenance Effort 
+|⭐⭐⭐⭐ 
+|-1 
+|+1 
+|-1 
+|-1 
+|Wartbarkeit 
+
+|**Summe (gewichtet)** 
+|- 
+|**-3** 
+|**0** 
+|**+1** 
+|**-4** 
+|=
+
+*Gewichtung: ⭐⭐⭐⭐⭐ = 5, ⭐⭐⭐⭐ = 4, ⭐⭐⭐ = 3, ⭐⭐ = 2, ⭐ = 1*
+
+[.small]
+*Detaillierte Bewertung: Asciidoctor.js: -5-5+0-4+0+3-3-4 = -3; Pandoc Direct: -5-5+4+4+0+3+3+4 = 0; DocBook→Pandoc: +5+5+4+4+4-3-3-4 = +1; Custom: 0?+0-4+3-3-3-4 = -4*
+
+=== Optionen
+
+==== Option 1: Asciidoctor.js with Markdown writer
+
+* **Pros:**
+  - Direct AsciiDoc to Markdown conversion
+  - JavaScript-based, lightweight
+  - Part of Asciidoctor ecosystem
+
+* **Cons:**
+  - Limited Markdown feature support
+  - Less mature than full Asciidoctor
+  - JavaScript dependency
+  - Limited adoption and documentation
+
+==== Option 2: Pandoc (AsciiDoc → Markdown directly)
+
+* **Pros:**
+  - Direct conversion possible
+  - Well-known and widely used tool
+  - Supports many input/output formats
+
+* **Cons:**
+  - AsciiDoc support in Pandoc is **limited** (not all AsciiDoc features are supported)
+  - May lose formatting or features during conversion
+  - Inconsistent rendering compared to Asciidoctor HTML output
+
+==== Option 3: Asciidoctor → DocBook → Pandoc → Markdown
+
+* **Pros:**
+  - Uses **Asciidoctor's full feature set** for initial conversion
+  - DocBook is a well-defined intermediate format
+  - Pandoc has **excellent DocBook to Markdown support**
+  - Most reliable conversion path
+  - Preserves most formatting and structure
+
+* **Cons:**
+  - Two conversion steps (AsciiDoc → DocBook → Markdown)
+  - Slightly more complex build process
+  - Requires both Asciidoctor and Pandoc
+
+==== Option 4: Custom Conversion Script
+
+* **Pros:**
+  - Tailored exactly to our needs
+  - Full control over conversion
+
+* **Cons:**
+  - High development effort
+  - Maintenance burden
+  - Error-prone
+  - Not portable
+
+== Entscheidung
+
+We chose **Option 3: Asciidoctor → DocBook → Pandoc → Markdown** for Markdown generation.
+
+**Pugh Matrix Ergebnis:** AsciiDoc→DocBook→Pandoc (+1) schneidet am besten ab, gefolgt von Pandoc Direct (0). Asciidoctor.js (-3) und Custom Script (-4) sind weniger geeignet.
+
+Die Entscheidung für den zweistufigen Ansatz basiert auf der **Feature-Vollständigkeit** und **Konvertierungsqualität**, da Asciidoctor alle AsciiDoc-Features verarbeitet und Pandoc DocBook exzellent nach Markdown konvertiert.
+
+== Konsequenzen
+
+=== Vorteile
+
+Accepted (direct from Pugh analysis)
+
+* Functional Suitability: Feature Completeness: Uses Asciidoctor's full feature set, ensuring all AsciiDoc features are properly processed
+* Correctness: Conversion Quality: Pandoc has excellent DocBook to Markdown support
+* Maintainability: Consistency: DocBook serves as a stable intermediate format
+* Maintainability: Proven Tools: Both Asciidoctor and Pandoc are mature, widely-used tools
+* Flexibility: Flexibility: The DocBook intermediate allows for future output formats
+
+=== Nachteile
+
+* Maintainability: Two-Step Conversion: Requires Asciidoctor for first step, Pandoc for second
+* Maintainability: Complexity: More complex build configuration
+* Performance: Performance: Slightly slower due to two conversion steps
+* Compatibility: Tool Dependency: Requires both Asciidoctor and Pandoc in the build environment
+
+=== Risiken und Mitigation (Referenz auf Kapitel 11)
+
+[cols="1,2,2", options="header"]
+|===
+|Risiko-ID |Risiko |Mitigation 
+
+|<<../09-risks-and-constraints#RISK-004,RISK-004>> 
+|Asciidoctor oder Pandoc werden nicht mehr gewartet 
+|Regelmäßige Updates der Abhängigkeiten; Monitoring von CVE-Datenbanken; alternative Tools evaluieren 
+
+|<<../09-risks-and-constraints#RISK-102,RISK-102>> 
+|Build-Dauer wird zu lang 
+|Caching zwischen den Konvertierungsschritten; inkrementelle Builds implementieren 
+
+|<<../09-risks-and-constraints#RISK-104,RISK-104>> 
+|Abhängigkeiten haben Sicherheitslücken 
+|Regelmäßige Updates der Abhängigkeiten; Docker-Image regelmäßig neu bauen 
+
+|=== 
+
+== Alternativen
+
+* **Asciidoctor.js:** Rejected due to limited Markdown support and maturity (Pugh: -3)
+* **Pandoc direct:** Rejected due to limited AsciiDoc feature support (Pugh: 0)
+* **Custom Script:** Rejected due to development and maintenance effort (Pugh: -4)
+
+== Verknüpfungen
+
+* **Unterstützt Vision & Ziele:**
+  - <<../01-vision-and-goals#_mission_statement,Mission Statement>> (Multi-Output)
+  - <<../01-vision-and-goals#_primäre_ziele,Primäres Ziel Single Source of Truth>> (mehrere Outputs aus einer Quelle)
+  - <<../01-vision-and-goals#_sekundäre_ziele,Sekundäres Ziel Flexibilität>> (Z-014)
+
+* **Implementiert Lösungsstrategie:**
+  - <<../04-solution-strategy#_5_multi_output_strategy,Strategie Multi-Output>>
+  - <<../04-solution-strategy#_9_konsistentes_design,Konsistentes Design>>
+
+* **Verwendet in Baustein:**
+  - <<../05-building-blocks#_3_gradle_build,Baustein Gradle Build>> (orchestriert die Konvertierung)
+
+* **Implementiert Schnittstelle:**
+  - <<../06-interfaces#_13_gradle_pandoc,Schnittstelle Gradle → Pandoc>>
+
+* **Unterstützt Qualitätsanforderungen:**
+  - <<../07-quality-requirements,QA-FLEX-001 (Unterstützung mehrerer Output-Formate)>>
+  - <<../07-quality-requirements,QA-FLEX-002 (Einfaches Hinzufügen neuer Formate)>>
+
+* **Verknüpft mit Entscheidungen:**
+  - <<ADR-001-use-asciidoc.adoc,ADR-001: Use AsciiDoc as single source>> (Input-Format)
+  - <<ADR-002-use-gradle.adoc,ADR-002: Use Gradle for orchestration>> (orchestriert die Konvertierung)
+
+* **Betroffen von Stakeholdern:**
+  - <<../02-stakeholders,ST-004 (Community)>> (benötigt Markdown für READMEs und Artikel-Exporte)
+
+* **Top-Level Qualitätsziele (Kapitel 1.2):**
+  - Unterstützt <<../01-vision-and-goals#_1_2_top_level_qualitätsziele,Q-002 (Wartbarkeit)>> durch modulare Konvertierungskette
+  - Unterstützt <<../01-vision-and-goals#_1_2_top_level_qualitätsziele,Q-005 (Korrektheit)>> durch hohe Konvertierungsqualität
+
+== Implementierungsdetails
+
+The conversion process is implemented in `build.gradle`:
+
+```groovy
+// 1. Convert AsciiDoc to DocBook
+tasks.register('buildReadmeDocbook', org.asciidoctor.gradle.jvm.AsciidoctorTask) {
+    setSourceDir(file('src-content/profile/readme'))
+    setOutputDir(file('build/readme/docbook'))
+    outputOptions {
+        backends = ['docbook']
+    }
+}
+
+// 2. Define Pandoc task
+tasks.register('convertDocBookToMarkdown', PandocTask) {
+    dependsOn tasks.named('buildReadmeDocbook')
+    dependsOn tasks.named('buildReadmeDocbookCopyAssets')
+    
+    setInputFile(file("build/readme/docbook/README.xml"))
+    setOutputFile(file("build/readme/README.md"))
+}
+
+// 3. Final HTML build (optional)
+tasks.register('buildReadme','convertDocBookToMarkdown','src-content/profile/readme', 'build/readme', [],false)
+```
+
+The custom `PandocTask` is defined as:
+
+```groovy
+abstract class PandocTask extends DefaultTask {
+    @InputFile
+    abstract RegularFileProperty getInputFile()
+    
+    @OutputFile
+    abstract RegularFileProperty getOutputFile()
+    
+    @TaskAction
+    void runPandoc() {
+        project.exec {
+            commandLine 'pandoc',
+                    inputFile.get().asFile,
+                    '-f', 'docbook',
+                    '-t', 'gfm',
+                    '--wrap=none',
+                    '--extract-media=build/pandoc/media',
+                    '-o', outputFile.get().asFile
+        }
+    }
+}
+```
+
+For article exports, the same conversion chain is applied recursively:
+
+```groovy
+asciidoctorBase(
+    'buildArticlesDocbook',
+    '',
+    'src-content/profile/site/articles',
+    'build/articles/docbook',
+    articleSources,
+    true,
+    'docbook',
+    ['type': 'readme']
+)
+
+tasks.register('buildArticlesMarkdown', PandocDirectoryTask) {
+    dependsOn tasks.named('buildArticlesDocbook')
+    dependsOn tasks.named('buildArticlesDocbookCopyAssets')
+
+    setInputDirectory(layout.buildDirectory.dir("articles/docbook"))
+    setOutputDirectory(layout.buildDirectory.dir("articles"))
+}
+```
+
+`PandocDirectoryTask` converts all generated `*.xml` files below `build/articles/docbook` to `*.md` below `build/articles` while preserving the relative article directory structure. Media files are extracted to `build/articles/media`.
+
+Pandoc command options:
+
+* `-f docbook`: Input format is DocBook
+* `-t gfm`: Output format is GitHub Flavored Markdown
+* `--wrap=none`: No text wrapping
+* `--extract-media=...`: Extract media files to specified directory
+
+== Revision History
+
+| Date | Author | Changes |
+|------|--------|---------|
+| 2024-XX-XX | Dieter Baier | Initial version |
+| 2025-06-23 | Dieter Baier | Added Pugh Matrix per AGENTS.md | Added risk references per AGENTS.md | Added Chapter 1.2 references |

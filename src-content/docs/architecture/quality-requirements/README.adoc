@@ -1,0 +1,447 @@
+= Qualitätskriterien – Übersicht
+include::../../../revinfo.adoc[]
+:lang: de
+Dieter Baier
+:author_page: https://dieterbaier.eu
+:revremark: Übersicht aller Qualitätskriterien-Dokumente
+:nofooter:
+:toc: left
+:stylesheet: style.css
+:stylesdir: ../../../theme
+:iconsdir: {stylesdir}/icons
+:icons: image
+ifdef::buildsite[]
+:stylesdir: ./stylesheet
+:iconsdir: ./assets/icons
+:linkcss:
+endif::[]
+:docinfo: shared
+:docinfodir: ../../../docinfo/
+
+include::../../../../theme/doctitle.adoc[]
+
+[.callout]
+---
+*Dieses Verzeichnis enthält alle **detaillierten Qualitätskriterien-Dokumente** des `profile-dieterbaier`-Projekts.*
+
+*Jedes Kriterium ist ein **eigenständiges Dokument** und folgt den Richtlinien von https://quality.arc42.org[quality.arc42.org].*
+
+*Verknüpft mit:*
+
+* <<../07-quality-requirements.adoc,07. Qualitätsanforderungen>> (Überblick)
+* <<../architecture-canvas.adoc,Architecture Canvas>> (Kompakte Übersicht)
+---
+
+== Übersicht der Qualitätskriterien
+
+[cols="1,2,1,1", options="header"]
+|=== 
+|ID |Kriterium |Priorität |Dokument 
+
+|QA-REP 
+|Reproduzierbarkeit 
+|⭐⭐⭐⭐⭐ 
+|<<reproducibility.adoc,Reproduzierbarkeit>> 
+
+|QA-MNT 
+|Wartbarkeit 
+|⭐⭐⭐⭐⭐ 
+|<<maintainability.adoc,Wartbarkeit>> 
+
+|QA-AUT 
+|Automatisierbarkeit 
+|⭐⭐⭐⭐⭐ 
+|<<automability.adoc,Automatisierbarkeit>> 
+
+|QA-FLEX 
+|Flexibilität 
+|⭐⭐⭐⭐ 
+|<<flexibility.adoc,Flexibilität>> 
+
+|QA-PERF 
+|Performance 
+|⭐⭐⭐⭐ 
+|<<performance.adoc,Performance>> 
+
+|QA-SUS 
+|Nachhaltigkeit 
+|⭐⭐⭐⭐ 
+|<<sustainability.adoc,Nachhaltigkeit>> 
+
+|QA-USAB 
+|Benutzerfreundlichkeit 
+|⭐⭐⭐⭐ 
+|<<usability.adoc,Benutzerfreundlichkeit>> 
+
+|QA-SEC 
+|Sicherheit 
+|⭐⭐⭐⭐⭐ 
+|<<security.adoc,Sicherheit>> 
+
+|QA-CORR 
+|Korrektheit 
+|⭐⭐⭐⭐⭐ 
+|<<correctness.adoc,Korrektheit>> 
+
+|=== 
+
+== Detaillierte Qualitätskriterien
+
+=== 🎯 Reproduzierbarkeit
+
+*Dokument:* <<reproducibility.adoc,Reproduzierbarkeit>>
+
+[cols="1,3,1", options="header"]
+|=== 
+|ID |Beschreibung |Messkriterium 
+
+|QA-REP-001 
+|Gleiche Input-Dateien und Umgebung führen zu identischen Output-Dateien. 
+|Build-Hash Prüfsumme stimmt bei wiederholten Läufen überein 
+
+|QA-REP-002 
+|Build-Ergebnisse sind unabhängig von der Host-Umgebung (Betriebssystem, installierte Tools). 
+|Build in Docker-Container und lokal (mit gleichem Image) produziert identische Ergebnisse 
+
+|QA-REP-003 
+|Versionierte Docker-Images ermöglichen deterministische Builds. 
+|Image-Tags sind unveränderlich (immutable) 
+
+|=== 
+
+*Verknüpfungen:*
+
+* <<../04-solution-strategy,Strategie Reproduzierbare Umgebung>>
+* <<../05-building-blocks,Baustein Docker-Image>>
+* <<../decisions/ADR-003-use-docker.adoc,ADR-003: Use Docker for reproducibility>>
+
+---
+
+=== 🛠️ Wartbarkeit
+
+*Dokument:* <<maintainability.adoc,Wartbarkeit>>
+
+[cols="1,3,1", options="header"]
+|=== 
+|ID |Beschreibung |Messkriterium 
+
+|QA-MNT-001 
+|Klare Trennung von Content, Präsentation und Build-Logik (Separation of Concerns). 
+|Jede Datei hat einen klaren Verantwortungsbereich 
+
+|QA-MNT-002 
+|Modulare Gradle-Tasks ermöglichen einfache Änderungen und Erweiterungen. 
+|Neue Output-Formate können durch Hinzufügen eines Tasks unterstützt werden 
+
+|QA-MNT-003 
+|Dokumentation der Architekturentscheidungen (ADRs) für nachvollziehbare Entscheidungen. 
+|Jede signifikante Entscheidung ist als ADR dokumentiert 
+
+|QA-MNT-004 
+|Verwendung von Standards und Best Practices (AsciiDoc, Gradle, arc42). 
+|Einhaltung etablierter Konventionen 
+
+|QA-MNT-005 
+|Automatisierte Validierung der Dokumentationsstruktur. 
+|CI-Pipeline prüft auf gebrochene Links, fehlerhafte Includes 
+
+|=== 
+
+*Verknüpfungen:*
+
+* <<../04-solution-strategy,Strategie Modularer Build>>
+* <<../05-building-blocks,Baustein Gradle Build>>
+* <<../05-building-blocks,Baustein Content>>, <<../05-building-blocks,Baustein Themes>>
+* <<../decisions/ADR-002-use-gradle.adoc,ADR-002: Use Gradle for orchestration>>
+
+---
+
+=== 🤖 Automatisierbarkeit
+
+*Dokument:* <<automability.adoc,Automatisierbarkeit>>
+
+[cols="1,3,1", options="header"]
+|=== 
+|ID |Beschreibung |Messkriterium 
+
+|QA-AUT-001 
+|100% der Build- und Deployment-Prozesse sind automatisiert. 
+|Keine manuellen Schritte im Normalbetrieb nötig 
+
+|QA-AUT-002 
+|CI/CD-Pipeline führt alle Builds und Deployments aus. 
+|Push zu main löst automatisch Build und Deployment aus 
+
+|QA-AUT-003 
+|Lokale Entwicklungsumgebung unterstützt die gleichen Kommandos wie CI. 
+|`./build.sh` und `./gradlew` funktionieren lokal und in CI 
+
+|QA-AUT-004 
+|Fehler in der Pipeline führen zu klaren Fehlermeldungen. 
+|Jeder Fehler hat eine verständliche Meldung und Logs 
+
+|=== 
+
+*Verknüpfungen:*
+
+* <<../01-vision-and-goals,Sekundäres Ziel Automatisierung>>
+* <<../05-building-blocks,Baustein GitHub Actions>>
+* <<../05-building-blocks,Baustein Gradle Build>>
+
+---
+
+=== 🎨 Flexibilität
+
+*Dokument:* <<flexibility.adoc,Flexibilität>>
+
+[cols="1,3,1", options="header"]
+|=== 
+|ID |Beschreibung |Messkriterium 
+
+|QA-FLEX-001 
+|Unterstützung mehrerer Output-Formate (HTML, PDF, Markdown). 
+|Mindestens 3 Formate werden unterstützt 
+
+|QA-FLEX-002 
+|Einfaches Hinzufügen neuer Output-Formate. 
+|Neues Format kann durch einen Gradle-Task hinzugefügt werden 
+
+|QA-FLEX-003 
+|Anpassbare Themes für verschiedene Use Cases (Website, CV, Architektur). 
+|Themes können für verschiedene Outputs konfiguriert werden 
+
+|QA-FLEX-004 
+|Umgebungsabhängige Inhalte (z. B. öffentliche vs. private Kontaktdaten). 
+|Unterschiedliche Inhalte für Website und persönliches CV 
+
+|=== 
+
+*Verknüpfungen:*
+
+* <<../04-solution-strategy,Strategie Multi-Output>>
+* <<../05-building-blocks,Baustein Themes>>
+* <<../05-building-blocks,Baustein Content>>
+* <<../05-building-blocks,Baustein Environment Management>>
+* <<../decisions/ADR-004-use-pandoc.adoc,ADR-004: Use Pandoc for Markdown conversion>>
+
+---
+
+=== ⚡ Performance
+
+*Dokument:* <<performance.adoc,Performance>>
+
+[cols="1,3,1", options="header"]
+|=== 
+|ID |Beschreibung |Messkriterium 
+
+|QA-PERF-001 
+|Build-Dauer für lokale Entwicklung < 2 Minuten. 
+|Gemessen mit `time ./gradlew buildAll` 
+
+|QA-PERF-002 
+|Build-Dauer in CI/CD < 5 Minuten. 
+|Gemessen über GitHub Actions Logs 
+
+|QA-PERF-003 
+|Change Detection reduziert unnötige Builds. 
+|Builds werden nur bei relevanten Änderungen ausgeführt 
+
+|QA-PERF-004 
+|Gradle nutzt Caching für Abhängigkeiten. 
+|`.gradle`-Verzeichnis wird zwischen Builds gecached 
+
+|QA-PERF-005 
+|Website-Ladezeit < 2 Sekunden (First Contentful Paint). 
+|Gemessen mit Lighthouse oder WebPageTest 
+
+|=== 
+
+*Verknüpfungen:*
+
+* <<../01-vision-and-goals,Erfolgsmetrik Build-Dauer>>
+* <<../04-solution-strategy,Strategie Change Detection>>
+* <<../04-solution-strategy,Strategie Reproduzierbare Umgebung>> (Caching)
+* <<../05-building-blocks,Baustein GitHub Actions>>
+* <<../05-building-blocks,Baustein Docker-Image>>
+
+---
+
+=== 🌱 Nachhaltigkeit
+
+*Dokument:* <<sustainability.adoc,Nachhaltigkeit>>
+
+[cols="1,3,1", options="header"]
+|=== 
+|ID |Beschreibung |Messkriterium 
+
+|QA-SUS-001 
+|Minimaler Ressourcenverbrauch (Green IT). 
+|Change Detection reduziert CI/CD-Ressourcen 
+
+|QA-SUS-002 
+|Keine unnötigen Third-Party-Skripte oder Tracker. 
+|Audit der generierten HTML-Dateien 
+
+|QA-SUS-003 
+|Optimierte Assets (Bilder, CSS, JS). 
+|CSS/JS-Dateien sind minifiziert, Bilder komprimiert 
+
+|QA-SUS-004 
+|Effiziente Docker-Images (keine unnötigen Tools). 
+|Image-Größe < 500 MB 
+
+|=== 
+
+*Verknüpfungen:*
+
+* <<../decisions/ADR-005-green-it.adoc,ADR-005: Nothing is used on the site that isn't absolutely necessary>>
+* <<../01-vision-and-goals,Sekundäres Ziel Green IT>>
+* <<../04-solution-strategy,Strategie Change Detection>>
+* <<../05-building-blocks,Baustein Docker-Image>>
+* <<../05-building-blocks,Baustein Themes>>
+
+---
+
+=== 👥 Benutzerfreundlichkeit
+
+*Dokument:* <<usability.adoc,Benutzerfreundlichkeit>>
+
+[cols="1,3,1", options="header"]
+|=== 
+|ID |Beschreibung |Messkriterium 
+
+|QA-USAB-001 
+|Klare und intuitive Navigation der Website. 
+|Benutzertests oder Heuristische Evaluation 
+
+|QA-USAB-002 
+|Lesbare und gut strukturierte Dokumente. 
+|Keine Formatierungsfehler, klare Hierarchie 
+
+|QA-USAB-003 
+|Konsistentes Design über alle Ausgaben. 
+|Gleiches Corporate Design für Website, CV, READMEs 
+
+|QA-USAB-004 
+|Barrierefreie Website (WCAG 2.1 AA). 
+|Automatisierte Prüfung mit axe-core oder Lighthouse 
+
+|QA-USAB-005 
+|Gute Druckdarstellung des CVs. 
+|Manuelle Prüfung des PDF-Outputs 
+
+|=== 
+
+*Verknüpfungen:*
+
+* <<../02-stakeholders,ST-002/ST-003 (Arbeitgeber/Kunden)>>
+* <<../05-building-blocks,Baustein Themes>>
+* <<../05-building-blocks,Baustein Content>>
+* <<../01-vision-and-goals,Mission Statement>>
+
+---
+
+=== 🔒 Sicherheit
+
+*Dokument:* <<security.adoc,Sicherheit>>
+
+[cols="1,3,1", options="header"]
+|=== 
+|ID |Beschreibung |Messkriterium 
+
+|QA-SEC-001 
+|Keine Secrets oder privaten Daten im Repository. 
+|`.gitignore` blockiert `.env` und sensitive Dateien 
+
+|QA-SEC-002 
+|Sichere Speicherung von Secrets in GitHub Secrets. 
+|Keine Secrets in Plaintext in Dateien 
+
+|QA-SEC-003 
+|Sichere Authentifizierung für Deployment (SFTP, Git API). 
+|Tokens/Passwörter werden sicher übertragen 
+
+|QA-SEC-004 
+|Keine Injection-Angriffe durch Benutzereingaben. 
+|AsciiDoc-Inhalte werden nicht direkt in HTML eingebettet 
+
+|QA-SEC-005 
+|Regelmäßige Updates der Abhängigkeiten. 
+|Dependencies werden monatlich geprüft 
+
+|=== 
+
+*Verknüpfungen:*
+
+* <<../05-building-blocks,Baustein Environment Management>>
+* <<../06-interfaces,Schnittstellen GitHub Actions → *>>
+* <<../09-risks-and-constraints,Constraint Propietäre Inhalte>>
+* <<../05-building-blocks,Baustein Docker-Image>>
+
+---
+
+=== ✅ Korrektheit
+
+*Dokument:* <<correctness.adoc,Korrektheit>>
+
+[cols="1,3,1", options="header"]
+|=== 
+|ID |Beschreibung |Messkriterium 
+
+|QA-CORR-001 
+|Generierte Outputs sind inhaltlich korrekt. 
+|Manuelles Review der generierten Dokumente 
+
+|QA-CORR-002 
+|AsciiDoc-Includes funktionieren korrekt. 
+|Keine gebrochenen Includes in Build-Prozess 
+
+|QA-CORR-003 
+|Links in den generierten Dokumenten sind valide. 
+|Automatisierte Link-Validierung in CI 
+
+|QA-CORR-004 
+|Diagramme werden korrekt generiert. 
+|PlantUML-Diagramme renders ohne Fehler 
+
+|=== 
+
+*Verknüpfungen:*
+
+* <<../02-stakeholders,ST-002/ST-003 (Arbeitgeber/Kunden)>>
+* <<../05-building-blocks,Baustein Content>>
+* <<../05-building-blocks,Baustein Gradle Build>>
+* <<../03-system-context,Tool Graphviz>>
+
+---
+
+== Einfluss auf Architekturentscheidungen
+
+Jedes Qualitätskriterium beeinflusst **Lösungsstrategien**, **Bausteine**, **Schnittstellen** und **Entscheidungen**:
+
+* *Reproduzierbarkeit* → <<../04-solution-strategy,Strategie Reproduzierbare Umgebung>> → <<../05-building-blocks,Baustein Docker-Image>> → <<../decisions/ADR-003-use-docker.adoc,ADR-003>>
+* *Wartbarkeit* → <<../04-solution-strategy,Strategie Modularer Build>> → <<../05-building-blocks,Baustein Gradle Build>> → <<../decisions/ADR-002-use-gradle.adoc,ADR-002>>
+* *Flexibilität* → <<../04-solution-strategy,Strategie Multi-Output>> → <<../decisions/ADR-004-use-pandoc.adoc,ADR-004>>
+* *Nachhaltigkeit* → <<../decisions/ADR-005-green-it.adoc,ADR-005>>
+
+*Detaillierte Verknüpfungen finden sich in den jeweiligen <<../07-quality-requirements.adoc,Qualitätsanforderungen-Dokumenten>.*
+
+== Qualitätskriterien nach Priorität
+
+[cols="1,2,1", options="header"]
+|=== 
+|Priorität |Kriterien |Anzahl 
+
+|⭐⭐⭐⭐⭐ (Kritisch) 
+|Reproduzierbarkeit, Wartbarkeit, Automatisierbarkeit, Sicherheit, Korrektheit 
+|16 Kriterien 
+
+|⭐⭐⭐⭐ (Hoch) 
+|Flexibilität, Performance, Nachhaltigkeit, Benutzerfreundlichkeit 
+|16 Kriterien 
+
+|⭐⭐⭐ (Mittel) 
+|Performance (PERF-005), Nachhaltigkeit (SUS-003), Sicherheit (SEC-004-005) 
+|3 Kriterien 
+
+|=== 

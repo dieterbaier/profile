@@ -1,0 +1,217 @@
+= Korrektheit
+include::../../../revinfo.adoc[]
+:lang: de
+Dieter Baier
+:author_page: https://dieterbaier.eu
+:revremark: Qualitätskriterium – Korrektheit (QA-CORR)
+:nofooter:
+:toc: left
+:stylesheet: style.css
+:stylesdir: ../../../theme
+:iconsdir: {stylesdir}/icons
+:icons: image
+ifdef::buildsite[]
+:stylesdir: ./stylesheet
+:iconsdir: ./assets/icons
+:linkcss:
+endif::[]
+:docinfo: shared
+:docinfodir: ../../../docinfo/
+
+include::../../../../theme/doctitle.adoc[]
+
+[.callout]
+---
+*Dieses Dokument beschreibt das **Qualitätskriterium Korrektheit** für das `profile-dieterbaier`-Projekt.*
+
+*Verknüpft mit:*
+
+* <<../07-quality-requirements.adoc,07. Qualitätsanforderungen (Überblick)>>
+* <<../architecture-canvas.adoc,Architecture Canvas>>
+* <<../02-stakeholders.adoc,02. Stakeholder>>
+* <<../03-system-context.adoc,03. Systemkontext>>
+* <<../05-building-blocks.adoc,05. Bausteine>>
+---
+
+== Definition und Ziel
+
+=== 🎯 Qualitätsziel
+
+Korrektheit (Correctness) beschreibt die **inhaltliche und technische Richtigkeit** aller generierten Artefakte. Korrekte Dokumente und Build-Prozesse sind essenziell für das Vertrauen der Stakeholder (Arbeitgeber, Kunden).
+
+=== Kontext
+
+Im `profile-dieterbaier`-Projekt betrifft Korrektheit:
+
+* Inhalte der generierten Dokumente (CV, Website, READMEs)
+* Funktionierende AsciiDoc-Includes
+* Valide Links in allen Dokumenten
+* Korrekte Generierung von Diagrammen
+
+=== Priorität
+
+⭐⭐⭐⭐⭐ (Kritisch) – Korrektheit ist fundamental für die Glaubwürdigkeit des Profils.
+
+== Detaillierte Anforderungen
+
+[cols="1,3,1,1", options="header"]
+|=== 
+|ID |Anforderung |Messkriterium |Verantwortlicher 
+
+|QA-CORR-001 
+|Generierte Outputs sind inhaltlich korrekt. 
+|Manuelles Review der generierten Dokumente 
+|Content-Verantwortlicher 
+
+|QA-CORR-002 
+|AsciiDoc-Includes funktionieren korrekt. 
+|Keine gebrochenen Includes in Build-Prozess 
+|Build-System 
+
+|QA-CORR-003 
+|Links in den generierten Dokumenten sind valide. 
+|Automatisierte Link-Validierung in CI 
+|CI/CD-Pipeline 
+
+|QA-CORR-004 
+|Diagramme werden korrekt generiert. 
+|PlantUML-Diagramme renders ohne Fehler 
+|Dokumentation 
+
+|=== 
+
+== Implementierungsstrategie
+
+=== Lösungsansatz
+
+. **Content-Review**: Manuelle und automatisierte Prüfung aller Inhalte
+. **Include-Validierung**: Automatisierte Prüfung aller AsciiDoc-Includes
+. **Link-Validierung**: CI prüft alle Links auf Gültigkeit
+. **Diagramm-Validierung**: PlantUML-Diagramme werden vor Build geprüft
+
+=== Technische Umsetzung
+
+[plantuml]
+----
+@startuml
+left to right direction
+
+package "Content Validation" {
+  [Manual Review]
+  [Automated Checks]
+  [Content Guidelines]
+}
+
+package "Technical Validation" {
+  [Include Check]
+  [Link Validation]
+  [Diagram Rendering]
+}
+
+package "Build Validation" {
+  [CI Pipeline]
+  [Build Logs]
+  [Artifact Check]
+}
+
+[Manual Review] --> [Automated Checks] : "ergänzt durch"
+[Include Check] --> [Link Validation] : "verwandt mit"
+[Link Validation] --> [Diagram Rendering] : "verwandt mit"
+[CI Pipeline] --> [Build Logs] : "generiert"
+[Build Logs] --> [Artifact Check] : "validiert"
+
+note top of [Content Validation]
+  Inhaltsprüfung
+  für alle Dokumente
+end note
+
+note right of [Technical Validation]
+  Automatisierte
+  Validierung der
+  technischen
+  Korrektheit
+end note
+
+@enduml
+----
+
+=== Verknüpfungen zu Architekturentscheidungen
+
+* <<../02-stakeholders.adoc,ST-002/ST-003 (Arbeitgeber/Kunden)>>
+  **→ Zielgruppe: Vertrauen der Stakeholder**
+* <<../05-building-blocks.adoc#baustein-content,Baustein Content>>
+  **→ Content-Implementierung**
+* <<../05-building-blocks.adoc#baustein-gradle-build,Baustein Gradle Build>>
+  **→ Build-System für Korrektheitsprüfung**
+* <<../03-system-context.adoc,Tool Graphviz>>
+  **→ Diagramm-Generierung**
+
+== Verifikationsmethoden
+
+=== Automatisierte Tests
+
+. **Include-Check**: CI prüft alle AsciiDoc-Includes auf Existenz
+. **Link-Validation**: Alle Links werden auf Gültigkeit geprüft
+. **Diagramm-Rendering**: PlantUML-Diagramme werden vor Build generiert
+. **Build-Validation**: CI prüft, ob Build erfolgreich war
+
+=== Manuelle Prüfungen
+
+. **Content-Review**: Regelmäßige Überprüfung aller Inhalte
+. **Diagramm-Review**: Visuelle Prüfung aller Diagramme
+. **Output-Review**: Prüfung der generierten Artefakte
+
+== Metriken und Monitoring
+
+[cols="1,2,1", options="header"]
+|=== 
+|Metrik |Zielwert |Aktueller Status 
+
+|Anzahl gebrochener Includes 
+|0 
+|Zu messen 
+
+|Anzahl ungültiger Links 
+|0 
+|Zu messen 
+
+|Anzahl fehlerhafter Diagramme 
+|0 
+|Zu messen 
+
+|Build-Erfolgsrate 
+|100% 
+|Zu messen 
+
+|Content-Review-Frequenz 
+|Monatlich 
+|Zu messen 
+
+|=== 
+
+== Abhängigkeiten und Konflikte
+
+=== Abhängigkeiten
+
+* <<maintainability.adoc,Wartbarkeit>>: Gute Wartbarkeit unterstützt langfristige Korrektheit
+* <<automability.adoc,Automatisierbarkeit>>: Automatisierte Validierung verbessert Korrektheit
+* <<usability.adoc,Benutzerfreundlichkeit>>: Korrekte Inhalte sind Basis für gute Usability
+
+=== Potenzielle Konflikte
+
+* *Performance vs. Korrektheit*: Automatisierte Validierung kann Performance beeinflussen
+  **Lösung**: Validierung parallel zum Build-Prozess
+* *Flexibilität vs. Korrektheit*: Flexible Content-Struktur kann Fehler begünstigen
+  **Lösung**: Klare Content-Richtlinien und Validierungsregeln
+
+== Historische Entwicklung
+
+| Version | Datum | Änderung | Autor |
+| 1.0 | 2025-06-23 | Initiales Dokument | Dieter Baier |
+
+== Referenzen
+
+* https://quality.arc42.org[quality.arc42.org] – Korrektheit
+* https://asciidoctor.org/docs/user-manual/[AsciiDoc User Manual]
+* https://plantuml.com/[PlantUML Dokumentation]
+* https://www.w3.org/QA/Tips/validation[W3C Validation]
