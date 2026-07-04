@@ -1,0 +1,20 @@
+---
+id: CANVAS-003-architecture-inception
+type: Document
+title: "Architecture Inception Canvas"
+status: draft
+owner: "Dieter Baier"
+created: '2026-07-04'
+reviewed: false
+generated: false
+summary: "Draft architecture inception canvas for profile-dieterbaier."
+tags:
+- canvas
+- architecture
+relations: []
+metadata_version: '1.0'
+---
+[[architecture-inception-canvas]]
+= Architecture Inception Canvas
+
+The architecture centers on source-controlled content, deterministic generation, explicit metadata, and automated publication.

@@ -27,12 +27,31 @@ jobs:
           filters: |
             readme:
               - 'src-content/profile/**'
+              - 'metamodel/profile-artifact.schema.yaml'
+              - 'scripts/validate-profile-metamodel.rb'
+              - 'build.gradle'
             articles:
               - 'src-content/profile/site/articles/**'
+              - 'metamodel/profile-artifact.schema.yaml'
+              - 'scripts/validate-profile-metamodel.rb'
+              - 'build.gradle'
             architecture:
               - 'src-content/docs/**'
+              - 'metamodel/**'
+              - 'scripts/validate-metamodel.rb'
+              - 'templates/**'
+              - 'build.gradle'
+              - 'AGENTS.md'
+              - '.agents/**'
+              - '.codex/**'
             site:
               - 'src-content/profile/**'
+              - 'metamodel/profile-artifact.schema.yaml'
+              - 'scripts/validate-profile-metamodel.rb'
+              - 'build.gradle'
+              - 'AGENTS.md'
+              - '.agents/**'
+              - '.codex/**'
 
   build-docs:
     runs-on: ubuntu-latest

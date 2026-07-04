@@ -1,0 +1,51 @@
+---
+id: DOC-03000-system-scope-and-context
+type: Document
+title: "System Scope and Context"
+status: draft
+owner: "Dieter Baier"
+created: '2026-07-04'
+reviewed: false
+generated: false
+summary: "Business and technical context of the profile publishing pipeline."
+tags:
+- arc42
+- architecture
+relations: []
+metadata_version: '1.0'
+---
+[[system-scope-and-context]]
+= System Scope and Context
+
+== Business Context
+
+[plantuml]
+----
+@startuml
+left to right direction
+actor "Dieter Baier" as Author
+rectangle "profile-dieterbaier" as System
+actor "Employers / Clients" as Audience
+actor "Technical Community" as Community
+Author --> System : writes AsciiDoc and metadata
+System --> Audience : publishes CV and website
+System --> Community : publishes README, articles, shorts
+@enduml
+----
+
+== Technical Context
+
+[plantuml]
+----
+@startuml
+left to right direction
+[AsciiDoc sources] --> [Gradle build]
+[Profile metadata] --> [Profile validators and generators]
+[Architecture metadata] --> [Architecture validators and generators]
+[Gradle build] --> [Asciidoctor HTML/PDF]
+[Gradle build] --> [Pandoc Markdown]
+[GitHub Actions] --> [SFTP webspace]
+[GitHub Actions] --> [GitHub profile README]
+[GitHub Actions] --> [GitLab profile README]
+@enduml
+----

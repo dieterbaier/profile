@@ -1,0 +1,16 @@
+[[canvas-questions-and-answers]]
+= Questions and Answers
+
+[[qa-profile-metamodel-reviewed]]
+== Q-001 Is the profile metamodel accepted?
+
+Status: open.
+
+The bootstrap derives a profile metamodel from the existing content and the architecture-knowledge-toolkit pattern. A human review should confirm artifact types, required fields, and whether further profile fragments need first-class metadata.
+
+[[qa-publication-urls]]
+== Q-002 Which canonical publication URLs should generated summaries use?
+
+Status: open.
+
+AI-generated article publication packs must not invent URLs. Missing canonical URLs remain placeholders until supplied.

@@ -1,0 +1,22 @@
+  id: SHORT-001-architecture-thinking
+  type: ShortThought
+  title: "Architecture Thinking"
+  status: published
+  owner: "Dieter Baier"
+  created: '2026-07-04'
+  reviewed: false
+  generated: false
+  language: mixed
+  audience:
+    - employers
+    - clients
+    - technical-community
+  channels:
+    - website
+  summary: "Short architecture thoughts."
+  source: src-content/profile/site/shorts/architecture-thinking.adoc
+  tags:
+    - profile
+    - docs-as-code
+  relations: []
+  metadata_version: '1.0'

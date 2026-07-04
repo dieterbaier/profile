@@ -1,0 +1,132 @@
+---
+id: DOC-001-profile-dieterbaier-arc42
+type: Document
+title: "Profile Dieter Baier arc42 Architecture"
+status: draft
+owner: "Dieter Baier"
+created: '2026-07-04'
+reviewed: false
+generated: false
+summary: "Assembled architecture documentation for the personal profile publishing pipeline."
+tags:
+- arc42
+- docs-as-code
+- profile-dieterbaier
+relations:
+- type: documents
+  target: DOC-01000-introduction-and-goals
+  status: proposed
+  rationale: "The assembled architecture includes this arc42 chapter."
+  reviewed: false
+- type: documents
+  target: DOC-02000-architecture-constraints
+  status: proposed
+  rationale: "The assembled architecture includes this arc42 chapter."
+  reviewed: false
+- type: documents
+  target: DOC-03000-system-scope-and-context
+  status: proposed
+  rationale: "The assembled architecture includes this arc42 chapter."
+  reviewed: false
+- type: documents
+  target: DOC-04000-solution-strategy
+  status: proposed
+  rationale: "The assembled architecture includes this arc42 chapter."
+  reviewed: false
+- type: documents
+  target: DOC-05000-building-block-view
+  status: proposed
+  rationale: "The assembled architecture includes this arc42 chapter."
+  reviewed: false
+- type: documents
+  target: DOC-06000-runtime-view
+  status: proposed
+  rationale: "The assembled architecture includes this arc42 chapter."
+  reviewed: false
+- type: documents
+  target: DOC-07000-deployment-view
+  status: proposed
+  rationale: "The assembled architecture includes this arc42 chapter."
+  reviewed: false
+- type: documents
+  target: DOC-08000-crosscutting-concepts
+  status: proposed
+  rationale: "The assembled architecture includes this arc42 chapter."
+  reviewed: false
+- type: documents
+  target: DOC-09000-architecture-decisions
+  status: proposed
+  rationale: "The assembled architecture includes this arc42 chapter."
+  reviewed: false
+- type: documents
+  target: DOC-10000-quality-requirements
+  status: proposed
+  rationale: "The assembled architecture includes this arc42 chapter."
+  reviewed: false
+- type: documents
+  target: DOC-11000-risks-and-technical-debt
+  status: proposed
+  rationale: "The assembled architecture includes this arc42 chapter."
+  reviewed: false
+- type: documents
+  target: DOC-12000-glossary
+  status: proposed
+  rationale: "The assembled architecture includes this arc42 chapter."
+  reviewed: false
+- type: documents
+  target: DOC-13000-appendix
+  status: proposed
+  rationale: "The assembled architecture includes this arc42 chapter."
+  reviewed: false
+metadata_version: '1.0'
+---
+[[profile-dieterbaier-arc42]]
+= Profile Dieter Baier arc42 Architecture
+
+:toc: left
+:toclevels: 2
+:sectnums:
+:skip-front-matter:
+ifndef::includesdir[]
+:includesdir: .
+endif::[]
+include::{includesdir}/../../revinfo.adoc[]
+:lang: en
+Dieter Baier
+:author_page: https://dieterbaier.eu
+:revremark: Write once. Publish everywhere.
+:nofooter:
+:stylesheet: style.css
+:stylesdir: ../../theme
+:iconsdir: {stylesdir}/icons
+:icons: image
+ifdef::buildsite[]
+:stylesdir: ./stylesheet
+:iconsdir: ./assets/icons
+:linkcss:
+endif::[]
+:docinfo: shared
+:docinfodir: {includesdir}/../docinfo/
+
+include::{includesdir}/../../theme/doctitle.adoc[]
+
+[.callout]
+--
+This architecture documentation describes `profile-dieterbaier` as a software project:
+a personal profile, CV, thoughts, articles, and publishing pipeline based on
+Docs-as-Code and the principle "write once, publish everywhere".
+--
+
+include::{includesdir}/doc-01000-introduction-and-goals.adoc[leveloffset=+1]
+include::{includesdir}/doc-02000-architecture-constraints.adoc[leveloffset=+1]
+include::{includesdir}/doc-03000-system-scope-and-context.adoc[leveloffset=+1]
+include::{includesdir}/doc-04000-solution-strategy.adoc[leveloffset=+1]
+include::{includesdir}/doc-05000-building-block-view.adoc[leveloffset=+1]
+include::{includesdir}/doc-06000-runtime-view.adoc[leveloffset=+1]
+include::{includesdir}/doc-07000-deployment-view.adoc[leveloffset=+1]
+include::{includesdir}/doc-08000-crosscutting-concepts.adoc[leveloffset=+1]
+include::{includesdir}/doc-09000-architecture-decisions.adoc[leveloffset=+1]
+include::{includesdir}/doc-10000-quality-requirements.adoc[leveloffset=+1]
+include::{includesdir}/doc-11000-risks-and-technical-debt.adoc[leveloffset=+1]
+include::{includesdir}/doc-12000-glossary.adoc[leveloffset=+1]
+include::{includesdir}/doc-13000-appendix.adoc[leveloffset=+1]

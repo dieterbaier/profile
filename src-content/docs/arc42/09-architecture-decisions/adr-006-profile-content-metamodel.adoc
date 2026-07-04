@@ -1,0 +1,52 @@
+---
+id: ADR-006-profile-content-metamodel
+type: ADR
+title: "Profile Content Metamodel"
+status: proposed
+owner: "Dieter Baier"
+created: '2026-07-04'
+reviewed: false
+generated: false
+summary: "Use a profile-specific metamodel, validator, and generator alongside the architecture metamodel."
+tags:
+- adr
+- decision
+relations:
+- type: addresses
+  target: QS-002-profile-metadata-validity
+  status: proposed
+  rationale: "This decision supports the referenced quality scenario."
+  reviewed: false
+metadata_version: '1.0'
+---
+[[adr-006-profile-content-metamodel]]
+== ADR-006: Profile Content Metamodel
+
+=== Status
+
+Proposed (derived).
+
+=== Decision
+
+Use a profile-specific metamodel, validator, and generator alongside the architecture metamodel.
+
+=== Context
+
+This ADR was derived while bootstrapping the existing project to the architecture-knowledge-toolkit structure. The decision reflects existing repository practice and should be reviewed before being marked accepted.
+
+=== Pugh Matrix
+
+[cols="2,1,1,1", options="header"]
+|===
+| Criterion | Keep existing practice | Replace with custom tooling | Manual process
+| Fit to Docs-as-Code | +1 | 0 | -1
+| Build reproducibility | +1 | ? | -1
+| Maintainability | +1 | 0 | -1
+s| Sum s| +3 s| ? s| -3
+|===
+
+=== Consequences
+
+* Positive: The project keeps a coherent source-based publishing workflow.
+* Negative: Contributors need to understand the chosen toolchain.
+* Follow-up: Human review should confirm the derived status and rationale.

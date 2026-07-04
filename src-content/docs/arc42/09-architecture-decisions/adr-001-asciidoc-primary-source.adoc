@@ -1,0 +1,52 @@
+---
+id: ADR-001-asciidoc-primary-source
+type: ADR
+title: "AsciiDoc as Primary Source"
+status: proposed
+owner: "Dieter Baier"
+created: '2026-07-04'
+reviewed: false
+generated: false
+summary: "Use AsciiDoc as the primary source format for profile and architecture content."
+tags:
+- adr
+- decision
+relations:
+- type: addresses
+  target: QS-003-public-artifact-consistency
+  status: proposed
+  rationale: "This decision supports the referenced quality scenario."
+  reviewed: false
+metadata_version: '1.0'
+---
+[[adr-001-asciidoc-primary-source]]
+== ADR-001: AsciiDoc as Primary Source
+
+=== Status
+
+Proposed (derived).
+
+=== Decision
+
+Use AsciiDoc as the primary source format for profile and architecture content.
+
+=== Context
+
+This ADR was derived while bootstrapping the existing project to the architecture-knowledge-toolkit structure. The decision reflects existing repository practice and should be reviewed before being marked accepted.
+
+=== Pugh Matrix
+
+[cols="2,1,1,1", options="header"]
+|===
+| Criterion | Keep existing practice | Replace with custom tooling | Manual process
+| Fit to Docs-as-Code | +1 | 0 | -1
+| Build reproducibility | +1 | ? | -1
+| Maintainability | +1 | 0 | -1
+s| Sum s| +3 s| ? s| -3
+|===
+
+=== Consequences
+
+* Positive: The project keeps a coherent source-based publishing workflow.
+* Negative: Contributors need to understand the chosen toolchain.
+* Follow-up: Human review should confirm the derived status and rationale.

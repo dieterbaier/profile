@@ -1,0 +1,22 @@
+---
+id: DOC-13000-appendix
+type: Document
+title: "Appendix"
+status: draft
+owner: "Dieter Baier"
+created: '2026-07-04'
+reviewed: false
+generated: false
+summary: "Supporting project clarification documents and generated traceability."
+tags:
+- arc42
+- architecture
+relations: []
+metadata_version: '1.0'
+---
+[[appendix]]
+= Appendix
+
+include::../doc-005-questions-and-answers.adoc[leveloffset=+1]
+
+include::generated/traceability-matrix.adoc[leveloffset=+1]

@@ -1,0 +1,38 @@
+---
+id: DOC-01001-profile-goals
+type: Document
+title: "Profile Product Goals"
+status: draft
+owner: "Dieter Baier"
+created: '2026-07-04'
+reviewed: false
+generated: false
+summary: "Detailed goals for the personal profile content product."
+tags:
+- arc42
+- goals
+- profile
+relations:
+- type: refines
+  target: DOC-01000-introduction-and-goals
+  status: proposed
+  rationale: "This detail page expands the introduction and goals chapter."
+  reviewed: false
+metadata_version: '1.0'
+---
+[[profile-product-goals]]
+= Profile Product Goals
+
+== Content Product Purpose
+
+The project publishes the author's professional identity as structured source content. The core value is not the build pipeline itself, but the reusable, versioned profile knowledge that the pipeline turns into channel-specific outputs.
+
+== Authoring Principle
+
+The profile content follows the same discipline as architecture documentation:
+
+* stable artifact identity where content is independently meaningful;
+* explicit metadata for validation and generation;
+* source artifacts as the authority;
+* generated indexes and matrices as derived output;
+* AI-assisted work governed by contracts and skills.

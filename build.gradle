@@ -134,6 +134,7 @@ tasks.register('housekeeping', Delete) {
 def asciidoctorBase = { taskName, taskDependsOnTask, sourceDir, outputDir, List<String> sourcesToBuild, clean = false, backend = "html5", extraAttrs = [:] ->
     var asciidocAttributes = ['includesdir': 'src-content/profile/includes',
                       'buildsite': 'true',
+                      'skip-front-matter': '',
     ] + extraAttrs
 
     def taskProvider
@@ -238,6 +239,80 @@ def asciidoctorBase = { taskName, taskDependsOnTask, sourceDir, outputDir, List<
     }
 }
 
+tasks.register('validateArchitectureMetamodel') {
+    inputs.files(fileTree('src-content/docs') {
+        include '**/*.adoc'
+        exclude '**/generated/**'
+    })
+    inputs.files('metamodel/artifact.schema.yaml', 'metamodel/relations.schema.yaml', 'scripts/validate-metamodel.rb')
+
+    doLast {
+        exec {
+            commandLine 'ruby',
+                    'scripts/validate-metamodel.rb',
+                    '--docs', 'src-content/docs/arc42',
+                    '--docs', 'src-content/docs/doc-002-vision-mission.adoc',
+                    '--docs', 'src-content/docs/doc-004-roadmap.adoc',
+                    '--docs', 'src-content/docs/canvas'
+        }
+    }
+}
+
+tasks.register('generateArchitectureArtifacts') {
+    inputs.files(fileTree('src-content/docs') {
+        include '**/*.adoc'
+        exclude '**/generated/**'
+    })
+    inputs.files('metamodel/artifact.schema.yaml', 'metamodel/relations.schema.yaml', 'scripts/validate-metamodel.rb')
+    outputs.dir('src-content/docs/arc42/generated')
+    outputs.dir('src-content/docs/arc42/09-architecture-decisions/generated')
+    outputs.dir('src-content/docs/arc42/10-quality-requirements/generated')
+    outputs.dir('src-content/docs/arc42/11-risks-and-technical-debt/generated')
+
+    doLast {
+        exec {
+            commandLine 'ruby',
+                    'scripts/validate-metamodel.rb',
+                    '--docs', 'src-content/docs/arc42',
+                    '--docs', 'src-content/docs/doc-002-vision-mission.adoc',
+                    '--docs', 'src-content/docs/doc-004-roadmap.adoc',
+                    '--docs', 'src-content/docs/canvas',
+                    '--generate'
+        }
+    }
+}
+
+tasks.register('validateProfileMetamodel') {
+    inputs.files(fileTree('src-content/profile') {
+        include '**/*.adoc'
+        include '**/*.profile.yaml'
+        exclude '**/generated/**'
+    })
+    inputs.files('metamodel/profile-artifact.schema.yaml', 'metamodel/relations.schema.yaml', 'scripts/validate-profile-metamodel.rb')
+
+    doLast {
+        exec {
+            commandLine 'ruby', 'scripts/validate-profile-metamodel.rb'
+        }
+    }
+}
+
+tasks.register('generateProfileArtifacts') {
+    inputs.files(fileTree('src-content/profile') {
+        include '**/*.adoc'
+        include '**/*.profile.yaml'
+        exclude '**/generated/**'
+    })
+    inputs.files('metamodel/profile-artifact.schema.yaml', 'metamodel/relations.schema.yaml', 'scripts/validate-profile-metamodel.rb')
+    outputs.dir('src-content/profile/generated')
+
+    doLast {
+        exec {
+            commandLine 'ruby', 'scripts/validate-profile-metamodel.rb', '--generate'
+        }
+    }
+}
+
 // Readme
 asciidoctorBase('buildReadmeDocbook','','src-content/profile/readme', 'build/readme/docbook', [],true, 'docbook')
 tasks.register('convertDocBookToMarkdown', PandocTask) {
@@ -289,6 +364,34 @@ asciidoctorBase('buildSite','buildCVDownload','src-content/profile/site', 'build
 ])
 // Architekturseite
 asciidoctorBase('buildArchitecture','','src-content/docs/arc42', 'build/architecture', ['index.adoc'],true, "html5", ['includesdir': 'src-content/docs/arc42'])
+
+tasks.named('buildArchitecture') {
+    dependsOn tasks.named('generateArchitectureArtifacts')
+}
+
+tasks.named('buildReadmeDocbook') {
+    dependsOn tasks.named('generateProfileArtifacts')
+}
+
+tasks.named('buildArticlesDocbook') {
+    dependsOn tasks.named('generateProfileArtifacts')
+}
+
+tasks.named('buildCVPersonal') {
+    dependsOn tasks.named('generateProfileArtifacts')
+}
+
+tasks.named('buildCVSite') {
+    dependsOn tasks.named('generateProfileArtifacts')
+}
+
+tasks.named('generateArchitectureArtifacts') {
+    dependsOn tasks.named('validateArchitectureMetamodel')
+}
+
+tasks.named('generateProfileArtifacts') {
+    dependsOn tasks.named('validateProfileMetamodel')
+}
 
 tasks.register('buildAll') {
     dependsOn tasks.named('buildSite')

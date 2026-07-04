@@ -1,0 +1,37 @@
+---
+id: RISK-003-private-data-exposure
+type: Risk
+title: "Private Data Exposure"
+status: proposed
+owner: "Dieter Baier"
+created: '2026-07-04'
+reviewed: false
+generated: false
+summary: "Because CV builds can inject private contact data, secrets may be exposed if environment handling is wrong."
+tags:
+- risk
+relations: []
+metadata_version: '1.0'
+---
+[[risk-003-private-data-exposure]]
+== RISK-003: Private Data Exposure
+
+=== Risk Statement
+
+Because CV builds can inject private contact data, secrets may be exposed if environment handling is wrong.
+
+=== Assessment
+
+[cols="1,3", options="header"]
+|===
+| Field | Value
+| Likelihood | Low
+| Impact | High
+| Priority | Medium
+| Timeframe | medium-term
+| Confidence | medium
+|===
+
+=== Mitigation Options
+
+* Keep private data in environment variables and exclude local `.env` files from version control.

@@ -1,0 +1,24 @@
+  id: PROF-001-readme
+  type: ProfilePage
+  title: "Profile README"
+  status: published
+  owner: "Dieter Baier"
+  created: '2026-07-04'
+  reviewed: false
+  generated: false
+  language: mixed
+  audience:
+    - employers
+    - clients
+    - technical-community
+  channels:
+    - github
+    - gitlab
+    - readme
+  summary: "Public README generated from the profile source."
+  source: src-content/profile/readme/README.adoc
+  tags:
+    - profile
+    - docs-as-code
+  relations: []
+  metadata_version: '1.0'

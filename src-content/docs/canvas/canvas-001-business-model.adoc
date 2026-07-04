@@ -1,0 +1,20 @@
+---
+id: CANVAS-001-business-model
+type: Document
+title: "Business Model Canvas"
+status: draft
+owner: "Dieter Baier"
+created: '2026-07-04'
+reviewed: false
+generated: false
+summary: "Draft business model canvas for the personal profile project."
+tags:
+- canvas
+- product
+relations: []
+metadata_version: '1.0'
+---
+[[business-model-canvas]]
+= Business Model Canvas
+
+Draft canvas. The key value proposition is a trustworthy, current professional profile maintained as source content and published to multiple channels.

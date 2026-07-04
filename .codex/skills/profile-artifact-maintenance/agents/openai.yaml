@@ -1,0 +1,4 @@
+interface:
+  display_name: "Profile Artifact Maintenance"
+  short_description: "Maintain validated profile metadata and generated profile indexes"
+  default_prompt: "Use $profile-artifact-maintenance to update profile content and metadata."

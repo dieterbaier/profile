@@ -1,0 +1,21 @@
+id: PROJECT-025-27-datensynchronisation-hr-erp
+type: Project
+title: "datensynchronisation hr erp"
+status: published
+owner: "Dieter Baier"
+created: '2026-07-04'
+reviewed: false
+generated: false
+language: de
+audience:
+  - employers
+  - clients
+channels:
+  - cv
+  - website
+summary: "Project profile source for datensynchronisation hr erp."
+source: src-content/profile/includes/projects/27_datensynchronisation_hr_erp/master.adoc
+tags:
+  - project
+relations: []
+metadata_version: '1.0'

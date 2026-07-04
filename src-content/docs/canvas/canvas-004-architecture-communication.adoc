@@ -1,0 +1,20 @@
+---
+id: CANVAS-004-architecture-communication
+type: Document
+title: "Architecture Communication Canvas"
+status: draft
+owner: "Dieter Baier"
+created: '2026-07-04'
+reviewed: false
+generated: false
+summary: "Draft communication canvas for architecture documentation."
+tags:
+- canvas
+- architecture
+relations: []
+metadata_version: '1.0'
+---
+[[architecture-communication-canvas]]
+= Architecture Communication Canvas
+
+The architecture documentation communicates how the profile is treated as a software product and how the toolkit conventions are applied.

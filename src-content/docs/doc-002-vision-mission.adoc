@@ -1,0 +1,22 @@
+---
+id: DOC-002-vision-mission
+type: Document
+title: "Vision and Mission"
+status: draft
+owner: "Dieter Baier"
+created: '2026-07-04'
+reviewed: false
+generated: false
+summary: "Product-level vision and mission for the profile project."
+tags:
+- vision
+- product
+relations: []
+metadata_version: '1.0'
+---
+[[vision-mission]]
+= Vision and Mission
+
+Vision: One personally maintained professional knowledge base that can be published everywhere it is useful.
+
+Mission: Author profile, CV, thoughts, articles, and project history as structured source content, then validate and generate channel-specific outputs automatically.

@@ -1,0 +1,80 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+$id: "https://dieterbaier.eu/metamodel/profile-artifact.schema.yaml"
+title: Profile Artifact Metadata
+description: Metadata for personal profile artifacts authored as source content.
+type: object
+additionalProperties: false
+required:
+  - id
+  - type
+  - title
+  - status
+  - owner
+  - created
+properties:
+  id:
+    type: string
+    pattern: "^[A-Z]+-[0-9]{3,}(-[a-z0-9]+)*$"
+  type:
+    type: string
+    enum:
+      - ProfilePage
+      - Article
+      - ShortThought
+      - CV
+      - Project
+      - ProfessionalExperience
+      - Education
+      - Skill
+      - Contact
+      - ProfileFragment
+  title:
+    type: string
+    minLength: 1
+  status:
+    type: string
+    enum: [draft, proposed, reviewed, published, archived, deprecated]
+  owner:
+    type: string
+    minLength: 1
+  created:
+    type: string
+    format: date
+  updated:
+    type: string
+    format: date
+  reviewed:
+    type: boolean
+    default: false
+  generated:
+    type: boolean
+    default: false
+  language:
+    type: string
+    enum: [de, en, mixed]
+  audience:
+    type: array
+    items:
+      type: string
+  channels:
+    type: array
+    items:
+      type: string
+      enum: [website, cv, readme, github, gitlab, markdown-export, pdf]
+  summary:
+    type: string
+  source:
+    type: string
+  tags:
+    type: array
+    uniqueItems: true
+    items:
+      type: string
+      pattern: "^[a-z0-9][a-z0-9-]*$"
+  relations:
+    type: array
+    items:
+      $ref: "relations.schema.yaml#/$defs/relation"
+  metadata_version:
+    type: string
+    default: "1.0"

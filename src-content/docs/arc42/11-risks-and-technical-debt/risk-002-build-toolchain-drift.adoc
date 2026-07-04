@@ -1,0 +1,37 @@
+---
+id: RISK-002-build-toolchain-drift
+type: Risk
+title: "Build Toolchain Drift"
+status: proposed
+owner: "Dieter Baier"
+created: '2026-07-04'
+reviewed: false
+generated: false
+summary: "Because local and CI tool versions may diverge, builds may become non-reproducible, leading to deployment failures."
+tags:
+- risk
+relations: []
+metadata_version: '1.0'
+---
+[[risk-002-build-toolchain-drift]]
+== RISK-002: Build Toolchain Drift
+
+=== Risk Statement
+
+Because local and CI tool versions may diverge, builds may become non-reproducible, leading to deployment failures.
+
+=== Assessment
+
+[cols="1,3", options="header"]
+|===
+| Field | Value
+| Likelihood | Medium
+| Impact | High
+| Priority | High
+| Timeframe | medium-term
+| Confidence | medium
+|===
+
+=== Mitigation Options
+
+* Use containerized builds and expose environment checks as Gradle tasks.

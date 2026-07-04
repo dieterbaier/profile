@@ -1,0 +1,37 @@
+---
+id: RISK-001-metadata-drift
+type: Risk
+title: "Metadata Drift"
+status: proposed
+owner: "Dieter Baier"
+created: '2026-07-04'
+reviewed: false
+generated: false
+summary: "Because content and metadata evolve separately, generated indexes may become incomplete, leading to misleading public artifacts."
+tags:
+- risk
+relations: []
+metadata_version: '1.0'
+---
+[[risk-001-metadata-drift]]
+== RISK-001: Metadata Drift
+
+=== Risk Statement
+
+Because content and metadata evolve separately, generated indexes may become incomplete, leading to misleading public artifacts.
+
+=== Assessment
+
+[cols="1,3", options="header"]
+|===
+| Field | Value
+| Likelihood | Medium
+| Impact | Medium
+| Priority | Medium
+| Timeframe | medium-term
+| Confidence | medium
+|===
+
+=== Mitigation Options
+
+* Validate metadata before build and generate indexes from source metadata.

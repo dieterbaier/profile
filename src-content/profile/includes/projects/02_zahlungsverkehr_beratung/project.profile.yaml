@@ -1,0 +1,21 @@
+id: PROJECT-002-02-zahlungsverkehr-beratung
+type: Project
+title: "zahlungsverkehr beratung"
+status: published
+owner: "Dieter Baier"
+created: '2026-07-04'
+reviewed: false
+generated: false
+language: de
+audience:
+  - employers
+  - clients
+channels:
+  - cv
+  - website
+summary: "Project profile source for zahlungsverkehr beratung."
+source: src-content/profile/includes/projects/02_zahlungsverkehr_beratung/master.adoc
+tags:
+  - project
+relations: []
+metadata_version: '1.0'

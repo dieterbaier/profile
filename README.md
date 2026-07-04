@@ -15,6 +15,8 @@ A **single-source documentation pipeline** for generating
 Maintaining a personal profile across multiple platforms is painful and error-prone.
 
 This project solves that by using a **single source of truth**...
+It now treats both the architecture documentation and the profile content as
+validated Docs-as-Code knowledge artifacts.
 
 ## 🧠 What this demonstrates
 
@@ -33,6 +35,8 @@ This project solves that by using a **single source of truth**...
 * 🐳 Fully containerized build environment
 * ⚙️ Works locally and in GitHub Actions
 * 🎯 Deterministic builds (no “works on my machine”)
+* 🧭 architecture-knowledge-toolkit style architecture metadata, ADRs, quality scenarios, risks, validation, and generated traceability
+* 🪪 Profile artifact metadata for articles, shorts, CV, README, profile pages, and project entries
 
 ---
 
@@ -64,6 +68,10 @@ Available tasks:
 - buildArticlesMarkdown
 - buildCVPersonal
 - buildArchitecture
+- validateArchitectureMetamodel
+- generateArchitectureArtifacts
+- validateProfileMetamodel
+- generateProfileArtifacts
 
 
 - buildAll (builds the main profile outputs at once)
@@ -94,6 +102,8 @@ Available tasks:
 | CV (on the website, PDF)   | `build/site/cv.pdf`             |
 | Personalized CV (PDF)      | `build/cv/cv.pdf`               |
 | Architecture documentation | `build/architecture/index.html` |
+| Profile artifact index     | `src-content/profile/generated/profile-artifact-index.adoc` |
+| Architecture traceability  | `src-content/docs/arc42/generated/traceability-matrix.adoc` |
 
 Additional needed artifacts are copied during the build process to the according directories.
 
@@ -119,9 +129,14 @@ The build is implemented using Gradle:
 
 * Custom tasks (e.g. Pandoc integration)
 * Directory-based Pandoc conversion for article Markdown exports
+* Architecture metamodel validation and generation from `scripts/validate-metamodel.rb`
+* Profile artifact validation and index generation from `scripts/validate-profile-metamodel.rb`
 * Asset pipeline (Copy tasks)
 * Cleanup (Delete tasks)
 * Environment checks
+
+Generated fragments live under `**/generated/` and are reproducible build
+output. They are not primary editing surfaces.
 
 ---
 
@@ -129,9 +144,16 @@ The build is implemented using Gradle:
 
 Project-local AI instructions live in `AGENTS.md`.
 
-Repeatable AI-assisted work is described with contracts under `.agents/ai-contracts/`. The first contract is `article-summary-pack`, which defines how article summaries for LinkedIn, Substack, and listed.io should be created.
+Repeatable AI-assisted work is described with contracts under `.agents/ai-contracts/`.
+The relevant contracts are:
 
-The matching Codex skill lives in `.codex/skills/article-summary-pack` and provides the workflow plus platform templates.
+- `article-summary-pack`: summaries for LinkedIn, Substack, and listed.io
+- `profile-artifact-metadata`: metadata for profile pages, CV content, articles, shorts, project entries, and generated profile indexes
+
+The matching Codex skills live in `.codex/skills/`:
+
+- `article-summary-pack`
+- `profile-artifact-maintenance`
 
 ### 🏗️ CI/CD Pipeline
 
@@ -176,14 +198,22 @@ When article sources change, the pipeline also builds Markdown exports under `bu
     update-profile.yml  # The CI/CD github action description
 src-content/
   docs/ 
-    arc42/              # Architecture documentation
+    arc42/              # Toolkit-style arc42 architecture documentation
+    canvas/             # Product and architecture canvases
+    doc-*.adoc          # Product-level source documents
   profile/              # Personal profile sources
     cv/
     readme/
     site/
       articles/         # Website articles and Markdown export sources
     includes/
+    generated/          # Generated profile artifact index
   theme/                # The theme for the docs and the profile
+metamodel/              # Architecture and profile metadata schemas
+scripts/                # Validators and generators
+templates/              # ADR, quality scenario, and risk templates
+.agents/ai-contracts/   # AI task contracts
+.codex/skills/          # Project-local Codex skills
 
 build/                  # Destination for the generated target artifacts
 .env-example            # A file that defines the environment variables needed to populate personal information in the documentation. If this file exists as a .env file containing custom values, those values will be used during the build (locally). Of course, the .env file must not be checked in.
