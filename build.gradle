@@ -93,6 +93,11 @@ def env = { String key, String defaultValue = null ->
     System.getenv(key) ?: localEnv[key] ?: defaultValue
 }
 
+def articleSummarySourceExcludes = [
+        '**/*_summary_*.adoc',
+        '**/*_summary_*.md'
+]
+
 tasks.register('checkEnvironment') {
     doLast {
         def missing = []
@@ -148,6 +153,9 @@ def asciidoctorBase = { taskName, taskDependsOnTask, sourceDir, outputDir, List<
                     setIncludes(sourcesToBuild)
                 }
             }
+            sources {
+                articleSummarySourceExcludes.each { exclude it }
+            }
 
             asciidoctorj {
                 modules {
@@ -170,6 +178,9 @@ def asciidoctorBase = { taskName, taskDependsOnTask, sourceDir, outputDir, List<
                 sources {
                     setIncludes(sourcesToBuild)
                 }
+            }
+            sources {
+                articleSummarySourceExcludes.each { exclude it }
             }
         }
     }
@@ -326,6 +337,7 @@ asciidoctorBase('buildReadme','convertDocBookToMarkdown','src-content/profile/re
 // Articles Markdown
 def articleSources = fileTree('src-content/profile/site/articles') {
     include '**/*.adoc'
+    articleSummarySourceExcludes.each { exclude it }
     exclude '**/.asciidoctorconfig.adoc'
     exclude 'articles.adoc'
     exclude 'articles_matrix.adoc'
@@ -340,6 +352,50 @@ tasks.register('buildArticlesMarkdown', PandocDirectoryTask) {
 
     setInputDirectory(layout.buildDirectory.dir("articles/docbook"))
     setOutputDirectory(layout.buildDirectory.dir("articles"))
+}
+
+tasks.register('verifyNoArticleSummariesInGeneratedOutputs') {
+    mustRunAfter tasks.named('buildSite')
+    mustRunAfter tasks.named('buildArticlesMarkdown')
+
+    doLast {
+        def generatedTargets = [
+                layout.buildDirectory.dir('site').get().asFile,
+                layout.buildDirectory.dir('articles').get().asFile
+        ]
+        def summaryReferencePattern = ~/_summary_[A-Za-z0-9-]+/
+        def textExtensions = ['.adoc', '.css', '.html', '.js', '.json', '.md', '.txt', '.xml', '.yaml', '.yml']
+        def violations = []
+
+        generatedTargets.findAll { it.exists() }.each { target ->
+            fileTree(target) {
+                include '**/*'
+                exclude '**/media/**'
+                exclude '**/assets/**'
+                exclude '**/stylesheet/**'
+            }.files.each { File candidate ->
+                if (candidate.name.contains('_summary_')) {
+                    violations << "summary file generated: ${rootDir.toPath().relativize(candidate.toPath())}"
+                    return
+                }
+
+                if (candidate.isFile() && textExtensions.any { candidate.name.endsWith(it) } && candidate.length() < 5_000_000L) {
+                    def content = candidate.getText('UTF-8')
+                    if (summaryReferencePattern.matcher(content).find()) {
+                        violations << "summary reference generated: ${rootDir.toPath().relativize(candidate.toPath())}"
+                    }
+                }
+            }
+        }
+
+        if (!violations.isEmpty()) {
+            throw new GradleException("Article summaries must not be part of generated site or article outputs:\n- ${violations.join('\n- ')}")
+        }
+    }
+}
+
+tasks.named('buildArticlesMarkdown') {
+    finalizedBy tasks.named('verifyNoArticleSummariesInGeneratedOutputs')
 }
 // CV
 asciidoctorBase('buildCVPersonal','','src-content/profile/cv', 'build/cv', ['cv.adoc'],true, 'pdf', [ // personal PDF (not deployed to the site)
@@ -362,6 +418,9 @@ asciidoctorBase('buildSite','buildCVDownload','src-content/profile/site', 'build
                                                                         'site-tel'   : env('SITE_TEL') ?: '.',
                                                                         'site-email' : env('SITE_EMAIL') ?: '.'
 ])
+tasks.named('buildSite') {
+    finalizedBy tasks.named('verifyNoArticleSummariesInGeneratedOutputs')
+}
 // Architekturseite
 asciidoctorBase('buildArchitecture','','src-content/docs/arc42', 'build/architecture', ['index.adoc'],true, "html5", ['includesdir': 'src-content/docs/arc42'])
 

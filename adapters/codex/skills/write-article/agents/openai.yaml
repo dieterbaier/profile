@@ -1,0 +1,4 @@
+interface:
+  display_name: "Write Article"
+  short_description: "Draft profile articles from a reusable structure"
+  default_prompt: "Use $write-article to draft a new profile article from a topic, thesis, and notes."

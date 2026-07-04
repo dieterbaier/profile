@@ -1,0 +1,22 @@
+id: ART-000-article-slug
+type: Article
+title: "<Article Title>"
+status: draft
+owner: "Dieter Baier"
+created: 'YYYY-MM-DD'
+reviewed: false
+generated: false
+language: de
+audience:
+  - employers
+  - clients
+  - technical-community
+channels:
+  - website
+  - markdown-export
+summary: "<One sentence summary for generated indexes.>"
+source: src-content/profile/site/articles/<topic>/<article-slug>.adoc
+tags:
+  - profile
+relations: []
+metadata_version: '1.0'

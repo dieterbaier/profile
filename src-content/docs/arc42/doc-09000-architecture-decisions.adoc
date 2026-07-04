@@ -19,14 +19,4 @@ metadata_version: '1.0'
 
 include::09-architecture-decisions/generated/doc-09001-adr-index.adoc[]
 
-include::09-architecture-decisions/adr-001-asciidoc-primary-source.adoc[]
-
-include::09-architecture-decisions/adr-002-gradle-build-orchestration.adoc[]
-
-include::09-architecture-decisions/adr-003-containerized-build-runtime.adoc[]
-
-include::09-architecture-decisions/adr-004-pandoc-markdown-export.adoc[]
-
-include::09-architecture-decisions/adr-005-minimal-static-site.adoc[]
-
-include::09-architecture-decisions/adr-006-profile-content-metamodel.adoc[]
+include::generated/doc-09000-architecture-decisions-includes.adoc[]

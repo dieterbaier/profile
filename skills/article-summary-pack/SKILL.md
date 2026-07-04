@@ -15,7 +15,7 @@ description: Create paste-ready summaries, teasers, excerpts, and short publicat
 6. Read the article's `*.profile.yaml` sidecar if present.
 7. Select requested platform templates from `templates/article-summary-pack/`; if no platform is specified, use all three.
 8. Produce paste-ready Markdown sections following the contract.
-9. If asked to write files, write to `build/article-summaries/<article-slug>/`.
+9. If asked to write files, write each summary next to the source article.
 
 ## Source Handling
 
@@ -45,9 +45,11 @@ For chat responses, group outputs in this order:
 For file output, create one file per platform:
 
 ```text
-build/article-summaries/<article-slug>/linkedin.md
-build/article-summaries/<article-slug>/substack.md
-build/article-summaries/<article-slug>/listed-io.md
+src-content/profile/site/articles/<topic>/<article-slug>_summary_linkedin.md
+src-content/profile/site/articles/<topic>/<article-slug>_summary_substack.md
+src-content/profile/site/articles/<topic>/<article-slug>_summary_listed-io.md
 ```
 
 Each output must be directly pasteable. Put assumptions and missing values in a short `notes` block after the platform copy.
+
+Summary files are source-controlled writing aids. They must not be linked from article content, navigation, generated site pages, or generated article exports.
