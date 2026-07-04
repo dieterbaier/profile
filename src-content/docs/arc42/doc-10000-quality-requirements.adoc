@@ -28,7 +28,11 @@ metadata_version: '1.0'
 ** QS-004 Minimal static site
 
 include::10-quality-requirements/generated/doc-10001-quality-scenarios.adoc[]
+
 include::10-quality-requirements/qs-001-reproducible-build.adoc[]
+
 include::10-quality-requirements/qs-002-profile-metadata-validity.adoc[]
+
 include::10-quality-requirements/qs-003-public-artifact-consistency.adoc[]
+
 include::10-quality-requirements/qs-004-minimal-static-site.adoc[]

@@ -18,6 +18,9 @@ metadata_version: '1.0'
 = Risks and Technical Debt
 
 include::11-risks-and-technical-debt/generated/doc-11001-risks.adoc[]
+
 include::11-risks-and-technical-debt/risk-001-metadata-drift.adoc[]
+
 include::11-risks-and-technical-debt/risk-002-build-toolchain-drift.adoc[]
+
 include::11-risks-and-technical-debt/risk-003-private-data-exposure.adoc[]
