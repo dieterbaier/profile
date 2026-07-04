@@ -1,6 +1,4 @@
-[[profile-dieterbaier-arc42]]
-= Profile Dieter Baier arc42 Architecture
-
+= [[profile-dieterbaier-arc42]]Profile Dieter Baier arc42 Architecture
 :toc: left
 :toclevels: 2
 :sectnums:
