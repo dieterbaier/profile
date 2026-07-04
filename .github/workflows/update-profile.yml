@@ -42,16 +42,20 @@ jobs:
               - 'templates/**'
               - 'build.gradle'
               - 'AGENTS.md'
-              - '.agents/**'
-              - '.codex/**'
+              - 'general-semantic-contracts.md'
+              - 'ai-contracts/**'
+              - 'skills/**'
+              - 'adapters/**'
             site:
               - 'src-content/profile/**'
               - 'metamodel/profile-artifact.schema.yaml'
               - 'scripts/validate-profile-metamodel.rb'
               - 'build.gradle'
               - 'AGENTS.md'
-              - '.agents/**'
-              - '.codex/**'
+              - 'general-semantic-contracts.md'
+              - 'ai-contracts/**'
+              - 'skills/**'
+              - 'adapters/**'
 
   build-docs:
     runs-on: ubuntu-latest
