@@ -1,0 +1,23 @@
+  id: CV-001-professional-cv
+  type: CV
+  title: "Professional CV"
+  status: published
+  owner: "Dieter Baier"
+  created: '2026-07-04'
+  reviewed: false
+  generated: false
+  language: mixed
+  audience:
+    - employers
+    - clients
+    - technical-community
+  channels:
+    - website
+    - pdf
+  summary: "Curriculum vitae generated as HTML and PDF."
+  source: src-content/profile/cv/cv.adoc
+  tags:
+    - profile
+    - docs-as-code
+  relations: []
+  metadata_version: '1.0'

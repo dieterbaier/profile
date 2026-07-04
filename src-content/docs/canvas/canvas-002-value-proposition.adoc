@@ -1,0 +1,20 @@
+---
+id: CANVAS-002-value-proposition
+type: Document
+title: "Value Proposition Canvas"
+status: draft
+owner: "Dieter Baier"
+created: '2026-07-04'
+reviewed: false
+generated: false
+summary: "Draft value proposition canvas for audiences of the personal profile."
+tags:
+- canvas
+- product
+relations: []
+metadata_version: '1.0'
+---
+[[value-proposition-canvas]]
+= Value Proposition Canvas
+
+Draft canvas. Employers, clients, and community readers need concise, current, and credible profile information without stale duplicates.

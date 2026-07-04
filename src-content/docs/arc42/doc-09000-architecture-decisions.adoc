@@ -1,0 +1,27 @@
+---
+id: DOC-09000-architecture-decisions
+type: Document
+title: "Architecture Decisions"
+status: draft
+owner: "Dieter Baier"
+created: '2026-07-04'
+reviewed: false
+generated: false
+summary: "Architecture decision records for the profile publishing system."
+tags:
+- arc42
+- architecture
+relations: []
+metadata_version: '1.0'
+---
+[[architecture-decisions]]
+= Architecture Decisions
+
+include::09-architecture-decisions/generated/doc-09001-adr-index.adoc[]
+
+include::09-architecture-decisions/adr-001-asciidoc-primary-source.adoc[]
+include::09-architecture-decisions/adr-002-gradle-build-orchestration.adoc[]
+include::09-architecture-decisions/adr-003-containerized-build-runtime.adoc[]
+include::09-architecture-decisions/adr-004-pandoc-markdown-export.adoc[]
+include::09-architecture-decisions/adr-005-minimal-static-site.adoc[]
+include::09-architecture-decisions/adr-006-profile-content-metamodel.adoc[]

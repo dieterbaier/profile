@@ -1,0 +1,41 @@
+---
+id: DOC-06000-runtime-view
+type: Document
+title: "Runtime View"
+status: draft
+owner: "Dieter Baier"
+created: '2026-07-04'
+reviewed: false
+generated: false
+summary: "Main runtime scenarios for generation and deployment."
+tags:
+- arc42
+- architecture
+relations: []
+metadata_version: '1.0'
+---
+[[runtime-view]]
+= Runtime View
+
+== Build And Publish Scenario
+
+[plantuml]
+----
+@startuml
+start
+:Detect changed paths;
+:Validate architecture metadata;
+:Validate profile metadata;
+:Generate derived architecture fragments;
+:Generate profile indexes;
+:Render AsciiDoc outputs;
+:Convert selected DocBook outputs to Markdown;
+:Copy assets;
+:Deploy affected artifacts;
+stop
+@enduml
+----
+
+== Failure Scenario
+
+If metadata validation fails, Gradle stops before rendering or deployment. This keeps generated artifacts from drifting away from source truth.

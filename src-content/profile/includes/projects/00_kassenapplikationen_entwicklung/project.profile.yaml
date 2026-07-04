@@ -1,0 +1,21 @@
+id: PROJECT-001-00-kassenapplikationen-entwicklung
+type: Project
+title: "kassenapplikationen entwicklung"
+status: published
+owner: "Dieter Baier"
+created: '2026-07-04'
+reviewed: false
+generated: false
+language: de
+audience:
+  - employers
+  - clients
+channels:
+  - cv
+  - website
+summary: "Project profile source for kassenapplikationen entwicklung."
+source: src-content/profile/includes/projects/00_kassenapplikationen_entwicklung/master.adoc
+tags:
+  - project
+relations: []
+metadata_version: '1.0'

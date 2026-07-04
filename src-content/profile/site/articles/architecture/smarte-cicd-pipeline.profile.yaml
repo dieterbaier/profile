@@ -1,0 +1,23 @@
+  id: ART-002-smarter-cicd
+  type: Article
+  title: "Smarter CI/CD"
+  status: published
+  owner: "Dieter Baier"
+  created: '2026-07-04'
+  reviewed: false
+  generated: false
+  language: mixed
+  audience:
+    - employers
+    - clients
+    - technical-community
+  channels:
+    - website
+    - markdown-export
+  summary: "Article about building and deploying only what changed."
+  source: src-content/profile/site/articles/architecture/smarte-cicd-pipeline.adoc
+  tags:
+    - profile
+    - docs-as-code
+  relations: []
+  metadata_version: '1.0'

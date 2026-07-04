@@ -1,0 +1,20 @@
+---
+id: CANVAS-005-techstack
+type: Document
+title: "Techstack Canvas"
+status: draft
+owner: "Dieter Baier"
+created: '2026-07-04'
+reviewed: false
+generated: false
+summary: "Draft techstack canvas for the publishing pipeline."
+tags:
+- canvas
+- techstack
+relations: []
+metadata_version: '1.0'
+---
+[[techstack-canvas]]
+= Techstack Canvas
+
+AsciiDoc, Gradle, Asciidoctor, Pandoc, PlantUML/Graphviz, Docker, GitHub Actions, SFTP, and Ruby validators form the current stack.

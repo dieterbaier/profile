@@ -1,0 +1,63 @@
+---
+id: DOC-05000-building-block-view
+type: Document
+title: "Building Block View"
+status: draft
+owner: "Dieter Baier"
+created: '2026-07-04'
+reviewed: false
+generated: false
+summary: "Static decomposition of the repository and publishing pipeline."
+tags:
+- arc42
+- architecture
+relations: []
+metadata_version: '1.0'
+---
+[[building-block-view]]
+= Building Block View
+
+== Level 1
+
+[plantuml]
+----
+@startuml
+package "Source Content" {
+  [Profile Content] as Profile
+  [Architecture Knowledge] as Architecture
+  [Theme Assets] as Theme
+}
+package "Automation" {
+  [Gradle Tasks] as Gradle
+  [Validators] as Validators
+  [Generators] as Generators
+}
+package "Outputs" {
+  [Website]
+  [CV PDF]
+  [README Markdown]
+  [Article Markdown]
+  [Architecture Site]
+}
+Profile --> Gradle
+Architecture --> Gradle
+Theme --> Gradle
+Gradle --> Validators
+Gradle --> Generators
+Gradle --> Website
+Gradle --> [CV PDF]
+Gradle --> [README Markdown]
+Gradle --> [Article Markdown]
+Gradle --> [Architecture Site]
+@enduml
+----
+
+[cols="1,2,2", options="header"]
+|===
+| Building block | Responsibility | Storage
+| Profile Content | CV, profile pages, articles, shorts, project history, and reusable fragments. | `src-content/profile`
+| Architecture Knowledge | arc42 chapters, ADRs, quality scenarios, risks, canvases, Q&A, and metadata. | `src-content/docs`
+| Validators | Check architecture and profile metadata. | `scripts/`
+| Generators | Create derived indexes and traceability fragments. | `scripts/` and generated folders
+| Gradle Tasks | Orchestrate build, validation, generation, conversion, and asset copying. | `build.gradle`
+|===

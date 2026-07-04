@@ -1,0 +1,28 @@
+---
+id: DOC-07000-deployment-view
+type: Document
+title: "Deployment View"
+status: draft
+owner: "Dieter Baier"
+created: '2026-07-04'
+reviewed: false
+generated: false
+summary: "Deployment environments and generated targets."
+tags:
+- arc42
+- architecture
+relations: []
+metadata_version: '1.0'
+---
+[[deployment-view]]
+= Deployment View
+
+[cols="1,2,2", options="header"]
+|===
+| Target | Deployment mechanism | Output path
+| Personal website | SFTP from GitHub Actions | `build/site`
+| Architecture documentation | SFTP from GitHub Actions | `build/architecture`
+| GitHub profile README | Git commit from GitHub Actions | `build/readme/README.md`
+| GitLab profile README | Git push from GitHub Actions | `build/readme/README.md`
+| Personal CV PDF | Local build artifact, not deployed by default | `build/cv/cv.pdf`
+|===

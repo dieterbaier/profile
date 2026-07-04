@@ -1,0 +1,23 @@
+  id: ART-001-intentionally-simple-website
+  type: Article
+  title: "Why this website is intentionally simple"
+  status: published
+  owner: "Dieter Baier"
+  created: '2026-07-04'
+  reviewed: false
+  generated: false
+  language: mixed
+  audience:
+    - employers
+    - clients
+    - technical-community
+  channels:
+    - website
+    - markdown-export
+  summary: "Article about sustainability and architectural simplicity."
+  source: src-content/profile/site/articles/architecture/sustainability.adoc
+  tags:
+    - profile
+    - docs-as-code
+  relations: []
+  metadata_version: '1.0'

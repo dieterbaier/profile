@@ -1,0 +1,23 @@
+  id: ART-003-doc-as-code
+  type: Article
+  title: "Dokumentation als Code"
+  status: published
+  owner: "Dieter Baier"
+  created: '2026-07-04'
+  reviewed: false
+  generated: false
+  language: mixed
+  audience:
+    - employers
+    - clients
+    - technical-community
+  channels:
+    - website
+    - markdown-export
+  summary: "Article explaining Docs-as-Code as a documentation discipline."
+  source: src-content/profile/site/articles/documentation/doc-as-code.adoc
+  tags:
+    - profile
+    - docs-as-code
+  relations: []
+  metadata_version: '1.0'

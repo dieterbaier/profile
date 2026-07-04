@@ -1,0 +1,22 @@
+  id: SHORT-002-domain-driven-design
+  type: ShortThought
+  title: "Domain Driven Design"
+  status: published
+  owner: "Dieter Baier"
+  created: '2026-07-04'
+  reviewed: false
+  generated: false
+  language: mixed
+  audience:
+    - employers
+    - clients
+    - technical-community
+  channels:
+    - website
+  summary: "Short thoughts and notes about Domain-Driven Design."
+  source: src-content/profile/site/shorts/ddd.adoc
+  tags:
+    - profile
+    - docs-as-code
+  relations: []
+  metadata_version: '1.0'

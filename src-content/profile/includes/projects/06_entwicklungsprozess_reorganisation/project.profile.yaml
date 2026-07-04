@@ -1,0 +1,21 @@
+id: PROJECT-006-06-entwicklungsprozess-reorganisation
+type: Project
+title: "entwicklungsprozess reorganisation"
+status: published
+owner: "Dieter Baier"
+created: '2026-07-04'
+reviewed: false
+generated: false
+language: de
+audience:
+  - employers
+  - clients
+channels:
+  - cv
+  - website
+summary: "Project profile source for entwicklungsprozess reorganisation."
+source: src-content/profile/includes/projects/06_entwicklungsprozess_reorganisation/master.adoc
+tags:
+  - project
+relations: []
+metadata_version: '1.0'

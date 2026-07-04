@@ -1,0 +1,34 @@
+---
+id: DOC-10000-quality-requirements
+type: Document
+title: "Quality Requirements"
+status: draft
+owner: "Dieter Baier"
+created: '2026-07-04'
+reviewed: false
+generated: false
+summary: "Quality tree and measurable quality scenarios."
+tags:
+- arc42
+- architecture
+relations: []
+metadata_version: '1.0'
+---
+[[quality-requirements]]
+= Quality Requirements
+
+== Quality Tree
+
+* Reproducibility
+** QS-001 Reproducible build
+* Correctness
+** QS-002 Profile metadata validity
+** QS-003 Public artifact consistency
+* Sustainability
+** QS-004 Minimal static site
+
+include::10-quality-requirements/generated/doc-10001-quality-scenarios.adoc[]
+include::10-quality-requirements/qs-001-reproducible-build.adoc[]
+include::10-quality-requirements/qs-002-profile-metadata-validity.adoc[]
+include::10-quality-requirements/qs-003-public-artifact-consistency.adoc[]
+include::10-quality-requirements/qs-004-minimal-static-site.adoc[]

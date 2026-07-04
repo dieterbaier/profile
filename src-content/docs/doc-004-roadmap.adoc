@@ -1,0 +1,26 @@
+---
+id: DOC-004-roadmap
+type: Document
+title: "Roadmap"
+status: draft
+owner: "Dieter Baier"
+created: '2026-07-04'
+reviewed: false
+generated: false
+summary: "Roadmap for evolving the profile and toolkit integration."
+tags:
+- roadmap
+- product
+relations: []
+metadata_version: '1.0'
+---
+[[roadmap]]
+= Roadmap
+
+[cols="1,3,2", options="header"]
+|===
+| Horizon | Outcome | Status
+| Now | Bootstrap architecture and profile metamodel validation. | draft
+| Next | Expand profile generators for additional public indexes and summaries. | proposed
+| Later | Add richer traceability between articles, skills, projects, and public channels. | proposed
+|===

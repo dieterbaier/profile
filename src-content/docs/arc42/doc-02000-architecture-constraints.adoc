@@ -1,0 +1,28 @@
+---
+id: DOC-02000-architecture-constraints
+type: Document
+title: "Architecture Constraints"
+status: draft
+owner: "Dieter Baier"
+created: '2026-07-04'
+reviewed: false
+generated: false
+summary: "Binding technical, organizational, and content constraints."
+tags:
+- arc42
+- architecture
+relations: []
+metadata_version: '1.0'
+---
+[[architecture-constraints]]
+= Architecture Constraints
+
+[cols="1,2,3", options="header"]
+|===
+| ID | Constraint | Consequence
+| CON-001 | AsciiDoc is the primary authoring format. | Profile and architecture content can use includes, attributes, and multi-format rendering.
+| CON-002 | Gradle orchestrates local and CI builds. | New generators and validators are exposed as Gradle tasks.
+| CON-003 | GitHub Actions and the docs-toolbox container are the deployment runtime. | CI must remain compatible with containerized execution.
+| CON-004 | Private contact data is injected from environment variables. | Secrets must not be committed to the repository.
+| CON-005 | Profile and architecture metadata must remain source-controlled and reviewable. | Generated output is reproducible and excluded from source editing.
+|===

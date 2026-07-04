@@ -1,0 +1,21 @@
+id: PROJECT-010-10-kapos-kfz
+type: Project
+title: "kapos kfz"
+status: published
+owner: "Dieter Baier"
+created: '2026-07-04'
+reviewed: false
+generated: false
+language: de
+audience:
+  - employers
+  - clients
+channels:
+  - cv
+  - website
+summary: "Project profile source for kapos kfz."
+source: src-content/profile/includes/projects/10_kapos_kfz/master.adoc
+tags:
+  - project
+relations: []
+metadata_version: '1.0'

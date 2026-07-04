@@ -1,4 +1,10 @@
-= Write Once. Publish Everywhere. Architecture.
+[[profile-dieterbaier-arc42]]
+= Profile Dieter Baier arc42 Architecture
+
+:toc: left
+:toclevels: 2
+:sectnums:
+:skip-front-matter:
 ifndef::includesdir[]
 :includesdir: .
 endif::[]
@@ -6,9 +12,8 @@ include::{includesdir}/../../revinfo.adoc[]
 :lang: en
 Dieter Baier
 :author_page: https://dieterbaier.eu
-:revremark: Because Maintaining 5 CVs is insane
+:revremark: Write once. Publish everywhere.
 :nofooter:
-:toc: left
 :stylesheet: style.css
 :stylesdir: ../../theme
 :iconsdir: {stylesdir}/icons
@@ -25,35 +30,21 @@ include::{includesdir}/../../theme/doctitle.adoc[]
 
 [.callout]
 --
-This is the architecture documentation for the personal profile (Website, CV, several outputs more) of Dieter Baier.
-
-You can check the outputs for example on:
-
-https://github.com/dieterbaier[Personal README on GitHub] +
-https://gitlab.com/brdietdidi[Personal README on GitLab] +
-https://dieterbaier.eu[Personal Website]
-
-The project is not just documentation.
-
-It is a working example of:
-
-Documentation as Code +
-Multi-target publishing +
-Reproducible builds
+This architecture documentation describes `profile-dieterbaier` as a software project:
+a personal profile, CV, thoughts, articles, and publishing pipeline based on
+Docs-as-Code and the principle "write once, publish everywhere".
 --
 
-:leveloffset: +1
-include::{includesdir}/01_introduction_and_goals.adoc[]
-
-include::{includesdir}/02_architecture_constraints.adoc[]
-
-include::{includesdir}/03_system_scope_and_context.adoc[]
-
-include::{includesdir}/04_solution_strategy.adoc[]
-
-include::{includesdir}/05_building_block_view.adoc[]
-
-include::{includesdir}/06_runtime_view.adoc[]
-
-include::{includesdir}/09_architecture_decisions.adoc[]
-
+include::{includesdir}/doc-01000-introduction-and-goals.adoc[leveloffset=+1]
+include::{includesdir}/doc-02000-architecture-constraints.adoc[leveloffset=+1]
+include::{includesdir}/doc-03000-system-scope-and-context.adoc[leveloffset=+1]
+include::{includesdir}/doc-04000-solution-strategy.adoc[leveloffset=+1]
+include::{includesdir}/doc-05000-building-block-view.adoc[leveloffset=+1]
+include::{includesdir}/doc-06000-runtime-view.adoc[leveloffset=+1]
+include::{includesdir}/doc-07000-deployment-view.adoc[leveloffset=+1]
+include::{includesdir}/doc-08000-crosscutting-concepts.adoc[leveloffset=+1]
+include::{includesdir}/doc-09000-architecture-decisions.adoc[leveloffset=+1]
+include::{includesdir}/doc-10000-quality-requirements.adoc[leveloffset=+1]
+include::{includesdir}/doc-11000-risks-and-technical-debt.adoc[leveloffset=+1]
+include::{includesdir}/doc-12000-glossary.adoc[leveloffset=+1]
+include::{includesdir}/doc-13000-appendix.adoc[leveloffset=+1]

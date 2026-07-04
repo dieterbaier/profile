@@ -1,0 +1,21 @@
+id: PROJECT-024-26-green-it-beratung
+type: Project
+title: "green it beratung"
+status: published
+owner: "Dieter Baier"
+created: '2026-07-04'
+reviewed: false
+generated: false
+language: de
+audience:
+  - employers
+  - clients
+channels:
+  - cv
+  - website
+summary: "Project profile source for green it beratung."
+source: src-content/profile/includes/projects/26_green_it_beratung/master.adoc
+tags:
+  - project
+relations: []
+metadata_version: '1.0'

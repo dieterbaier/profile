@@ -1,0 +1,38 @@
+---
+id: DOC-08000-crosscutting-concepts
+type: Document
+title: "Crosscutting Concepts"
+status: draft
+owner: "Dieter Baier"
+created: '2026-07-04'
+reviewed: false
+generated: false
+summary: "Crosscutting architecture concepts used by the project."
+tags:
+- arc42
+- architecture
+relations: []
+metadata_version: '1.0'
+---
+[[crosscutting-concepts]]
+= Crosscutting Concepts
+
+== Security
+
+Private contact data and deployment credentials are injected from environment variables or GitHub Secrets. `.env` is local-only.
+
+== Testing And Validation
+
+Metadata validation runs before documentation rendering. The architecture validator follows the architecture-knowledge-toolkit metamodel. The profile validator checks profile artifact metadata, relations, and generated indexes.
+
+== Observability
+
+CI logs, Gradle task output, and validator reports are the operational feedback loop.
+
+== Error Handling
+
+Failed validation or missing tooling stops the build. Missing publication URLs in AI-generated article summaries are represented as placeholders rather than invented values.
+
+== Sustainability
+
+Generated output is static. The public site avoids runtime backends, trackers, and unnecessary third-party scripts.

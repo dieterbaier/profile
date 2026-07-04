@@ -1,0 +1,52 @@
+---
+id: ADR-005-minimal-static-site
+type: ADR
+title: "Minimal Static Site"
+status: proposed
+owner: "Dieter Baier"
+created: '2026-07-04'
+reviewed: false
+generated: false
+summary: "Keep the public website static and avoid unnecessary third-party runtime behavior."
+tags:
+- adr
+- decision
+relations:
+- type: addresses
+  target: QS-004-minimal-static-site
+  status: proposed
+  rationale: "This decision supports the referenced quality scenario."
+  reviewed: false
+metadata_version: '1.0'
+---
+[[adr-005-minimal-static-site]]
+== ADR-005: Minimal Static Site
+
+=== Status
+
+Proposed (derived).
+
+=== Decision
+
+Keep the public website static and avoid unnecessary third-party runtime behavior.
+
+=== Context
+
+This ADR was derived while bootstrapping the existing project to the architecture-knowledge-toolkit structure. The decision reflects existing repository practice and should be reviewed before being marked accepted.
+
+=== Pugh Matrix
+
+[cols="2,1,1,1", options="header"]
+|===
+| Criterion | Keep existing practice | Replace with custom tooling | Manual process
+| Fit to Docs-as-Code | +1 | 0 | -1
+| Build reproducibility | +1 | ? | -1
+| Maintainability | +1 | 0 | -1
+s| Sum s| +3 s| ? s| -3
+|===
+
+=== Consequences
+
+* Positive: The project keeps a coherent source-based publishing workflow.
+* Negative: Contributors need to understand the chosen toolchain.
+* Follow-up: Human review should confirm the derived status and rationale.

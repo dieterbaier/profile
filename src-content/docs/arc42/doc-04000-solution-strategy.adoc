@@ -1,0 +1,28 @@
+---
+id: DOC-04000-solution-strategy
+type: Document
+title: "Solution Strategy"
+status: draft
+owner: "Dieter Baier"
+created: '2026-07-04'
+reviewed: false
+generated: false
+summary: "Key architectural approaches for content, validation, generation, and deployment."
+tags:
+- arc42
+- architecture
+relations: []
+metadata_version: '1.0'
+---
+[[solution-strategy]]
+= Solution Strategy
+
+[cols="1,2,3", options="header"]
+|===
+| Strategy | Supports | Description
+| Single source profile knowledge | QG-002, QG-004 | Profile artifacts are authored once and reused across website, CV, README, and article exports.
+| Metadata-backed content | QG-002, QG-004 | Standalone content artifacts receive front matter; include-heavy reusable fragments are covered by sidecar metadata.
+| Toolkit-compatible architecture knowledge | QG-002, QG-003 | arc42 chapters, ADRs, quality scenarios, risks, schemas, validators, and generated fragments follow architecture-knowledge-toolkit conventions.
+| Gradle task orchestration | QG-001, QG-003 | Build, validation, and generation are exposed as repeatable Gradle tasks.
+| Containerized CI/CD | QG-001, QG-005 | GitHub Actions run the same toolchain in the docs-toolbox container and deploy only changed outputs.
+|===

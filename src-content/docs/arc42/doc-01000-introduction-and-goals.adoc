@@ -1,0 +1,57 @@
+---
+id: DOC-01000-introduction-and-goals
+type: Document
+title: "Introduction and Goals"
+status: draft
+owner: "Dieter Baier"
+created: '2026-07-04'
+reviewed: false
+generated: false
+summary: "Purpose, goals, quality goals, and stakeholders of the profile publishing project."
+tags:
+- arc42
+- architecture
+relations: []
+metadata_version: '1.0'
+---
+[[introduction-and-goals]]
+= Introduction and Goals
+
+`profile-dieterbaier` exists to maintain one authoritative personal profile source and publish it to multiple channels: personal website, CV, GitHub README, GitLab README, article exports, and architecture documentation.
+
+== Motivation
+
+Maintaining the same professional profile across several platforms creates duplication, inconsistency, and avoidable manual work. The project applies Docs-as-Code to personal professional content: source text is versioned, reviewed, validated, generated, and deployed like software.
+
+== Business Goals
+
+[cols="1,3,2", options="header"]
+|===
+| ID | Goal | Success indicator
+| G-001 | Single source of truth for profile, CV, articles, shorts, and architecture documentation. | Public artifacts are generated from repository sources.
+| G-002 | Multi-target publishing without copy-paste maintenance. | README, website, CV, and article Markdown are built by Gradle tasks.
+| G-003 | Treat the profile as a software product. | Architecture documentation, decisions, risks, quality scenarios, metamodels, validators, and generators are part of the repository.
+|===
+
+== Top Quality Goals
+
+[cols="1,2,3", options="header"]
+|===
+| ID | Quality goal | Meaning
+| QG-001 | Reproducibility | Same source and environment produce the same generated artifacts.
+| QG-002 | Maintainability | Content, presentation, metadata, and build logic have explicit responsibilities.
+| QG-003 | Automation | Normal publishing and validation run without manual transformation steps.
+| QG-004 | Correctness | Generated public artifacts reflect the intended source content and metadata.
+| QG-005 | Sustainability | The site and pipeline avoid unnecessary runtime logic, tracking, and waste.
+|===
+
+== Stakeholders
+
+[cols="1,2,3", options="header"]
+|===
+| ID | Stakeholder | Concern
+| ST-001 | Dieter Baier | Maintain professional profile information efficiently and correctly.
+| ST-002 | Potential employers and clients | Read current CV, project history, articles, and contact information.
+| ST-003 | Technical community | Access thoughts, articles, README content, and toolkit examples.
+| ST-004 | CI/CD runtime | Build and deploy only the artifacts affected by a change.
+|===

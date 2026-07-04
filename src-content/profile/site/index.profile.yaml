@@ -1,0 +1,22 @@
+  id: PAGE-001-website-index
+  type: ProfilePage
+  title: "Website Index"
+  status: published
+  owner: "Dieter Baier"
+  created: '2026-07-04'
+  reviewed: false
+  generated: false
+  language: mixed
+  audience:
+    - employers
+    - clients
+    - technical-community
+  channels:
+    - website
+  summary: "Landing page of the personal website."
+  source: src-content/profile/site/index.adoc
+  tags:
+    - profile
+    - docs-as-code
+  relations: []
+  metadata_version: '1.0'

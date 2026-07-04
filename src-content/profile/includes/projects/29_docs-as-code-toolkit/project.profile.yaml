@@ -1,0 +1,21 @@
+id: PROJECT-027-29-docs-as-code-toolkit
+type: Project
+title: "docs-as-code-toolkit"
+status: published
+owner: "Dieter Baier"
+created: '2026-07-04'
+reviewed: false
+generated: false
+language: de
+audience:
+  - employers
+  - clients
+channels:
+  - cv
+  - website
+summary: "Project profile source for docs-as-code-toolkit."
+source: src-content/profile/includes/projects/29_docs-as-code-toolkit/master.adoc
+tags:
+  - project
+relations: []
+metadata_version: '1.0'
