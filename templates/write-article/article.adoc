@@ -1,0 +1,74 @@
+= <Article Title>
+ifdef::buildsite[]
+:basedir: ../..
+endif::[]
+include::{includesdir}/../../revinfo.adoc[]
+:author: Dieter Baier
+:author_page: {basedir}/index.html
+:author_page: index.html
+:revremark: <Short article promise or subtitle>
+:revnumber: 0.1
+:revdate: <MM/YYYY>
+:active: articles
+include::{includesdir}/docheader.adoc[]
+
+[.highlight.info]
+--
+<A short opening that frames the problem, states the article's thesis, and gives readers a reason to continue. Keep this concrete and close to the author's experience.>
+--
+
+toc::[]
+
+== Ausgangssituation
+
+<Describe the situation, misconception, pain, or recurring observation that makes the article worth writing.>
+
+== Kernthese
+
+<State the main idea in plain language. Explain what the article argues and what it does not claim.>
+
+== Warum das wichtig ist
+
+<Connect the thesis to architecture, documentation, delivery, maintainability, sustainability, or professional practice.>
+
+== Vorgehen oder Lösungsbild
+
+<Describe the approach, structure, pattern, or decision. Use subsections when there are multiple building blocks.>
+
+=== <Baustein 1>
+
+<Explain one concrete part of the approach.>
+
+=== <Baustein 2>
+
+<Explain another concrete part of the approach.>
+
+== Beispiel
+
+<Add an example, short code/configuration excerpt, diagram, quote, or story when it makes the article more useful. Remove this section if the article does not need one.>
+
+== Trade-offs
+
+<Name costs, limits, risks, and cases where the approach may not fit.>
+
+== Key Takeaways
+
+[.callout]
+--
+* **<Takeaway 1>.**
+<Short explanation.>
+
+* **<Takeaway 2>.**
+<Short explanation.>
+
+* **<Takeaway 3>.**
+<Short explanation.>
+--
+
+== Fazit
+
+<Close with the practical consequence of the article. Make the ending clear, useful, and grounded instead of promotional.>
+
+== Ausblick
+
+<Optional next steps, open questions, or follow-up article ideas. Remove this section if it does not add value.>

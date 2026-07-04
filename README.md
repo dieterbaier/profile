@@ -152,11 +152,13 @@ Repeatable AI-assisted work is described with contracts under `ai-contracts/`.
 The relevant contracts are:
 
 - `article-summary-pack`: summaries for LinkedIn, Substack, and listed.io
+- `write-article`: article drafts and metadata using the repository article template
 - `profile-artifact-metadata`: metadata for profile pages, CV content, articles, shorts, project entries, and generated profile indexes
 
 Generic skills live in `skills/`:
 
 - `article-summary-pack`
+- `write-article`
 - `profile-artifact-maintenance`
 
 Codex-specific metadata lives under `adapters/codex/`. Codex should read

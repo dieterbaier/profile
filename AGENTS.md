@@ -44,4 +44,6 @@
 - Follow `ai-contracts/article-summary-pack.md`.
 - Also preserve article metadata governed by `ai-contracts/profile-artifact-metadata.md`.
 - Use `skills/article-summary-pack/SKILL.md` and the templates in `templates/article-summary-pack/` for LinkedIn, Substack, and listed.io outputs.
+- When summaries are written to files, store them beside the source article as `<article-file>_summary_<target>.md`.
+- Do not link summary files from public content or include them in generated site/article targets.
 - Default language is German unless the source article or user explicitly asks otherwise.

@@ -30,4 +30,5 @@ skills/<skill-name>/SKILL.md
 ## Current Skills
 
 - `skills/article-summary-pack/SKILL.md`
+- `skills/write-article/SKILL.md`
 - `skills/profile-artifact-maintenance/SKILL.md`

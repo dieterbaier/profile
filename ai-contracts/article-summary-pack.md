@@ -36,13 +36,13 @@ Each platform section must include:
 - `tags`: platform-appropriate tags or hashtags, if useful
 - `notes`: assumptions, placeholders, or omitted items
 
-When writing to files, use this layout:
+When writing to files, place each summary next to the source article and name it
+after the article filename with `_summary_<target>` before the extension:
 
 ```text
-build/article-summaries/<article-slug>/
-  linkedin.md
-  substack.md
-  listed-io.md
+src-content/profile/site/articles/<topic>/<article-slug>_summary_linkedin.md
+src-content/profile/site/articles/<topic>/<article-slug>_summary_substack.md
+src-content/profile/site/articles/<topic>/<article-slug>_summary_listed-io.md
 ```
 
 ## Invariants
@@ -51,6 +51,9 @@ build/article-summaries/<article-slug>/
 - Do not add facts, metrics, case studies, quotes, or links that are not present in the article or supplied by the user.
 - Keep the author's first-person perspective when the source article uses it.
 - Keep the source article as the authority. Summaries may simplify but must not contradict it.
+- Keep file-based summaries in source control next to the article unless a newer ADR changes this practice.
+- Do not include summary files in generated site or article export targets.
+- Do not add links, xrefs, navigation entries, or generated public content that points to `_summary_<target>` files.
 - Use plain pasteable Markdown. Avoid platform-specific embedded HTML.
 - Do not include internal build paths in the public copy.
 - Use placeholders such as `[Artikel-Link einsetzen]` when a required publication URL is missing.
