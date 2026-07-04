@@ -142,18 +142,26 @@ output. They are not primary editing surfaces.
 
 ## 🤖 AI Workflows
 
-Project-local AI instructions live in `AGENTS.md`.
+Project-local AI instructions start in `AGENTS.md` and then fan out into
+AI-agnostic contracts, generic skills, reusable templates, and adapter-specific
+metadata.
 
-Repeatable AI-assisted work is described with contracts under `.agents/ai-contracts/`.
+The baseline project contract is `general-semantic-contracts.md`.
+
+Repeatable AI-assisted work is described with contracts under `ai-contracts/`.
 The relevant contracts are:
 
 - `article-summary-pack`: summaries for LinkedIn, Substack, and listed.io
 - `profile-artifact-metadata`: metadata for profile pages, CV content, articles, shorts, project entries, and generated profile indexes
 
-The matching Codex skills live in `.codex/skills/`:
+Generic skills live in `skills/`:
 
 - `article-summary-pack`
 - `profile-artifact-maintenance`
+
+Codex-specific metadata lives under `adapters/codex/`. Codex should read
+`adapters/codex/README.md` after `AGENTS.md`, `general-semantic-contracts.md`,
+and the relevant generic skill.
 
 ### 🏗️ CI/CD Pipeline
 
@@ -211,9 +219,11 @@ src-content/
   theme/                # The theme for the docs and the profile
 metamodel/              # Architecture and profile metadata schemas
 scripts/                # Validators and generators
-templates/              # ADR, quality scenario, and risk templates
-.agents/ai-contracts/   # AI task contracts
-.codex/skills/          # Project-local Codex skills
+templates/              # ADR, quality scenario, risk, and publication templates
+ai-contracts/           # AI-agnostic task contracts
+skills/                 # AI-agnostic reusable skills
+adapters/               # Agent-specific integration, e.g. Codex metadata
+general-semantic-contracts.md
 
 build/                  # Destination for the generated target artifacts
 .env-example            # A file that defines the environment variables needed to populate personal information in the documentation. If this file exists as a .env file containing custom values, those values will be used during the build (locally). Of course, the .env file must not be checked in.

@@ -7,15 +7,16 @@ description: Maintain profile artifact metadata, indexes, and validation for pro
 
 ## Workflow
 
-1. Read `.agents/ai-contracts/profile-artifact-metadata.md`.
-2. Inspect the affected source under `src-content/profile`.
-3. Preserve existing content and stable profile artifact IDs.
-4. Add or update metadata:
+1. Read `general-semantic-contracts.md`.
+2. Read `ai-contracts/profile-artifact-metadata.md`.
+3. Inspect the affected source under `src-content/profile`.
+4. Preserve existing content and stable profile artifact IDs.
+5. Add or update metadata:
    - YAML front matter for standalone pages when safe.
    - `*.profile.yaml` sidecars for include-heavy fragments.
-5. Keep metadata aligned with `metamodel/profile-artifact.schema.yaml`.
-6. Run `./gradlew validateProfileMetamodel`.
-7. Run `./gradlew generateProfileArtifacts` when indexes or generated views need
+6. Keep metadata aligned with `metamodel/profile-artifact.schema.yaml`.
+7. Run `./gradlew validateProfileMetamodel`.
+8. Run `./gradlew generateProfileArtifacts` when indexes or generated views need
    refreshing.
 
 ## Rules

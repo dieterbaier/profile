@@ -2,7 +2,7 @@
 
 ## title
 
-<Starker Einstiegssatz. Kein Clickbait.>
+<Starker Einstiegssatz, Kein Clickbait.>
 
 ## summary
 
@@ -28,4 +28,4 @@ Optional:
 
 ## notes
 
-- <Annahmen oder Platzhalter.>
+- <Annahmen, oder Platzhalter.>

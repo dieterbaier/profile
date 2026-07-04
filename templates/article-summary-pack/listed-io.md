@@ -8,7 +8,7 @@
 
 <Eine knappe, reflektierende Notiz in einfachem Markdown.>
 
-<Fasse die Hauptidee des Artikels ohne Marketing-Sprache zusammen.>
+<Fasse die Hauptidee des Artikels, ohne Marketing-Sprache zusammen.>
 
 <Ende mit einem Gedanken, einer Frage oder einem schlichten Verweis auf den vollständigen Artikel.>
 
@@ -22,4 +22,4 @@
 
 ## notes
 
-- <Annahmen oder Platzhalter.>
+- <Annahmen, oder Platzhalter.>

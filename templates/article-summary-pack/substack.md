@@ -2,7 +2,7 @@
 
 ## title
 
-<Newsletter-tauglicher Titel.>
+<Newsletter-tauglicher Titel,.>
 
 ## subtitle
 
@@ -26,4 +26,4 @@
 
 ## notes
 
-- <Annahmen oder Platzhalter.>
+- <Annahmen, oder Platzhalter.>
