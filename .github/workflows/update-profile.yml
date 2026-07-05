@@ -174,10 +174,10 @@ jobs:
               generateArchitectureArtifacts \
               generateArticleSummaries
 
-  deploy:
+  deploy-site:
     needs: [build-docs, detect-changes]
     runs-on: ubuntu-latest
-    if: needs.build-docs.outputs.isBuilt == 'true'
+    if: needs.build-docs.outputs.isBuilt == 'true' && needs.detect-changes.outputs.site == 'true'
     environment:
       name: production
     env:
@@ -194,12 +194,9 @@ jobs:
           path: build
 
       - name: Install lftp
-        if: needs.detect-changes.outputs.site == 'true' || needs.detect-changes.outputs.architecture == 'true'
         run: sudo apt-get update && sudo apt-get install -y lftp
 
-      # --- Upload Site ---
       - name: Deploy site to private webspace
-        if: needs.detect-changes.outputs.site == 'true'
         run: |
           lftp -u "$SFTP_USER","$SFTP_PASSWORD" sftp://$SFTP_HOST:$SFTP_PORT <<EOF
           set sftp:auto-confirm yes
@@ -209,9 +206,29 @@ jobs:
           bye
           EOF
 
-      # --- Upload Architecture ---
+  deploy-architecture:
+    needs: [build-docs, detect-changes]
+    runs-on: ubuntu-latest
+    if: needs.build-docs.outputs.isBuilt == 'true' && needs.detect-changes.outputs.architecture == 'true'
+    environment:
+      name: production
+    env:
+      SFTP_HOST: ${{ vars.SFTP_HOST }}
+      SFTP_PORT: ${{ vars.SFTP_PORT }}
+      SFTP_USER: ${{ vars.SFTP_USER }}
+      SFTP_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
+      SFTP_REMOTE_BASE: ${{ vars.SFTP_REMOTE_BASE }}
+
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: docs
+          path: build
+
+      - name: Install lftp
+        run: sudo apt-get update && sudo apt-get install -y lftp
+
       - name: Deploy architecture to private webspace
-        if: needs.detect-changes.outputs.architecture == 'true'
         run: |
           lftp -u "$SFTP_USER","$SFTP_PASSWORD" sftp://$SFTP_HOST:$SFTP_PORT <<EOF
           set sftp:auto-confirm yes
@@ -221,9 +238,18 @@ jobs:
           bye
           EOF
 
-      # --- GitHub README ---
+  deploy-github-readme:
+    needs: [build-docs, detect-changes]
+    runs-on: ubuntu-latest
+    if: needs.build-docs.outputs.isBuilt == 'true' && needs.detect-changes.outputs.readme == 'true'
+
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: docs
+          path: build
+
       - name: checkout github profile repo
-        if: needs.detect-changes.outputs.readme == 'true'
         uses: actions/checkout@v4
         with:
           repository: dieterbaier/dieterbaier
@@ -231,7 +257,6 @@ jobs:
           path: profile
 
       - name: update readme on profile repo
-        if: needs.detect-changes.outputs.readme == 'true'
         run: |
           cp build/readme/README.md profile/README.md
           cd profile
@@ -241,9 +266,18 @@ jobs:
           git commit -m "update README" || echo "no changes"
           git push origin HEAD:main
 
-      # --- GitLab README ---
+  deploy-gitlab-readme:
+    needs: [build-docs, detect-changes]
+    runs-on: ubuntu-latest
+    if: needs.build-docs.outputs.isBuilt == 'true' && needs.detect-changes.outputs.readme == 'true'
+
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: docs
+          path: build
+
       - name: push readme to gitlab profile
-        if: needs.detect-changes.outputs.readme == 'true'
         run: |
           git clone https://oauth2:${{ secrets.GITLAB_TOKEN }}@gitlab.com/brdietdidi/brdietdidi.git gitlab-repo
           cp build/readme/README.md gitlab-repo/README.md

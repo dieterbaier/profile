@@ -45,6 +45,15 @@ Use:
 ./gradlew generateArchitectureArtifacts
 ```
 
+When this repository references `architecture-knowledge-toolkit`, treat that
+toolkit as the canonical source for architecture contracts, task skills,
+templates, metamodel schemas, validators, and generators. Project-local
+instructions and contracts still win when they deliberately narrow or override
+the toolkit. For issue implementation, pull request review, ADRs, quality
+scenarios, risks, traceability, and commit messages, use the corresponding
+toolkit `skills/**/SKILL.md` and contract guidance where applicable instead of
+recreating those rules locally.
+
 ## Profile Knowledge
 
 Profile content under `src-content/profile` is treated as product source.

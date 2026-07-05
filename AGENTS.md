@@ -7,6 +7,7 @@
 - Preserve user changes. Do not revert unrelated work.
 - Prefer existing project patterns in Gradle, AsciiDoc, architecture documentation, generic skill layout, and adapter layout.
 - When changing build behavior, run the narrowest relevant Gradle task and report any warnings that remain.
+- When working from a GitHub issue, use the `architecture-knowledge-toolkit` issue workflow and commit message skills where applicable. In particular, format issue commit messages according to `skills/commit-message/SKILL.md` from the toolkit, for example `issue_23: Split deploy workflow by target`.
 
 ## Contract And Adapter Discovery
 

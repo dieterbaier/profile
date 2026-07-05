@@ -7,7 +7,7 @@ owner: "Dieter Baier"
 created: '2026-07-04'
 reviewed: false
 generated: false
-summary: "Key architectural approaches for content, validation, generation, and deployment."
+summary: "Key architectural approaches for content, validation, generation, deployment, and credential handling."
 tags:
 - arc42
 - architecture
@@ -24,5 +24,34 @@ metadata_version: '1.0'
 | Metadata-backed content | QG-002, QG-004 | Standalone content artifacts receive front matter; include-heavy reusable fragments are covered by sidecar metadata.
 | Toolkit-compatible architecture knowledge | QG-002, QG-003 | arc42 chapters, ADRs, quality scenarios, risks, schemas, validators, and generated fragments follow architecture-knowledge-toolkit conventions.
 | Gradle task orchestration | QG-001, QG-003 | Build, validation, and generation are exposed as repeatable Gradle tasks.
-| Containerized CI/CD | QG-001, QG-005 | GitHub Actions run the same toolchain in the docs-toolbox container and deploy only changed outputs.
+| Containerized CI/CD | QG-001, QG-005 | GitHub Actions run the same toolchain in the docs-toolbox container and deploy changed outputs through target-specific deploy jobs.
+| Scoped deployment credentials | QG-005 | Deployment credentials are separated by target. GitHub profile README deployment uses a fine-grained token for `dieterbaier/dieterbaier`; GitLab README deployment uses a GitLab token; private webspace deployment uses SFTP credentials.
 |===
+
+== Build Pipeline Strategy
+
+The GitHub Actions workflow separates change detection, build execution, artifact upload, and target-specific deployment.
+
+Only changed target categories trigger the matching Gradle tasks:
+
+[cols="1,2", options="header"]
+|===
+| Change category | Build output
+| README | `build/readme/README.md`
+| Articles | Markdown exports under `build/articles`
+| Architecture | `build/architecture`
+| Site | `build/site`
+|===
+
+Generated artifacts are uploaded once and consumed by separate deploy jobs. Each deploy job owns one deployment target so failed deployments can be re-run without repeating successful targets. The deploy jobs use target-specific credentials instead of one shared deployment token:
+
+[cols="1,2,2", options="header"]
+|===
+| Target | Credential | Reason
+| GitHub profile README | `PROFILE_REPO_TOKEN` repository secret | Cross-repository push to `dieterbaier/dieterbaier` requires write access to the target repository.
+| GitLab profile README | `GITLAB_TOKEN` repository secret | GitLab push requires a GitLab credential independent of GitHub Actions.
+| Personal website and architecture documentation | `SFTP_PASSWORD` production environment secret plus `SFTP_*` variables | Private webspace deployment is external to GitHub and uses SFTP.
+| Personal contact data | `SITE_*` production environment secrets | Private data is injected only during CI generation and is not stored in source files.
+|===
+
+`PROFILE_REPO_TOKEN` should be a fine-grained GitHub personal access token scoped to `dieterbaier/dieterbaier` with `Contents: Read and write`. A failure in the `checkout github profile repo` step with `Bad credentials` indicates that this token is invalid, expired, revoked, or missing the required target repository permission.
