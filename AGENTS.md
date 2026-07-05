@@ -43,7 +43,7 @@
 - Use the project-local `$article-summary-pack` skill for summaries, teasers, excerpts, or paste-ready publication drafts derived from articles in `src-content/profile/site/articles`.
 - Follow `ai-contracts/article-summary-pack.md`.
 - Also preserve article metadata governed by `ai-contracts/profile-artifact-metadata.md`.
-- Use `skills/article-summary-pack/SKILL.md` and the templates in `templates/article-summary-pack/` for LinkedIn, Substack, and listed.io outputs.
-- When summaries are written to files, store them beside the source article as `<article-file>_summary_<target>.md`.
+- Use `skills/article-summary-pack/SKILL.md` and the HTML templates in `templates/article-summary-pack/` for LinkedIn and Substack outputs.
+- When summaries are requested, always write the generated HTML files to `build/summaries/`.
 - Do not link summary files from public content or include them in generated site/article targets.
 - Default language is German unless the source article or user explicitly asks otherwise.

@@ -1,0 +1,176 @@
+---
+id: ADR-007-build-generated-article-summaries
+type: ADR
+title: "Build-Generated Article Summaries"
+status: proposed
+owner: "Dieter Baier"
+created: '2026-07-04'
+reviewed: false
+generated: false
+summary: "Generate article summaries as HTML build artifacts under build/summaries."
+tags:
+  - adr
+  - decision
+  - article-summary
+relations:
+  - type: addresses
+    target: QS-003-public-artifact-consistency
+    status: proposed
+    rationale: "Generating summaries from article sources keeps publication drafts reproducible and separate from public site outputs."
+    evidence: ai-contracts/article-summary-pack.md
+    reviewed: false
+  - type: mitigates
+    target: RISK-001-metadata-drift
+    status: proposed
+    rationale: "Build-generated summaries reduce manual drift between article source and publication drafts."
+    evidence: ai-contracts/article-summary-pack.md
+    reviewed: false
+  - type: affects
+    target: ADR-004-pandoc-markdown-export
+    status: proposed
+    rationale: "The decision keeps article Markdown exports separate from generated HTML summary artifacts."
+    evidence: skills/article-summary-pack/SKILL.md
+    reviewed: false
+metadata_version: '1.0'
+---
+[[adr-007-build-generated-article-summaries]]
+== ADR-007: Build-Generated Article Summaries
+
+=== Status
+
+Proposed.
+
+This ADR is AI-assisted and must not be treated as accepted architecture truth
+until reviewed and accepted by the accountable owner.
+
+=== Decision
+
+We propose to generate file-based article summaries as HTML build artifacts
+under `build/summaries`. Each summary filename uses the article filename stem
+plus `_summary_<target>` and the `.html` extension.
+
+These summaries are generated writing aids. They are excluded from generated
+site and article-export targets, and generated public content must not link to
+them.
+
+For example:
+
+[source,text]
+----
+src-content/profile/site/articles/documentation/doc-as-code.adoc
+build/summaries/doc-as-code_summary_linkedin.html
+build/summaries/doc-as-code_summary_substack.html
+----
+
+=== Context
+
+The project already treats profile article sources under
+`src-content/profile/site/articles` as product source. AI-assisted article
+summaries are paste-ready publication aids for LinkedIn and Substack.
+
+An earlier proposal placed written summaries next to the article source. The
+current desired practice is different: summaries are generated whenever they are
+requested and written to `build/summaries`.
+
+This keeps authored article sources clean, makes the workflow reproducible
+through Gradle, and avoids treating publication drafts as primary source.
+
+=== Decision Drivers
+
+* Summary drafts should be reproducible through a build task.
+* Article source directories should contain only primary article sources and metadata.
+* Summary drafts should not become public generated content by accident.
+* Generated build output should remain separate from authored source.
+* The convention should stay simple enough for agents and humans to apply.
+* Future relocation should remain possible through a later ADR and contract update.
+
+=== Considered Options
+
+==== Option 1: Build-generated summary files
+
+Generate each platform summary under `build/summaries` with the naming pattern
+`<article-slug>_summary_<target>.html`.
+
+==== Option 2: Source-adjacent summary files
+
+Store each platform summary next to the article with the naming pattern
+`<article-slug>_summary_<target>.md`.
+
+==== Option 3: Nested build summary files
+
+Store generated HTML summaries in nested directories such as
+`build/summaries/<article-slug>/<target>.html`.
+
+==== Option 4: Central source summary directory
+
+Store summaries under a source-controlled directory such as
+`src-content/profile/site/article-summaries/<article-slug>/<target>.md`.
+
+=== Pugh Matrix
+
+[.pugh-matrix]
+[cols="2,1,1,1,1", options="header"]
+|===
+| Criterion | Build-generated files | Source-adjacent files | Nested build-directory files | Central source directory
+| Reproducible generation | +1 | -1 | 0 | -1
+| Clean article source directories | +1 | -1 | +1 | +1
+| Separation from public generated output | +1 | +1 | +1 | +1
+| Directory simplicity | 0 | +1 | -1 | -1
+| Future relocation flexibility | 0 | 0 | 0 | 0
+s| Sum s| +3 s| 0 s| +1 s| 0
+|===
+
+=== Consequences
+
+==== Positive
+
+* Summary drafts can be regenerated with `./gradlew generateArticleSummaries`.
+* Article source directories stay focused on primary sources and metadata.
+* `build/` remains the place for reproducible generated outputs.
+* The build verifies that generated site and article-export outputs do not contain summary files or `_summary_<target>` references.
+
+==== Negative
+
+* Generated summary files are not visible in ordinary Git diffs unless copied or reviewed separately.
+* The summary generator must be maintained when the article format or supported publication targets change.
+* The verification task must continue to distinguish public generated outputs from `build/summaries`.
+
+==== Neutral or Follow-Up
+
+* A future ADR may move summaries again if they become curated source artifacts.
+* Validators may later add checks for expected summary targets and naming.
+
+=== Impact
+
+[cols="1,1,3", options="header"]
+|===
+| Artifact | Impact | Rationale
+| xref:../10-quality-requirements/qs-003-public-artifact-consistency.adoc#qs-003-public-artifact-consistency[QS-003-public-artifact-consistency] | addressed | Generated summaries remain traceable to article metadata and source files.
+| xref:../11-risks-and-technical-debt/risk-001-metadata-drift.adoc#risk-001-metadata-drift[RISK-001-metadata-drift] | mitigated | Regeneration reduces manual drift between source articles and publication aids.
+| xref:adr-004-pandoc-markdown-export.adoc#adr-004-pandoc-markdown-export[ADR-004-pandoc-markdown-export] | affected | Pandoc exports remain generated Markdown outputs, while summaries become generated HTML outputs.
+|===
+
+=== Traceability
+
+[cols="1,1,3", options="header"]
+|===
+| Relation | Target | Rationale
+| `addresses` | xref:../10-quality-requirements/qs-003-public-artifact-consistency.adoc#qs-003-public-artifact-consistency[QS-003-public-artifact-consistency] | Supports consistency between generated publication aids and source articles.
+| `mitigates` | xref:../11-risks-and-technical-debt/risk-001-metadata-drift.adoc#risk-001-metadata-drift[RISK-001-metadata-drift] | Reduces hidden drift by regenerating summary artifacts from article source.
+| `affects` | xref:adr-004-pandoc-markdown-export.adoc#adr-004-pandoc-markdown-export[ADR-004-pandoc-markdown-export] | Clarifies that summary HTML is generated separately from Pandoc article Markdown exports.
+|===
+
+=== Assumptions
+
+* Summary files are deterministic build artifacts by default.
+* AI-assisted refinements may still be created through the article-summary skill, but generated files remain under `build/summaries`.
+
+=== Open Questions
+
+* Should future validation require one summary file for every supported target?
+* Should generated site or Markdown export tasks explicitly ignore all `_summary_<target>` files regardless of extension?
+
+=== Review Notes
+
+Confirm that generated summaries should stay build artifacts before changing
+this ADR to accepted or reviewed.
