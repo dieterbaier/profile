@@ -21,6 +21,8 @@ metadata_version: '1.0'
 
 Private contact data and deployment credentials are injected from environment variables or GitHub Secrets. `.env` is local-only.
 
+Deployment credentials are scoped by target system. `PROFILE_REPO_TOKEN` grants write access only to the GitHub profile README target repository. `GITLAB_TOKEN` grants write access to the GitLab profile README target repository. SFTP credentials are used only for private webspace deployment. This avoids one shared credential for all deployment targets and makes token rotation diagnosable from the failing workflow step.
+
 == Testing And Validation
 
 Metadata validation runs before documentation rendering. The architecture validator follows the architecture-knowledge-toolkit metamodel. The profile validator checks profile artifact metadata, relations, and generated indexes.

@@ -62,14 +62,31 @@ Artifacts are::
 
 - generated once
 - uploaded
-- consumed by a dedicated deploy stage
+- consumed by target-specific deploy jobs
 
 Deployment targets::
 
 - GitHub profile README
 - GitLab profile README
-- GitHub Pages
-- personal domain
+- personal website on private webspace
+- architecture documentation on private webspace
+
+==== 5. Scoped Deployment Credentials
+
+Deployment credentials are separated by target:
+
+[cols="1,2,2", options="header"]
+|===
+| Target | Credential | Access model
+| GitHub profile README | `PROFILE_REPO_TOKEN` repository secret | Fine-grained GitHub personal access token for `dieterbaier/dieterbaier` with `Contents: Read and write`
+| GitLab profile README | `GITLAB_TOKEN` repository secret | GitLab token with repository write access
+| Personal website and architecture documentation | `SFTP_PASSWORD` production environment secret, `SFTP_*` variables | SFTP deployment to the configured private webspace
+| Personal contact data | `SITE_*` production environment secrets | Value injection during generation, no repository access
+|===
+
+Each deployment target is implemented as a separate GitHub Actions job. This keeps re-runs focused on the failed target and avoids repeating successful deployments when one target fails.
+
+Token failures are diagnosed at the target-specific step. `Bad credentials` in `checkout github profile repo` points to `PROFILE_REPO_TOKEN`. GitLab clone or push failures point to `GITLAB_TOKEN`. SFTP login or transfer failures point to `SFTP_PASSWORD` or the `SFTP_*` variables.
 
 === Consequences
 
@@ -79,8 +96,10 @@ Advantages::
 - Lower resource consumption
 - Deterministic builds
 - Clear separation of concerns
+- Smaller credential blast radius per deployment target
 
 Trade-offs::
 
 - Increased pipeline complexity
 - Additional maintenance for path filters
+- Token expiry and rotation must be operated explicitly

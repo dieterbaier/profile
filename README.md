@@ -183,18 +183,39 @@ To enable the pipeline to use personal information (which is included in the doc
     secrets.GITLAB_TOKEN              # To be able to deploy the README.md files
     secrets.PROFILE_REPO_TOKEN
 
-    secrets.SFTP_PASSWORD             # To deploy the website and architcture documentation to the personal webspace
+    secrets.SFTP_PASSWORD             # To deploy the website and architecture documentation to the personal webspace
     vars.SFTP_REMOTE_BASE
     vars.SFTP_HOST
     vars.SFTP_PORT
     vars.SFTP_USER
 
-The pipeline builds and deployes
+Credential ownership:
+
+| Name | GitHub Actions scope | Purpose | Required access |
+| --- | --- | --- | --- |
+| `PROFILE_REPO_TOKEN` | repository secret in `dieterbaier/profile` | Checkout and push the generated README to `dieterbaier/dieterbaier` | Fine-grained GitHub token for `dieterbaier/dieterbaier` with `Contents: Read and write` |
+| `GITLAB_TOKEN` | repository secret in `dieterbaier/profile` | Clone and push the generated README to `gitlab.com/brdietdidi/brdietdidi` | GitLab token with repository write access |
+| `SFTP_PASSWORD` | `production` environment secret in `dieterbaier/profile` | Upload site and architecture artifacts to the private webspace | SFTP password for the configured deployment user |
+| `SITE_*` secrets | `production` environment secrets in `dieterbaier/profile` | Inject private contact data during site/CV generation | Values only, no repository access |
+| `SFTP_*` variables | `production` environment variables in `dieterbaier/profile` | Configure SFTP target host, port, user, and remote base path | Non-secret deployment configuration |
+
+Token rotation:
+
+1. Create a new fine-grained GitHub personal access token for the target repository `dieterbaier/dieterbaier`.
+2. Grant `Contents: Read and write`. Do not grant broader account permissions unless the workflow needs them later.
+3. Update the repository secret `PROFILE_REPO_TOKEN` in `dieterbaier/profile`.
+4. Re-run the failed `Build Docs` workflow or trigger it with `workflow_dispatch`.
+
+If the README deploy fails in the `checkout github profile repo` step with `Bad credentials`, rotate `PROFILE_REPO_TOKEN`. If the GitLab README step fails during clone or push, rotate `GITLAB_TOKEN`. If the private webspace upload fails during `lftp`, check `SFTP_PASSWORD` and the `SFTP_*` variables.
+
+The pipeline builds and deploys
 
 - README.md to https://github.com/dieterbaier (has to be improved so it is not fixed)
 - README.md to https://gitlab.com/brdietdidi (has to be improved so it is not fixed)
 - The profile website (including the cv.pdf, which can be downloaded from the website) to `<vars.SFTP_REMOTE_BASE>/site`
 - The architecture documentation to `<vars.SFTP_REMOTE_BASE>/architecture`
+
+Each deployment target has its own GitHub Actions job. This allows a failed target deployment to be re-run without deploying already successful targets again.
 
 When article sources change, the pipeline also builds Markdown exports under `build/articles` as part of the uploaded build artifact.
 
