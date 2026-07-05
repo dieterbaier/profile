@@ -630,7 +630,7 @@ class OpenQuestionsIndexGenerator
       case line
       when /^==\s+Open Questions For\s+(.+?)\s*$/
         role = Regexp.last_match(1)
-      when /^\[\[(q-[a-z]+-[0-9]{3})\]\]\s*$/
+      when /^\[\[([a-z][a-z0-9-]*)\]\]\s*$/
         pending_anchor = Regexp.last_match(1)
       when /^===\s+(Q-[A-Z]+-[0-9]{3}):\s*(.+?)\s*$/
         current = Question.new(
@@ -642,6 +642,16 @@ class OpenQuestionsIndexGenerator
         pending_anchor = nil
       when /^Answer:\s+Open\.\s*$/
         questions << current if current&.anchor
+      when /^==\s+(Q-[0-9]{3}(?:-[A-Z0-9]+)*):?\s*(.+?)\s*$/
+        current = Question.new(
+          anchor: pending_anchor || normalized_anchor(Regexp.last_match(1)),
+          id: Regexp.last_match(1),
+          title: Regexp.last_match(2),
+          role: role
+        )
+        pending_anchor = nil
+      when /^Status:\s+open\.\s*$/i
+        questions << current if current&.anchor
       end
     end
 
@@ -649,6 +659,13 @@ class OpenQuestionsIndexGenerator
   end
 
   private
+
+  def normalized_anchor(value)
+    value.to_s
+         .downcase
+         .gsub(/[^a-z0-9]+/, '-')
+         .gsub(/\A-+|-+\z/, '')
+  end
 
   def cell(value)
     text = value.to_s.strip
