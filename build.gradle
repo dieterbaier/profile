@@ -95,7 +95,8 @@ def env = { String key, String defaultValue = null ->
 
 def articleSummarySourceExcludes = [
         '**/*_summary_*.adoc',
-        '**/*_summary_*.md'
+        '**/*_summary_*.md',
+        '**/*_summary_*.html'
 ]
 
 tasks.register('checkEnvironment') {
@@ -320,6 +321,33 @@ tasks.register('generateProfileArtifacts') {
     doLast {
         exec {
             commandLine 'ruby', 'scripts/validate-profile-metamodel.rb', '--generate'
+        }
+    }
+}
+
+tasks.register('generateArticleSummaries') {
+    description = 'Generates LinkedIn and Substack article summary HTML files under build/summaries.'
+    group = 'documentation'
+
+    inputs.files(fileTree('src-content/profile/site/articles') {
+        include '**/*.adoc'
+        include '**/*.profile.yaml'
+        exclude '**/.asciidoctorconfig.adoc'
+        exclude '**/*_summary_*.*'
+    })
+    inputs.files('scripts/generate-article-summaries.rb')
+    inputs.files(fileTree('templates/article-summary-pack') {
+        include '*.html'
+    })
+    outputs.dir(layout.buildDirectory.dir('summaries'))
+
+    doLast {
+        exec {
+            commandLine 'ruby',
+                    'scripts/generate-article-summaries.rb',
+                    '--articles-dir', 'src-content/profile/site/articles',
+                    '--template-dir', 'templates/article-summary-pack',
+                    '--output-dir', layout.buildDirectory.dir('summaries').get().asFile
         }
     }
 }

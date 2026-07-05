@@ -6,7 +6,6 @@ Create paste-ready summaries and publication drafts from a source article for:
 
 - LinkedIn
 - Substack
-- listed.io
 
 The output is a writing aid for cross-posting, not a replacement for the source article.
 
@@ -22,11 +21,11 @@ Optional:
 - Target language
 - Desired tone adjustment
 - Publication date or context
-- Platforms to generate; default is all three
+- Platforms to generate; default is LinkedIn and Substack
 
 ## Output
 
-Produce one clearly separated section per target platform.
+Produce one generated HTML file per target platform under `build/summaries/`.
 
 Each platform section must include:
 
@@ -36,14 +35,17 @@ Each platform section must include:
 - `tags`: platform-appropriate tags or hashtags, if useful
 - `notes`: assumptions, placeholders, or omitted items
 
-When writing to files, place each summary next to the source article and name it
-after the article filename with `_summary_<target>` before the extension:
+Whenever summaries are requested, write files to `build/summaries/` and name each
+file after the article filename with `_summary_<target>` before the `.html`
+extension:
 
 ```text
-src-content/profile/site/articles/<topic>/<article-slug>_summary_linkedin.md
-src-content/profile/site/articles/<topic>/<article-slug>_summary_substack.md
-src-content/profile/site/articles/<topic>/<article-slug>_summary_listed-io.md
+build/summaries/<article-slug>_summary_linkedin.html
+build/summaries/<article-slug>_summary_substack.html
 ```
+
+The Gradle task `generateArticleSummaries` creates these files for all article
+metadata entries under `src-content/profile/site/articles`.
 
 ## Invariants
 
@@ -51,10 +53,10 @@ src-content/profile/site/articles/<topic>/<article-slug>_summary_listed-io.md
 - Do not add facts, metrics, case studies, quotes, or links that are not present in the article or supplied by the user.
 - Keep the author's first-person perspective when the source article uses it.
 - Keep the source article as the authority. Summaries may simplify but must not contradict it.
-- Keep file-based summaries in source control next to the article unless a newer ADR changes this practice.
+- Treat file-based summaries as generated writing aids under `build/summaries/`.
 - Do not include summary files in generated site or article export targets.
 - Do not add links, xrefs, navigation entries, or generated public content that points to `_summary_<target>` files.
-- Use plain pasteable Markdown. Avoid platform-specific embedded HTML.
+- Use paste-ready HTML based on the platform template.
 - Do not include internal build paths in the public copy.
 - Use placeholders such as `[Artikel-Link einsetzen]` when a required publication URL is missing.
 
@@ -65,18 +67,13 @@ LinkedIn:
 - Write as a concise professional post.
 - Prefer a strong hook, 2-5 short paragraphs, and an optional compact bullet list.
 - Include 3-5 relevant hashtags.
+- Do not exceed 2,000 characters for the complete LinkedIn copy, excluding `notes`.
 
 Substack:
 
 - Write as a newsletter teaser or short intro post.
 - Include a title, subtitle, preview paragraph, and a short CTA.
 - Keep enough substance to stand alone, but point to the full article.
-
-listed.io:
-
-- Write as a quiet, reflective note.
-- Prefer simple Markdown, minimal formatting, and no hashtags unless requested.
-- Keep the voice close to the source article.
 
 ## Quality Checks
 
@@ -85,8 +82,9 @@ Before finalizing:
 - Verify the source title and main thesis are represented.
 - Verify each platform output is paste-ready without extra explanation.
 - Verify missing URLs or assumptions are explicit in `notes`.
-- Verify the LinkedIn copy does not exceed roughly 1,300 characters unless the user asks for a long version.
-- Verify listed.io output reads naturally as a standalone note.
+- Verify the LinkedIn copy does not exceed 2,000 characters, excluding `notes`.
+- Verify generated summaries were written to `build/summaries/`.
+- Run `./gradlew generateArticleSummaries` when checking deterministic summary generation.
 
 ## Failure Behavior
 

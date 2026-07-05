@@ -1,4 +1,4 @@
 interface:
   display_name: "Article Summary Pack"
   short_description: "Create platform-ready article summaries"
-  default_prompt: "Use $article-summary-pack to create LinkedIn, Substack, and listed.io summaries for an article."
+  default_prompt: "Use $article-summary-pack to create LinkedIn and Substack HTML summaries for an article."

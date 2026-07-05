@@ -151,7 +151,7 @@ The baseline project contract is `general-semantic-contracts.md`.
 Repeatable AI-assisted work is described with contracts under `ai-contracts/`.
 The relevant contracts are:
 
-- `article-summary-pack`: summaries for LinkedIn, Substack, and listed.io
+- `article-summary-pack`: HTML summaries for LinkedIn and Substack
 - `write-article`: article drafts and metadata using the repository article template
 - `profile-artifact-metadata`: metadata for profile pages, CV content, articles, shorts, project entries, and generated profile indexes
 
