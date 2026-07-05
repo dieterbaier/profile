@@ -10,9 +10,16 @@ require 'yaml'
 
 class ProfileArtifactValidator
   REQUIRED = %w[id type title status owner created].freeze
+  PROPERTIES = %w[id type title status owner created updated reviewed generated language audience channels summary source tags relations metadata_version].freeze
   TYPES = %w[ProfilePage Article ShortThought CV Project ProfessionalExperience Education Skill Contact ProfileFragment].freeze
   STATUSES = %w[draft proposed reviewed published archived deprecated].freeze
+  LANGUAGES = %w[de en mixed].freeze
+  CHANNELS = %w[website cv readme github gitlab markdown-export pdf].freeze
   RELATION_TYPES = %w[addresses depends_on constrains refines supersedes conflicts_with mitigates introduces_risk affects verifies documents relates_to].freeze
+  RELATION_STATUSES = %w[proposed reviewed accepted rejected].freeze
+  RELATION_KEYS = %w[type target status rationale evidence reviewed].freeze
+  ARTIFACT_ID_PATTERN = /\A[A-Z]+-[0-9]{3,}(-[a-z0-9]+)*\z/
+  TAG_PATTERN = /\A[a-z0-9][a-z0-9-]*\z/
 
   Artifact = Struct.new(:path, :metadata, keyword_init: true)
   attr_reader :errors, :warnings, :root, :profile_dir
@@ -90,11 +97,31 @@ class ProfileArtifactValidator
 
   def validate_fields(artifacts)
     artifacts.each do |artifact|
+      unknown_keys = artifact.metadata.keys - PROPERTIES
+      errors << "#{relative(artifact.path)} has unknown field(s): #{unknown_keys.sort.join(', ')}" unless unknown_keys.empty?
+
       REQUIRED.each do |field|
         errors << "#{relative(artifact.path)} missing required field '#{field}'" if blank?(artifact.metadata[field])
       end
-      errors << "#{relative(artifact.path)} unknown type '#{artifact.metadata['type']}'" if artifact.metadata['type'] && !TYPES.include?(artifact.metadata['type'])
-      errors << "#{relative(artifact.path)} unknown status '#{artifact.metadata['status']}'" if artifact.metadata['status'] && !STATUSES.include?(artifact.metadata['status'])
+
+      validate_string(artifact, 'id', pattern: ARTIFACT_ID_PATTERN)
+      validate_string(artifact, 'title')
+      validate_string(artifact, 'owner')
+      validate_string(artifact, 'summary', required: false)
+      validate_string(artifact, 'source', required: false)
+      validate_string(artifact, 'metadata_version', required: false)
+      validate_enum(artifact, 'type', TYPES)
+      validate_enum(artifact, 'status', STATUSES)
+      validate_enum(artifact, 'language', LANGUAGES, required: false)
+      validate_date(artifact, 'created')
+      validate_date(artifact, 'updated', required: false)
+      validate_boolean(artifact, 'reviewed')
+      validate_boolean(artifact, 'generated')
+      validate_string_array(artifact, 'audience')
+      validate_string_array(artifact, 'channels', allowed: CHANNELS)
+      validate_tags(artifact)
+      validate_relations_field(artifact)
+
       if artifact.metadata['source']
         source = root.join(artifact.metadata['source'])
         errors << "#{relative(artifact.path)} source does not exist: #{artifact.metadata['source']}" unless source.exist?
@@ -121,13 +148,112 @@ class ProfileArtifactValidator
         end
         type = relation['type']
         target = relation['target']
+        unknown_keys = relation.keys - RELATION_KEYS
+        errors << "#{location} has unknown key(s): #{unknown_keys.sort.join(', ')}" unless unknown_keys.empty?
         errors << "#{location} missing type" if blank?(type)
         errors << "#{location} missing target" if blank?(target)
         errors << "#{location} missing status" if blank?(relation['status'])
         errors << "#{location} unknown type '#{type}'" if type && !RELATION_TYPES.include?(type)
+        errors << "#{location} unknown status '#{relation['status']}'" if relation['status'] && !RELATION_STATUSES.include?(relation['status'])
+        errors << "#{location} target must match #{ARTIFACT_ID_PATTERN.inspect}" if target && target !~ ARTIFACT_ID_PATTERN
+        errors << "#{location} rationale must be a string" if relation.key?('rationale') && !relation['rationale'].is_a?(String)
+        errors << "#{location} evidence must be a string" if relation.key?('evidence') && !relation['evidence'].is_a?(String)
+        errors << "#{location} reviewed must be true or false" if relation.key?('reviewed') && !boolean?(relation['reviewed'])
         warnings << "#{location} references external artifact '#{target}'" if target && !known.include?(target)
       end
     end
+  end
+
+  def validate_string(artifact, field, pattern: nil, required: true)
+    value = artifact.metadata[field]
+    return if !required && value.nil?
+
+    unless value.is_a?(String) && !value.empty?
+      errors << "#{relative(artifact.path)} field '#{field}' must be a non-empty string"
+      return
+    end
+
+    errors << "#{relative(artifact.path)} field '#{field}' must match #{pattern.inspect}" if pattern && value !~ pattern
+  end
+
+  def validate_enum(artifact, field, allowed, required: true)
+    value = artifact.metadata[field]
+    return if !required && value.nil?
+
+    errors << "#{relative(artifact.path)} unknown #{field} '#{value}'" unless allowed.include?(value)
+  end
+
+  def validate_date(artifact, field, required: true)
+    value = artifact.metadata[field]
+    return if !required && value.nil?
+
+    if value.is_a?(Date)
+      return
+    elsif value.is_a?(String)
+      begin
+        parsed = Date.iso8601(value)
+        return if parsed.to_s == value
+      rescue Date::Error
+        # handled below
+      end
+    end
+
+    errors << "#{relative(artifact.path)} field '#{field}' must be an ISO-8601 date"
+  end
+
+  def validate_boolean(artifact, field)
+    value = artifact.metadata[field]
+    return if value.nil?
+
+    errors << "#{relative(artifact.path)} field '#{field}' must be true or false" unless boolean?(value)
+  end
+
+  def validate_string_array(artifact, field, allowed: nil)
+    value = artifact.metadata[field]
+    return if value.nil?
+
+    unless value.is_a?(Array)
+      errors << "#{relative(artifact.path)} field '#{field}' must be an array"
+      return
+    end
+
+    value.each_with_index do |item, index|
+      unless item.is_a?(String)
+        errors << "#{relative(artifact.path)} field '#{field}' item ##{index + 1} must be a string"
+        next
+      end
+      errors << "#{relative(artifact.path)} field '#{field}' item ##{index + 1} unknown value '#{item}'" if allowed && !allowed.include?(item)
+    end
+  end
+
+  def validate_tags(artifact)
+    tags = artifact.metadata['tags']
+    return if tags.nil?
+
+    unless tags.is_a?(Array)
+      errors << "#{relative(artifact.path)} field 'tags' must be an array"
+      return
+    end
+
+    duplicates = tags.group_by(&:itself).select { |_tag, matches| matches.length > 1 }.keys
+    errors << "#{relative(artifact.path)} field 'tags' contains duplicate value(s): #{duplicates.join(', ')}" unless duplicates.empty?
+
+    tags.each_with_index do |tag, index|
+      unless tag.is_a?(String) && tag =~ TAG_PATTERN
+        errors << "#{relative(artifact.path)} field 'tags' item ##{index + 1} must match #{TAG_PATTERN.inspect}"
+      end
+    end
+  end
+
+  def validate_relations_field(artifact)
+    relations = artifact.metadata['relations']
+    return if relations.nil? || relations.is_a?(Array)
+
+    errors << "#{relative(artifact.path)} field 'relations' must be an array"
+  end
+
+  def boolean?(value)
+    value == true || value == false
   end
 
   def render_index(artifacts, output_path)
