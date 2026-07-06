@@ -145,7 +145,7 @@ s| Sum s| +3 s| 0 s| +1 s| 0
 [cols="1,1,3", options="header"]
 |===
 | Artifact | Impact | Rationale
-| xref:qs-003-public-artifact-consistency[QS-003-public-artifact-consistency] | addressed | Generated summaries remain traceable to article metadata and source files.
+| xref:qs-003-public-artifact-consistency[QS-003: Public Artifact Consistency] | addressed | Generated summaries remain traceable to article metadata and source files.
 | xref:risk-001-metadata-drift[RISK-001-metadata-drift] | mitigated | Regeneration reduces manual drift between source articles and publication aids.
 | xref:adr-004-pandoc-markdown-export[ADR-004-pandoc-markdown-export] | affected | Pandoc exports remain generated Markdown outputs, while summaries become generated HTML outputs.
 |===
@@ -155,7 +155,7 @@ s| Sum s| +3 s| 0 s| +1 s| 0
 [cols="1,1,3", options="header"]
 |===
 | Relation | Target | Rationale
-| `addresses` | xref:qs-003-public-artifact-consistency[QS-003-public-artifact-consistency] | Supports consistency between generated publication aids and source articles.
+| `addresses` | xref:qs-003-public-artifact-consistency[QS-003: Public Artifact Consistency] | Supports consistency between generated publication aids and source articles.
 | `mitigates` | xref:risk-001-metadata-drift[RISK-001-metadata-drift] | Reduces hidden drift by regenerating summary artifacts from article source.
 | `affects` | xref:adr-004-pandoc-markdown-export[ADR-004-pandoc-markdown-export] | Clarifies that summary HTML is generated separately from Pandoc article Markdown exports.
 |===

@@ -19,20 +19,25 @@ metadata_version: '1.0'
 
 == Quality Tree
 
-* Reproducibility
-** QS-001 Reproducible build
-* Correctness
-** QS-002 Profile metadata validity
-** QS-003 Public artifact consistency
-* Sustainability
-** QS-004 Minimal static site
+* xref:qg-001-reproducibility[QG-001 Reproducibility]
+** xref:qs-001-reproducible-build[QS-001 Reproducible Build]
+* xref:qg-002-maintainability[QG-002 Maintainability]
+* xref:qg-003-automation[QG-003 Automation]
+* xref:qg-004-correctness[QG-004 Correctness]
+** xref:qs-002-profile-metadata-validity[QS-002 Profile Metadata Validity]
+** xref:qs-003-public-artifact-consistency[QS-003 Public Artifact Consistency]
+** xref:qs-005-publication-visibility-boundary[QS-005 Publication Visibility Boundary]
+* xref:qg-005-sustainability[QG-005 Sustainability]
+** xref:qs-004-minimal-static-site[QS-004 Minimal Static Site]
 
-include::10-quality-requirements/generated/doc-10001-quality-scenarios.adoc[]
+== Quality Goals
 
-include::10-quality-requirements/qs-001-reproducible-build.adoc[]
+include::10-quality-requirements/generated/doc-10001-quality-goals.adoc[leveloffset=+1]
 
-include::10-quality-requirements/qs-002-profile-metadata-validity.adoc[]
+include::generated/doc-10000-quality-goals-includes.adoc[]
 
-include::10-quality-requirements/qs-003-public-artifact-consistency.adoc[]
+== Quality Scenarios
 
-include::10-quality-requirements/qs-004-minimal-static-site.adoc[]
+include::10-quality-requirements/generated/doc-10001-quality-scenarios.adoc[leveloffset=+1]
+
+include::generated/doc-10000-quality-scenarios-includes.adoc[]

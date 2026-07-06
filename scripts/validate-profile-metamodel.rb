@@ -12,7 +12,7 @@ class ProfileArtifactValidator
   REQUIRED = %w[id type title status owner created].freeze
   PROPERTIES = %w[id type title status owner created updated reviewed generated language audience channels summary source tags relations metadata_version].freeze
   TYPES = %w[ProfilePage Article ShortThought CV Project ProfessionalExperience Education Skill Contact ProfileFragment].freeze
-  STATUSES = %w[draft proposed reviewed published archived deprecated].freeze
+  STATUSES = %w[draft proposed preview reviewed published private archived deprecated].freeze
   LANGUAGES = %w[de en mixed].freeze
   CHANNELS = %w[website cv readme github gitlab markdown-export pdf].freeze
   RELATION_TYPES = %w[addresses depends_on constrains refines supersedes conflicts_with mitigates introduces_risk affects verifies documents relates_to].freeze

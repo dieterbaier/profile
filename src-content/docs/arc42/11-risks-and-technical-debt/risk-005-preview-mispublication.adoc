@@ -1,0 +1,47 @@
+---
+id: RISK-005-preview-mispublication
+type: Risk
+title: "Preview Mispublication"
+status: proposed
+owner: "Dieter Baier"
+created: '2026-07-06'
+reviewed: false
+generated: false
+summary: "Preview articles may accidentally appear on the public website or be indexed as official content."
+tags:
+- risk
+- publishing
+- seo
+relations:
+- type: affects
+  target: QS-005-publication-visibility-boundary
+  status: proposed
+  rationale: "Incorrect target filtering or HTML metadata can violate the visibility boundary."
+  reviewed: false
+metadata_version: '1.0'
+---
+[[risk-005-preview-mispublication]]
+== RISK-005: Preview Mispublication
+
+=== Risk Statement
+
+Because public, preview, and private builds share article sources and build tooling, preview articles may be included in the public website or indexed by search engines, leading to premature or misleading publication.
+
+=== Assessment
+
+[cols="1,3", options="header"]
+|===
+| Field | Value
+| Likelihood | Medium
+| Impact | Medium
+| Priority | Medium
+| Timeframe | near-term
+| Confidence | medium
+|===
+
+=== Mitigation Options
+
+* Generate article matrices and source lists from metadata instead of maintaining public links manually.
+* Add a verification task that fails if `build/site` contains non-`published` articles.
+* Add a verification task that fails if preview/private HTML contains canonical links or lacks `noindex`.
+* Keep deployment jobs target-specific so preview artifacts cannot be uploaded to the public webspace by a reused deploy step.

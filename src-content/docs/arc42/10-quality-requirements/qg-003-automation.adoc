@@ -1,0 +1,34 @@
+---
+id: QG-003-automation
+type: QualityGoal
+title: "Automation"
+status: proposed
+owner: "Dieter Baier"
+created: '2026-07-07'
+reviewed: false
+generated: false
+priority: 3
+summary: "Normal publishing and validation run without manual transformation steps."
+tags:
+- quality
+- goal
+relations:
+- type: refines
+  target: DOC-10000-quality-requirements
+  status: proposed
+  rationale: "The quality goal refines the quality requirements chapter."
+  reviewed: false
+metadata_version: '1.0'
+---
+[[qg-003-automation]]
+== QG-003: Automation
+
+=== Meaning
+
+Normal publishing and validation run without manual transformation steps.
+
+=== Priority
+
+3
+
+include::generated/qg-003-automation-quality-scenarios.adoc[]

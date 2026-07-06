@@ -1,0 +1,160 @@
+---
+id: ADR-009-private-repository-integration
+type: ADR
+title: "Private Repository Integration"
+status: proposed
+owner: "Dieter Baier"
+created: '2026-07-07'
+reviewed: false
+generated: false
+summary: "Treat the private repository as a separate source component of the profile application and integrate it through explicit content and promotion contracts."
+tags:
+- adr
+- decision
+- repository
+- privacy
+relations:
+- type: mitigates
+  target: RISK-004-source-boundary-leakage
+  status: proposed
+  rationale: "Explicit repository boundaries and promotion contracts reduce accidental private source disclosure."
+  reviewed: false
+- type: addresses
+  target: QS-005-publication-visibility-boundary
+  status: proposed
+  rationale: "The private repository strategy supports source and publication visibility boundaries."
+  reviewed: false
+metadata_version: '1.0'
+---
+[[adr-009-private-repository-integration]]
+== ADR-009: Private Repository Integration
+
+=== Status
+
+Proposed.
+
+=== Decision
+
+We propose to treat `profile-dieterbaier-private` as a separate source component of the same profile application, integrated through explicit content and promotion contracts instead of Git submodules or duplicated build logic.
+
+The public repository remains the owner of shared build logic, validators, generators, theme assets, profile metadata contracts, and architecture documentation. The private repository owns private article, note, and protocol source content. Private content is rendered by reusing the public repository's build tooling through a documented checkout or local path contract.
+
+The private repository should not maintain separate architecture documentation unless it introduces architecture decisions that are not part of the overall profile application. It may contain local operational notes, but architecture truth stays in this repository.
+
+=== Context
+
+The private repository is not just backup storage. It is part of the profile publishing system because it contributes source content to the private site and can promote reviewable articles to the public repository. At the same time, its main architectural reason to exist is privacy: content that must not be public source cannot live in the public repository.
+
+Git submodules could express a repository relationship directly, but they introduce extra workflow complexity, detached version management, and contributor friction. Treating the private repository as a completely independent product would keep boundaries simple, but it would likely duplicate generators, validation rules, theme assets, and deployment behavior.
+
+This decision supports https://github.com/dieterbaier/profile/issues/26[GitHub issue #26] and must be reviewed before implementation slices that create private repository automation.
+
+=== Decision Basis Diagrams
+
+The component model below documents the preferred repository integration option. The official building block view includes it by tag while the decision is still proposed, so later refinements can happen once at the decision source.
+
+==== Public And Private Repository Components
+
+// tag::private-public-repository-components[]
+[plantuml]
+----
+@startuml
+skinparam componentStyle rectangle
+
+package "profile-dieterbaier (public repository)" as PublicRepo {
+  component "Architecture Documentation" as ArchitectureDocs
+  component "Gradle Build Orchestrator" as Gradle
+  component "Validators" as Validators
+  component "Generators" as Generators
+  component "Theme Assets" as Theme
+  component "Public and Preview Article Source" as PublicArticles
+}
+
+package "profile-dieterbaier-private (private repository)" as PrivateRepo {
+  component "Private Article Source" as PrivateArticles
+  component "Private Notes and Protocols" as PrivateNotes
+  component "Private Deployment Configuration" as PrivateDeployConfig
+}
+
+component "Private Site Build" as PrivateBuild
+component "Promotion Script" as Promotion
+component "Public Site Build" as PublicBuild
+
+PrivateBuild --> PrivateArticles : read private content roots
+PrivateBuild --> PrivateNotes : render private notebook
+PrivateBuild --> Gradle : reuse tooling contract
+PrivateBuild --> Validators : validate shared metadata contract
+PrivateBuild --> Generators : generate private target inputs
+PrivateBuild --> Theme : reuse presentation
+PrivateBuild --> PrivateDeployConfig : deploy protected target
+
+Promotion --> PrivateArticles : select cleaned article
+Promotion --> PublicArticles : copy as status=preview
+
+PublicBuild --> PublicArticles : render public and preview targets
+PublicBuild --> Gradle
+PublicBuild --> Validators
+PublicBuild --> Generators
+PublicBuild --> Theme
+
+ArchitectureDocs ..> PrivateRepo : documents application-level decisions
+@enduml
+----
+// end::private-public-repository-components[]
+
+=== Options
+
+[.pugh-matrix]
+[cols="3,1,1,1,1", options="header"]
+|===
+| Criterion | Separate source component with explicit contracts | Git submodule | Independent private product | Copy shared tooling manually
+| Keeps private source out of public Git history | +1 | +1 | +1 | +1
+| Avoids duplicated generators and theme logic | +1 | +1 | -1 | -1
+| Keeps day-to-day authoring simple | +1 | -1 | 0 | 0
+| Makes coupling explicit and reviewable | +1 | 0 | 0 | -1
+| Supports independent private deployment | +1 | 0 | +1 | 0
+| Low operational surprise | +1 | -1 | 0 | -1
+s| Sum s| +6 s| 0 s| +1 s| -2
+|===
+
+=== Proposed Integration Contract
+
+[cols="1,3", options="header"]
+|===
+| Contract | Proposed rule
+| Source ownership | Public source stays in `profile-dieterbaier`; private source stays in `profile-dieterbaier-private`.
+| Tooling ownership | Shared Gradle tasks, generators, validators, schemas, and theme assets are owned by `profile-dieterbaier`.
+| Private build input | The private repository provides content roots that match the public profile article metadata contract.
+| Tooling access | Private builds use a checked-out public repository path or a later packaged toolkit version; no submodule is required initially.
+| Promotion | A reviewed script copies selected article source and metadata from private to public source and sets `status: preview`.
+| Architecture documentation | Architecture decisions stay in the public repository unless private-only implementation creates a separate architectural concern.
+|===
+
+=== Consequences
+
+Positive:
+
+* The privacy boundary is solved at source level without making the generated deployment the only control.
+* Shared generators and validators remain in one owner repository.
+* The private repository can be developed and deployed independently while still obeying the same metadata contracts.
+* The project avoids Git submodule complexity until there is concrete evidence that it is needed.
+
+Negative:
+
+* The private repository build must locate compatible shared tooling.
+* Contract drift between repositories becomes possible and needs validation.
+* Local development requires two checkouts for private builds.
+
+Neutral or follow-up:
+
+* A later packaging step may turn shared tooling into a reusable toolkit artifact if local path coupling becomes painful.
+* A Git submodule can be reconsidered if reproducible pinning becomes more important than simple authoring.
+
+=== Review Notes
+
+Before acceptance, confirm:
+
+* the private repository name;
+* the initial tooling access mechanism, such as sibling checkout path versus packaged toolkit version;
+* whether private deployment runs locally, in GitHub Actions from the private repository, or both;
+* which compatibility check prevents private/public metadata contract drift.

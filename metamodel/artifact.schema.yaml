@@ -28,6 +28,7 @@ properties:
     description: Supported architecture artifact type.
     enum:
       - ADR
+      - QualityGoal
       - QualityScenario
       - Risk
       - Requirement
@@ -71,6 +72,10 @@ properties:
   summary:
     type: string
     description: Short human-readable summary for indexes and generated views.
+  priority:
+    type: integer
+    description: Optional ordering priority, with lower numbers rendered first.
+    minimum: 1
   tags:
     type: array
     uniqueItems: true

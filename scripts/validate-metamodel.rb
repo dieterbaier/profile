@@ -531,12 +531,32 @@ class ArtifactIndexGenerator
         ]
       end
     },
+    'QualityGoal' => {
+      output: '10-quality-requirements/generated/doc-10001-quality-goals.adoc',
+      anchor: 'quality-goals',
+      title: 'Quality Goal Index',
+      cols: '1,1,2,4',
+      columns: ['ID', 'Priority', 'Quality goal', 'Meaning'],
+      sort: lambda do |artifact|
+        metadata = artifact.metadata
+        [metadata['priority'].to_i.zero? ? 999 : metadata['priority'].to_i, metadata['id'].to_s]
+      end,
+      row: lambda do |artifact, helper|
+        metadata = artifact.metadata
+        [
+          helper.artifact_link(artifact, label: helper.short_id(metadata['id'])),
+          helper.cell(metadata['priority']),
+          helper.cell(metadata['title']),
+          helper.cell(metadata['summary'])
+        ]
+      end
+    },
     'QualityScenario' => {
       output: '10-quality-requirements/generated/doc-10001-quality-scenarios.adoc',
       anchor: 'quality-scenarios',
-      title: 'Quality Scenarios',
+      title: 'Quality Scenario Index',
       cols: '1,1,2,2,2,2,2,2',
-      columns: ['ID', 'Objective', 'Source', 'Stimulus', 'Artifact', 'Environment', 'Response', 'Response measure'],
+      columns: ['ID', 'Quality goal', 'Source', 'Stimulus', 'Artifact', 'Environment', 'Response', 'Response measure'],
       row: lambda do |artifact, helper|
         fields = helper.definition_table_fields(artifact)
         [
@@ -596,7 +616,11 @@ class ArtifactIndexGenerator
   def render(artifacts, definition, output_path = @docs_dir.join(definition.fetch(:output)))
     type = INDEX_DEFINITIONS.key(definition)
     selected = artifacts.select { |artifact| artifact.metadata && artifact.metadata['type'] == type }
-                        .sort_by { |artifact| artifact.metadata['id'].to_s }
+    selected = if definition[:sort]
+                 selected.sort_by { |artifact| definition[:sort].call(artifact) }
+               else
+                 selected.sort_by { |artifact| artifact.metadata['id'].to_s }
+               end
 
     lines = []
     lines << "[[#{definition.fetch(:anchor)}]]"
@@ -1004,6 +1028,139 @@ class ArtifactRenderHelper
   end
 end
 
+class QualityRequirementsFragmentGenerator
+  OUTPUTS = {
+    'QualityGoal' => 'generated/doc-10000-quality-goals-includes.adoc',
+    'QualityScenario' => 'generated/doc-10000-quality-scenarios-includes.adoc',
+    'TopQualityGoals' => 'generated/doc-01000-top-quality-goals.adoc'
+  }.freeze
+
+  attr_reader :output_paths
+
+  def initialize(root:, docs_dir:)
+    @root = Pathname.new(root).expand_path
+    @docs_dir = output_base(docs_dir)
+    @output_paths = []
+  end
+
+  def write(artifacts)
+    goals = artifacts.select { |artifact| artifact.metadata && artifact.metadata['type'] == 'QualityGoal' }
+                     .sort_by { |artifact| quality_goal_sort_key(artifact) }
+    scenarios = artifacts.select { |artifact| artifact.metadata && artifact.metadata['type'] == 'QualityScenario' }
+                         .sort_by { |artifact| artifact.metadata['id'].to_s }
+
+    @output_paths = []
+    @output_paths << write_file(OUTPUTS.fetch('QualityGoal'), render_includes('QualityGoal', goals, OUTPUTS.fetch('QualityGoal')))
+    @output_paths << write_file(OUTPUTS.fetch('QualityScenario'), render_includes('QualityScenario', scenarios, OUTPUTS.fetch('QualityScenario')))
+    @output_paths << write_file(OUTPUTS.fetch('TopQualityGoals'), render_top_quality_goals(goals, OUTPUTS.fetch('TopQualityGoals')))
+    @output_paths.concat(write_quality_goal_scenario_fragments(goals, scenarios))
+  end
+
+  private
+
+  def write_file(relative_output, content)
+    output_path = @docs_dir.join(relative_output)
+    FileUtils.mkdir_p(output_path.dirname)
+    output_path.write(content)
+    output_path
+  end
+
+  def render_includes(type, artifacts, relative_output)
+    output_path = @docs_dir.join(relative_output)
+    lines = []
+    lines << "// Generated from #{type} metadata. Do not edit manually."
+    lines << ''
+
+    artifacts.each do |artifact|
+      target = artifact.path.expand_path.relative_path_from(output_path.dirname).to_s
+      lines << ''
+      lines << "include::#{target}[leveloffset=+1]"
+      lines << ''
+    end
+
+    lines.join("\n")
+  end
+
+  def render_top_quality_goals(goals, relative_output)
+    output_path = @docs_dir.join(relative_output)
+    helper = ArtifactRenderHelper.new(output_path, goals)
+    lines = []
+    lines << '// Generated from QualityGoal metadata. Do not edit manually.'
+    lines << ''
+    lines << '[cols="1,1,2,3", options="header"]'
+    lines << '|==='
+    lines << '| ID | Priority | Quality goal | Meaning'
+    lines << ''
+
+    goals.each do |goal|
+      metadata = goal.metadata
+      lines << "| #{helper.artifact_link(goal, label: helper.short_id(metadata['id']))}"
+      lines << "| #{helper.cell(metadata['priority'])}"
+      lines << "| #{helper.cell(metadata['title'])}"
+      lines << "| #{helper.cell(metadata['summary'])}"
+      lines << ''
+    end
+
+    lines << '|==='
+    lines << ''
+    lines.join("\n")
+  end
+
+  def write_quality_goal_scenario_fragments(goals, scenarios)
+    scenarios_by_goal = scenarios.each_with_object(Hash.new { |hash, key| hash[key] = [] }) do |scenario, index|
+      Array(scenario.metadata['relations']).each do |relation|
+        next unless relation['type'] == 'refines'
+
+        index[relation['target']] << scenario
+      end
+    end
+
+    goals.map do |goal|
+      basename = goal.path.basename(goal.path.extname).to_s
+      relative_output = "10-quality-requirements/generated/#{basename}-quality-scenarios.adoc"
+      write_file(relative_output, render_quality_goal_scenarios(goal, scenarios_by_goal.fetch(goal.metadata['id'], []), relative_output))
+    end
+  end
+
+  def render_quality_goal_scenarios(goal, scenarios, relative_output)
+    output_path = @docs_dir.join(relative_output)
+    helper = ArtifactRenderHelper.new(output_path, [goal] + scenarios)
+    lines = []
+    lines << "// Generated from QualityScenario relations for #{goal.metadata['id']}. Do not edit manually."
+    lines << ''
+    lines << '=== Quality Scenarios'
+    lines << ''
+
+    if scenarios.empty?
+      lines << 'No quality scenarios currently refine this quality goal.'
+      lines << ''
+      return lines.join("\n")
+    end
+
+    lines << '[cols="1,3,4", options="header"]'
+    lines << '|==='
+    lines << '| ID | Scenario | Response measure'
+    lines << ''
+
+    scenarios.sort_by { |scenario| scenario.metadata['id'].to_s }.each do |scenario|
+      fields = helper.definition_table_fields(scenario)
+      lines << "| #{helper.artifact_link(scenario, label: helper.short_id(scenario.metadata['id']))}"
+      lines << "| #{helper.cell(scenario.metadata['title'])}"
+      lines << "| #{helper.cell(fields['Response Measure'])}"
+      lines << ''
+    end
+
+    lines << '|==='
+    lines << ''
+    lines.join("\n")
+  end
+
+  def quality_goal_sort_key(artifact)
+    priority = artifact.metadata['priority'].to_i
+    [priority.zero? ? 999 : priority, artifact.metadata['id'].to_s]
+  end
+end
+
 class DocumentationGenerator
   def initialize(root:, docs_dir:, matrix_output_path: nil)
     @root = Pathname.new(root).expand_path
@@ -1030,6 +1187,9 @@ class DocumentationGenerator
 
     open_questions = OpenQuestionsIndexGenerator.new(root: @root, docs_dir: @docs_dir)
     written.concat(open_questions.write)
+
+    quality_requirements = QualityRequirementsFragmentGenerator.new(root: @root, docs_dir: @docs_dir)
+    written.concat(quality_requirements.write(metadata_artifacts))
 
     traceability = TraceabilityFragmentGenerator.new(root: @root, docs_dir: @docs_dir)
     written.concat(traceability.write(metadata_artifacts))

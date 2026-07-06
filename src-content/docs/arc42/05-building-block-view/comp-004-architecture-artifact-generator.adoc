@@ -1,0 +1,63 @@
+---
+id: COMP-004-architecture-artifact-generator
+type: Component
+title: "Architecture Artifact Generator"
+status: proposed
+owner: "Dieter Baier"
+created: '2026-07-07'
+reviewed: false
+generated: false
+summary: "Generates architecture indexes, chapter include fragments, open-question lists, and traceability views."
+tags:
+- component
+- generator
+- architecture
+relations:
+- type: refines
+  target: DOC-05000-building-block-view
+  status: proposed
+  rationale: "The component details one Level 3 generator from the building block view."
+  reviewed: false
+metadata_version: '1.0'
+---
+[[comp-004-architecture-artifact-generator]]
+== COMP-004: Architecture Artifact Generator
+
+=== Responsibility
+
+The Architecture Artifact Generator derives navigation and traceability fragments from validated architecture metadata.
+
+It owns:
+
+* ADR, quality scenario, and risk indexes;
+* chapter include fragments for generated chapter assembly;
+* open-question index generation;
+* per-artifact traceability fragments;
+* the architecture-wide traceability matrix.
+
+It does not own:
+
+* source architecture decisions;
+* acceptance of generated relations;
+* profile artifact indexes.
+
+=== Inputs And Outputs
+
+[cols="1,3", options="header"]
+|===
+| Kind | Description
+| Input | validated architecture artifacts
+| Input | `src-content/docs/doc-005-questions-and-answers.adoc`
+| Output | ignored `generated/` AsciiDoc fragments
+| Output | traceability matrix and per-artifact traceability fragments
+|===
+
+=== Implementation
+
+[cols="1,3", options="header"]
+|===
+| Field | Value
+| Script | `scripts/validate-metamodel.rb --generate`
+| Gradle task | `generateArchitectureArtifacts`
+| Generated storage | `**/generated/`
+|===

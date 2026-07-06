@@ -1,0 +1,34 @@
+---
+id: QG-004-correctness
+type: QualityGoal
+title: "Correctness"
+status: proposed
+owner: "Dieter Baier"
+created: '2026-07-07'
+reviewed: false
+generated: false
+priority: 4
+summary: "Generated public artifacts reflect the intended source content and metadata."
+tags:
+- quality
+- goal
+relations:
+- type: refines
+  target: DOC-10000-quality-requirements
+  status: proposed
+  rationale: "The quality goal refines the quality requirements chapter."
+  reviewed: false
+metadata_version: '1.0'
+---
+[[qg-004-correctness]]
+== QG-004: Correctness
+
+=== Meaning
+
+Generated public artifacts reflect the intended source content and metadata.
+
+=== Priority
+
+4
+
+include::generated/qg-004-correctness-quality-scenarios.adoc[]

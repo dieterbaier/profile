@@ -35,15 +35,7 @@ Maintaining the same professional profile across several platforms creates dupli
 
 == Top Quality Goals
 
-[cols="1,2,3", options="header"]
-|===
-| ID | Quality goal | Meaning
-| QG-001 | Reproducibility | Same source and environment produce the same generated artifacts.
-| QG-002 | Maintainability | Content, presentation, metadata, and build logic have explicit responsibilities.
-| QG-003 | Automation | Normal publishing and validation run without manual transformation steps.
-| QG-004 | Correctness | Generated public artifacts reflect the intended source content and metadata.
-| QG-005 | Sustainability | The site and pipeline avoid unnecessary runtime logic, tracking, and waste.
-|===
+include::generated/doc-01000-top-quality-goals.adoc[]
 
 == Stakeholders
 
@@ -55,3 +47,5 @@ Maintaining the same professional profile across several platforms creates dupli
 | ST-003 | Technical community | Access thoughts, articles, README content, and toolkit examples.
 | ST-004 | CI/CD runtime | Build and deploy only the artifacts affected by a change.
 |===
+
+include::generated/doc-01000-introduction-and-goals-includes.adoc[]

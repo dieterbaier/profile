@@ -1,0 +1,70 @@
+---
+id: COMP-003-profile-metamodel-validator
+type: Component
+title: "Profile Metamodel Validator"
+status: proposed
+owner: "Dieter Baier"
+created: '2026-07-07'
+reviewed: false
+generated: false
+summary: "Validates profile artifact metadata, statuses, channels, IDs, and relations."
+tags:
+- component
+- validator
+- profile
+relations:
+- type: refines
+  target: DOC-05000-building-block-view
+  status: proposed
+  rationale: "The component details one Level 3 validator from the building block view."
+  reviewed: false
+- type: addresses
+  target: QS-002-profile-metadata-validity
+  status: proposed
+  rationale: "The validator directly supports profile metadata validity."
+  reviewed: false
+metadata_version: '1.0'
+---
+[[comp-003-profile-metamodel-validator]]
+== COMP-003: Profile Metamodel Validator
+
+=== Responsibility
+
+The Profile Metamodel Validator checks profile content metadata before profile indexes, website artifacts, CV output, README output, or article exports are generated.
+
+It owns:
+
+* profile artifact required fields;
+* supported profile artifact types;
+* supported lifecycle statuses, including proposed `preview` and `private`;
+* supported publication channels;
+* profile artifact ID uniqueness;
+* relation key, relation type, relation status, and target validation.
+
+It does not own:
+
+* article prose quality;
+* publication target filtering;
+* deployment authorization.
+
+=== Inputs And Outputs
+
+[cols="1,3", options="header"]
+|===
+| Kind | Description
+| Input | `*.profile.yaml` sidecar metadata
+| Input | profile AsciiDoc files with YAML front matter
+| Input | `metamodel/profile-artifact.schema.yaml`
+| Output | validation report with errors and warnings
+| Output | failed Gradle task when profile metadata is invalid
+|===
+
+=== Implementation
+
+[cols="1,3", options="header"]
+|===
+| Field | Value
+| Script | `scripts/validate-profile-metamodel.rb`
+| Gradle task | `validateProfileMetamodel`
+| Primary scope | `src-content/profile`
+|===

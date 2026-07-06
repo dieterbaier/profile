@@ -11,11 +11,20 @@ summary: "Validator exits non-zero on missing required fields or broken relation
 tags:
 - quality
 - scenario
-relations: []
+relations:
+- type: refines
+  target: QG-004-correctness
+  status: proposed
+  rationale: "The scenario makes the correctness quality goal measurable for profile metadata."
+  reviewed: false
 metadata_version: '1.0'
 ---
 [[qs-002-profile-metadata-validity]]
 == QS-002: Profile Metadata Validity
+
+=== Quality Goal
+
+xref:qg-004-correctness[QG-004: Correctness]
 
 === Scenario
 

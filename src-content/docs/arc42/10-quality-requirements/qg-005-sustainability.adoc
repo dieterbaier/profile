@@ -1,0 +1,34 @@
+---
+id: QG-005-sustainability
+type: QualityGoal
+title: "Sustainability"
+status: proposed
+owner: "Dieter Baier"
+created: '2026-07-07'
+reviewed: false
+generated: false
+priority: 5
+summary: "The site and pipeline avoid unnecessary runtime logic, tracking, and waste."
+tags:
+- quality
+- goal
+relations:
+- type: refines
+  target: DOC-10000-quality-requirements
+  status: proposed
+  rationale: "The quality goal refines the quality requirements chapter."
+  reviewed: false
+metadata_version: '1.0'
+---
+[[qg-005-sustainability]]
+== QG-005: Sustainability
+
+=== Meaning
+
+The site and pipeline avoid unnecessary runtime logic, tracking, and waste.
+
+=== Priority
+
+5
+
+include::generated/qg-005-sustainability-quality-scenarios.adoc[]

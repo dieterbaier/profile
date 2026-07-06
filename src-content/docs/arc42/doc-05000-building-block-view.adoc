@@ -17,47 +17,144 @@ metadata_version: '1.0'
 [[building-block-view]]
 = Building Block View
 
-== Level 1
+== C4 Level 1: System Context
 
 [plantuml]
 ----
 @startuml
-package "Source Content" {
-  [Profile Content] as Profile
+skinparam componentStyle rectangle
+actor "Dieter Baier" as Owner
+actor "Readers" as Readers
+cloud "GitHub" as GitHub
+node "Strato Webspace" as Strato
+
+rectangle "Profile Publishing System" as System {
+  [profile-dieterbaier]
+  [profile-dieterbaier-private]
+}
+
+Owner --> System : authors and reviews source content
+System --> GitHub : stores public source and backlog
+System --> Strato : deploys generated sites
+Readers --> Strato : read public, preview, or private site targets
+@enduml
+----
+
+The system publishes profile content from source repositories into static artifacts. The public repository owns the reusable publishing application, architecture documentation, validators, generators, and theme. The private repository is proposed as a separate source component for private articles, notes, and protocols.
+
+== Repository Collaboration
+
+include::09-architecture-decisions/adr-009-private-repository-integration.adoc[tag=private-public-repository-components]
+
+This component diagram is the proposed decision basis from xref:adr-009-private-repository-integration[ADR-009]. It is included here to show the official building block view of the public/private repository collaboration without duplicating the model.
+
+== C4 Level 2: Containers
+
+[plantuml]
+----
+@startuml
+skinparam componentStyle rectangle
+
+package "Source Containers" {
+  [Public Profile Repository] as PublicRepo
+  [Private Profile Repository] as PrivateRepo
   [Architecture Knowledge] as Architecture
   [Theme Assets] as Theme
 }
-package "Automation" {
-  [Gradle Tasks] as Gradle
+
+package "Build-Time Containers" {
+  [Gradle Build Orchestrator] as Gradle
   [Validators] as Validators
   [Generators] as Generators
+  [Pandoc Conversion] as Pandoc
 }
-package "Outputs" {
-  [Website]
-  [CV PDF]
-  [README Markdown]
-  [Article Markdown]
-  [Architecture Site]
+
+package "Publication Targets" {
+  [Public Website] as PublicSite
+  [Preview Website] as PreviewSite
+  [Private Article Notebook] as PrivateSite
+  [CV PDF] as CV
+  [README Markdown] as Readme
+  [Article Markdown] as ArticleMarkdown
+  [Architecture Site] as ArchitectureSite
 }
-Profile --> Gradle
+
+PublicRepo --> Gradle
+PrivateRepo ..> Gradle : proposed private content root
 Architecture --> Gradle
 Theme --> Gradle
-Gradle --> Validators
-Gradle --> Generators
-Gradle --> Website
-Gradle --> [CV PDF]
-Gradle --> [README Markdown]
-Gradle --> [Article Markdown]
-Gradle --> [Architecture Site]
+Gradle --> Validators : validate source metadata
+Gradle --> Generators : generate derived inputs and indexes
+Gradle --> Pandoc : convert DocBook to Markdown
+Gradle --> PublicSite
+Gradle --> PreviewSite
+Gradle --> PrivateSite
+Gradle --> CV
+Gradle --> Readme
+Gradle --> ArticleMarkdown
+Gradle --> ArchitectureSite
 @enduml
 ----
 
 [cols="1,2,2", options="header"]
 |===
-| Building block | Responsibility | Storage
-| Profile Content | CV, profile pages, articles, shorts, project history, and reusable fragments. | `src-content/profile`
+| Container | Responsibility | Storage
+| Public Profile Repository | Public profile source, public articles, previewable article source, reusable build logic, theme, profile metadata contracts, and architecture documentation. | `profile-dieterbaier`
+| Private Profile Repository | Private article, note, and protocol source. Proposed as a separate source component, not as a duplicated product. | `profile-dieterbaier-private`
 | Architecture Knowledge | arc42 chapters, ADRs, quality scenarios, risks, canvases, Q&A, and metadata. | `src-content/docs`
-| Validators | Check architecture and profile metadata. | `scripts/`
-| Generators | Create derived indexes and traceability fragments. | `scripts/` and generated folders
+| Theme Assets | CSS, fonts, icons, JavaScript, and shared docinfo fragments used by generated static outputs. | `src-content/theme`, `src-content/profile/includes`
+| Validators | Check architecture and profile metadata before generation and deployment. | `scripts/`
+| Generators | Create derived indexes, traceability fragments, article summaries, and proposed publication target inputs. | `scripts/` and generated folders
 | Gradle Tasks | Orchestrate build, validation, generation, conversion, and asset copying. | `build.gradle`
 |===
+
+== C4 Level 3: Build-Time Components
+
+[plantuml]
+----
+@startuml
+skinparam componentStyle rectangle
+
+package "Gradle Build Orchestrator" {
+  [checkEnvironment]
+  [buildSite]
+  [buildArticlesMarkdown]
+  [buildArchitecture]
+  [generateProfileArtifacts]
+  [generateArchitectureArtifacts]
+}
+
+package "Validators" {
+  [Architecture Metamodel Validator] as ArchitectureValidator
+  [Profile Metamodel Validator] as ProfileValidator
+}
+
+package "Generators" {
+  [Architecture Artifact Generator] as ArchitectureGenerator
+  [Profile Artifact Generator] as ProfileGenerator
+  [Article Summary Generator] as SummaryGenerator
+  [Publication Target Generator] as TargetGenerator
+}
+
+[generateArchitectureArtifacts] --> ArchitectureValidator
+[generateArchitectureArtifacts] --> ArchitectureGenerator
+[generateProfileArtifacts] --> ProfileValidator
+[generateProfileArtifacts] --> ProfileGenerator
+[buildSite] --> TargetGenerator : proposed
+[buildArticlesMarkdown] --> SummaryGenerator
+@enduml
+----
+
+[cols="1,2,2", options="header"]
+|===
+| Component | Responsibility | Current implementation
+| Gradle Build Orchestrator | Defines build tasks, task dependencies, source sets, output directories, and asset copying. | `build.gradle`
+| Architecture Metamodel Validator | Validates architecture artifact metadata, IDs, relations, and structural conventions. | xref:comp-002-architecture-metamodel-validator[COMP-002]
+| Architecture Artifact Generator | Generates ADR, quality scenario, risk, chapter include, open-question, and traceability fragments. | xref:comp-004-architecture-artifact-generator[COMP-004]
+| Profile Metamodel Validator | Validates profile sidecar/frontmatter metadata, IDs, statuses, channels, and relations. | xref:comp-003-profile-metamodel-validator[COMP-003]
+| Profile Artifact Generator | Generates the profile artifact index from profile metadata. | xref:comp-005-profile-artifact-generator[COMP-005]
+| Article Summary Generator | Generates LinkedIn/Substack-oriented HTML summary packs without publishing them into public site targets. | xref:comp-006-article-summary-generator[COMP-006]
+| Publication Target Generator | Proposed component for deriving public, preview, and private article source sets and navigation from metadata. | xref:comp-001-publication-target-generator[COMP-001]
+|===
+
+include::generated/doc-05000-building-block-view-includes.adoc[]
