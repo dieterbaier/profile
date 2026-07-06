@@ -1,0 +1,48 @@
+---
+id: RISK-004-source-boundary-leakage
+type: Risk
+title: "Source Boundary Leakage"
+status: proposed
+owner: "Dieter Baier"
+created: '2026-07-06'
+reviewed: false
+generated: false
+summary: "Private article or note content may be copied from the private repository into the public repository during promotion."
+tags:
+- risk
+- privacy
+- publishing
+relations:
+- type: affects
+  target: QS-005-publication-visibility-boundary
+  status: proposed
+  rationale: "If private source crosses the repository boundary, target-specific site filtering cannot restore source confidentiality."
+  reviewed: false
+metadata_version: '1.0'
+---
+[[risk-004-source-boundary-leakage]]
+== RISK-004: Source Boundary Leakage
+
+=== Risk Statement
+
+Because private drafts and public preview content are promoted across repository boundaries, private-only source material may be copied into the public repository, leading to irreversible disclosure through public Git history.
+
+=== Assessment
+
+[cols="1,3", options="header"]
+|===
+| Field | Value
+| Likelihood | Medium
+| Impact | High
+| Priority | High
+| Timeframe | near-term
+| Confidence | medium
+|===
+
+=== Mitigation Options
+
+* Keep truly private content in a private repository until it is intentionally promoted.
+* Start with a local promotion script so the owner reviews the diff before push.
+* Add promotion checks for private-only markers, disallowed paths, and status transitions.
+* Treat `preview` as reviewable public-source content, not as confidential content.
+* If private material enters public Git history, rotate affected secrets and rewrite history only after an explicit incident decision.

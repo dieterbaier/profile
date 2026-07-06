@@ -39,3 +39,5 @@ stop
 == Failure Scenario
 
 If metadata validation fails, Gradle stops before rendering or deployment. This keeps generated artifacts from drifting away from source truth.
+
+include::generated/doc-06000-runtime-view-includes.adoc[]

@@ -1,0 +1,34 @@
+---
+id: QG-001-reproducibility
+type: QualityGoal
+title: "Reproducibility"
+status: proposed
+owner: "Dieter Baier"
+created: '2026-07-07'
+reviewed: false
+generated: false
+priority: 1
+summary: "Same source and environment produce the same generated artifacts."
+tags:
+- quality
+- goal
+relations:
+- type: refines
+  target: DOC-10000-quality-requirements
+  status: proposed
+  rationale: "The quality goal refines the quality requirements chapter."
+  reviewed: false
+metadata_version: '1.0'
+---
+[[qg-001-reproducibility]]
+== QG-001: Reproducibility
+
+=== Meaning
+
+Same source and environment produce the same generated artifacts.
+
+=== Priority
+
+1
+
+include::generated/qg-001-reproducibility-quality-scenarios.adoc[]

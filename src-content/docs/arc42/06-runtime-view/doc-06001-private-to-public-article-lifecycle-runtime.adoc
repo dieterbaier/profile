@@ -1,0 +1,63 @@
+---
+id: DOC-06001-private-to-public-article-lifecycle-runtime
+type: Document
+title: "Private To Public Article Lifecycle Runtime"
+status: proposed
+owner: "Dieter Baier"
+created: '2026-07-07'
+reviewed: false
+generated: false
+summary: "Runtime scenarios for drafting private articles, promoting them to preview, and publishing reviewed articles."
+tags:
+- arc42
+- runtime
+- publishing
+- article-lifecycle
+relations:
+- type: refines
+  target: DOC-06000-runtime-view
+  status: proposed
+  rationale: "The document details runtime scenarios for the article lifecycle."
+  reviewed: false
+- type: depends_on
+  target: ADR-008-private-to-public-article-lifecycle
+  status: proposed
+  rationale: "The runtime scenarios depend on the proposed article lifecycle decision."
+  reviewed: false
+- type: depends_on
+  target: ADR-009-private-repository-integration
+  status: proposed
+  rationale: "The runtime scenarios depend on the proposed private repository integration decision."
+  reviewed: false
+metadata_version: '1.0'
+---
+[[doc-06001-private-to-public-article-lifecycle-runtime]]
+== DOC-06001: Private To Public Article Lifecycle Runtime
+
+=== Status
+
+Proposed and in progress. The backlog epic is tracked as https://github.com/dieterbaier/profile/issues/26[GitHub issue #26]. These scenarios describe intended runtime behavior and must be reviewed with xref:adr-008-private-to-public-article-lifecycle[ADR-008] and xref:adr-009-private-repository-integration[ADR-009] before implementation starts.
+
+=== Scenario 1: Draft Private Article
+
+include::../09-architecture-decisions/adr-008-private-to-public-article-lifecycle.adoc[tag=runtime-private-draft]
+
+The private site is a reading and review surface for the author. It is not a substitute for source privacy; private content remains in the private repository.
+
+=== Scenario 2: Promote Article To Preview
+
+include::../09-architecture-decisions/adr-008-private-to-public-article-lifecycle.adoc[tag=runtime-promote-preview]
+
+After promotion, preview content is public-source content. It is not official publication content, but it must no longer contain information that depends on private repository confidentiality.
+
+=== Scenario 3: Publish Reviewed Article
+
+include::../09-architecture-decisions/adr-008-private-to-public-article-lifecycle.adoc[tag=runtime-publish-reviewed]
+
+Publishing is an explicit metadata transition. The public target must not include preview or private articles.
+
+=== Scenario 4: Reject Or Continue Private Draft
+
+include::../09-architecture-decisions/adr-008-private-to-public-article-lifecycle.adoc[tag=runtime-continue-private]
+
+If an article is not ready to become public-source preview material, it stays private. No generated preview or public artifact is expected.

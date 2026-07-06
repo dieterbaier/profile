@@ -11,11 +11,20 @@ summary: "Generated indexes list every metadata-backed article and project."
 tags:
 - quality
 - scenario
-relations: []
+relations:
+- type: refines
+  target: QG-004-correctness
+  status: proposed
+  rationale: "The scenario makes the correctness quality goal measurable for generated public artifacts."
+  reviewed: false
 metadata_version: '1.0'
 ---
 [[qs-003-public-artifact-consistency]]
 == QS-003: Public Artifact Consistency
+
+=== Quality Goal
+
+xref:qg-004-correctness[QG-004: Correctness]
 
 === Scenario
 

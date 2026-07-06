@@ -1,0 +1,51 @@
+---
+id: QS-005-publication-visibility-boundary
+type: QualityScenario
+title: "Publication Visibility Boundary"
+status: proposed
+owner: "Dieter Baier"
+created: '2026-07-06'
+reviewed: false
+generated: false
+summary: "Publication targets contain only the article statuses intended for that target."
+tags:
+- quality
+- scenario
+- publishing
+- security
+relations:
+- type: refines
+  target: QG-004-correctness
+  status: proposed
+  rationale: "The scenario makes the correctness quality goal measurable for publication targets."
+  reviewed: false
+- type: refines
+  target: DOC-01000-introduction-and-goals
+  status: proposed
+  rationale: "The scenario concretizes correctness and source-of-truth goals for publication targets."
+  reviewed: false
+metadata_version: '1.0'
+---
+[[qs-005-publication-visibility-boundary]]
+== QS-005: Publication Visibility Boundary
+
+=== Quality Goal
+
+xref:qg-004-correctness[QG-004: Correctness]
+
+=== Scenario
+
+[cols="1,3", options="header"]
+|===
+| Element | Description
+| Source | Site owner
+| Stimulus | changes an article status or promotes an article between repositories
+| Artifact | generated public, preview, and private site targets
+| Environment | during local build or CI build before deployment
+| Response | each publication target contains only the statuses allowed for that target; preview and private targets emit `noindex` metadata and omit canonical links
+| Response Measure | `build/site` contains no article whose metadata status is not `published`; `build/site-preview` and `build/site-private` contain no canonical links and contain a `noindex` robots directive on generated HTML pages.
+|===
+
+=== Assumptions
+
+The exact verification mechanism is still proposed. It may be implemented as a Gradle verification task that inspects generated HTML and the metadata-derived source set.

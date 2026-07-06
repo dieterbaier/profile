@@ -1,0 +1,68 @@
+---
+id: COMP-006-article-summary-generator
+type: Component
+title: "Article Summary Generator"
+status: proposed
+owner: "Dieter Baier"
+created: '2026-07-07'
+reviewed: false
+generated: false
+summary: "Generates reviewable LinkedIn and Substack summary HTML files from source articles without publishing them into site outputs."
+tags:
+- component
+- generator
+- articles
+relations:
+- type: refines
+  target: DOC-05000-building-block-view
+  status: proposed
+  rationale: "The component details one Level 3 generator from the building block view."
+  reviewed: false
+- type: depends_on
+  target: ADR-007-build-generated-article-summaries
+  status: proposed
+  rationale: "The generator implements the article summary generation decision."
+  reviewed: false
+metadata_version: '1.0'
+---
+[[comp-006-article-summary-generator]]
+== COMP-006: Article Summary Generator
+
+=== Responsibility
+
+The Article Summary Generator creates paste-ready publication summary packs from source articles.
+
+It owns:
+
+* reading article source and article metadata;
+* deriving summary content from the source article;
+* applying LinkedIn and Substack HTML templates;
+* writing generated summary files to `build/summaries/`;
+* keeping summary outputs out of public website and article export targets.
+
+It does not own:
+
+* publishing summaries to external platforms;
+* inventing publication URLs;
+* changing article metadata or article status.
+
+=== Inputs And Outputs
+
+[cols="1,3", options="header"]
+|===
+| Kind | Description
+| Input | article AsciiDoc files under `src-content/profile/site/articles`
+| Input | article `*.profile.yaml` sidecar metadata
+| Input | HTML templates under `templates/article-summary-pack`
+| Output | LinkedIn and Substack HTML files under `build/summaries/`
+|===
+
+=== Implementation
+
+[cols="1,3", options="header"]
+|===
+| Field | Value
+| Script | `scripts/generate-article-summaries.rb`
+| Gradle task | `generateArticleSummaries`
+| Guard | `verifyNoArticleSummariesInGeneratedOutputs`
+|===

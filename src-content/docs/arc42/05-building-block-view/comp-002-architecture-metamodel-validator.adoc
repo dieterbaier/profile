@@ -1,0 +1,65 @@
+---
+id: COMP-002-architecture-metamodel-validator
+type: Component
+title: "Architecture Metamodel Validator"
+status: proposed
+owner: "Dieter Baier"
+created: '2026-07-07'
+reviewed: false
+generated: false
+summary: "Validates architecture artifact metadata, IDs, relations, and structural conventions."
+tags:
+- component
+- validator
+- architecture
+relations:
+- type: refines
+  target: DOC-05000-building-block-view
+  status: proposed
+  rationale: "The component details one Level 3 validator from the building block view."
+  reviewed: false
+metadata_version: '1.0'
+---
+[[comp-002-architecture-metamodel-validator]]
+== COMP-002: Architecture Metamodel Validator
+
+=== Responsibility
+
+The Architecture Metamodel Validator checks architecture source artifacts before generated architecture fragments or rendered architecture pages are produced.
+
+It owns:
+
+* required architecture metadata fields;
+* unique artifact IDs;
+* filename and ID consistency warnings;
+* relation key, relation type, relation status, and target validation;
+* detection of unusual bidirectional relations;
+* validation reports for architecture documentation changes.
+
+It does not own:
+
+* rendered HTML output;
+* profile artifact metadata;
+* human acceptance of proposed architecture decisions.
+
+=== Inputs And Outputs
+
+[cols="1,3", options="header"]
+|===
+| Kind | Description
+| Input | architecture AsciiDoc files with YAML front matter
+| Input | `metamodel/artifact.schema.yaml`
+| Input | `metamodel/relations.schema.yaml`
+| Output | validation report with errors and warnings
+| Output | failed Gradle task when architecture metadata is invalid
+|===
+
+=== Implementation
+
+[cols="1,3", options="header"]
+|===
+| Field | Value
+| Script | `scripts/validate-metamodel.rb`
+| Gradle task | `validateArchitectureMetamodel`
+| Primary scope | `src-content/docs/arc42`, roadmap, vision/mission, and canvas docs
+|===

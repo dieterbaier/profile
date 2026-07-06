@@ -18,6 +18,16 @@ relations:
   status: proposed
   rationale: "This detail page expands the introduction and goals chapter."
   reviewed: false
+- type: documents
+  target: ADR-008-private-to-public-article-lifecycle
+  status: proposed
+  rationale: "The product goals summarize the backlog epic that is refined by the publication lifecycle decision."
+  reviewed: false
+- type: documents
+  target: ADR-009-private-repository-integration
+  status: proposed
+  rationale: "The product goals summarize the backlog epic that is constrained by the private repository integration decision."
+  reviewed: false
 metadata_version: '1.0'
 ---
 [[profile-product-goals]]
@@ -36,3 +46,12 @@ The profile content follows the same discipline as architecture documentation:
 * source artifacts as the authority;
 * generated indexes and matrices as derived output;
 * AI-assisted work governed by contracts and skills.
+
+== Private-To-Public Article Lifecycle
+
+The profile product has a private-to-public article lifecycle. New articles and private notes should start in a private source boundary, become reviewable through a preview status, and appear on `dieterbaier.eu` only after an explicit publication decision.
+
+The implementation is tracked as https://github.com/dieterbaier/profile/issues/26[GitHub issue #26]. The epic links backlog work to the architecture roadmap and must not be implemented before the related ADRs are reviewed:
+
+* xref:adr-008-private-to-public-article-lifecycle[ADR-008: Private To Public Article Lifecycle]
+* xref:adr-009-private-repository-integration[ADR-009: Private Repository Integration]

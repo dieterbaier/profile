@@ -1,0 +1,34 @@
+---
+id: QG-002-maintainability
+type: QualityGoal
+title: "Maintainability"
+status: proposed
+owner: "Dieter Baier"
+created: '2026-07-07'
+reviewed: false
+generated: false
+priority: 2
+summary: "Content, presentation, metadata, and build logic have explicit responsibilities."
+tags:
+- quality
+- goal
+relations:
+- type: refines
+  target: DOC-10000-quality-requirements
+  status: proposed
+  rationale: "The quality goal refines the quality requirements chapter."
+  reviewed: false
+metadata_version: '1.0'
+---
+[[qg-002-maintainability]]
+== QG-002: Maintainability
+
+=== Meaning
+
+Content, presentation, metadata, and build logic have explicit responsibilities.
+
+=== Priority
+
+2
+
+include::generated/qg-002-maintainability-quality-scenarios.adoc[]

@@ -21,6 +21,7 @@ metadata_version: '1.0'
 |===
 | Horizon | Outcome | Status
 | Now | Bootstrap architecture and profile metamodel validation. | draft
+| Next | Implement the private-to-public article lifecycle for draft, preview, and public publication targets; backlog epic: https://github.com/dieterbaier/profile/issues/26[#26]. | proposed
 | Next | Expand profile generators for additional public indexes and summaries. | proposed
 | Later | Add richer traceability between articles, skills, projects, and public channels. | proposed
 |===

@@ -1,0 +1,64 @@
+---
+id: COMP-005-profile-artifact-generator
+type: Component
+title: "Profile Artifact Generator"
+status: proposed
+owner: "Dieter Baier"
+created: '2026-07-07'
+reviewed: false
+generated: false
+summary: "Generates the profile artifact index from validated profile metadata."
+tags:
+- component
+- generator
+- profile
+relations:
+- type: refines
+  target: DOC-05000-building-block-view
+  status: proposed
+  rationale: "The component details one Level 3 generator from the building block view."
+  reviewed: false
+- type: addresses
+  target: QS-003-public-artifact-consistency
+  status: proposed
+  rationale: "The generated index helps keep public artifacts aligned with metadata-backed source content."
+  reviewed: false
+metadata_version: '1.0'
+---
+[[comp-005-profile-artifact-generator]]
+== COMP-005: Profile Artifact Generator
+
+=== Responsibility
+
+The Profile Artifact Generator derives a profile artifact index from validated profile metadata.
+
+It owns:
+
+* collecting metadata-backed profile artifacts;
+* rendering a generated artifact index;
+* keeping generated profile documentation aligned with source metadata.
+
+It does not own:
+
+* article matrix generation;
+* article lifecycle promotion;
+* architecture traceability generation.
+
+=== Inputs And Outputs
+
+[cols="1,3", options="header"]
+|===
+| Kind | Description
+| Input | validated profile artifacts under `src-content/profile`
+| Output | generated profile artifact index
+|===
+
+=== Implementation
+
+[cols="1,3", options="header"]
+|===
+| Field | Value
+| Script | `scripts/validate-profile-metamodel.rb --generate`
+| Gradle task | `generateProfileArtifacts`
+| Generated file | `src-content/profile/generated/profile-artifact-index.adoc`
+|===

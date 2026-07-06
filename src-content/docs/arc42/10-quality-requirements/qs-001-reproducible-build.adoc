@@ -11,11 +11,20 @@ summary: "The same task succeeds twice without source changes."
 tags:
 - quality
 - scenario
-relations: []
+relations:
+- type: refines
+  target: QG-001-reproducibility
+  status: proposed
+  rationale: "The scenario makes the reproducibility quality goal measurable."
+  reviewed: false
 metadata_version: '1.0'
 ---
 [[qs-001-reproducible-build]]
 == QS-001: Reproducible Build
+
+=== Quality Goal
+
+xref:qg-001-reproducibility[QG-001: Reproducibility]
 
 === Scenario
 

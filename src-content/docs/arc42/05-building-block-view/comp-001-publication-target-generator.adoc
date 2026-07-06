@@ -1,0 +1,90 @@
+---
+id: COMP-001-publication-target-generator
+type: Component
+title: "Publication Target Generator"
+status: proposed
+owner: "Dieter Baier"
+created: '2026-07-06'
+reviewed: false
+generated: false
+summary: "Generates target-specific article source sets, navigation, and metadata controls from article metadata."
+tags:
+- component
+- publishing
+- generator
+relations:
+- type: refines
+  target: DOC-05000-building-block-view
+  status: proposed
+  rationale: "The component extends the build-time generation building blocks with publication target preparation."
+  reviewed: false
+- type: addresses
+  target: QS-005-publication-visibility-boundary
+  status: proposed
+  rationale: "The generator is responsible for selecting articles per publication target."
+  reviewed: false
+metadata_version: '1.0'
+---
+[[comp-001-publication-target-generator]]
+== COMP-001: Publication Target Generator
+
+=== Responsibility
+
+The Publication Target Generator is a build-time component that reads article sidecar metadata and creates target-specific AsciiDoc inputs for public, preview, and private site builds.
+
+It owns:
+
+* status-based article selection;
+* generated article matrix/navigation fragments;
+* publication-target source lists for Gradle/Asciidoctor;
+* target-specific HTML metadata decisions such as canonical URL eligibility and `noindex` mode.
+* verification inputs that prove `build/site` does not contain preview or private articles.
+
+It does not own:
+
+* article prose;
+* reviewer authentication;
+* private repository access control;
+* deployment credentials.
+
+=== Inputs And Outputs
+
+[cols="1,3", options="header"]
+|===
+| Kind | Description
+| Input | `*.profile.yaml` article metadata and corresponding `*.adoc` source files
+| Input | publication target, for example `public`, `preview`, or `private`
+| Output | metadata-derived article matrix for the target
+| Output | source include/build list for the target
+| Output | target attributes for canonical and robots metadata handling
+|===
+
+=== Target Rules
+
+[cols="1,3,2", options="header"]
+|===
+| Target | Article eligibility | HTML metadata
+| Public | `status: published` and `channels` includes `website` | canonical links allowed, search indexing allowed
+| Preview | `status: preview` plus public context | no canonical links, `noindex`
+| Private | private repository content plus preview and published context | no canonical links, `noindex`
+|===
+
+=== Implementation Guard
+
+This component must not be implemented before xref:adr-008-private-to-public-article-lifecycle[ADR-008] and xref:adr-009-private-repository-integration[ADR-009] are reviewed. The current component description defines the target shape, not an accepted implementation contract.
+
+=== Integration Sketch
+
+[plantuml]
+----
+@startuml
+[Article Metadata] --> [Publication Target Generator]
+[Article Sources] --> [Publication Target Generator]
+[Publication Target Generator] --> [Generated Article Matrix]
+[Publication Target Generator] --> [Target Source List]
+[Publication Target Generator] --> [Gradle Site Tasks]
+[Gradle Site Tasks] --> [build/site]
+[Gradle Site Tasks] --> [build/site-preview]
+[Gradle Site Tasks] --> [build/site-private]
+@enduml
+----

@@ -11,11 +11,20 @@ summary: "No backend call is required for core content display."
 tags:
 - quality
 - scenario
-relations: []
+relations:
+- type: refines
+  target: QG-005-sustainability
+  status: proposed
+  rationale: "The scenario makes the sustainability quality goal measurable for public pages."
+  reviewed: false
 metadata_version: '1.0'
 ---
 [[qs-004-minimal-static-site]]
 == QS-004: Minimal Static Site
+
+=== Quality Goal
+
+xref:qg-005-sustainability[QG-005: Sustainability]
 
 === Scenario
 

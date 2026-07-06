@@ -1,0 +1,231 @@
+---
+id: ADR-008-private-to-public-article-lifecycle
+type: ADR
+title: "Private To Public Article Lifecycle"
+status: proposed
+owner: "Dieter Baier"
+created: '2026-07-06'
+reviewed: false
+generated: false
+summary: "Use repository boundaries and metadata-driven publication targets for article drafting, preview, and public release."
+tags:
+- adr
+- decision
+- publishing
+- article-lifecycle
+relations:
+- type: depends_on
+  target: ADR-009-private-repository-integration
+  status: proposed
+  rationale: "The article lifecycle depends on a reviewed decision for how the private repository participates in the application."
+  reviewed: false
+- type: addresses
+  target: QS-005-publication-visibility-boundary
+  status: proposed
+  rationale: "Metadata-driven target generation supports the required publication visibility boundary."
+  reviewed: false
+- type: documents
+  target: COMP-001-publication-target-generator
+  status: proposed
+  rationale: "The ADR introduces the publication target generator as a building block."
+  reviewed: false
+- type: mitigates
+  target: RISK-004-source-boundary-leakage
+  status: proposed
+  rationale: "Private drafts stay in a private source repository until explicit promotion."
+  reviewed: false
+- type: mitigates
+  target: RISK-005-preview-mispublication
+  status: proposed
+  rationale: "Only metadata-selected published content is eligible for the public website target."
+  reviewed: false
+metadata_version: '1.0'
+---
+[[adr-008-private-to-public-article-lifecycle]]
+== ADR-008: Private To Public Article Lifecycle
+
+=== Status
+
+Proposed.
+
+=== Decision
+
+We propose to separate article privacy from article publication quality by combining repository boundaries with metadata-driven build targets.
+
+Private drafts, notes, and protocols start in a private repository. Reviewable but not official article content is promoted to the public profile repository with `status: preview`. Public deployment to `dieterbaier.eu` uses only metadata-selected `status: published` article content. Preview and private deployments render their own target-specific sites without canonical links and with `noindex` metadata.
+
+=== Context
+
+The profile repository is public. Deployment protection such as `.htaccess` can protect generated HTML on a webspace, but it cannot protect source files that are already public in Git. Therefore, the privacy boundary must exist at source level before generated deployment targets are considered.
+
+At the same time, not every unfinished article is confidential. After an article is cleaned enough for feedback, public source visibility is acceptable, while public website visibility and search indexing are still not desired.
+
+This decision supports the lifecycle tracked as https://github.com/dieterbaier/profile/issues/26[GitHub issue #26].
+
+=== Decision Basis Diagrams
+
+The following diagrams document the decision basis for the lifecycle. While this ADR is proposed, they remain close to the options and consequences. Official architecture views include these diagrams by tag so that the accepted decision can be reused without duplicating the model.
+
+==== Draft Private Article Runtime
+
+// tag::runtime-private-draft[]
+[plantuml]
+----
+@startuml
+actor "Dieter Baier" as Author
+participant "profile-dieterbaier-private" as PrivateRepo
+participant "Private Build" as Build
+participant "private.dieterbaier.eu" as PrivateSite
+
+Author -> PrivateRepo : create or update article source
+Author -> PrivateRepo : set status draft/proposed/private
+Author -> Build : run private site build
+Build -> PrivateRepo : read private article metadata and source
+Build -> Build : validate metadata
+Build -> PrivateSite : deploy protected private site
+Author -> PrivateSite : read rendered private article
+@enduml
+----
+// end::runtime-private-draft[]
+
+==== Promote Article To Preview Runtime
+
+// tag::runtime-promote-preview[]
+[plantuml]
+----
+@startuml
+actor "Dieter Baier" as Author
+participant "profile-dieterbaier-private" as PrivateRepo
+participant "Promotion Script" as Promote
+participant "profile-dieterbaier" as PublicRepo
+participant "preview.dieterbaier.eu" as PreviewSite
+
+Author -> Promote : select article for preview
+Promote -> PrivateRepo : read article source and metadata
+Promote -> Promote : remove private-only material and set status preview
+Promote -> PublicRepo : copy source and sidecar metadata
+Author -> PublicRepo : review diff before push
+PublicRepo -> PreviewSite : build and deploy noindex preview
+Author -> PreviewSite : share rendered preview for feedback
+@enduml
+----
+// end::runtime-promote-preview[]
+
+==== Publish Reviewed Article Runtime
+
+// tag::runtime-publish-reviewed[]
+[plantuml]
+----
+@startuml
+actor "Dieter Baier" as Author
+participant "profile-dieterbaier" as PublicRepo
+participant "Publication Target Generator" as TargetGenerator
+participant "Public Site Build" as Build
+participant "dieterbaier.eu" as PublicSite
+
+Author -> PublicRepo : change article status from preview to published
+PublicRepo -> TargetGenerator : derive public article source set
+TargetGenerator -> TargetGenerator : include only published website articles
+TargetGenerator -> Build : provide public matrix and source list
+Build -> PublicSite : deploy public site with canonical links
+@enduml
+----
+// end::runtime-publish-reviewed[]
+
+==== Reject Or Continue Private Draft Runtime
+
+// tag::runtime-continue-private[]
+[plantuml]
+----
+@startuml
+actor "Dieter Baier" as Author
+participant "profile-dieterbaier-private" as PrivateRepo
+participant "profile-dieterbaier" as PublicRepo
+
+Author -> PrivateRepo : continue editing private article
+Author -> PrivateRepo : keep status draft/proposed/private
+PrivateRepo -[#gray,dashed]> PublicRepo : no promotion
+@enduml
+----
+// end::runtime-continue-private[]
+
+==== Publication Target Deployment
+
+// tag::publication-target-deployment[]
+[plantuml]
+----
+@startuml
+skinparam componentStyle rectangle
+
+node "Build Execution" as BuildExecution {
+  component "Public Repository Workflow" as PublicWorkflow
+  component "Private Repository Workflow" as PrivateWorkflow
+  component "Local Promotion Script" as PromotionScript
+}
+
+artifact "build/site" as PublicArtifact
+artifact "build/site-preview" as PreviewArtifact
+artifact "build/site-private" as PrivateArtifact
+
+node "Strato Webspace" as Strato {
+  node "dieterbaier.eu" as PublicSite
+  node "preview.dieterbaier.eu" as PreviewSite
+  node "private.dieterbaier.eu" as PrivateSite
+}
+
+PublicWorkflow --> PublicArtifact : published articles only
+PublicWorkflow --> PreviewArtifact : preview and published articles
+PrivateWorkflow --> PrivateArtifact : private, preview, and published articles
+PromotionScript --> PublicWorkflow : promotes cleaned source as preview
+
+PublicArtifact --> PublicSite : SFTP deploy\ncanonical links
+PreviewArtifact --> PreviewSite : SFTP deploy\nnoindex, no canonical
+PrivateArtifact --> PrivateSite : SFTP deploy\nBasic Auth, noindex, no canonical
+@enduml
+----
+// end::publication-target-deployment[]
+
+=== Options
+
+[.pugh-matrix]
+[cols="3,1,1,1", options="header"]
+|===
+| Criterion | Repository boundary plus metadata targets | Only `.htaccess` protected preview/private targets | Branch-only review in public repository
+| Protects truly private source content | +1 | -1 | -1
+| Keeps public website deterministic | +1 | 0 | 0
+| Supports rendered review before publication | +1 | +1 | 0
+| Operational simplicity | 0 | +1 | +1
+| Fits static hosting and Gradle pipeline | +1 | +1 | 0
+s| Sum s| +4 s| +2 s| 0
+|===
+
+=== Consequences
+
+Positive:
+
+* Private material is protected before it becomes source in a public repository.
+* Preview becomes a quality state, not a secrecy state.
+* Public website generation can be validated by metadata rules instead of source tree location alone.
+* `preview.dieterbaier.eu` and `private.dieterbaier.eu` can share the static-site toolchain while enforcing different content sets.
+
+Negative:
+
+* A private repository and promotion workflow add operational overhead.
+* Cross-repository promotion can leak content if checks are weak; this is tracked by xref:risk-004-source-boundary-leakage[RISK-004].
+* Incorrect status handling can publish preview content unintentionally; this is tracked by xref:risk-005-preview-mispublication[RISK-005].
+
+Neutral or follow-up:
+
+* Basic Auth remains sufficient for the generated private deployment, but it is not the source confidentiality mechanism.
+* A local promotion script should be preferred initially. A GitHub Action can be introduced once promotion checks are reviewed.
+* The final public status vocabulary must be reviewed: keep `published`, introduce `public`, or support both with one canonical value.
+
+=== Review Notes
+
+Before acceptance, confirm:
+
+* the private repository name and deployment target;
+* xref:adr-009-private-repository-integration[ADR-009] is reviewed and no longer blocks implementation;
+* whether preview requires Basic Auth;
+* the canonical lifecycle vocabulary for article metadata;
+* the first promotion checks that prevent private-only content from entering the public repository.
