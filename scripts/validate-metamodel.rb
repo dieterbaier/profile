@@ -453,6 +453,9 @@ class TraceabilityMatrixGenerator
     included
   end
 
+  # Include discovery is conservative: it does not evaluate ifdef/ifndef/ifeval
+  # directives and treats every visible include:: statement as potentially part
+  # of the aggregate document.
   def visit_includes(path, included, visited)
     expanded = Pathname.new(path).expand_path
     return if visited.include?(expanded) || !expanded.file?
@@ -473,7 +476,16 @@ class TraceabilityMatrixGenerator
 
     candidate = Pathname.new(expanded_target)
     candidate = base_dir.join(candidate) unless candidate.absolute?
-    candidate.expand_path
+    expanded = candidate.expand_path
+    return nil unless inside_root?(expanded)
+
+    expanded
+  end
+
+  def inside_root?(path)
+    path_string = path.to_s
+    root_string = @root.to_s
+    path_string == root_string || path_string.start_with?("#{root_string}/")
   end
 
   def cell(value)
