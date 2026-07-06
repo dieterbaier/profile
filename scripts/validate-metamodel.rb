@@ -334,6 +334,7 @@ class TraceabilityMatrixGenerator
     @docs_dir = Array(docs_dir).first
     @docs_dir = Pathname.new(@docs_dir).expand_path
     @output_path = Pathname.new(output_path || @docs_dir.join(DEFAULT_OUTPUT)).expand_path
+    @aggregate_entry = aggregate_entry
   end
 
   def write(artifacts)
@@ -347,6 +348,7 @@ class TraceabilityMatrixGenerator
     artifacts_by_id = artifacts.each_with_object({}) do |artifact, index|
       index[artifact.metadata['id']] = artifact if artifact.metadata
     end
+    included_paths = included_artifact_paths
     incoming = incoming_relations(artifacts)
     sorted = artifacts.sort_by { |artifact| [artifact.metadata['type'].to_s, artifact.metadata['id'].to_s] }
 
@@ -366,12 +368,12 @@ class TraceabilityMatrixGenerator
     sorted.each do |artifact|
       metadata = artifact.metadata
       id = metadata['id']
-      lines << "| #{artifact_link(artifact)}"
+      lines << "| #{artifact_link(artifact, included_paths)}"
       lines << "| #{cell(metadata['type'])}"
       lines << "| #{cell(metadata['title'])}"
       lines << "| #{cell(metadata['status'])}"
-      lines << "| #{relations_cell(metadata['relations'] || [], artifacts_by_id, :outgoing)}"
-      lines << "| #{relations_cell(incoming.fetch(id, []), artifacts_by_id, :incoming)}"
+      lines << "| #{relations_cell(metadata['relations'] || [], artifacts_by_id, :outgoing, included_paths)}"
+      lines << "| #{relations_cell(incoming.fetch(id, []), artifacts_by_id, :incoming, included_paths)}"
       lines << ''
     end
 
@@ -391,7 +393,7 @@ class TraceabilityMatrixGenerator
     end
   end
 
-  def relations_cell(relations, artifacts_by_id, direction)
+  def relations_cell(relations, artifacts_by_id, direction, included_paths)
     return '-' if relations.empty?
 
     sorted = relations.sort_by do |relation|
@@ -401,16 +403,24 @@ class TraceabilityMatrixGenerator
 
     sorted.map do |relation|
       if direction == :outgoing
-        "#{cell(relation['type'])} -> #{artifact_ref(relation['target'], artifacts_by_id)}"
+        "#{cell(relation['type'])} -> #{artifact_ref(relation['target'], artifacts_by_id, included_paths)}"
       else
-        "#{artifact_ref(relation['source'], artifacts_by_id)} -> #{cell(relation['type'])}"
+        "#{artifact_ref(relation['source'], artifacts_by_id, included_paths)} -> #{cell(relation['type'])}"
       end
     end.join(" +\n")
   end
 
-  def artifact_link(artifact)
+  def artifact_link(artifact, included_paths)
+    label = cell(artifact.metadata['id'])
+    return source_artifact_link(artifact, label) unless @aggregate_entry
+    return label unless included_paths.include?(artifact.path.expand_path)
+
+    "xref:#{artifact_anchor(artifact.path)}[#{label}]"
+  end
+
+  def source_artifact_link(artifact, label)
     target = artifact.path.expand_path.relative_path_from(@output_path.dirname).to_s
-    "xref:#{target}##{artifact_anchor(artifact.path)}[#{cell(artifact.metadata['id'])}]"
+    "xref:#{target}##{artifact_anchor(artifact.path)}[#{label}]"
   end
 
   def anchor_for(path)
@@ -421,11 +431,49 @@ class TraceabilityMatrixGenerator
     explicit_anchor(path) || anchor_for(path)
   end
 
-  def artifact_ref(id, artifacts_by_id)
+  def artifact_ref(id, artifacts_by_id, included_paths)
     artifact = artifacts_by_id[id]
     return cell(id) unless artifact
 
-    artifact_link(artifact)
+    artifact_link(artifact, included_paths)
+  end
+
+  def aggregate_entry
+    return nil unless @docs_dir.directory?
+
+    candidate = @docs_dir.join('index.adoc')
+    candidate.file? ? candidate : nil
+  end
+
+  def included_artifact_paths
+    return Set.new unless @aggregate_entry
+
+    included = Set.new
+    visit_includes(@aggregate_entry, included, Set.new)
+    included
+  end
+
+  def visit_includes(path, included, visited)
+    expanded = Pathname.new(path).expand_path
+    return if visited.include?(expanded) || !expanded.file?
+
+    visited << expanded
+    included << expanded
+    expanded.each_line do |line|
+      next unless line =~ /^\s*include::([^\[]+)\[/
+
+      target = resolve_include_target(Regexp.last_match(1).strip, expanded.dirname)
+      visit_includes(target, included, visited) if target
+    end
+  end
+
+  def resolve_include_target(target, base_dir)
+    expanded_target = target.gsub('{includesdir}', @docs_dir.to_s)
+    return nil if expanded_target.match?(/\{[^}]+\}/)
+
+    candidate = Pathname.new(expanded_target)
+    candidate = base_dir.join(candidate) unless candidate.absolute?
+    candidate.expand_path
   end
 
   def cell(value)
@@ -954,6 +1002,10 @@ class DocumentationGenerator
   def write(artifacts)
     written = []
     metadata_artifacts = artifacts.select(&:metadata)
+
+    chapter_includes = ChapterIncludeFragmentGenerator.new(root: @root, docs_dir: @docs_dir)
+    written.concat(chapter_includes.write(metadata_artifacts))
+
     matrix = TraceabilityMatrixGenerator.new(
       root: @root,
       docs_dir: @docs_dir,
@@ -966,9 +1018,6 @@ class DocumentationGenerator
 
     open_questions = OpenQuestionsIndexGenerator.new(root: @root, docs_dir: @docs_dir)
     written.concat(open_questions.write)
-
-    chapter_includes = ChapterIncludeFragmentGenerator.new(root: @root, docs_dir: @docs_dir)
-    written.concat(chapter_includes.write(metadata_artifacts))
 
     traceability = TraceabilityFragmentGenerator.new(root: @root, docs_dir: @docs_dir)
     written.concat(traceability.write(metadata_artifacts))
