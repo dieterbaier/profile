@@ -29,6 +29,16 @@ skills/<skill-name>/SKILL.md
 
 ## Current Skills
 
+Project-local skills:
+
 - `skills/article-summary-pack/SKILL.md`
 - `skills/write-article/SKILL.md`
 - `skills/profile-artifact-maintenance/SKILL.md`
+
+Toolkit-provided skills are not copied into this project. For architecture and
+SDLC work covered by `architecture-knowledge-toolkit`, inspect the matching
+toolkit `skills/**/SKILL.md`, including issue slicing
+(`skills/slice-issues/SKILL.md`), issue implementation
+(`skills/implement-issue-workflow/SKILL.md`), architecture impact analysis,
+commit messages, pull request review, post-merge synchronization, ADRs, quality
+scenarios, risks, traceability review, and domain modeling.
