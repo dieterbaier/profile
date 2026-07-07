@@ -7,7 +7,7 @@
 - Preserve user changes. Do not revert unrelated work.
 - Prefer existing project patterns in Gradle, AsciiDoc, architecture documentation, generic skill layout, and adapter layout.
 - When changing build behavior, run the narrowest relevant Gradle task and report any warnings that remain.
-- When working from a GitHub issue, use the `architecture-knowledge-toolkit` issue workflow and commit message skills where applicable. In particular, format issue commit messages according to `skills/commit-message/SKILL.md` from the toolkit, for example `issue_23: Split deploy workflow by target`.
+- When working from a GitHub issue, use the `architecture-knowledge-toolkit` SDLC skills where applicable, including issue slicing, issue implementation, architecture impact analysis, commit messages, pull request reviews, and post-merge synchronization. In particular, format issue commit messages according to `skills/commit-message/SKILL.md` from the toolkit, for example `issue_23: Split deploy workflow by target`.
 
 ## Contract And Adapter Discovery
 
@@ -20,6 +20,7 @@
 
 - This repository belongs to the docs-as-code-toolkit context.
 - If architecture documentation, ADRs, quality scenarios, risks, traceability, metadata, templates, validators, or generators are requested, use the architecture-knowledge-toolkit where applicable.
+- For toolkit-backed architecture work, use the matching toolkit skills where applicable, including `adr`, `quality-scenario`, `risk`, `traceability-review`, `architecture-impact`, and `domain-modeling`.
 - Project-local instructions and contracts win over generic toolkit conventions.
 - Architecture source follows the architecture-knowledge-toolkit structure under `src-content/docs`.
 - Run `./gradlew validateArchitectureMetamodel` or `./gradlew generateArchitectureArtifacts` after changing architecture metadata or traceability.
