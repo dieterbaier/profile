@@ -37,8 +37,15 @@ Project-local skills:
 
 Toolkit-provided skills are not copied into this project. For architecture and
 SDLC work covered by `architecture-knowledge-toolkit`, inspect the matching
-toolkit `skills/**/SKILL.md`, including issue slicing
-(`skills/slice-issues/SKILL.md`), issue implementation
-(`skills/implement-issue-workflow/SKILL.md`), architecture impact analysis,
-commit messages, pull request review, post-merge synchronization, ADRs, quality
-scenarios, risks, traceability review, and domain modeling.
+toolkit `skills/**/SKILL.md`, including:
+
+- `skills/slice-issues/SKILL.md` for issue slicing.
+- `skills/implement-issue-workflow/SKILL.md` for issue implementation.
+- `skills/architecture-impact/SKILL.md` for feature, refactoring, issue, PR,
+  and architecture impact alignment.
+- `skills/commit-message/SKILL.md` for commit messages.
+- `skills/pr-review/SKILL.md` for pull request reviews.
+- `skills/post-merge-sync/SKILL.md` for cleanup after merged pull requests.
+- `skills/adr/SKILL.md`, `skills/quality-scenario/SKILL.md`,
+  `skills/risk/SKILL.md`, `skills/traceability-review/SKILL.md`, and
+  `skills/domain-modeling/SKILL.md` for architecture maintenance.

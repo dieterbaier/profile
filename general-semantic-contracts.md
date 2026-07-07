@@ -47,14 +47,14 @@ Use:
 
 When this repository references `architecture-knowledge-toolkit`, treat that
 toolkit as the canonical source for architecture contracts, task skills,
-templates, metamodel schemas, validators, generators, and SDLC workflows.
-Project-local instructions and contracts still win when they deliberately
-narrow or override the toolkit. For issue slicing, issue implementation,
-architecture impact analysis, commit messages, pull request review, post-merge
-synchronization, ADRs, quality scenarios, risks, traceability, domain modeling,
-and related architecture maintenance, use the corresponding toolkit
-`skills/**/SKILL.md` and contract guidance where applicable instead of
-recreating those rules locally.
+templates, metamodel schemas, validators, generators, and
+software-development-lifecycle workflows. Project-local instructions and
+contracts still win when they deliberately narrow or override the toolkit. For
+issue slicing, issue implementation, architecture impact analysis, commit
+messages, pull request reviews, post-merge synchronization, ADRs, quality
+scenarios, risks, traceability, domain modeling, and related architecture
+maintenance, use the corresponding toolkit `skills/**/SKILL.md` and contract
+guidance where applicable instead of recreating those rules locally.
 
 ## Profile Knowledge
 

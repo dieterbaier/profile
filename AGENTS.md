@@ -7,7 +7,7 @@
 - Preserve user changes. Do not revert unrelated work.
 - Prefer existing project patterns in Gradle, AsciiDoc, architecture documentation, generic skill layout, and adapter layout.
 - When changing build behavior, run the narrowest relevant Gradle task and report any warnings that remain.
-- When working from a GitHub issue, use the `architecture-knowledge-toolkit` SDLC skills where applicable, including issue slicing, issue implementation, architecture impact analysis, commit messages, pull request reviews, and post-merge synchronization. In particular, format issue commit messages according to `skills/commit-message/SKILL.md` from the toolkit, for example `issue_23: Split deploy workflow by target`.
+- When working from a GitHub issue or pull request, use the `architecture-knowledge-toolkit` SDLC skills where applicable, including `skills/slice-issues/SKILL.md`, `skills/implement-issue-workflow/SKILL.md`, `skills/architecture-impact/SKILL.md`, `skills/commit-message/SKILL.md`, `skills/pr-review/SKILL.md`, and `skills/post-merge-sync/SKILL.md`. In particular, format issue commit messages according to `skills/commit-message/SKILL.md` from the toolkit, for example `issue_23: Split deploy workflow by target`.
 
 ## Contract And Adapter Discovery
 
