@@ -14,3 +14,16 @@ The bootstrap derives a profile metamodel from the existing content and the arch
 Status: open.
 
 AI-generated article publication packs must not invent URLs. Missing canonical URLs remain placeholders until supplied.
+
+[[qa-toolkit-layering-example]]
+== Q-003 How should this project demonstrate the Docs-as-Code Toolkit layers?
+
+Status: open.
+
+Current assumption: The profile project should remain a concrete running
+example, not a second copy of the organization positioning. It should show that
+profile content and architecture metadata are authoritative source knowledge,
+while generated website, README, CV, article, and architecture outputs are
+derived publication artifacts. `docs-toolbox` is the reproducible rendering
+runtime; docToolchain or similar tools could be combined with the same source
+model in other projects.

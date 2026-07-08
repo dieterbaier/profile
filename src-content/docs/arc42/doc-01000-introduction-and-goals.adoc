@@ -23,6 +23,11 @@ metadata_version: '1.0'
 
 Maintaining the same professional profile across several platforms creates duplication, inconsistency, and avoidable manual work. The project applies Docs-as-Code to personal professional content: source text is versioned, reviewed, validated, generated, and deployed like software.
 
+As a running example of the Docs-as-Code Toolkit, the project keeps structured
+source content, metadata, and relations above the publishing layer. Generated
+website, README, CV, article, and architecture outputs are derived artifacts
+rendered by the build pipeline.
+
 == Business Goals
 
 [cols="1,3,2", options="header"]

@@ -18,12 +18,21 @@ This project solves that by using a **single source of truth**...
 It now treats both the architecture documentation and the profile content as
 validated Docs-as-Code knowledge artifacts.
 
+As a running example of the Docs-as-Code Toolkit, this project shows both
+layers in practice: structured source knowledge and metadata are maintained one
+layer above publishing, while `docs-toolbox` provides the reproducible runtime
+that renders the derived website, README, CV, article, and architecture
+outputs. Tools such as [docToolchain](https://github.com/docToolchain) could be
+combined with the same source approach when a project needs a different
+publishing workflow.
+
 ## 🧠 What this demonstrates
 
 - Documentation as Code in practice
 - Reproducible builds across environments
 - Separation of content and presentation
 - Automated personal branding pipeline
+- Architecture knowledge managed above the publishing layer
 
 ---
 

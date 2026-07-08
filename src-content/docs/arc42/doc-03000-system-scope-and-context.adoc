@@ -44,6 +44,7 @@ left to right direction
 [Architecture metadata] --> [Architecture validators and generators]
 [Gradle build] --> [Asciidoctor HTML/PDF]
 [Gradle build] --> [Pandoc Markdown]
+[docs-toolbox runtime] --> [Gradle build]
 [GitHub Actions] --> [SFTP webspace]
 [GitHub Actions] --> [GitHub profile README]
 [GitHub Actions] --> [GitLab profile README]
