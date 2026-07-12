@@ -11,14 +11,18 @@ When working in this repository, Codex should read files in this order:
 2. `general-semantic-contracts.md`
 3. Relevant `skills/**/SKILL.md`
 4. Relevant `ai-contracts/*.md`
-5. This adapter directory for Codex-specific metadata
+5. This adapter directory for Codex-specific routing
+
+The routing wrapper `adapters/codex/AGENTS.md` is generated from
+`skills/**/SKILL.md` by `scripts/build-agent-adapters.js`. Do not edit it by
+hand; change the canonical skills or the generator and regenerate.
 
 ## Skill Metadata
 
-Codex UI metadata for generic skills is stored under:
+OpenAI UI metadata for generic skills is stored under:
 
 ```text
-adapters/codex/skills/<skill-name>/agents/openai.yaml
+adapters/openai/<skill-name>/openai.yaml
 ```
 
 The executable workflow remains the generic skill at:

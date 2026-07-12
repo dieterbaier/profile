@@ -56,6 +56,23 @@ scenarios, risks, traceability, domain modeling, and related architecture
 maintenance, use the corresponding toolkit `skills/**/SKILL.md` and contract
 guidance where applicable instead of recreating those rules locally.
 
+### Reference, don't copy
+
+Treat the `architecture-knowledge-toolkit` as the single source of truth for
+architecture skills, contracts, and features. Do not copy toolkit
+`skills/**/SKILL.md`, `features/`, or contract text into this repository;
+resolve them from the toolkit through the lookup order in `AGENTS.md`. Only
+executable tooling that must run in this repository — metamodel schemas under
+`metamodel/`, templates under `templates/`, and validator/generator scripts
+under `scripts/` — is copied or vendored and kept in sync with the toolkit.
+
+The local skills under `skills/` and task contracts under `ai-contracts/` cover
+project-specific work only (profile content, articles, profile metadata). They
+**extend** the toolkit: their bodies read the toolkit baseline first and then
+add the project-specific steps. A local rule may **override** a toolkit rule
+only where it deliberately narrows it, and it must say so explicitly. Local
+skills and contracts never silently duplicate toolkit rules.
+
 ## Profile Knowledge
 
 Profile content under `src-content/profile` is treated as product source.
