@@ -28,6 +28,13 @@
 - Architecture source follows the architecture-knowledge-toolkit structure under `src-content/docs`.
 - Run `./gradlew validateArchitectureMetamodel` or `./gradlew generateArchitectureArtifacts` after changing architecture metadata or traceability.
 
+Locate the toolkit in this order:
+
+1. `$ARCHITECTURE_KNOWLEDGE_TOOLKIT` if it is set.
+2. Otherwise the nearest local `architecture-knowledge-toolkit` checkout found by searching upward from this project directory: `../architecture-knowledge-toolkit`, then the same directory name in each parent directory up to the filesystem root. Do not assume the toolkit is a direct sibling; this project may live outside the toolkit's parent folder.
+3. Otherwise a project-local recorded toolkit reference such as a submodule, vendored copy, or pinned path.
+4. Otherwise the public repository, preferably at a stable release tag or commit SHA: https://github.com/docs-as-code-toolkit/architecture-knowledge-toolkit
+
 ## Profile Artifact Documentation
 
 - Profile content under `src-content/profile` is treated like product source.
