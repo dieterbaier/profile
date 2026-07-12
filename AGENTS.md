@@ -13,8 +13,11 @@
 
 - Generic AI instructions live in `general-semantic-contracts.md`, `skills/`, `ai-contracts/`, and `templates/`.
 - Agent-specific integration lives under `adapters/<agent>/`.
-- Codex-specific instructions and skill metadata live under `adapters/codex/`.
-- Do not put generic task workflows under `.codex/`; use `skills/` and keep Codex-only metadata in `adapters/codex/`.
+- Codex-specific instructions live under `adapters/codex/`.
+- Do not put generic task workflows under `.codex/`; use `skills/` and keep Codex-only routing in `adapters/codex/`.
+- The thin routing wrappers `adapters/codex/AGENTS.md`, `adapters/vibe/AGENTS.md`, `adapters/github-copilot/copilot-instructions.md`, and `adapters/cursor/rules/profile-dieterbaier.mdc` are generated from `skills/**/SKILL.md` by `scripts/build-agent-adapters.js`. Do not edit them by hand; change the canonical skills or the generator, then run `node scripts/build-agent-adapters.js` (or `./gradlew buildAgentAdapters`). CI runs `node scripts/check-agent-adapters.js` (`./gradlew checkAgentAdapters`) to fail on stale adapters.
+- Put OpenAI-specific skill UI metadata, such as `openai.yaml`, under `adapters/openai/<skill-name>/`; do not place it under `adapters/codex/skills/<skill-name>/agents/` or `skills/<skill-name>/agents/`.
+- Keep GitHub Copilot repository instructions in `.github/copilot-instructions.md` as an entry point only that points back to `adapters/github-copilot/copilot-instructions.md`.
 
 ## Architecture Documentation
 

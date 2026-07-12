@@ -172,7 +172,9 @@ jobs:
               validateProfileMetamodel \
               generateProfileArtifacts \
               generateArchitectureArtifacts \
-              generateArticleSummaries
+              generateArticleSummaries \
+              checkAgentAdapters \
+              testAgentAdapters
 
   deploy-site:
     needs: [build-docs, detect-changes]

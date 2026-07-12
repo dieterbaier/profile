@@ -115,6 +115,10 @@ tasks.register('checkEnvironment') {
             missing << 'graphviz (dot)'
         }
 
+        if (!commandExists('node', '--version')) {
+            missing << 'node'
+        }
+
         if (!missing.isEmpty()) {
             throw new GradleException('''
 ❌ Missing required tools:
@@ -348,6 +352,52 @@ tasks.register('generateArticleSummaries') {
                     '--articles-dir', 'src-content/profile/site/articles',
                     '--template-dir', 'templates/article-summary-pack',
                     '--output-dir', layout.buildDirectory.dir('summaries').get().asFile
+        }
+    }
+}
+
+def agentAdapterInputs = {
+    inputs.files(fileTree('skills') { include '**/SKILL.md' })
+    inputs.files('scripts/build-agent-adapters.js', 'scripts/check-agent-adapters.js')
+}
+
+tasks.register('buildAgentAdapters') {
+    description = 'Regenerates the thin agent adapters under adapters/ from skills/**/SKILL.md.'
+    group = 'documentation'
+    configure agentAdapterInputs
+    outputs.dir('adapters/codex')
+    outputs.dir('adapters/vibe')
+    outputs.dir('adapters/github-copilot')
+    outputs.dir('adapters/cursor')
+
+    doLast {
+        exec {
+            commandLine 'node', 'scripts/build-agent-adapters.js'
+        }
+    }
+}
+
+tasks.register('checkAgentAdapters') {
+    description = 'Fails if the generated agent adapters are out of date.'
+    group = 'verification'
+    configure agentAdapterInputs
+
+    doLast {
+        exec {
+            commandLine 'node', 'scripts/check-agent-adapters.js'
+        }
+    }
+}
+
+tasks.register('testAgentAdapters') {
+    description = 'Runs the agent adapter generator behaviour tests.'
+    group = 'verification'
+    configure agentAdapterInputs
+    inputs.files('test/build-agent-adapters.test.mjs')
+
+    doLast {
+        exec {
+            commandLine 'node', '--test', 'test/build-agent-adapters.test.mjs'
         }
     }
 }

@@ -81,6 +81,9 @@ Available tasks:
 - generateArchitectureArtifacts
 - validateProfileMetamodel
 - generateProfileArtifacts
+- buildAgentAdapters (regenerates the thin agent adapters from `skills/**/SKILL.md`)
+- checkAgentAdapters (fails if the generated agent adapters are stale)
+- testAgentAdapters (runs the adapter generator behaviour tests)
 
 
 - buildAll (builds the main profile outputs at once)
