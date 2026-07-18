@@ -30,7 +30,7 @@ node "Strato Webspace" as Strato
 
 rectangle "Profile Publishing System" as System {
   [profile-dieterbaier]
-  [profile-dieterbaier-private]
+  [profile-private]
 }
 
 Owner --> System : authors and reviews source content
@@ -99,8 +99,8 @@ Gradle --> ArchitectureSite
 [cols="1,2,2", options="header"]
 |===
 | Container | Responsibility | Storage
-| Public Profile Repository | Public profile source, public articles, previewable article source, reusable build logic, theme, profile metadata contracts, and architecture documentation. | `profile-dieterbaier`
-| Private Profile Repository | Private article, note, and protocol source. Proposed as a separate source component, not as a duplicated product. | `profile-dieterbaier-private`
+| Public Profile Repository | Public profile source, public articles, previewable article source, reusable build logic, theme, profile metadata contracts, and architecture documentation. | `dieterbaier/profile`
+| Private Profile Repository | Private article, note, and protocol source. Proposed as a separate source component, not as a duplicated product. | `dieterbaier/profile-private`
 | Architecture Knowledge | arc42 chapters, ADRs, quality scenarios, risks, canvases, Q&A, and metadata. | `src-content/docs`
 | Theme Assets | CSS, fonts, icons, JavaScript, and shared docinfo fragments used by generated static outputs. | `src-content/theme`, `src-content/profile/includes`
 | Validators | Check architecture and profile metadata before generation and deployment. | `scripts/`

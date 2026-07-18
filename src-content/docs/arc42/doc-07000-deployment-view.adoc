@@ -21,7 +21,7 @@ metadata_version: '1.0'
 |===
 | Target | Deployment mechanism | Output path
 | Personal website | SFTP from GitHub Actions | `build/site`
-| Preview website | SFTP from GitHub Actions or local deploy script to a protected/non-indexed preview target | `build/site-preview`
+| Preview website | SFTP from GitHub Actions or local deploy script to a Basic Auth protected and non-indexed preview target | `build/site-preview`
 | Private article notebook | SFTP from private source build to a Basic Auth protected target | `build/site-private`
 | Architecture documentation | SFTP from GitHub Actions | `build/architecture`
 | GitHub profile README | Git commit from GitHub Actions | `build/readme/README.md`
@@ -35,7 +35,7 @@ The deploy workflow uses one GitHub Actions job per deployed target. A failed ta
 
 include::09-architecture-decisions/adr-008-private-to-public-article-lifecycle.adoc[tag=publication-target-deployment]
 
-The publication targets are proposed by xref:adr-008-private-to-public-article-lifecycle[ADR-008]. The diagram is included from the ADR while the decision is still in progress, so the decision basis and the official deployment view stay aligned.
+The publication targets are defined by accepted xref:adr-008-private-to-public-article-lifecycle[ADR-008]. The diagram is included from the ADR so the decision basis and the official deployment view stay aligned.
 
 == Deployment Credentials
 
@@ -45,7 +45,7 @@ The publication targets are proposed by xref:adr-008-private-to-public-article-l
 | GitHub profile README | `PROFILE_REPO_TOKEN` | Repository secret in `dieterbaier/profile` | Fine-grained GitHub token for `dieterbaier/dieterbaier` with `Contents: Read and write`
 | GitLab profile README | `GITLAB_TOKEN` | Repository secret in `dieterbaier/profile` | GitLab repository write access
 | Personal website | `SFTP_PASSWORD`, `SFTP_HOST`, `SFTP_PORT`, `SFTP_USER`, `SFTP_REMOTE_BASE` | `SFTP_PASSWORD` as `production` environment secret; `SFTP_*` values as `production` environment variables | SFTP write access to the configured site directory
-| Preview website | `PREVIEW_SFTP_PASSWORD`, `PREVIEW_SFTP_HOST`, `PREVIEW_SFTP_PORT`, `PREVIEW_SFTP_USER`, `PREVIEW_SFTP_REMOTE_BASE` | Preview environment secrets and variables | SFTP write access to the configured preview site directory
+| Preview website | `PREVIEW_SFTP_PASSWORD`, `PREVIEW_SFTP_HOST`, `PREVIEW_SFTP_PORT`, `PREVIEW_SFTP_USER`, `PREVIEW_SFTP_REMOTE_BASE`, and `.htpasswd` material | Preview environment secrets and variables | SFTP write access to the configured preview site directory and Basic Auth configuration
 | Private article notebook | Private repository deployment secrets and `.htpasswd` material outside the public document root | Private repository or local deployment environment | SFTP write access to the configured private site directory
 | Architecture documentation | `SFTP_PASSWORD`, `SFTP_HOST`, `SFTP_PORT`, `SFTP_USER`, `SFTP_REMOTE_BASE` | `SFTP_PASSWORD` as `production` environment secret; `SFTP_*` values as `production` environment variables | SFTP write access to the configured architecture directory
 | Private contact data | `SITE_EMAIL`, `SITE_ADDRESS_NAME`, `SITE_STREET`, `SITE_PLZ`, `SITE_CITY`, `SITE_TEL` | `production` environment secrets in `dieterbaier/profile` | Value injection only; no repository or deployment permission
@@ -53,4 +53,4 @@ The publication targets are proposed by xref:adr-008-private-to-public-article-l
 
 The GitHub profile README is deployed to a different repository than the workflow source repository. The default `GITHUB_TOKEN` is intentionally not used for this cross-repository push; it is scoped to the workflow repository. `PROFILE_REPO_TOKEN` therefore has to be rotated when it expires or when GitHub reports `Bad credentials` during the `checkout github profile repo` step.
 
-Preview and private deployments are intentionally separated from the public website deployment. The public target may emit canonical links for published pages. Preview and private targets must emit `noindex` metadata and omit canonical links.
+Preview and private deployments are intentionally separated from the public website deployment and require Basic Auth. The public target emits canonical links for published pages from the deployment-specific `SITE_BASE_URL`; preview and private targets must emit `noindex` metadata and omit canonical links.

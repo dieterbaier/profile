@@ -36,7 +36,7 @@ metadata_version: '1.0'
 
 === Status
 
-Proposed and in progress. The backlog epic is tracked as https://github.com/dieterbaier/profile/issues/26[GitHub issue #26]. These scenarios describe intended runtime behavior and must be reviewed with xref:adr-008-private-to-public-article-lifecycle[ADR-008] and xref:adr-009-private-repository-integration[ADR-009] before implementation starts.
+In progress. The backlog epic is tracked as https://github.com/dieterbaier/profile/issues/26[GitHub issue #26]. The lifecycle is accepted in xref:adr-008-private-to-public-article-lifecycle[ADR-008]. Public canonical metadata can proceed independently; private repository integration and promotion automation remain proposed in xref:adr-009-private-repository-integration[ADR-009], and no first promotion check has yet been performed.
 
 === Scenario 1: Draft Private Article
 

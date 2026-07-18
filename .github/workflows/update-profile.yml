@@ -70,6 +70,8 @@ jobs:
       SITE_PLZ: ${{ secrets.SITE_PLZ }}
       SITE_CITY: ${{ secrets.SITE_CITY }}
       SITE_TEL: ${{ secrets.SITE_TEL }}
+      SITE_BASE_URL: ${{ vars.SITE_BASE_URL }}
+      REQUIRE_SITE_BASE_URL: 'true'
     outputs:
       isBuilt: ${{ steps.run_build.outputs.IS_BUILT }}
     if: github.event_name != 'pull_request' && (needs.detect-changes.outputs.readme == 'true' || needs.detect-changes.outputs.articles == 'true' || needs.detect-changes.outputs.architecture == 'true' || needs.detect-changes.outputs.site == 'true')
@@ -130,6 +132,8 @@ jobs:
             -e SITE_PLZ \
             -e SITE_CITY \
             -e SITE_TEL \
+            -e SITE_BASE_URL \
+            -e REQUIRE_SITE_BASE_URL \
             -w /app \
             ${{ steps.set_image.outputs.IMAGE_NAME }} \
             $CMD
@@ -175,7 +179,8 @@ jobs:
               generateArticleSummaries \
               checkAgentAdapters \
               testAgentAdapters \
-              testProfileNavigation
+              testProfileNavigation \
+              testSiteMetadata
 
   deploy-site:
     needs: [build-docs, detect-changes]

@@ -71,7 +71,7 @@ It does not own:
 
 === Implementation Guard
 
-This component must not be implemented before xref:adr-008-private-to-public-article-lifecycle[ADR-008] and xref:adr-009-private-repository-integration[ADR-009] are reviewed. The current component description defines the target shape, not an accepted implementation contract.
+The public canonical-URL slice is authorized by accepted xref:adr-008-private-to-public-article-lifecycle[ADR-008] and may be implemented independently because it processes only already selected public output. Publication selection, preview/private targets, and promotion automation remain subject to xref:adr-009-private-repository-integration[ADR-009] and the still-missing first promotion check.
 
 === Integration Sketch
 

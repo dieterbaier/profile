@@ -35,7 +35,7 @@ Proposed.
 
 === Decision
 
-We propose to treat `profile-dieterbaier-private` as a separate source component of the same profile application, integrated through explicit content and promotion contracts instead of Git submodules or duplicated build logic.
+We propose to treat `profile-private` (`dieterbaier/profile-private`) as a separate source component of the same profile application, integrated through explicit content and promotion contracts instead of Git submodules or duplicated build logic.
 
 The public repository remains the owner of shared build logic, validators, generators, theme assets, profile metadata contracts, and architecture documentation. The private repository owns private article, note, and protocol source content. Private content is rendered by reusing the public repository's build tooling through a documented checkout or local path contract.
 
@@ -70,7 +70,7 @@ package "profile-dieterbaier (public repository)" as PublicRepo {
   component "Public and Preview Article Source" as PublicArticles
 }
 
-package "profile-dieterbaier-private (private repository)" as PrivateRepo {
+package "profile-private (private repository)" as PrivateRepo {
   component "Private Article Source" as PrivateArticles
   component "Private Notes and Protocols" as PrivateNotes
   component "Private Deployment Configuration" as PrivateDeployConfig
@@ -122,7 +122,7 @@ s| Sum s| +6 s| 0 s| +1 s| -2
 [cols="1,3", options="header"]
 |===
 | Contract | Proposed rule
-| Source ownership | Public source stays in `profile-dieterbaier`; private source stays in `profile-dieterbaier-private`.
+| Source ownership | Public source stays in `profile`; private source stays in `profile-private`.
 | Tooling ownership | Shared Gradle tasks, generators, validators, schemas, and theme assets are owned by `profile-dieterbaier`.
 | Private build input | The private repository provides content roots that match the public profile article metadata contract.
 | Tooling access | Private builds use a checked-out public repository path or a later packaged toolkit version; no submodule is required initially.
@@ -154,7 +154,7 @@ Neutral or follow-up:
 
 Before acceptance, confirm:
 
-* the private repository name;
+* the private repository name is confirmed as `dieterbaier/profile-private`;
 * the initial tooling access mechanism, such as sibling checkout path versus packaged toolkit version;
 * whether private deployment runs locally, in GitHub Actions from the private repository, or both;
 * which compatibility check prevents private/public metadata contract drift.
