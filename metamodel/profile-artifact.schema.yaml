@@ -43,6 +43,12 @@ properties:
   updated:
     type: string
     format: date
+  published:
+    type: string
+    format: date
+    description: >-
+      Optional publication date. Article listings display this date and sort by
+      it; when absent, listings fall back to 'created'.
   reviewed:
     type: boolean
     default: false
@@ -63,6 +69,16 @@ properties:
       enum: [website, cv, readme, github, gitlab, markdown-export, pdf]
   summary:
     type: string
+    description: >-
+      Language-neutral fallback summary. Listings prefer the language-specific
+      'summary_de'/'summary_en' and fall back to this value when the requested
+      language variant is absent.
+  summary_de:
+    type: string
+    description: German summary shown in German article listings.
+  summary_en:
+    type: string
+    description: English summary shown in English article listings.
   source:
     type: string
   tags:
@@ -73,6 +89,16 @@ properties:
       description: >-
         Any capitalization is allowed. Restricted to letters, digits, and
         hyphens so tags carry no blanks or special characters.
+      pattern: "^[A-Za-z0-9][A-Za-z0-9-]*$"
+  skills:
+    type: array
+    uniqueItems: true
+    items:
+      type: string
+      description: >-
+        Skill slug an article demonstrates. Kept separate from 'tags'. Restricted
+        to letters, digits, and hyphens so it is URL- and filename-safe; the
+        overview page derives its heading by turning hyphens into spaces.
       pattern: "^[A-Za-z0-9][A-Za-z0-9-]*$"
   previous:
     type: string

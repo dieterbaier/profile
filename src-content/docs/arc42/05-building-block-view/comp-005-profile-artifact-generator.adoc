@@ -36,11 +36,13 @@ It owns:
 
 * collecting metadata-backed profile artifacts;
 * rendering a generated artifact index;
+* rendering per-article navigation includes (series and related articles);
+* rendering the article listings: a recent-articles fragment and the standalone
+  overview pages for all articles, each tag, and each skill;
 * keeping generated profile documentation aligned with source metadata.
 
 It does not own:
 
-* article matrix generation;
 * article lifecycle promotion;
 * architecture traceability generation.
 
@@ -51,6 +53,8 @@ It does not own:
 | Kind | Description
 | Input | validated profile artifacts under `src-content/profile`
 | Output | generated profile artifact index
+| Output | per-article navigation includes next to each article
+| Output | article listing fragment and overview pages under the articles `generated/lists` and `generated/pages` directories
 |===
 
 === Implementation
@@ -61,4 +65,5 @@ It does not own:
 | Script | `scripts/validate-profile-metamodel.rb --generate`
 | Gradle task | `generateProfileArtifacts`
 | Generated file | `src-content/profile/generated/profile-artifact-index.adoc`
+| Generated listings | recent fragment plus all/tag/skill overview pages, rendered into the site by the `buildArticleListPages` Gradle task
 |===

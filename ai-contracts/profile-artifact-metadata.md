@@ -20,6 +20,12 @@ Optional:
 - Canonical publication URL.
 - Relation targets to other profile artifacts.
 - Article-series links via the optional `previous` and `next` fields (existing Article IDs).
+- A `published` date (article listings display and sort by it; when absent they
+  fall back to `created`).
+- Language-specific summaries `summary_de` and `summary_en` (article listings
+  prefer the language variant and fall back to the neutral `summary`).
+- A `skills` array of skill slugs an article demonstrates, kept separate from
+  `tags`. Each skill gets a generated overview page listing its articles.
 
 ## Output
 
@@ -38,7 +44,8 @@ as project entries.
 - Stable IDs are preserved after creation.
 - Generated files under `**/generated/` are not edited manually, including the
   per-article navigation includes written to a `generated/` directory next to
-  each article.
+  each article and the article listings written under the articles
+  `generated/lists` and `generated/pages` directories.
 - Public-channel assumptions are explicit when they are not known.
 - Prefer meaningful, discriminating tags. Ubiquitous tags (for example `profile`)
   carry no relatedness signal and trigger a validator warning.

@@ -38,7 +38,7 @@ ifdef::nolinks[]
 <strong>{skill_architecture_title}</strong>
 endif::[]
 ifndef::nolinks[]
-        <a href="{basedir}/articles/architecture/sustainability.html"><strong>{skill_architecture_title}</strong></a>
+        <a href="{basedir}/articles/lists/skill-Software-Architektur.html"><strong>{skill_architecture_title}</strong></a>
 endif::[]
 <br>
         {skill_architecture_1}<br>
@@ -53,7 +53,7 @@ ifdef::nolinks[]
 {skill_methods_docascode}
 endif::[]
 ifndef::nolinks[]
-        <a href="{basedir}/articles/documentation/doc-as-code.html">{skill_methods_docascode}</a>
+        <a href="{basedir}/articles/lists/skill-Docs-as-Code.html">{skill_methods_docascode}</a>
 endif::[]
         {skill_methods_4}<br>
         {skill_methods_5}
@@ -69,7 +69,7 @@ ifdef::nolinks[]
 {skill_platform_cicd}
 endif::[]
 ifndef::nolinks[]
-        <a href="{basedir}/articles/architecture/smarte-cicd-pipeline.html">{skill_platform_cicd}</a>
+        <a href="{basedir}/articles/lists/skill-CI-CD-Pipelines.html">{skill_platform_cicd}</a>
 endif::[]
         {skill_platform_4}<br>
     </div>

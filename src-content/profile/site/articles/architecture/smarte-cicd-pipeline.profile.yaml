@@ -4,6 +4,7 @@
   status: published
   owner: "Dieter Baier"
   created: '2026-07-04'
+  published: '2026-07-04'
   reviewed: false
   generated: false
   language: mixed
@@ -15,10 +16,13 @@
     - website
     - markdown-export
   summary: "Article about building and deploying only what changed."
+  summary_de: "Wie eine CI/CD-Pipeline nur das baut und ausliefert, was sich wirklich geändert hat – für schnellere und ressourcenschonende Builds."
   source: src-content/profile/site/articles/architecture/smarte-cicd-pipeline.adoc
   tags:
     - docs-as-code
     - greenIT
+  skills:
+    - CI-CD-Pipelines
   previous: ART-001-intentionally-simple-website
   relations: []
   metadata_version: '1.0'

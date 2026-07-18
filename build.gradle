@@ -421,6 +421,19 @@ tasks.register('testProfileNavigation') {
     }
 }
 
+tasks.register('testProfileListings') {
+    description = 'Runs the article listing generator behaviour tests.'
+    group = 'verification'
+    inputs.files('scripts/validate-profile-metamodel.rb', 'test/profile_listings_test.rb')
+    inputs.files('features/article-listings.feature')
+
+    doLast {
+        exec {
+            commandLine 'ruby', '-Itest', 'test/profile_listings_test.rb'
+        }
+    }
+}
+
 // Readme
 asciidoctorBase('buildReadmeDocbook','','src-content/profile/readme', 'build/readme/docbook', [],true, 'docbook')
 tasks.register('convertDocBookToMarkdown', PandocTask) {
@@ -438,7 +451,6 @@ def articleSources = fileTree('src-content/profile/site/articles') {
     exclude '**/generated/**'
     exclude '**/.asciidoctorconfig.adoc'
     exclude 'articles.adoc'
-    exclude 'articles_matrix.adoc'
 }.files.collect {
     file('src-content/profile/site/articles').toPath().relativize(it.toPath()).toString()
 }.sort()
@@ -539,6 +551,59 @@ tasks.named('buildSite') {
     }
 
     finalizedBy tasks.named('verifyNoArticleSummariesInGeneratedOutputs')
+}
+
+// Generated article listing pages (all / per tag / per skill). Their source
+// lives under a generated/ directory that the main site build excludes, so a
+// dedicated task renders it into build/site/articles/lists. It runs after
+// buildSite so it never competes with buildSite's stale-output cleanup, and it
+// re-runs the (idempotent) canonical URL injection so the listing pages are
+// covered as well.
+tasks.register('buildArticleListPages', org.asciidoctor.gradle.jvm.AsciidoctorTask) {
+    dependsOn tasks.named('generateProfileArtifacts')
+    dependsOn tasks.named('checkEnvironment')
+
+    setSourceDir(file('src-content/profile/site/articles/generated/pages'))
+    setOutputDir(file('build/site/articles/lists'))
+    attributes([
+            'includesdir'      : 'src-content/profile/includes',
+            'buildsite'        : 'true',
+            'skip-front-matter': ''
+    ])
+    sources {
+        include '**/*.adoc'
+    }
+    asciidoctorj {
+        modules {
+            diagram.use()
+        }
+    }
+    outputOptions {
+        backends = ['html5']
+    }
+
+    doLast {
+        def command = [
+                'ruby',
+                'scripts/inject-site-metadata.rb',
+                '--site-dir', layout.buildDirectory.dir('site').get().asFile
+        ]
+        if (env('SITE_BASE_URL')) {
+            command += ['--base-url', env('SITE_BASE_URL')]
+        }
+        if (env('REQUIRE_SITE_BASE_URL', 'false').toBoolean()) {
+            command += ['--required']
+        }
+        exec {
+            commandLine command
+        }
+    }
+
+    finalizedBy tasks.named('housekeeping')
+}
+
+tasks.named('buildSite') {
+    finalizedBy tasks.named('buildArticleListPages')
 }
 
 tasks.register('testSiteMetadata') {
