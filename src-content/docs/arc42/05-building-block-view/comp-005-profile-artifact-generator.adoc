@@ -73,7 +73,10 @@ It does not own:
 [cols="1,2,1", options="header"]
 |===
 | Feature | Description | Status
+| https://github.com/dieterbaier/profile/issues/34[Issue #34]
+| Per-article navigation includes (previous/next series links and related articles) added to this generator.
+| implemented
 | https://github.com/dieterbaier/profile/issues/37[Issue #37]
-| Article index replaced by generated listings (recent, all, per tag, per skill) and skill metadata; adds the article navigation and listing outputs to this generator.
+| Article index replaced by generated listings (recent, all, per tag, per skill) plus skill metadata, adding the article listing outputs to this generator.
 | implemented
 |===
