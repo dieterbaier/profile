@@ -159,6 +159,9 @@ def asciidoctorBase = { taskName, taskDependsOnTask, sourceDir, outputDir, List<
                 }
             }
             sources {
+                if (sourcesToBuild.isEmpty()) {
+                    include '**/*.adoc'
+                }
                 articleSummarySourceExcludes.each { exclude it }
                 exclude '**/generated/**'
             }
@@ -513,7 +516,40 @@ asciidoctorBase('buildSite','buildCVDownload','src-content/profile/site', 'build
                                                                         'site-email' : env('SITE_EMAIL') ?: '.'
 ])
 tasks.named('buildSite') {
+    inputs.file('scripts/inject-site-metadata.rb')
+    inputs.property('siteBaseUrl', env('SITE_BASE_URL') ?: '')
+    inputs.property('requireSiteBaseUrl', env('REQUIRE_SITE_BASE_URL', 'false'))
+
+    doLast {
+        def command = [
+                'ruby',
+                'scripts/inject-site-metadata.rb',
+                '--site-dir', layout.buildDirectory.dir('site').get().asFile
+        ]
+        if (env('SITE_BASE_URL')) {
+            command += ['--base-url', env('SITE_BASE_URL')]
+        }
+        if (env('REQUIRE_SITE_BASE_URL', 'false').toBoolean()) {
+            command += ['--required']
+        }
+        exec {
+            commandLine command
+        }
+    }
+
     finalizedBy tasks.named('verifyNoArticleSummariesInGeneratedOutputs')
+}
+
+tasks.register('testSiteMetadata') {
+    description = 'Runs the canonical public-site metadata behaviour tests.'
+    group = 'verification'
+    inputs.files('scripts/inject-site-metadata.rb', 'test/site_metadata_injector_test.rb', 'features/canonical-site-urls.feature')
+
+    doLast {
+        exec {
+            commandLine 'ruby', '-Itest', 'test/site_metadata_injector_test.rb'
+        }
+    }
 }
 // Architekturseite
 asciidoctorBase('buildArchitecture','','src-content/docs/arc42', 'build/architecture', ['index.adoc'],true, "html5", ['includesdir': 'src-content/docs/arc42'])

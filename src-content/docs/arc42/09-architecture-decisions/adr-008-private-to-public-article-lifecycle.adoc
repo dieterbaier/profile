@@ -2,10 +2,11 @@
 id: ADR-008-private-to-public-article-lifecycle
 type: ADR
 title: "Private To Public Article Lifecycle"
-status: proposed
+status: accepted
 owner: "Dieter Baier"
 created: '2026-07-06'
-reviewed: false
+updated: '2026-07-18'
+reviewed: true
 generated: false
 summary: "Use repository boundaries and metadata-driven publication targets for article drafting, preview, and public release."
 tags:
@@ -16,29 +17,29 @@ tags:
 relations:
 - type: depends_on
   target: ADR-009-private-repository-integration
-  status: proposed
+  status: accepted
   rationale: "The article lifecycle depends on a reviewed decision for how the private repository participates in the application."
-  reviewed: false
+  reviewed: true
 - type: addresses
   target: QS-005-publication-visibility-boundary
-  status: proposed
+  status: accepted
   rationale: "Metadata-driven target generation supports the required publication visibility boundary."
-  reviewed: false
+  reviewed: true
 - type: documents
   target: COMP-001-publication-target-generator
-  status: proposed
+  status: accepted
   rationale: "The ADR introduces the publication target generator as a building block."
-  reviewed: false
+  reviewed: true
 - type: mitigates
   target: RISK-004-source-boundary-leakage
-  status: proposed
+  status: accepted
   rationale: "Private drafts stay in a private source repository until explicit promotion."
-  reviewed: false
+  reviewed: true
 - type: mitigates
   target: RISK-005-preview-mispublication
-  status: proposed
+  status: accepted
   rationale: "Only metadata-selected published content is eligible for the public website target."
-  reviewed: false
+  reviewed: true
 metadata_version: '1.0'
 ---
 [[adr-008-private-to-public-article-lifecycle]]
@@ -46,13 +47,13 @@ metadata_version: '1.0'
 
 === Status
 
-Proposed.
+Accepted.
 
 === Decision
 
-We propose to separate article privacy from article publication quality by combining repository boundaries with metadata-driven build targets.
+We separate article privacy from article publication quality by combining repository boundaries with metadata-driven build targets.
 
-Private drafts, notes, and protocols start in a private repository. Reviewable but not official article content is promoted to the public profile repository with `status: preview`. Public deployment to `dieterbaier.eu` uses only metadata-selected `status: published` article content. Preview and private deployments render their own target-specific sites without canonical links and with `noindex` metadata.
+Private drafts, notes, and protocols start in the private repository `dieterbaier/profile-private`. Reviewable but not official article content is promoted to the public profile repository with `status: preview`. Public deployment uses only metadata-selected `status: published` article content and derives canonical links from a deployment-specific base URL plus each generated output path. Preview and private deployments render their own target-specific sites without canonical links, with `noindex` metadata, and behind Basic Auth.
 
 === Context
 
@@ -73,7 +74,7 @@ The following diagrams document the decision basis for the lifecycle. While this
 ----
 @startuml
 actor "Dieter Baier" as Author
-participant "profile-dieterbaier-private" as PrivateRepo
+participant "profile-private" as PrivateRepo
 participant "Private Build" as Build
 participant "private.dieterbaier.eu" as PrivateSite
 
@@ -95,7 +96,7 @@ Author -> PrivateSite : read rendered private article
 ----
 @startuml
 actor "Dieter Baier" as Author
-participant "profile-dieterbaier-private" as PrivateRepo
+participant "profile-private" as PrivateRepo
 participant "Promotion Script" as Promote
 participant "profile-dieterbaier" as PublicRepo
 participant "preview.dieterbaier.eu" as PreviewSite
@@ -139,7 +140,7 @@ Build -> PublicSite : deploy public site with canonical links
 ----
 @startuml
 actor "Dieter Baier" as Author
-participant "profile-dieterbaier-private" as PrivateRepo
+participant "profile-private" as PrivateRepo
 participant "profile-dieterbaier" as PublicRepo
 
 Author -> PrivateRepo : continue editing private article
@@ -216,16 +217,20 @@ Negative:
 
 Neutral or follow-up:
 
-* Basic Auth remains sufficient for the generated private deployment, but it is not the source confidentiality mechanism.
+* Basic Auth is required for generated preview and private deployments, but it is not the source confidentiality mechanism.
 * A local promotion script should be preferred initially. A GitHub Action can be introduced once promotion checks are reviewed.
-* The final public status vocabulary must be reviewed: keep `published`, introduce `public`, or support both with one canonical value.
+* `published` is the canonical public lifecycle status.
+* The public canonical-URL slice is independent of private-source promotion: it operates only on already selected public output. The first promotion check remains required before promotion automation is implemented or used.
 
 === Review Notes
 
-Before acceptance, confirm:
+Confirmed on 2026-07-18:
 
-* the private repository name and deployment target;
-* xref:adr-009-private-repository-integration[ADR-009] is reviewed and no longer blocks implementation;
-* whether preview requires Basic Auth;
-* the canonical lifecycle vocabulary for article metadata;
-* the first promotion checks that prevent private-only content from entering the public repository.
+* the private source repository is `dieterbaier/profile-private`;
+* preview and private deployments require Basic Auth;
+* `published` is the canonical public lifecycle status;
+* the public canonical-URL slice may proceed independently of xref:adr-009-private-repository-integration[ADR-009] because it neither reads private source nor performs promotion.
+
+Open follow-up:
+
+* No first promotion check has been performed. Promotion automation remains blocked until checks that prevent private-only content from entering the public repository are defined, implemented, and verified.

@@ -200,6 +200,7 @@ To enable the pipeline to use personal information (which is included in the doc
     vars.SFTP_HOST
     vars.SFTP_PORT
     vars.SFTP_USER
+    vars.SITE_BASE_URL                # public HTTPS base URL used to derive canonical links
 
 Credential ownership:
 
@@ -210,6 +211,7 @@ Credential ownership:
 | `SFTP_PASSWORD` | `production` environment secret in `dieterbaier/profile` | Upload site and architecture artifacts to the private webspace | SFTP password for the configured deployment user |
 | `SITE_*` secrets | `production` environment secrets in `dieterbaier/profile` | Inject private contact data during site/CV generation | Values only, no repository access |
 | `SFTP_*` variables | `production` environment variables in `dieterbaier/profile` | Configure SFTP target host, port, user, and remote base path | Non-secret deployment configuration |
+| `SITE_BASE_URL` | `production` environment variable in `dieterbaier/profile` | Derive canonical URLs for generated public HTML pages | Non-secret public HTTPS URL; the production build fails when it is missing or invalid |
 
 Token rotation:
 
