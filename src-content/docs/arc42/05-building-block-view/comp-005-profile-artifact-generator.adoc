@@ -67,3 +67,13 @@ It does not own:
 | Generated file | `src-content/profile/generated/profile-artifact-index.adoc`
 | Generated listings | recent fragment plus all/tag/skill overview pages, rendered into the site by the `buildArticleListPages` Gradle task
 |===
+
+=== Affected Features
+
+[cols="1,2,1", options="header"]
+|===
+| Feature | Description | Status
+| https://github.com/dieterbaier/profile/issues/37[Issue #37]
+| Article index replaced by generated listings (recent, all, per tag, per skill) and skill metadata; adds the article navigation and listing outputs to this generator.
+| implemented
+|===
