@@ -49,6 +49,13 @@ done
 # it with a host path (for example $HOME/.gradle) so actions/cache can persist it.
 GRADLE_CACHE="${GRADLE_CACHE:-gradle-cache}"
 
+# A host path (contains a slash) must exist before it can be bind-mounted;
+# Podman errors on a missing source instead of creating it like Docker does.
+# Named volumes (no slash) are managed by the engine and left untouched.
+case "$GRADLE_CACHE" in
+    */*) mkdir -p "$GRADLE_CACHE" ;;
+esac
+
 # Run
 $ENGINE run --rm \
     $ENV_FILE \
