@@ -125,5 +125,5 @@ Sie ist das Ergebnis vieler kleiner Entscheidungen.
 
 // Generated article navigation (previous/next and related articles); website only.
 ifeval::["{type}" != "readme"]
-include::{includesdir}/../generated/articles/{docname}-navigation.adoc[opts=optional]
+include::{docfile}/../generated/{docname}-navigation.adoc[opts=optional]
 endif::[]

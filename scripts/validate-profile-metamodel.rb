@@ -57,23 +57,36 @@ class ProfileArtifactValidator
     output_path
   end
 
-  # Writes one navigation include per article under <profile_dir>/generated/articles/.
+  # Writes one navigation include per article into a `generated/` directory next
+  # to the article (for example .../architecture/generated/<slug>-navigation.adoc).
+  # Placing the file beside its article keeps the filename unique per directory,
+  # so articles that share a basename in different directories never collide, and
+  # the fixed `include::generated/{docname}-navigation.adoc` resolves per article.
   # Each file holds previous/next series links and up to RELATED_LIMIT related
-  # articles, or stays empty when nothing applies. Returns the output directory.
+  # articles, or stays empty when nothing applies. Returns the written paths.
   def generate_article_navigation(artifacts)
-    nav_dir = profile_dir.join('generated', 'articles')
-    FileUtils.rm_rf(nav_dir)
-    FileUtils.mkdir_p(nav_dir)
-
     articles = artifacts.select { |artifact| artifact.metadata['type'] == 'Article' }
     by_id = articles.each_with_object({}) { |article, index| index[article.metadata['id']] = article }
 
-    articles.each do |article|
-      content = render_navigation(article, articles, by_id)
-      nav_dir.join("#{article_slug(article)}-navigation.adoc").write(content, encoding: 'UTF-8')
-    end
+    clean_generated_navigation
 
-    nav_dir
+    articles.map do |article|
+      nav_dir = article_source_path(article).dirname.join('generated')
+      FileUtils.mkdir_p(nav_dir)
+      nav_path = nav_dir.join("#{article_slug(article)}-navigation.adoc")
+      nav_path.write(render_navigation(article, articles, by_id), encoding: 'UTF-8')
+      nav_path
+    end
+  end
+
+  # Removes previously generated navigation files, including files left behind by
+  # the earlier flat `generated/articles/` layout, so deletions and renames do not
+  # leave stale navigation around.
+  def clean_generated_navigation
+    FileUtils.rm_rf(profile_dir.join('generated', 'articles'))
+    Dir.glob(profile_dir.join('**', 'generated', '*-navigation.adoc').to_s).each do |path|
+      File.delete(path)
+    end
   end
 
   def report(artifacts)
@@ -301,6 +314,13 @@ class ProfileArtifactValidator
     by_id = index_by_id(artifacts)
     artifacts.each do |artifact|
       self_id = artifact.metadata['id']
+
+      unless artifact.metadata['type'] == 'Article'
+        if %w[previous next].any? { |field| !blank?(artifact.metadata[field]) }
+          errors << "#{relative(artifact.path)} 'previous'/'next' are only allowed for Articles"
+        end
+        next
+      end
 
       %w[previous next].each do |field|
         target = artifact.metadata[field]
@@ -549,7 +569,7 @@ if $PROGRAM_NAME == __FILE__
   if options[:generate]
     path = validator.generate(artifacts, output: output)
     puts "Generated: #{path.relative_path_from(root)}"
-    nav_dir = validator.generate_article_navigation(artifacts)
-    puts "Generated article navigation: #{nav_dir.relative_path_from(root)}"
+    nav_paths = validator.generate_article_navigation(artifacts)
+    puts "Generated #{nav_paths.length} article navigation include(s)."
   end
 end

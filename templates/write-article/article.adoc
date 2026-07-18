@@ -74,8 +74,9 @@ toc::[]
 <Optional next steps, open questions, or follow-up article ideas. Remove this section if it does not add value.>
 
 // Generated article navigation (previous/next series links and related articles).
-// The file is produced per article by generateProfileArtifacts and is empty when
-// nothing applies. Website only; skipped in the readme/markdown export.
+// The file is produced per article by generateProfileArtifacts into a `generated/`
+// directory next to this article and is empty when nothing applies. Website only;
+// skipped in the readme/markdown export.
 ifeval::["{type}" != "readme"]
-include::{includesdir}/../generated/articles/{docname}-navigation.adoc[opts=optional]
+include::{docfile}/../generated/{docname}-navigation.adoc[opts=optional]
 endif::[]

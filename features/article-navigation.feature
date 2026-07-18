@@ -57,6 +57,16 @@ Feature: Article navigation
     When the article navigation is generated
     Then the draft article is not suggested as related
 
+  Scenario: Articles with the same basename in different directories do not collide
+    Given two articles that share a basename in different directories
+    When the article navigation is generated
+    Then each article keeps its own navigation file next to it
+
+  Scenario: Previous and next are rejected on non-article artifacts
+    Given a non-article artifact that sets a next series link
+    When the profile metamodel is validated
+    Then the validator reports that previous and next are only allowed for articles
+
   Scenario: Unknown previous or next id is a validation error
     Given an article whose next id references a missing artifact
     When the profile metamodel is validated

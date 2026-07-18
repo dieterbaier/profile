@@ -37,7 +37,8 @@ as project entries.
   client, employer, or URL.
 - Stable IDs are preserved after creation.
 - Generated files under `**/generated/` are not edited manually, including the
-  per-article navigation includes under `src-content/profile/generated/articles/`.
+  per-article navigation includes written to a `generated/` directory next to
+  each article.
 - Public-channel assumptions are explicit when they are not known.
 - Prefer meaningful, discriminating tags. Ubiquitous tags (for example `profile`)
   carry no relatedness signal and trigger a validator warning.

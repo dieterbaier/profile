@@ -50,7 +50,7 @@ Use the template for new articles as a flexible scaffold. Do not rewrite existin
 ## Article Navigation
 
 - Each article ends with a generated navigation include (previous/next series links and a "Könnte Sie auch interessieren" list). `templates/write-article/article.adoc` already carries the guarded include line; keep it and do not author the navigation block by hand.
-- `generateProfileArtifacts` writes one `src-content/profile/generated/articles/<slug>-navigation.adoc` per article, empty when nothing applies. Related articles are derived from shared meaningful tags (ubiquitous tags excluded) and from `relations`, limited to the five newest.
+- `generateProfileArtifacts` writes one `<slug>-navigation.adoc` per article into a `generated/` directory next to the article (for example `.../architecture/generated/`), empty when nothing applies. Placing it beside the article keeps the filename unique per directory, so articles that share a basename in different directories never collide. Related articles are derived from shared meaningful tags (ubiquitous tags excluded) and from `relations`, limited to the five newest.
 - The navigation renders on the website only, not in the Markdown/README export.
 
 ## Output Expectations
