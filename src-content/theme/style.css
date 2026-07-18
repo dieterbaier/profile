@@ -802,3 +802,107 @@ footer p {
 .sustainability-note a:hover {
     text-decoration: underline;
 }
+
+/* =========================================================
+   Article Navigation (previous / related / next)
+   ========================================================= */
+
+.article-nav {
+    display: grid;
+    grid-template-columns: 1fr minmax(0, 2fr) 1fr;
+    gap: 1rem;
+    align-items: start;
+    margin: 2.5rem 0 1rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--box-border-color);
+}
+
+.article-nav-prev,
+.article-nav-next,
+.article-nav-related {
+    background: var(--bg-surface);
+    border: 1px solid var(--box-border-color);
+    border-radius: var(--border-radius);
+    padding: 0.85rem 1rem;
+}
+
+/* Fixed columns keep previous left, related centered, and next right even when
+   a section is omitted because it has no content. */
+.article-nav-prev {
+    grid-column: 1;
+    text-align: left;
+}
+
+.article-nav-related {
+    grid-column: 2;
+    text-align: center;
+}
+
+.article-nav-next {
+    grid-column: 3;
+    text-align: right;
+}
+
+.article-nav a {
+    display: inline-flex;
+    flex-direction: column;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.article-nav-next a {
+    align-items: flex-end;
+}
+
+.article-nav a:hover .article-nav-title {
+    text-decoration: underline;
+}
+
+.article-nav-label {
+    font-size: 0.8rem;
+    color: var(--text-color-subtle);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.article-nav-title {
+    color: var(--link-color);
+}
+
+.article-nav-heading {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+}
+
+.article-nav-related ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.article-nav-related li {
+    margin: 0.2rem 0;
+}
+
+.article-nav-related a {
+    display: inline;
+    font-weight: 500;
+}
+
+@media (max-width: 700px) {
+    .article-nav {
+        grid-template-columns: 1fr;
+    }
+
+    .article-nav-prev,
+    .article-nav-next,
+    .article-nav-related {
+        grid-column: auto;
+        text-align: left;
+    }
+
+    .article-nav-next a {
+        align-items: flex-start;
+    }
+}

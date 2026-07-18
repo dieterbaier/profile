@@ -17,7 +17,8 @@
   summary: "Article about building and deploying only what changed."
   source: src-content/profile/site/articles/architecture/smarte-cicd-pipeline.adoc
   tags:
-    - profile
     - docs-as-code
+    - greenIT
+  previous: ART-001-intentionally-simple-website
   relations: []
   metadata_version: '1.0'

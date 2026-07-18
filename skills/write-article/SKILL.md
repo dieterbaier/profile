@@ -44,6 +44,14 @@ Use the template for new articles as a flexible scaffold. Do not rewrite existin
 - Use `type: Article`, `generated: false`, and channels such as `website` and `markdown-export` when applicable.
 - Assign a stable article ID only after checking existing `ART-*` IDs.
 - Mark `reviewed: false` for AI-created or AI-modified articles until human review is recorded.
+- Use meaningful, discriminating topical tags. Avoid ubiquitous tags such as `profile`; they add no relatedness signal and the validator warns when an article relies on them.
+- To place an article in a series, set the optional `previous` and/or `next` fields to existing Article IDs. Keep them consistent (`A.next = B` should pair with `B.previous = A`); the validator warns on mismatches and errors on unknown or non-Article targets.
+
+## Article Navigation
+
+- Each article ends with a generated navigation include (previous/next series links and a "Könnte Sie auch interessieren" list). `templates/write-article/article.adoc` already carries the guarded include line; keep it and do not author the navigation block by hand.
+- `generateProfileArtifacts` writes one `src-content/profile/generated/articles/<slug>-navigation.adoc` per article, empty when nothing applies. Related articles are derived from shared meaningful tags (ubiquitous tags excluded) and from `relations`, limited to the five newest.
+- The navigation renders on the website only, not in the Markdown/README export.
 
 ## Output Expectations
 

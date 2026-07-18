@@ -70,7 +70,22 @@ properties:
     uniqueItems: true
     items:
       type: string
-      pattern: "^[a-z0-9][a-z0-9-]*$"
+      description: >-
+        Any capitalization is allowed. Restricted to letters, digits, and
+        hyphens so tags carry no blanks or special characters.
+      pattern: "^[A-Za-z0-9][A-Za-z0-9-]*$"
+  previous:
+    type: string
+    description: >-
+      Optional stable ID of the preceding artifact in an article series. Used to
+      render "previous article" navigation. Should reference an existing Article.
+    pattern: "^[A-Z]+-[0-9]{3,}(-[a-z0-9]+)*$"
+  next:
+    type: string
+    description: >-
+      Optional stable ID of the following artifact in an article series. Used to
+      render "next article" navigation. Should reference an existing Article.
+    pattern: "^[A-Z]+-[0-9]{3,}(-[a-z0-9]+)*$"
   relations:
     type: array
     items:

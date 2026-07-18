@@ -17,6 +17,11 @@ channels:
 summary: "<One sentence summary for generated indexes.>"
 source: src-content/profile/site/articles/<topic>/<article-slug>.adoc
 tags:
-  - profile
+  # Use meaningful, discriminating topical tags. Avoid ubiquitous tags such as
+  # 'profile'; they carry no relatedness signal and the validator warns on them.
+  - <topic-tag>
+# Optional article-series navigation. Reference existing Article IDs.
+# previous: ART-000-preceding-article
+# next: ART-000-following-article
 relations: []
 metadata_version: '1.0'

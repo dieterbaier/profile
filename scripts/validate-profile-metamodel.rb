@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
+require 'cgi'
 require 'date'
 require 'fileutils'
 require 'optparse'
@@ -10,16 +11,25 @@ require 'yaml'
 
 class ProfileArtifactValidator
   REQUIRED = %w[id type title status owner created].freeze
-  PROPERTIES = %w[id type title status owner created updated reviewed generated language audience channels summary source tags relations metadata_version].freeze
+  PROPERTIES = %w[id type title status owner created updated reviewed generated language audience channels summary source tags previous next relations metadata_version].freeze
   TYPES = %w[ProfilePage Article ShortThought CV Project ProfessionalExperience Education Skill Contact ProfileFragment].freeze
   STATUSES = %w[draft proposed preview reviewed published private archived deprecated].freeze
+  # Statuses whose articles may appear as public "related article" suggestions.
+  PUBLIC_STATUSES = %w[published preview reviewed].freeze
+  # Ubiquitous tags carry no discriminating meaning across articles. They are
+  # ignored when computing related-article tag overlap, and the validator warns
+  # when an article relies on them. Keep meaningful topical tags (for example
+  # docs-as-code) out of this list even when most articles currently share them.
+  UBIQUITOUS_TAGS = %w[profile].freeze
+  # Maximum number of "Könnte Sie auch interessieren" entries per article.
+  RELATED_LIMIT = 5
   LANGUAGES = %w[de en mixed].freeze
   CHANNELS = %w[website cv readme github gitlab markdown-export pdf].freeze
   RELATION_TYPES = %w[addresses depends_on constrains refines supersedes conflicts_with mitigates introduces_risk affects verifies documents relates_to].freeze
   RELATION_STATUSES = %w[proposed reviewed accepted rejected].freeze
   RELATION_KEYS = %w[type target status rationale evidence reviewed].freeze
   ARTIFACT_ID_PATTERN = /\A[A-Z]+-[0-9]{3,}(-[a-z0-9]+)*\z/
-  TAG_PATTERN = /\A[a-z0-9][a-z0-9-]*\z/
+  TAG_PATTERN = /\A[A-Za-z0-9][A-Za-z0-9-]*\z/
 
   Artifact = Struct.new(:path, :metadata, keyword_init: true)
   attr_reader :errors, :warnings, :root, :profile_dir
@@ -36,6 +46,7 @@ class ProfileArtifactValidator
     validate_fields(artifacts)
     validate_ids(artifacts)
     validate_relations(artifacts)
+    validate_series(artifacts)
     artifacts
   end
 
@@ -44,6 +55,25 @@ class ProfileArtifactValidator
     FileUtils.mkdir_p(output_path.dirname)
     output_path.write(render_index(artifacts, output_path))
     output_path
+  end
+
+  # Writes one navigation include per article under <profile_dir>/generated/articles/.
+  # Each file holds previous/next series links and up to RELATED_LIMIT related
+  # articles, or stays empty when nothing applies. Returns the output directory.
+  def generate_article_navigation(artifacts)
+    nav_dir = profile_dir.join('generated', 'articles')
+    FileUtils.rm_rf(nav_dir)
+    FileUtils.mkdir_p(nav_dir)
+
+    articles = artifacts.select { |artifact| artifact.metadata['type'] == 'Article' }
+    by_id = articles.each_with_object({}) { |article, index| index[article.metadata['id']] = article }
+
+    articles.each do |article|
+      content = render_navigation(article, articles, by_id)
+      nav_dir.join("#{article_slug(article)}-navigation.adoc").write(content, encoding: 'UTF-8')
+    end
+
+    nav_dir
   end
 
   def report(artifacts)
@@ -120,6 +150,9 @@ class ProfileArtifactValidator
       validate_string_array(artifact, 'audience')
       validate_string_array(artifact, 'channels', allowed: CHANNELS)
       validate_tags(artifact)
+      validate_ubiquitous_tags(artifact)
+      validate_string(artifact, 'previous', pattern: ARTIFACT_ID_PATTERN, required: false)
+      validate_string(artifact, 'next', pattern: ARTIFACT_ID_PATTERN, required: false)
       validate_relations_field(artifact)
 
       if artifact.metadata['source']
@@ -252,6 +285,196 @@ class ProfileArtifactValidator
     errors << "#{relative(artifact.path)} field 'relations' must be an array"
   end
 
+  def validate_ubiquitous_tags(artifact)
+    return unless artifact.metadata['type'] == 'Article'
+
+    tags = artifact.metadata['tags']
+    return unless tags.is_a?(Array)
+
+    used = (tags & UBIQUITOUS_TAGS).sort
+    return if used.empty?
+
+    warnings << "#{relative(artifact.path)} uses ubiquitous tag(s) with no discriminating meaning for related articles: #{used.join(', ')}"
+  end
+
+  def validate_series(artifacts)
+    by_id = index_by_id(artifacts)
+    artifacts.each do |artifact|
+      self_id = artifact.metadata['id']
+
+      %w[previous next].each do |field|
+        target = artifact.metadata[field]
+        next if blank?(target)
+
+        referenced = by_id[target]
+        if referenced.nil?
+          errors << "#{relative(artifact.path)} field '#{field}' references unknown artifact '#{target}'"
+        elsif referenced.metadata['type'] != 'Article'
+          errors << "#{relative(artifact.path)} field '#{field}' must reference an Article, but '#{target}' is a #{referenced.metadata['type']}"
+        end
+      end
+
+      nxt = artifact.metadata['next']
+      if !blank?(nxt) && (paired = by_id[nxt]) && paired.metadata['previous'] != self_id
+        warnings << "#{relative(artifact.path)} declares next '#{nxt}', but '#{nxt}' does not declare previous '#{self_id}'"
+      end
+
+      prv = artifact.metadata['previous']
+      if !blank?(prv) && (paired = by_id[prv]) && paired.metadata['next'] != self_id
+        warnings << "#{relative(artifact.path)} declares previous '#{prv}', but '#{prv}' does not declare next '#{self_id}'"
+      end
+    end
+  end
+
+  def render_navigation(article, all_articles, by_id)
+    previous = lookup_article(by_id, article.metadata['previous'])
+    nxt = lookup_article(by_id, article.metadata['next'])
+    related = related_articles(article, all_articles)
+
+    sections = [
+      nav_prev_html(article, previous),
+      nav_related_html(article, related),
+      nav_next_html(article, nxt)
+    ].compact
+    return '' if sections.empty?
+
+    lines = []
+    lines << '// Generated article navigation. Do not edit manually.'
+    lines << '++++'
+    lines << '<nav class="article-nav" aria-label="Artikel-Navigation">'
+    lines.concat(sections)
+    lines << '</nav>'
+    lines << '++++'
+    lines << ''
+    lines.join("\n")
+  end
+
+  def nav_prev_html(from_article, target)
+    return nil if target.nil?
+
+    href = h(article_link_href(from_article, target))
+    title = h(target.metadata['title'])
+    "  <div class=\"article-nav-prev\">\n" \
+      "    <a href=\"#{href}\" rel=\"prev\"><span class=\"article-nav-label\">&#8592; (Serie) Vorheriger Artikel</span>" \
+      "<span class=\"article-nav-title\">#{title}</span></a>\n" \
+      '  </div>'
+  end
+
+  def nav_next_html(from_article, target)
+    return nil if target.nil?
+
+    href = h(article_link_href(from_article, target))
+    title = h(target.metadata['title'])
+    "  <div class=\"article-nav-next\">\n" \
+      "    <a href=\"#{href}\" rel=\"next\"><span class=\"article-nav-label\">(Serie) Nächster Artikel &#8594;</span>" \
+      "<span class=\"article-nav-title\">#{title}</span></a>\n" \
+      '  </div>'
+  end
+
+  def nav_related_html(from_article, related)
+    return nil if related.empty?
+
+    items = related.map do |target|
+      "      <li><a href=\"#{h(article_link_href(from_article, target))}\">#{h(target.metadata['title'])}</a></li>"
+    end
+    ['  <div class="article-nav-related">',
+     '    <span class="article-nav-heading">Könnte Sie auch interessieren</span>',
+     '    <ul>',
+     *items,
+     '    </ul>',
+     '  </div>'].join("\n")
+  end
+
+  def related_articles(article, all_articles)
+    self_id = article.metadata['id']
+    excluded = [self_id, article.metadata['previous'], article.metadata['next']].compact.to_set
+    self_tags = meaningful_tags(article)
+    linked = related_relation_ids(article, all_articles)
+
+    candidates = all_articles.reject do |candidate|
+      excluded.include?(candidate.metadata['id']) || !PUBLIC_STATUSES.include?(candidate.metadata['status'])
+    end
+
+    scored = candidates.filter_map do |candidate|
+      shared = (self_tags & meaningful_tags(candidate)).length
+      is_linked = linked.include?(candidate.metadata['id'])
+      next unless is_linked || shared.positive?
+
+      { article: candidate, linked: is_linked, shared: shared }
+    end
+
+    scored.sort_by do |entry|
+      [entry[:linked] ? 0 : 1, -entry[:shared], -date_ordinal(entry[:article]), entry[:article].metadata['id'].to_s]
+    end.first(RELATED_LIMIT).map { |entry| entry[:article] }
+  end
+
+  def related_relation_ids(article, all_articles)
+    self_id = article.metadata['id']
+    article_ids = all_articles.map { |candidate| candidate.metadata['id'] }.to_set
+    ids = Set.new
+
+    Array(article.metadata['relations']).each do |relation|
+      target = relation.is_a?(Hash) ? relation['target'] : nil
+      ids << target if target && article_ids.include?(target)
+    end
+
+    all_articles.each do |other|
+      next if other.metadata['id'] == self_id
+
+      Array(other.metadata['relations']).each do |relation|
+        ids << other.metadata['id'] if relation.is_a?(Hash) && relation['target'] == self_id
+      end
+    end
+
+    ids
+  end
+
+  def meaningful_tags(article)
+    Array(article.metadata['tags']) - UBIQUITOUS_TAGS
+  end
+
+  def lookup_article(by_id, id)
+    return nil if blank?(id)
+
+    article = by_id[id]
+    article if article && article.metadata['type'] == 'Article'
+  end
+
+  def article_link_href(from_article, to_article)
+    from_dir = article_source_path(from_article).dirname
+    target = article_source_path(to_article).sub_ext('.html')
+    target.relative_path_from(from_dir).to_s
+  end
+
+  def article_source_path(article)
+    source = article.metadata['source']
+    return root.join(source) if source.is_a?(String) && !source.empty?
+
+    article.path.sub_ext('.adoc')
+  end
+
+  def article_slug(article)
+    article_source_path(article).basename('.adoc').to_s
+  end
+
+  def date_ordinal(article)
+    value = article.metadata['created']
+    return value.jd if value.is_a?(Date)
+
+    begin
+      Date.iso8601(value.to_s).jd
+    rescue Date::Error
+      0
+    end
+  end
+
+  def index_by_id(artifacts)
+    artifacts.each_with_object({}) do |artifact, index|
+      id = artifact.metadata['id']
+      index[id] = artifact unless blank?(id)
+    end
+  end
+
   def boolean?(value)
     value == true || value == false
   end
@@ -289,6 +512,10 @@ class ProfileArtifactValidator
     value.to_s.gsub('|', '\|').gsub("\n", ' ')
   end
 
+  def h(value)
+    CGI.escapeHTML(value.to_s)
+  end
+
   def relative(path)
     Pathname.new(path).expand_path.relative_path_from(root).to_s
   rescue ArgumentError
@@ -297,24 +524,32 @@ class ProfileArtifactValidator
 end
 
 if $PROGRAM_NAME == __FILE__
-  root = Pathname.new(__dir__).join('..').expand_path
+  default_root = Pathname.new(__dir__).join('..').expand_path
   options = {
-    profile_dir: root.join('src-content/profile'),
+    root: default_root,
+    profile_dir: nil,
     generate: false,
-    output: 'src-content/profile/generated/profile-artifact-index.adoc'
+    output: nil
   }
   OptionParser.new do |parser|
+    parser.on('--root PATH') { |value| options[:root] = Pathname.new(value) }
     parser.on('--profile-dir PATH') { |value| options[:profile_dir] = Pathname.new(value) }
     parser.on('--generate') { options[:generate] = true }
     parser.on('--output PATH') { |value| options[:output] = value }
   end.parse!
 
-  validator = ProfileArtifactValidator.new(root: root, profile_dir: options[:profile_dir])
+  root = options[:root]
+  profile_dir = options[:profile_dir] || root.join('src-content/profile')
+  output = options[:output] || 'src-content/profile/generated/profile-artifact-index.adoc'
+
+  validator = ProfileArtifactValidator.new(root: root, profile_dir: profile_dir)
   artifacts = validator.validate
   validator.report(artifacts)
   exit(1) unless validator.errors.empty?
   if options[:generate]
-    path = validator.generate(artifacts, output: options[:output])
+    path = validator.generate(artifacts, output: output)
     puts "Generated: #{path.relative_path_from(root)}"
+    nav_dir = validator.generate_article_navigation(artifacts)
+    puts "Generated article navigation: #{nav_dir.relative_path_from(root)}"
   end
 end
