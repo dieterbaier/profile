@@ -79,13 +79,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set image
-        id: set_image
-        run: echo "IMAGE_NAME=ghcr.io/docs-as-code-toolkit/docs-toolbox:v1.3.1" >> $GITHUB_OUTPUT
-
-      - name: Pull runtime image
-        run: docker pull ${{ steps.set_image.outputs.IMAGE_NAME }}
-
       - name: Cache Gradle
         uses: actions/cache@v4
         with:
@@ -95,48 +88,40 @@ jobs:
       - name: Run build
         id: run_build
         run: |
-          CMD="./gradlew --no-daemon"
+          TASKS=""
 
           if [ "${{ needs.detect-changes.outputs.readme }}" == "true" ]; then
-            CMD="$CMD buildReadme"
+            TASKS="$TASKS buildReadme"
           fi
 
           if [ "${{ needs.detect-changes.outputs.articles }}" == "true" ]; then
-            CMD="$CMD buildArticlesMarkdown"
+            TASKS="$TASKS buildArticlesMarkdown"
           fi
 
           if [ "${{ needs.detect-changes.outputs.architecture }}" == "true" ]; then
-            CMD="$CMD buildArchitecture"
+            TASKS="$TASKS buildArchitecture"
           fi
-          
+
           if [ "${{ needs.detect-changes.outputs.site }}" == "true" ]; then
-            CMD="$CMD buildSite"
+            TASKS="$TASKS buildSite"
           fi
-          
-          echo "Running: $CMD"
-          
-          echo "IS_BUILT=false" >> $GITHUB_OUTPUT
-          if [ "$CMD" == "./gradlew --no-daemon" ]; then
+
+          TASKS="$(echo "$TASKS" | xargs)"
+
+          if [ -z "$TASKS" ]; then
+            echo "IS_BUILT=false" >> $GITHUB_OUTPUT
             echo "Nothing to build"
             exit 0
           fi
-          
+
           echo "IS_BUILT=true" >> $GITHUB_OUTPUT
-          
-          docker run --rm \
-            -v ${{ github.workspace }}:/app \
-            -v $HOME/.gradle:/root/.gradle \
-            -e SITE_EMAIL \
-            -e SITE_ADDRESS_NAME \
-            -e SITE_STREET \
-            -e SITE_PLZ \
-            -e SITE_CITY \
-            -e SITE_TEL \
-            -e SITE_BASE_URL \
-            -e REQUIRE_SITE_BASE_URL \
-            -w /app \
-            ${{ steps.set_image.outputs.IMAGE_NAME }} \
-            $CMD
+
+          # The build runs through build.sh so CI and local builds share one
+          # container invocation and image tag. Forward the Gradle cache to the
+          # cached host directory.
+          export GRADLE_CACHE="$HOME/.gradle"
+          echo "Running: ./build.sh $TASKS"
+          ./build.sh $TASKS
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
@@ -152,13 +137,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set image
-        id: set_image
-        run: echo "IMAGE_NAME=ghcr.io/docs-as-code-toolkit/docs-toolbox:v1.3.1" >> $GITHUB_OUTPUT
-
-      - name: Pull runtime image
-        run: docker pull ${{ steps.set_image.outputs.IMAGE_NAME }}
-
       - name: Cache Gradle
         uses: actions/cache@v4
         with:
@@ -167,20 +145,17 @@ jobs:
 
       - name: Run validation and generator checks
         run: |
-          docker run --rm \
-            -v ${{ github.workspace }}:/app \
-            -v $HOME/.gradle:/root/.gradle \
-            -w /app \
-            ${{ steps.set_image.outputs.IMAGE_NAME }} \
-            ./gradlew --no-daemon \
-              validateProfileMetamodel \
-              generateProfileArtifacts \
-              generateArchitectureArtifacts \
-              generateArticleSummaries \
-              checkAgentAdapters \
-              testAgentAdapters \
-              testProfileNavigation \
-              testSiteMetadata
+          export GRADLE_CACHE="$HOME/.gradle"
+          ./build.sh \
+            validateProfileMetamodel \
+            generateProfileArtifacts \
+            generateArchitectureArtifacts \
+            generateArticleSummaries \
+            checkAgentAdapters \
+            testAgentAdapters \
+            testProfileNavigation \
+            testProfileListings \
+            testSiteMetadata
 
   deploy-site:
     needs: [build-docs, detect-changes]
