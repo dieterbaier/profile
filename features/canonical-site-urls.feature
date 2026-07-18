@@ -19,6 +19,11 @@ Feature: Canonical URLs for the public site
     When public site metadata is injected
     Then their canonical URLs omit index.html
 
+  Scenario: Special characters in output paths are percent encoded
+    Given a generated public page whose output path contains spaces and non-ASCII characters
+    When public site metadata is injected
+    Then each path segment is percent encoded in the canonical URL
+
   Scenario: Local builds may omit canonical URLs without a base URL
     Given a local site build without a configured base URL
     When public site metadata injection is invoked
