@@ -21,13 +21,14 @@ class ProfileNavigationTest < Minitest::Test
   def with_articles(articles)
     Dir.mktmpdir('profile-nav-test') do |dir|
       root = Pathname.new(dir)
-      (root + 'articles').mkpath
 
       articles.each do |article|
         slug = article.fetch(:slug)
-        source_rel = "articles/#{slug}.adoc"
+        rel_dir = article.fetch(:dir, 'articles')
+        (root + rel_dir).mkpath
+        source_rel = "#{rel_dir}/#{slug}.adoc"
         (root + source_rel).write("= #{article.fetch(:title, slug)}\n")
-        (root + "articles/#{slug}.profile.yaml").write(metadata_yaml(article, source_rel))
+        (root + "#{rel_dir}/#{slug}.profile.yaml").write(metadata_yaml(article, source_rel))
       end
 
       validator = ProfileArtifactValidator.new(root: root, profile_dir: root)
@@ -53,8 +54,8 @@ class ProfileNavigationTest < Minitest::Test
     metadata.to_yaml
   end
 
-  def nav_for(root, slug)
-    path = root + "generated/articles/#{slug}-navigation.adoc"
+  def nav_for(root, slug, dir: 'articles')
+    path = root + "#{dir}/generated/#{slug}-navigation.adoc"
     path.exist? ? path.read : ''
   end
 
@@ -231,6 +232,42 @@ class ProfileNavigationTest < Minitest::Test
 
       # Then: the draft article is not suggested as related
       refute_includes nav_for(root, 'public'), 'draft.html'
+    end
+  end
+
+  def test_articles_with_the_same_basename_in_different_directories_do_not_collide
+    # Given: two articles that share a basename in different directories
+    articles = [
+      { id: 'ART-771-arch-intro', slug: 'introduction', title: 'Architecture Intro',
+        dir: 'articles/architecture', tags: %w[shared-topic] },
+      { id: 'ART-772-docs-intro', slug: 'introduction', title: 'Documentation Intro',
+        dir: 'articles/documentation', tags: %w[shared-topic] }
+    ]
+
+    with_articles(articles) do |validator, artifacts, root|
+      # When: the article navigation is generated
+      validator.generate_article_navigation(artifacts)
+
+      # Then: each article keeps its own navigation file that links to the other
+      arch = nav_for(root, 'introduction', dir: 'articles/architecture')
+      docs = nav_for(root, 'introduction', dir: 'articles/documentation')
+      refute_equal '', arch
+      refute_equal '', docs
+      assert_includes arch, 'href="../documentation/introduction.html"'
+      assert_includes docs, 'href="../architecture/introduction.html"'
+    end
+  end
+
+  def test_previous_and_next_are_rejected_on_non_article_artifacts
+    # Given: a non-article artifact that sets a next series link
+    articles = [
+      { id: 'PRJ-001-tool', slug: 'tool', type: 'Project', next: 'ART-981-real' },
+      { id: 'ART-981-real', slug: 'real', type: 'Article' }
+    ]
+
+    with_articles(articles) do |validator, _artifacts, _root|
+      # When/Then: validation reports that previous/next are article-only
+      assert(validator.errors.any? { |e| e.include?('only allowed for Articles') })
     end
   end
 

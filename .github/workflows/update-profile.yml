@@ -174,7 +174,8 @@ jobs:
               generateArchitectureArtifacts \
               generateArticleSummaries \
               checkAgentAdapters \
-              testAgentAdapters
+              testAgentAdapters \
+              testProfileNavigation
 
   deploy-site:
     needs: [build-docs, detect-changes]

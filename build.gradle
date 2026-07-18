@@ -160,6 +160,7 @@ def asciidoctorBase = { taskName, taskDependsOnTask, sourceDir, outputDir, List<
             }
             sources {
                 articleSummarySourceExcludes.each { exclude it }
+                exclude '**/generated/**'
             }
 
             asciidoctorj {
@@ -186,6 +187,7 @@ def asciidoctorBase = { taskName, taskDependsOnTask, sourceDir, outputDir, List<
             }
             sources {
                 articleSummarySourceExcludes.each { exclude it }
+                exclude '**/generated/**'
             }
         }
     }
@@ -429,6 +431,7 @@ asciidoctorBase('buildReadme','convertDocBookToMarkdown','src-content/profile/re
 def articleSources = fileTree('src-content/profile/site/articles') {
     include '**/*.adoc'
     articleSummarySourceExcludes.each { exclude it }
+    exclude '**/generated/**'
     exclude '**/.asciidoctorconfig.adoc'
     exclude 'articles.adoc'
     exclude 'articles_matrix.adoc'

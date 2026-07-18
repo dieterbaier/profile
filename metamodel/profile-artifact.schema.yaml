@@ -78,13 +78,15 @@ properties:
     type: string
     description: >-
       Optional stable ID of the preceding artifact in an article series. Used to
-      render "previous article" navigation. Should reference an existing Article.
+      render "previous article" navigation. Only valid on Article artifacts and
+      must reference an existing Article.
     pattern: "^[A-Z]+-[0-9]{3,}(-[a-z0-9]+)*$"
   next:
     type: string
     description: >-
       Optional stable ID of the following artifact in an article series. Used to
-      render "next article" navigation. Should reference an existing Article.
+      render "next article" navigation. Only valid on Article artifacts and must
+      reference an existing Article.
     pattern: "^[A-Z]+-[0-9]{3,}(-[a-z0-9]+)*$"
   relations:
     type: array
@@ -93,3 +95,15 @@ properties:
   metadata_version:
     type: string
     default: "1.0"
+allOf:
+  # Article-series navigation is only meaningful for articles.
+  - if:
+      required: [type]
+      properties:
+        type:
+          const: Article
+    then: true
+    else:
+      properties:
+        previous: false
+        next: false
