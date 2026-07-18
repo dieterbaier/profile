@@ -16,7 +16,7 @@ if [ -z "$ENGINE" ]; then
     exit 0
 fi
 
-IMAGE_NAME="ghcr.io/docs-as-code-toolkit/docs-toolbox:v1.1.0"
+IMAGE_NAME="ghcr.io/docs-as-code-toolkit/docs-toolbox:v1.3.1"
 echo "📥 Versuche, Image $IMAGE_NAME von GHCR zu pullen..."
 if $ENGINE pull "$IMAGE_NAME"; then
     echo "✅ Image aus GHCR gezogen"
