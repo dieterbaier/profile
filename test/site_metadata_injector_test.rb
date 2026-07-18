@@ -55,6 +55,20 @@ class SiteMetadataInjectorTest < Minitest::Test
     end
   end
 
+  def test_special_characters_in_output_paths_are_percent_encoded
+    # Given: a generated public page whose output path contains spaces and non-ASCII characters
+    with_site(['articles/Über uns & mehr.html']) do |site|
+      injector = SiteMetadataInjector.new(site_dir: site, base_url: 'https://example.test')
+
+      # When: public site metadata is injected
+      injector.inject
+
+      # Then: each path segment is percent-encoded in the canonical URL
+      assert_equal 'https://example.test/articles/%C3%9Cber%20uns%20%26%20mehr.html',
+                   canonical_href(site.join('articles/Über uns & mehr.html'))
+    end
+  end
+
   def test_local_builds_may_omit_canonical_urls_without_a_base_url
     # Given: a local site build without a configured base URL
     with_site(%w[index.html]) do |site|
@@ -93,7 +107,7 @@ class SiteMetadataInjectorTest < Minitest::Test
   def test_existing_canonical_link_is_replaced_instead_of_duplicated
     with_site(%w[index.html]) do |site|
       page = site.join('index.html')
-      page.write(page.read.sub('</head>', '<link rel="canonical" href="https://old.test/"></head>'))
+      page.write(page.read.sub('</head>', '<link href="https://old.test/" rel="canonical"></head>'))
 
       SiteMetadataInjector.new(site_dir: site, base_url: 'https://example.test').inject
 

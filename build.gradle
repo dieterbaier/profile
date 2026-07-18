@@ -160,6 +160,7 @@ def asciidoctorBase = { taskName, taskDependsOnTask, sourceDir, outputDir, List<
             }
             sources {
                 if (sourcesToBuild.isEmpty()) {
+                    // Repository convention: authored AsciiDoc sources use the canonical .adoc extension.
                     include '**/*.adoc'
                 }
                 articleSummarySourceExcludes.each { exclude it }

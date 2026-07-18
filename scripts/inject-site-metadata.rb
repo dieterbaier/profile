@@ -30,10 +30,15 @@ class SiteMetadataInjector
                     relative
                   end
 
-    URI.join("#{base_url}/", public_path).to_s
+    encoded_path = public_path.split('/', -1).map { |segment| encode_path_segment(segment) }.join('/')
+    URI.join("#{base_url}/", encoded_path).to_s
   end
 
   private
+
+  def encode_path_segment(segment)
+    URI::DEFAULT_PARSER.escape(segment, /[^A-Za-z0-9\-._~]/)
+  end
 
   def normalize_base_url(value)
     raise ArgumentError, 'base URL must not be empty' if value.nil? || value.strip.empty?
@@ -55,10 +60,11 @@ class SiteMetadataInjector
     return unless content.include?('</head>')
 
     canonical = %(<link rel="canonical" href="#{canonical_url(html_path)}">)
-    updated = if content.match?(%r{<link\s+rel=["']canonical["'][^>]*>}i)
-                content.sub(%r{<link\s+rel=["']canonical["'][^>]*>}i, canonical)
+    canonical_link_pattern = %r{<link\b[^>]*\brel\s*=\s*["']canonical["'][^>]*>}i
+    updated = if content.match?(canonical_link_pattern)
+                content.sub(canonical_link_pattern) { canonical }
               else
-                content.sub('</head>', "#{canonical}\n</head>")
+                content.sub('</head>') { "#{canonical}\n</head>" }
               end
     html_path.write(updated, encoding: 'UTF-8')
   end
