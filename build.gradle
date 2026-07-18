@@ -402,6 +402,19 @@ tasks.register('testAgentAdapters') {
     }
 }
 
+tasks.register('testProfileNavigation') {
+    description = 'Runs the article navigation generator behaviour tests.'
+    group = 'verification'
+    inputs.files('scripts/validate-profile-metamodel.rb', 'test/profile_navigation_test.rb')
+    inputs.files('features/article-navigation.feature')
+
+    doLast {
+        exec {
+            commandLine 'ruby', '-Itest', 'test/profile_navigation_test.rb'
+        }
+    }
+}
+
 // Readme
 asciidoctorBase('buildReadmeDocbook','','src-content/profile/readme', 'build/readme/docbook', [],true, 'docbook')
 tasks.register('convertDocBookToMarkdown', PandocTask) {

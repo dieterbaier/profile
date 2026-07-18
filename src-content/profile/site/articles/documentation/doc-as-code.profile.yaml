@@ -17,7 +17,6 @@
   summary: "Article explaining Docs-as-Code as a documentation discipline."
   source: src-content/profile/site/articles/documentation/doc-as-code.adoc
   tags:
-    - profile
     - docs-as-code
   relations: []
   metadata_version: '1.0'

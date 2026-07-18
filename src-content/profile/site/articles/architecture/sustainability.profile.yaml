@@ -17,7 +17,7 @@
   summary: "Article about sustainability and architectural simplicity."
   source: src-content/profile/site/articles/architecture/sustainability.adoc
   tags:
-    - profile
-    - docs-as-code
+    - greenIT
+  next: ART-002-smarter-cicd
   relations: []
   metadata_version: '1.0'

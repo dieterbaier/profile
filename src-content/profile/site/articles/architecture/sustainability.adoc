@@ -122,3 +122,8 @@ Nachhaltigkeit bei Software ist selten eine einzige große Entscheidung.
 
 Sie ist das Ergebnis vieler kleiner Entscheidungen.
 --
+
+// Generated article navigation (previous/next and related articles); website only.
+ifeval::["{type}" != "readme"]
+include::{includesdir}/../generated/articles/{docname}-navigation.adoc[opts=optional]
+endif::[]

@@ -222,3 +222,8 @@ Mögliche nächste Schritte:
 - Metriken zur Pipeline-Performance
 
 Die Grundlage dafür ist bereits gelegt.
+
+// Generated article navigation (previous/next and related articles); website only.
+ifeval::["{type}" != "readme"]
+include::{includesdir}/../generated/articles/{docname}-navigation.adoc[opts=optional]
+endif::[]

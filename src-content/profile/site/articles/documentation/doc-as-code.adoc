@@ -247,3 +247,8 @@ Im nächsten Teil der Serie bauen wir Schritt für Schritt eine **Docs-as-Code P
 
 Am Ende steht eine Dokumentation, die sich wie Software bauen, versionieren und ausliefern lässt.
 endif::[]
+
+// Generated article navigation (previous/next and related articles); website only.
+ifeval::["{type}" != "readme"]
+include::{includesdir}/../generated/articles/{docname}-navigation.adoc[opts=optional]
+endif::[]

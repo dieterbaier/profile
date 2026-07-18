@@ -19,6 +19,7 @@ Optional:
 - Audience constraints.
 - Canonical publication URL.
 - Relation targets to other profile artifacts.
+- Article-series links via the optional `previous` and `next` fields (existing Article IDs).
 
 ## Output
 
@@ -35,8 +36,12 @@ as project entries.
 - Metadata must not invent facts about the person, project, publication status,
   client, employer, or URL.
 - Stable IDs are preserved after creation.
-- Generated files under `**/generated/` are not edited manually.
+- Generated files under `**/generated/` are not edited manually, including the
+  per-article navigation includes under `src-content/profile/generated/articles/`.
 - Public-channel assumptions are explicit when they are not known.
+- Prefer meaningful, discriminating tags. Ubiquitous tags (for example `profile`)
+  carry no relatedness signal and trigger a validator warning.
+- `previous`/`next` reference existing Articles and stay mutually consistent.
 
 ## Validation
 
