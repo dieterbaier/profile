@@ -4,6 +4,7 @@
   status: published
   owner: "Dieter Baier"
   created: '2026-07-04'
+  published: '2026-07-04'
   reviewed: false
   generated: false
   language: mixed
@@ -15,8 +16,11 @@
     - website
     - markdown-export
   summary: "Article explaining Docs-as-Code as a documentation discipline."
+  summary_de: "Was Docs-as-Code als Dokumentationsdisziplin bedeutet und warum Dokumentation wie Quellcode gepflegt, versioniert und generiert werden sollte."
   source: src-content/profile/site/articles/documentation/doc-as-code.adoc
   tags:
     - docs-as-code
+  skills:
+    - Docs-as-Code
   relations: []
   metadata_version: '1.0'

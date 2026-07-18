@@ -9,4 +9,8 @@ endif::[]
 :active: articles
 include::{includesdir}/docheader.adoc[]
 
-include::{includesdir}/../site/articles/articles_matrix.adoc[Artikel Matrix]
+Die zuletzt veröffentlichten Artikel:
+
+include::{docfile}/../generated/lists/recent.adoc[opts=optional]
+
+link:lists/all.html[Alle Artikel anzeigen,role="fingerPointsTo"]

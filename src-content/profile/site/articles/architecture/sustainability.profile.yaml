@@ -4,6 +4,7 @@
   status: published
   owner: "Dieter Baier"
   created: '2026-07-04'
+  published: '2026-07-04'
   reviewed: false
   generated: false
   language: mixed
@@ -15,9 +16,12 @@
     - website
     - markdown-export
   summary: "Article about sustainability and architectural simplicity."
+  summary_de: "Warum diese Website bewusst einfach gebaut ist – und wie viele kleine Architekturentscheidungen zu Einfachheit, Effizienz und Nachhaltigkeit beitragen."
   source: src-content/profile/site/articles/architecture/sustainability.adoc
   tags:
     - greenIT
+  skills:
+    - Software-Architektur
   next: ART-002-smarter-cicd
   relations: []
   metadata_version: '1.0'

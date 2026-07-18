@@ -11,7 +11,7 @@ require 'yaml'
 
 class ProfileArtifactValidator
   REQUIRED = %w[id type title status owner created].freeze
-  PROPERTIES = %w[id type title status owner created updated reviewed generated language audience channels summary source tags previous next relations metadata_version].freeze
+  PROPERTIES = %w[id type title status owner created updated published reviewed generated language audience channels summary summary_de summary_en source tags skills previous next relations metadata_version].freeze
   TYPES = %w[ProfilePage Article ShortThought CV Project ProfessionalExperience Education Skill Contact ProfileFragment].freeze
   STATUSES = %w[draft proposed preview reviewed published private archived deprecated].freeze
   # Statuses whose articles may appear as public "related article" suggestions.
@@ -23,6 +23,10 @@ class ProfileArtifactValidator
   UBIQUITOUS_TAGS = %w[profile].freeze
   # Maximum number of "Könnte Sie auch interessieren" entries per article.
   RELATED_LIMIT = 5
+  # Number of most recent articles shown on the article landing page.
+  RECENT_LIMIT = 10
+  # Default display language for article listings when none is requested.
+  DEFAULT_LANGUAGE = 'de'
   LANGUAGES = %w[de en mixed].freeze
   CHANNELS = %w[website cv readme github gitlab markdown-export pdf].freeze
   RELATION_TYPES = %w[addresses depends_on constrains refines supersedes conflicts_with mitigates introduces_risk affects verifies documents relates_to].freeze
@@ -77,6 +81,62 @@ class ProfileArtifactValidator
       nav_path.write(render_navigation(article, articles, by_id), encoding: 'UTF-8')
       nav_path
     end
+  end
+
+  # Generates the article listings from metadata: a "recent" include fragment
+  # (RECENT_LIMIT newest public articles) plus standalone overview pages for all
+  # articles, each tag, and each skill. Fragments live under
+  # <articles-dir>/generated/lists and standalone pages under
+  # <articles-dir>/generated/pages. Standalone pages are authored for the output
+  # location <articles-dir>/lists, so their links resolve once the dedicated
+  # Asciidoctor task renders that directory into the site. Returns written paths.
+  def generate_article_lists(artifacts, language: DEFAULT_LANGUAGE)
+    all_articles = artifacts.select { |artifact| artifact.metadata['type'] == 'Article' }
+    articles_dir = articles_base_dir(all_articles)
+    return [] if articles_dir.nil?
+
+    clean_generated_lists(articles_dir)
+
+    lists_dir = articles_dir.join('generated', 'lists')
+    pages_dir = articles_dir.join('generated', 'pages')
+    FileUtils.mkdir_p(lists_dir)
+    FileUtils.mkdir_p(pages_dir)
+
+    # The output location of the standalone pages; used to compute link targets.
+    output_dir = articles_dir.join('lists')
+    ordered = sort_articles(public_articles(artifacts))
+    written = []
+
+    recent_path = lists_dir.join('recent.adoc')
+    recent_path.write(render_list_fragment(ordered.first(RECENT_LIMIT), from_dir: articles_dir, language: language), encoding: 'UTF-8')
+    written << recent_path
+
+    all_path = pages_dir.join('all.adoc')
+    all_path.write(render_list_page(title: 'Alle Artikel', articles: ordered, output_dir: output_dir, articles_dir: articles_dir, language: language), encoding: 'UTF-8')
+    written << all_path
+
+    tags_in_use(ordered).each do |tag|
+      tagged = ordered.select { |article| Array(article.metadata['tags']).include?(tag) }
+      path = pages_dir.join("tag-#{tag}.adoc")
+      path.write(render_list_page(title: "Artikel mit dem Tag: #{tag}", articles: tagged, output_dir: output_dir, articles_dir: articles_dir, language: language), encoding: 'UTF-8')
+      written << path
+    end
+
+    skills_in_use(ordered).each do |skill|
+      skilled = ordered.select { |article| Array(article.metadata['skills']).include?(skill) }
+      path = pages_dir.join("skill-#{skill}.adoc")
+      path.write(render_list_page(title: "Artikel zum Thema: #{humanize_slug(skill)}", articles: skilled, output_dir: output_dir, articles_dir: articles_dir, language: language), encoding: 'UTF-8')
+      written << path
+    end
+
+    written
+  end
+
+  # Removes previously generated article listings so removed tags, skills, or
+  # articles do not leave stale pages or fragments behind.
+  def clean_generated_lists(articles_dir)
+    FileUtils.rm_rf(articles_dir.join('generated', 'lists'))
+    FileUtils.rm_rf(articles_dir.join('generated', 'pages'))
   end
 
   # Removes previously generated navigation files, including files left behind by
@@ -151,6 +211,8 @@ class ProfileArtifactValidator
       validate_string(artifact, 'title')
       validate_string(artifact, 'owner')
       validate_string(artifact, 'summary', required: false)
+      validate_string(artifact, 'summary_de', required: false)
+      validate_string(artifact, 'summary_en', required: false)
       validate_string(artifact, 'source', required: false)
       validate_string(artifact, 'metadata_version', required: false)
       validate_enum(artifact, 'type', TYPES)
@@ -158,12 +220,14 @@ class ProfileArtifactValidator
       validate_enum(artifact, 'language', LANGUAGES, required: false)
       validate_date(artifact, 'created')
       validate_date(artifact, 'updated', required: false)
+      validate_date(artifact, 'published', required: false)
       validate_boolean(artifact, 'reviewed')
       validate_boolean(artifact, 'generated')
       validate_string_array(artifact, 'audience')
       validate_string_array(artifact, 'channels', allowed: CHANNELS)
       validate_tags(artifact)
       validate_ubiquitous_tags(artifact)
+      validate_skills(artifact)
       validate_string(artifact, 'previous', pattern: ARTIFACT_ID_PATTERN, required: false)
       validate_string(artifact, 'next', pattern: ARTIFACT_ID_PATTERN, required: false)
       validate_relations_field(artifact)
@@ -291,6 +355,25 @@ class ProfileArtifactValidator
     end
   end
 
+  def validate_skills(artifact)
+    skills = artifact.metadata['skills']
+    return if skills.nil?
+
+    unless skills.is_a?(Array)
+      errors << "#{relative(artifact.path)} field 'skills' must be an array"
+      return
+    end
+
+    duplicates = skills.group_by(&:itself).select { |_skill, matches| matches.length > 1 }.keys
+    errors << "#{relative(artifact.path)} field 'skills' contains duplicate value(s): #{duplicates.join(', ')}" unless duplicates.empty?
+
+    skills.each_with_index do |skill, index|
+      unless skill.is_a?(String) && skill =~ TAG_PATTERN
+        errors << "#{relative(artifact.path)} field 'skills' item ##{index + 1} must match #{TAG_PATTERN.inspect}"
+      end
+    end
+  end
+
   def validate_relations_field(artifact)
     relations = artifact.metadata['relations']
     return if relations.nil? || relations.is_a?(Array)
@@ -344,6 +427,143 @@ class ProfileArtifactValidator
         warnings << "#{relative(artifact.path)} declares previous '#{prv}', but '#{prv}' does not declare next '#{self_id}'"
       end
     end
+  end
+
+  def public_articles(artifacts)
+    artifacts.select do |artifact|
+      artifact.metadata['type'] == 'Article' && PUBLIC_STATUSES.include?(artifact.metadata['status'])
+    end
+  end
+
+  # Newest first by publication date, ties broken by id for deterministic output.
+  def sort_articles(articles)
+    articles.sort_by { |article| [-publication_ordinal(article), article.metadata['id'].to_s] }
+  end
+
+  def publication_ordinal(article)
+    date = publication_date(article)
+    date ? date.jd : 0
+  end
+
+  # Publication date is 'published' when present, otherwise 'created'.
+  def publication_date(article)
+    raw = article.metadata['published'] || article.metadata['created']
+    return raw if raw.is_a?(Date)
+
+    begin
+      Date.iso8601(raw.to_s)
+    rescue Date::Error
+      nil
+    end
+  end
+
+  def format_date(date)
+    date.nil? ? '' : date.strftime('%d.%m.%Y')
+  end
+
+  # Language-specific summary with fallback to the language-neutral 'summary'.
+  def summary_for(article, language)
+    article.metadata["summary_#{language}"] || article.metadata['summary'] || ''
+  end
+
+  def tags_in_use(articles)
+    articles.flat_map { |article| Array(article.metadata['tags']) }.uniq.sort
+  end
+
+  def skills_in_use(articles)
+    articles.flat_map { |article| Array(article.metadata['skills']) }.uniq.sort
+  end
+
+  # Turns a slug into a readable heading, e.g. "Software-Architektur" -> "Software Architektur".
+  def humanize_slug(slug)
+    slug.to_s.tr('-', ' ')
+  end
+
+  # Common directory of all article sources; the listings live beneath it.
+  def articles_base_dir(articles)
+    dirs = articles.map { |article| article_source_path(article).dirname }
+    return nil if dirs.empty?
+
+    dirs.reduce { |common, dir| common_ancestor(common, dir) }
+  end
+
+  def common_ancestor(first, second)
+    shared = []
+    first.each_filename.to_a.zip(second.each_filename.to_a).each do |left, right|
+      break if left.nil? || left != right
+
+      shared << left
+    end
+    Pathname.new("/#{shared.join('/')}")
+  end
+
+  # Relative href from an output directory to a target output path.
+  def article_href(from_dir, target_path)
+    target_path.relative_path_from(from_dir).to_s
+  end
+
+  def tag_page_output_path(articles_dir, tag)
+    articles_dir.join('lists', "tag-#{tag}.html")
+  end
+
+  def render_list_fragment(articles, from_dir:, language:)
+    ['// Generated article list. Do not edit manually.',
+     '++++',
+     article_list_html(articles, from_dir: from_dir, articles_dir: from_dir, language: language),
+     '++++',
+     ''].join("\n")
+  end
+
+  def render_list_page(title:, articles:, output_dir:, articles_dir:, language:)
+    body = ['<p class="article-list-back"><a href="../articles.html">&#8592; Zurück zur Artikelübersicht</a></p>',
+            article_list_html(articles, from_dir: output_dir, articles_dir: articles_dir, language: language)].join("\n")
+
+    ['// Generated article list page. Do not edit manually.',
+     "= #{title}",
+     'ifdef::buildsite[]',
+     ':basedir: ../..',
+     'endif::[]',
+     'include::{includesdir}/../../revinfo.adoc[]',
+     ':revdate!:',
+     ':revnumber!:',
+     ':revremark!:',
+     ':active: articles',
+     'include::{includesdir}/docheader.adoc[]',
+     '',
+     '++++',
+     body,
+     '++++',
+     ''].join("\n")
+  end
+
+  def article_list_html(articles, from_dir:, articles_dir:, language:)
+    return '<div class="article-list"></div>' if articles.empty?
+
+    cards = articles.map { |article| article_card_html(article, from_dir: from_dir, articles_dir: articles_dir, language: language) }
+    ['<div class="article-list">', *cards, '</div>'].join("\n")
+  end
+
+  def article_card_html(article, from_dir:, articles_dir:, language:)
+    href = h(article_href(from_dir, article_source_path(article).sub_ext('.html')))
+    title = h(article.metadata['title'])
+    date = publication_date(article)
+    summary = summary_for(article, language)
+    tags = Array(article.metadata['tags'])
+
+    parts = ['  <article class="skillbox article-card">']
+    parts << "    <h3 class=\"article-card-title\"><a href=\"#{href}\">#{title}</a></h3>"
+    unless date.nil?
+      parts << "    <p class=\"article-card-date\"><time datetime=\"#{h(date.iso8601)}\">#{h(format_date(date))}</time></p>"
+    end
+    parts << "    <p class=\"article-card-summary\">#{h(summary)}</p>" unless summary.empty?
+    unless tags.empty?
+      links = tags.map do |tag|
+        "<a class=\"article-card-tag\" href=\"#{h(article_href(from_dir, tag_page_output_path(articles_dir, tag)))}\">#{h(tag)}</a>"
+      end
+      parts << "    <p class=\"article-card-tags\">#{links.join(' ')}</p>"
+    end
+    parts << '  </article>'
+    parts.join("\n")
   end
 
   def render_navigation(article, all_articles, by_id)
@@ -571,5 +791,7 @@ if $PROGRAM_NAME == __FILE__
     puts "Generated: #{path.relative_path_from(root)}"
     nav_paths = validator.generate_article_navigation(artifacts)
     puts "Generated #{nav_paths.length} article navigation include(s)."
+    list_paths = validator.generate_article_lists(artifacts)
+    puts "Generated #{list_paths.length} article list file(s)."
   end
 end
