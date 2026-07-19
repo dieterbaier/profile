@@ -1,6 +1,15 @@
 (function () {
     "use strict";
 
+    function prepareCreateLink(container) {
+        const link = container.querySelector(".article-comment-create");
+        if (!link) return;
+
+        const url = new URL(link.href);
+        url.searchParams.set("article_url", window.location.href);
+        link.href = url.toString();
+    }
+
     function renderIssues(container, issues) {
         const list = container.querySelector(".article-comments-list");
         const status = container.querySelector(".article-comments-status");
@@ -26,11 +35,11 @@
 
     async function loadIssues(container, button) {
         const repository = container.dataset.repository;
-        const marker = container.dataset.issueMarker;
+        const articleId = container.dataset.articleId;
         const status = container.querySelector(".article-comments-status");
         const perPage = 100;
         const searchLimit = 1000;
-        const query = "repo:" + repository + " in:title \"" + marker + "\"";
+        const query = "repo:" + repository + " is:issue label:\"Artikelkommentar\" label:\"" + articleId + "\"";
         const endpoint = "https://api.github.com/search/issues?q=" + encodeURIComponent(query) +
             "&sort=created&order=desc&per_page=" + perPage;
 
@@ -57,7 +66,10 @@
             } while (issues.length < resultCount);
 
             const matchingIssues = issues.filter(function (issue) {
-                return !issue.pull_request && issue.title.indexOf(marker) !== -1;
+                const labels = issue.labels.map(function (label) {
+                    return typeof label === "string" ? label : label.name;
+                });
+                return !issue.pull_request && labels.indexOf("Artikelkommentar") !== -1 && labels.indexOf(articleId) !== -1;
             });
             renderIssues(container, matchingIssues);
             button.hidden = true;
@@ -68,6 +80,7 @@
     }
 
     document.querySelectorAll("[data-article-comments]").forEach(function (container) {
+        prepareCreateLink(container);
         const button = container.querySelector(".article-comments-load");
         if (button) button.addEventListener("click", function () { return loadIssues(container, button); });
     });

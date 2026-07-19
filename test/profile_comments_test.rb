@@ -36,8 +36,10 @@ class ProfileCommentsTest < Minitest::Test
       generated = (root + 'articles/generated/example-comments.adoc').read
 
       # Then: its link creates a GitHub issue marked with article id and title
-      assert_includes generated, 'https://github.com/dieterbaier/profile/issues/new?'
-      assert_includes generated, '%5BArtikelkommentar%5D%5BART-101-example%5D'
+      assert_includes generated, 'https://github.com/dieterbaier/profile-artikelkommentare/issues/new?'
+      assert_includes generated, 'template=artikelkommentar.yml'
+      assert_includes generated, 'article_id=ART-101-example'
+      assert_includes generated, '%5BArtikelkommentar%5D+%5BART-101-example%5D'
       assert_includes generated, 'Example+%26+Practice'
     end
   end
@@ -56,6 +58,8 @@ class ProfileCommentsTest < Minitest::Test
       assert_includes generated, '<script src="{basedir}/stylesheet/article-comments.js"></script>'
       assert_includes script, 'addEventListener("click"'
       assert_includes script, 'https://api.github.com/search/issues?q='
+      assert_includes script, 'label:\"Artikelkommentar\"'
+      assert_includes script, 'url.searchParams.set("article_url", window.location.href)'
       refute_includes script, 'DOMContentLoaded'
     end
   end

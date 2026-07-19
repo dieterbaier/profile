@@ -32,8 +32,9 @@ Keep the public website static and avoid unnecessary third-party runtime behavio
 Optional integrations may use progressive enhancement when the core content and
 navigation work without them and the reader explicitly triggers any third-party
 request. The article-comments proof of concept follows this boundary: creating a
-comment navigates to GitHub, while loading existing comment issues requires an
-explicit button click. This applies ADR-005 to
+comment navigates to a structured issue form in the dedicated
+`dieterbaier/profile-artikelkommentare` repository, while loading label-matched
+comment issues requires an explicit button click. This applies ADR-005 to
 https://github.com/dieterbaier/profile/issues/44[feature #44].
 
 === Context

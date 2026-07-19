@@ -32,15 +32,18 @@ function articleComments(fetch) {
     const button = new Element('button');
     const status = new Element('p');
     const list = new Element('ul');
+    const createLink = new Element('a');
+    createLink.href = 'https://github.com/dieterbaier/profile-artikelkommentare/issues/new?template=artikelkommentar.yml';
     const elements = {
+        '.article-comment-create': createLink,
         '.article-comments-load': button,
         '.article-comments-status': status,
         '.article-comments-list': list
     };
     const container = new Element('section');
     container.dataset = {
-        repository: 'dieterbaier/profile',
-        issueMarker: '[Artikelkommentar][ART-101-example]'
+        repository: 'dieterbaier/profile-artikelkommentare',
+        articleId: 'ART-101-example'
     };
     container.querySelector = selector => elements[selector];
 
@@ -48,9 +51,10 @@ function articleComments(fetch) {
         createElement: kind => new Element(kind),
         querySelectorAll: () => [container]
     };
-    vm.runInNewContext(script, { document, fetch });
+    const window = { location: { href: 'http://localhost:63342/articles/example.html' } };
+    vm.runInNewContext(script, { document, fetch, URL, window });
 
-    return { button, list, status };
+    return { button, createLink, list, status };
 }
 
 test('existing comments use server-side search pagination and render matching issues', async () => {
@@ -61,8 +65,9 @@ test('existing comments use server-side search pagination and render matching is
             total_count: 101,
             incomplete_results: false,
             items: Array.from({ length: 100 }, (_, index) => ({
-                title: `[Artikelkommentar][ART-101-example] Kommentar ${index + 1}`,
-                html_url: `https://github.com/dieterbaier/profile/issues/${index + 1}`
+                title: `Frei editierbarer Kommentar ${index + 1}`,
+                html_url: `https://github.com/dieterbaier/profile-artikelkommentare/issues/${index + 1}`,
+                labels: [{ name: 'Artikelkommentar' }, { name: 'ART-101-example' }]
             }))
         },
         {
@@ -70,12 +75,14 @@ test('existing comments use server-side search pagination and render matching is
             incomplete_results: false,
             items: [
                 {
-                    title: '[Artikelkommentar][ART-101-example] Kommentar 101',
-                    html_url: 'https://github.com/dieterbaier/profile/issues/101'
+                    title: 'Vollständig geänderter Titel',
+                    html_url: 'https://github.com/dieterbaier/profile-artikelkommentare/issues/101',
+                    labels: ['Artikelkommentar', 'ART-101-example']
                 },
                 {
-                    title: '[Artikelkommentar][ART-OTHER] Kein Treffer',
-                    html_url: 'https://github.com/dieterbaier/profile/issues/102'
+                    title: 'Defensiv ausgefilterter Treffer',
+                    html_url: 'https://github.com/dieterbaier/profile-artikelkommentare/issues/102',
+                    labels: [{ name: 'Artikelkommentar' }, { name: 'ART-OTHER' }]
                 }
             ]
         }
@@ -84,20 +91,21 @@ test('existing comments use server-side search pagination and render matching is
         requests.push(url);
         return { ok: true, json: async () => pages[requests.length - 1] };
     };
-    const { button, list, status } = articleComments(fetch);
+    const { button, createLink, list, status } = articleComments(fetch);
 
     // When: the reader explicitly loads existing comments
     await button.listener();
 
-    // Then: GitHub narrows by repository and title marker, all pages are read,
-    // and only exact marker matches are rendered safely as links
+    // Then: the form receives the current page URL, GitHub narrows by both
+    // stable labels, all pages are read, and only exact label matches render
+    assert.equal(new URL(createLink.href).searchParams.get('article_url'), 'http://localhost:63342/articles/example.html');
     assert.equal(requests.length, 2);
     assert.match(requests[0], /^https:\/\/api\.github\.com\/search\/issues\?/);
-    assert.match(decodeURIComponent(requests[0]), /repo:dieterbaier\/profile in:title "\[Artikelkommentar\]\[ART-101-example\]"/);
+    assert.match(decodeURIComponent(requests[0]), /repo:dieterbaier\/profile-artikelkommentare is:issue label:"Artikelkommentar" label:"ART-101-example"/);
     assert.match(requests[0], /page=1$/);
     assert.match(requests[1], /page=2$/);
     assert.equal(list.children.length, 101);
-    assert.equal(list.children[100].children[0].textContent, '[Artikelkommentar][ART-101-example] Kommentar 101');
+    assert.equal(list.children[100].children[0].textContent, 'Vollständig geänderter Titel');
     assert.equal(status.textContent, '101 Kommentare:');
     assert.equal(button.hidden, true);
 });
