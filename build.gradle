@@ -434,6 +434,20 @@ tasks.register('testProfileListings') {
     }
 }
 
+tasks.register('testProfileComments') {
+    description = 'Runs the GitHub-backed article comments behaviour tests.'
+    group = 'verification'
+    inputs.files('scripts/validate-profile-metamodel.rb', 'test/profile_comments_test.rb')
+    inputs.files('features/article-comments.feature', 'src-content/theme/article-comments.js', 'src-content/theme/style.css')
+    inputs.files('templates/write-article/article.adoc')
+
+    doLast {
+        exec {
+            commandLine 'ruby', '-Itest', 'test/profile_comments_test.rb'
+        }
+    }
+}
+
 // Readme
 asciidoctorBase('buildReadmeDocbook','','src-content/profile/readme', 'build/readme/docbook', [],true, 'docbook')
 tasks.register('convertDocBookToMarkdown', PandocTask) {

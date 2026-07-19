@@ -102,9 +102,9 @@ Gradle --> ArchitectureSite
 | Public Profile Repository | Public profile source, public articles, previewable article source, reusable build logic, theme, profile metadata contracts, and architecture documentation. | `dieterbaier/profile`
 | Private Profile Repository | Private article, note, and protocol source. Proposed as a separate source component, not as a duplicated product. | `dieterbaier/profile-private`
 | Architecture Knowledge | arc42 chapters, ADRs, quality scenarios, risks, canvases, Q&A, and metadata. | `src-content/docs`
-| Theme Assets | CSS, fonts, icons, JavaScript, and shared docinfo fragments used by generated static outputs. | `src-content/theme`, `src-content/profile/includes`
+| Theme Assets | CSS, fonts, icons, JavaScript, and shared docinfo fragments used by generated static outputs. For https://github.com/dieterbaier/profile/issues/44[feature #44], the local article-comments script progressively loads matching GitHub issues only after reader consent. | `src-content/theme`, `src-content/profile/includes`
 | Validators | Check architecture and profile metadata before generation and deployment. | `scripts/`
-| Generators | Create derived indexes, traceability fragments, article summaries, and proposed publication target inputs. | `scripts/` and generated folders
+| Generators | Create derived indexes, traceability fragments, article summaries, article-specific GitHub comment blocks for https://github.com/dieterbaier/profile/issues/44[feature #44], and proposed publication target inputs. | `scripts/` and generated folders
 | Gradle Tasks | Orchestrate build, validation, generation, conversion, and asset copying. | `build.gradle`
 |===
 

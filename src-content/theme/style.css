@@ -124,6 +124,40 @@ footer {
     margin-right: auto;
 }
 
+/* Optional, reader-triggered GitHub discussion for articles. */
+.article-comments {
+    margin-top: 3rem;
+    padding: 1.25rem;
+    background: #f6f8fa;
+}
+
+.article-comments h2 {
+    margin-top: 0;
+}
+
+.article-comments-load {
+    padding: 0.55rem 0.85rem;
+    border: 1px solid currentColor;
+    border-radius: 0.3rem;
+    color: inherit;
+    background: transparent;
+    cursor: pointer;
+}
+
+.article-comments-load:disabled {
+    cursor: wait;
+    opacity: 0.65;
+}
+
+.article-comments-status:empty,
+.article-comments-list:empty {
+    display: none;
+}
+
+.article-comments-list li + li {
+    margin-top: 0.5rem;
+}
+
 body {
     font-family: "Noto Sans", sans-serif;
     color: var(--text-color);
