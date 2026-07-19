@@ -4,6 +4,7 @@
 require 'cgi'
 require 'date'
 require 'fileutils'
+require 'json'
 require 'optparse'
 require 'pathname'
 require 'set'
@@ -118,6 +119,22 @@ class ProfileArtifactValidator
       comments_path.write(render_article_comments(article), encoding: 'UTF-8')
       comments_path
     end
+  end
+
+  # Writes the stable IDs of articles eligible for the public website. The
+  # deployment workflow synchronizes this allowlist to the comments repository,
+  # where its issue workflow uses it for semantic article-ID validation.
+  def generate_article_comment_allowlist(artifacts, output:)
+    article_ids = artifacts.select do |artifact|
+      metadata = artifact.metadata
+      metadata['type'] == 'Article' && metadata['status'] == 'published' &&
+        Array(metadata['channels']).include?('website')
+    end.map { |article| article.metadata['id'] }.sort
+
+    output_path = root.join(output)
+    FileUtils.mkdir_p(output_path.dirname)
+    output_path.write(JSON.pretty_generate({ 'schema_version' => 1, 'article_ids' => article_ids }) + "\n", encoding: 'UTF-8')
+    output_path
   end
 
   # Generates the article listings from metadata: a "recent" include fragment
@@ -860,13 +877,15 @@ if $PROGRAM_NAME == __FILE__
     root: default_root,
     profile_dir: nil,
     generate: false,
-    output: nil
+    output: nil,
+    article_comment_allowlist: nil
   }
   OptionParser.new do |parser|
     parser.on('--root PATH') { |value| options[:root] = Pathname.new(value) }
     parser.on('--profile-dir PATH') { |value| options[:profile_dir] = Pathname.new(value) }
     parser.on('--generate') { options[:generate] = true }
     parser.on('--output PATH') { |value| options[:output] = value }
+    parser.on('--article-comment-allowlist PATH') { |value| options[:article_comment_allowlist] = value }
   end.parse!
 
   root = options[:root]
@@ -886,6 +905,11 @@ if $PROGRAM_NAME == __FILE__
     puts "Generated #{tag_paths.length} article tag include(s)."
     comment_paths = validator.generate_article_comment_includes(artifacts)
     puts "Generated #{comment_paths.length} article comment include(s)."
+    allowlist_path = validator.generate_article_comment_allowlist(
+      artifacts,
+      output: options[:article_comment_allowlist] || 'build/article-comments/allowed-article-ids.json'
+    )
+    puts "Generated article comment allowlist: #{allowlist_path.relative_path_from(root)}"
     list_paths = validator.generate_article_lists(artifacts)
     puts "Generated #{list_paths.length} article list file(s)."
   end

@@ -3,6 +3,7 @@
 require 'minitest/autorun'
 require 'tmpdir'
 require 'pathname'
+require 'json'
 require 'yaml'
 
 require_relative '../scripts/validate-profile-metamodel'
@@ -99,6 +100,41 @@ class ProfileCommentsTest < Minitest::Test
     assert_equal %w[comments navigation tags], generated_suffixes.sort
     generated_suffixes.each do |suffix|
       assert_includes template, "include::{docfile}/../generated/{docname}-#{suffix}.adoc[opts=optional]"
+    end
+  end
+
+  def test_only_published_website_article_ids_are_synchronized
+    # Given: published, preview, and non-website articles
+    Dir.mktmpdir('profile-comment-allowlist-test') do |dir|
+      root = Pathname.new(dir)
+      articles = [
+        ['ART-101-public', 'published', %w[website markdown-export]],
+        ['ART-102-preview', 'preview', %w[website]],
+        ['ART-103-export', 'published', %w[markdown-export]]
+      ]
+      articles.each do |id, status, channels|
+        slug = id.downcase
+        (root + 'articles').mkpath
+        (root + "articles/#{slug}.adoc").write("= #{id}\n")
+        (root + "articles/#{slug}.profile.yaml").write({
+          'id' => id,
+          'type' => 'Article',
+          'title' => id,
+          'status' => status,
+          'owner' => 'Test Owner',
+          'created' => '2026-01-01',
+          'channels' => channels,
+          'source' => "articles/#{slug}.adoc"
+        }.to_yaml)
+      end
+      validator = ProfileArtifactValidator.new(root: root, profile_dir: root)
+      artifacts = validator.validate
+
+      # When: the deployment allowlist is generated
+      path = validator.generate_article_comment_allowlist(artifacts, output: 'build/allowed-article-ids.json')
+
+      # Then: only IDs deployable to the public website are included
+      assert_equal({ 'schema_version' => 1, 'article_ids' => ['ART-101-public'] }, JSON.parse(path.read))
     end
   end
 end

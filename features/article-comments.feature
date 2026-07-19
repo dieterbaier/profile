@@ -22,3 +22,8 @@ Feature: GitHub-backed article comments
     Given a generated article comment include
     When the article is rendered for a non-website target
     Then the website-only comment block is omitted
+
+  Scenario: Only published article ids are synchronized
+    Given published, preview, and non-website articles
+    When the deployment allowlist is generated
+    Then it contains only article ids eligible for the public website

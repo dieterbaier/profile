@@ -155,6 +155,7 @@ jobs:
             testAgentAdapters \
             testProfileNavigation \
             testProfileListings \
+            testProfileComments \
             testSiteMetadata
 
   deploy-site:
@@ -188,6 +189,24 @@ jobs:
           mirror -R --delete --verbose ./build/site ${SFTP_REMOTE_BASE}/site
           bye
           EOF
+
+      - name: Checkout article comments repository
+        uses: actions/checkout@v4
+        with:
+          repository: dieterbaier/profile-artikelkommentare
+          token: ${{ secrets.ARTICLE_COMMENTS_REPO_TOKEN }}
+          path: article-comments-repo
+
+      - name: Synchronize published article IDs
+        run: |
+          mkdir -p article-comments-repo/config
+          cp build/article-comments/allowed-article-ids.json article-comments-repo/config/allowed-article-ids.json
+          cd article-comments-repo
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add config/allowed-article-ids.json
+          git commit -m "Update published article IDs" || echo "no changes"
+          git push origin HEAD:main
 
   deploy-architecture:
     needs: [build-docs, detect-changes]

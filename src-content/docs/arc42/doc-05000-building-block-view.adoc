@@ -81,6 +81,7 @@ package "Publication Targets" {
 }
 
 PublicRepo --> Gradle
+PublicRepo --> CommentsRepo : public deployment synchronizes\narticle-ID allowlist
 PrivateRepo ..> Gradle : proposed private content root
 Architecture --> Gradle
 Theme --> Gradle
@@ -102,7 +103,7 @@ PublicSite --> CommentsRepo : create or explicitly load\nlabelled article commen
 |===
 | Container | Responsibility | Storage
 | Public Profile Repository | Public profile source, public articles, previewable article source, reusable build logic, theme, profile metadata contracts, and architecture documentation. | `dieterbaier/profile`
-| Article Comments Repository | Public GitHub issues created through a structured form. A repository workflow validates the submitted article ID and assigns a stable per-article label. | `dieterbaier/profile-artikelkommentare`
+| Article Comments Repository | Public GitHub issues created through a structured form. A repository workflow validates the submitted article ID against the deployed public-article allowlist and assigns a stable per-article label. | `dieterbaier/profile-artikelkommentare`
 | Private Profile Repository | Private article, note, and protocol source. Proposed as a separate source component, not as a duplicated product. | `dieterbaier/profile-private`
 | Architecture Knowledge | arc42 chapters, ADRs, quality scenarios, risks, canvases, Q&A, and metadata. | `src-content/docs`
 | Theme Assets | CSS, fonts, icons, JavaScript, and shared docinfo fragments used by generated static outputs. For https://github.com/dieterbaier/profile/issues/44[feature #44], the local article-comments script progressively loads matching GitHub issues only after reader consent. | `src-content/theme`, `src-content/profile/includes`
