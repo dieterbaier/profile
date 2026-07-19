@@ -55,8 +55,7 @@ class ProfileCommentsTest < Minitest::Test
       assert_includes generated, '[subs="attributes"]'
       assert_includes generated, '<script src="{basedir}/stylesheet/article-comments.js"></script>'
       assert_includes script, 'addEventListener("click"'
-      assert_includes script, 'issue.title.indexOf(marker)'
-      assert_includes script, 'link.textContent = issue.title'
+      assert_includes script, 'https://api.github.com/search/issues?q='
       refute_includes script, 'DOMContentLoaded'
     end
   end

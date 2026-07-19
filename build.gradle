@@ -445,6 +445,9 @@ tasks.register('testProfileComments') {
         exec {
             commandLine 'ruby', '-Itest', 'test/profile_comments_test.rb'
         }
+        exec {
+            commandLine 'node', '--test', 'test/article_comments_test.mjs'
+        }
     }
 }
 
