@@ -12,6 +12,10 @@ include::{includesdir}/../../revinfo.adoc[]
 :active: articles
 include::{includesdir}/docheader.adoc[]
 
+ifeval::["{type}" != "readme"]
+include::{docfile}/../generated/{docname}-tags.adoc[opts=optional]
+endif::[]
+
 toc::[]
 
 == Ausgangssituation

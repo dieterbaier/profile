@@ -403,6 +403,10 @@ a.fingerPointsTo::before {
 }
 
 /* --- Article listings (recent / all / per tag / per skill) --- */
+.article-list-intro {
+    margin-top: 1.5rem;
+}
+
 .article-list {
     display: flex;
     flex-direction: column;
@@ -437,6 +441,12 @@ a.fingerPointsTo::before {
     display: flex;
     flex-wrap: wrap;
     gap: 0.4rem;
+}
+
+/* Standalone tag list at the start of an article. Keep its spacing independent
+   from the component that happens to follow it (TOC, callout, or body text). */
+.article-tags {
+    margin: 1.5rem 0;
 }
 
 .article-card-tag {

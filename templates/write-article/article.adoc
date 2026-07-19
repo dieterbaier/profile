@@ -12,6 +12,11 @@ include::{includesdir}/../../revinfo.adoc[]
 :active: articles
 include::{includesdir}/docheader.adoc[]
 
+// Generated horizontal tag list; website only.
+ifeval::["{type}" != "readme"]
+include::{docfile}/../generated/{docname}-tags.adoc[opts=optional]
+endif::[]
+
 [.highlight.info]
 --
 <A short opening that frames the problem, states the article's thesis, and gives readers a reason to continue. Keep this concrete and close to the author's experience.>

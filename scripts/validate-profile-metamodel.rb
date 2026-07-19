@@ -83,6 +83,24 @@ class ProfileArtifactValidator
     end
   end
 
+  # Writes one tag-list include per article into the same adjacent `generated/`
+  # directory used by article navigation. Links are relative to the article.
+  def generate_article_tag_includes(artifacts)
+    articles = artifacts.select { |artifact| artifact.metadata['type'] == 'Article' }
+    articles_dir = articles_base_dir(articles)
+    return [] if articles_dir.nil?
+
+    clean_generated_tag_includes
+
+    articles.map do |article|
+      tags_dir = article_source_path(article).dirname.join('generated')
+      FileUtils.mkdir_p(tags_dir)
+      tags_path = tags_dir.join("#{article_slug(article)}-tags.adoc")
+      tags_path.write(render_article_tags(article, articles_dir), encoding: 'UTF-8')
+      tags_path
+    end
+  end
+
   # Generates the article listings from metadata: a "recent" include fragment
   # (RECENT_LIMIT newest public articles) plus standalone overview pages for all
   # articles, each tag, and each skill. Fragments live under
@@ -145,6 +163,12 @@ class ProfileArtifactValidator
   def clean_generated_navigation
     FileUtils.rm_rf(profile_dir.join('generated', 'articles'))
     Dir.glob(profile_dir.join('**', 'generated', '*-navigation.adoc').to_s).each do |path|
+      File.delete(path)
+    end
+  end
+
+  def clean_generated_tag_includes
+    Dir.glob(profile_dir.join('**', 'generated', '*-tags.adoc').to_s).each do |path|
       File.delete(path)
     end
   end
@@ -557,13 +581,29 @@ class ProfileArtifactValidator
     end
     parts << "    <p class=\"article-card-summary\">#{h(summary)}</p>" unless summary.empty?
     unless tags.empty?
-      links = tags.map do |tag|
-        "<a class=\"article-card-tag\" href=\"#{h(article_href(from_dir, tag_page_output_path(articles_dir, tag)))}\">#{h(tag)}</a>"
-      end
-      parts << "    <p class=\"article-card-tags\">#{links.join(' ')}</p>"
+      parts << "    <p class=\"article-card-tags\">#{tag_links_html(tags, from_dir: from_dir, articles_dir: articles_dir)}</p>"
     end
     parts << '  </article>'
     parts.join("\n")
+  end
+
+  def render_article_tags(article, articles_dir)
+    tags = Array(article.metadata['tags'])
+    return '' if tags.empty?
+
+    from_dir = article_source_path(article).dirname
+    ['// Generated article tags. Do not edit manually.',
+     '++++',
+     "<p class=\"article-card-tags article-tags\">#{tag_links_html(tags, from_dir: from_dir, articles_dir: articles_dir)}</p>",
+     '++++',
+     ''].join("\n")
+  end
+
+  def tag_links_html(tags, from_dir:, articles_dir:)
+    tags.map do |tag|
+      href = h(article_href(from_dir, tag_page_output_path(articles_dir, tag)))
+      "<a class=\"article-card-tag\" href=\"#{href}\">#{h(tag)}</a>"
+    end.join(' ')
   end
 
   def render_navigation(article, all_articles, by_id)
@@ -791,6 +831,8 @@ if $PROGRAM_NAME == __FILE__
     puts "Generated: #{path.relative_path_from(root)}"
     nav_paths = validator.generate_article_navigation(artifacts)
     puts "Generated #{nav_paths.length} article navigation include(s)."
+    tag_paths = validator.generate_article_tag_includes(artifacts)
+    puts "Generated #{tag_paths.length} article tag include(s)."
     list_paths = validator.generate_article_lists(artifacts)
     puts "Generated #{list_paths.length} article list file(s)."
   end

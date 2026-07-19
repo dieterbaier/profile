@@ -66,6 +66,44 @@ class ProfileListingsTest < Minitest::Test
     path.exist? ? path.read : ''
   end
 
+  def article_tags(root, slug, dir: 'articles')
+    path = root + "#{dir}/generated/#{slug}-tags.adoc"
+    path.exist? ? path.read : ''
+  end
+
+  def test_article_tag_include_reuses_card_markup_and_links_to_tag_pages
+    # Given: an article in a topic directory with two tags
+    articles = [
+      { id: 'ART-200-tags', slug: 'tagged', dir: 'articles/architecture',
+        tags: %w[greenIT docs-as-code] },
+      { id: 'ART-201-other-topic', slug: 'other', dir: 'articles/documentation' }
+    ]
+
+    with_articles(articles) do |validator, artifacts, root|
+      # When: per-article tag includes are generated
+      validator.generate_article_tag_includes(artifacts)
+
+      # Then: the horizontal card markup links from the article to each tag page
+      tags = article_tags(root, 'tagged', dir: 'articles/architecture')
+      assert_includes tags, '<p class="article-card-tags article-tags">'
+      assert_includes tags, 'class="article-card-tag" href="../lists/tag-greenIT.html">greenIT</a>'
+      assert_includes tags, 'class="article-card-tag" href="../lists/tag-docs-as-code.html">docs-as-code</a>'
+    end
+  end
+
+  def test_article_without_tags_gets_an_empty_tag_include
+    # Given: an article without tags
+    articles = [{ id: 'ART-200-no-tags', slug: 'untagged' }]
+
+    with_articles(articles) do |validator, artifacts, root|
+      # When: per-article tag includes are generated
+      validator.generate_article_tag_includes(artifacts)
+
+      # Then: the optional include exists but contributes no markup
+      assert_equal '', article_tags(root, 'untagged')
+    end
+  end
+
   def test_recent_listing_shows_the_newest_public_articles_limited_to_ten
     # Given: twelve public articles with distinct publication dates
     articles = (1..12).map do |i|
