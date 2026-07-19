@@ -177,19 +177,6 @@ jobs:
           name: docs
           path: build
 
-      - name: Install lftp
-        run: sudo apt-get update && sudo apt-get install -y lftp
-
-      - name: Deploy site to private webspace
-        run: |
-          lftp -u "$SFTP_USER","$SFTP_PASSWORD" sftp://$SFTP_HOST:$SFTP_PORT <<EOF
-          set sftp:auto-confirm yes
-          set net:max-retries 2
-          set net:timeout 20
-          mirror -R --delete --verbose ./build/site ${SFTP_REMOTE_BASE}/site
-          bye
-          EOF
-
       - name: Checkout article comments repository
         uses: actions/checkout@v4
         with:
@@ -207,6 +194,19 @@ jobs:
           git add config/allowed-article-ids.json
           git commit -m "Update published article IDs" || echo "no changes"
           git push origin HEAD:main
+
+      - name: Install lftp
+        run: sudo apt-get update && sudo apt-get install -y lftp
+
+      - name: Deploy site to private webspace
+        run: |
+          lftp -u "$SFTP_USER","$SFTP_PASSWORD" sftp://$SFTP_HOST:$SFTP_PORT <<EOF
+          set sftp:auto-confirm yes
+          set net:max-retries 2
+          set net:timeout 20
+          mirror -R --delete --verbose ./build/site ${SFTP_REMOTE_BASE}/site
+          bye
+          EOF
 
   deploy-architecture:
     needs: [build-docs, detect-changes]
