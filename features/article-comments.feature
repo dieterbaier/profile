@@ -11,12 +11,12 @@ Feature: GitHub-backed article comments
   Scenario: Each article receives a prefilled comment link
     Given a metadata-backed article
     When profile artifacts are generated
-    Then its comment block links to a new GitHub issue marked with the article id and title
+    Then its comment block opens the dedicated GitHub issue form with article id, title, and current page URL
 
   Scenario: Existing comments can be requested explicitly
     Given an article comment block on the static website
     When the reader requests existing comments
-    Then the local enhancement loads matching GitHub issues and presents their headings as links
+    Then the local enhancement loads issues carrying the comment and article id labels and presents their headings as links
 
   Scenario: Non-website article exports omit the comment block
     Given a generated article comment include

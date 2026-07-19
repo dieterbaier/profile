@@ -27,7 +27,8 @@ class ProfileArtifactValidator
   RECENT_LIMIT = 10
   # Default display language for article listings when none is requested.
   DEFAULT_LANGUAGE = 'de'
-  ARTICLE_COMMENTS_REPOSITORY = 'dieterbaier/profile'
+  ARTICLE_COMMENTS_REPOSITORY = 'dieterbaier/profile-artikelkommentare'
+  ARTICLE_COMMENTS_TEMPLATE = 'artikelkommentar.yml'
   LANGUAGES = %w[de en mixed].freeze
   CHANNELS = %w[website cv readme github gitlab markdown-export pdf].freeze
   RELATION_TYPES = %w[addresses depends_on constrains refines supersedes conflicts_with mitigates introduces_risk affects verifies documents relates_to].freeze
@@ -626,17 +627,16 @@ class ProfileArtifactValidator
   def render_article_comments(article)
     article_id = article.metadata['id'].to_s
     article_title = article.metadata['title'].to_s
-    marker = "[Artikelkommentar][#{article_id}]"
-    issue_title = "#{marker} #{article_title}"
-    issue_body = "Kommentar zum Artikel: #{article_title}\n\nArtikel-ID: #{article_id}\n\nMein Kommentar:\n"
+    issue_title = "[Artikelkommentar] [#{article_id}] #{article_title}"
     new_issue_url = "https://github.com/#{ARTICLE_COMMENTS_REPOSITORY}/issues/new?" \
-                    "title=#{CGI.escape(issue_title)}&body=#{CGI.escape(issue_body)}"
+                    "template=#{CGI.escape(ARTICLE_COMMENTS_TEMPLATE)}&title=#{CGI.escape(issue_title)}&" \
+                    "article_id=#{CGI.escape(article_id)}&article_title=#{CGI.escape(article_title)}"
 
     ['// Generated article comments. Do not edit manually.',
      'ifdef::buildsite[]',
      '[subs="attributes"]',
      '++++',
-     "<section class=\"article-comments\" data-article-comments data-repository=\"#{h(ARTICLE_COMMENTS_REPOSITORY)}\" data-issue-marker=\"#{h(marker)}\">",
+     "<section class=\"article-comments\" data-article-comments data-repository=\"#{h(ARTICLE_COMMENTS_REPOSITORY)}\" data-article-id=\"#{h(article_id)}\">",
      '  <h2>Kommentare</h2>',
      '  <p>Fragen, Ergänzungen oder Feedback sind willkommen und werden als öffentliches GitHub-Issue erfasst.</p>',
      "  <p><a class=\"article-comment-create fingerPointsTo\" href=\"#{h(new_issue_url)}\" target=\"_blank\" rel=\"noopener noreferrer\">Diesen Artikel kommentieren</a></p>",
