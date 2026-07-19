@@ -327,6 +327,7 @@ tasks.register('generateProfileArtifacts') {
     })
     inputs.files('metamodel/profile-artifact.schema.yaml', 'metamodel/relations.schema.yaml', 'scripts/validate-profile-metamodel.rb')
     outputs.dir('src-content/profile/generated')
+    outputs.file('build/article-comments/allowed-article-ids.json')
 
     doLast {
         exec {

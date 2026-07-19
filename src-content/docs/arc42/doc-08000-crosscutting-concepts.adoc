@@ -40,8 +40,10 @@ Failed validation or missing tooling stops the build. Missing publication URLs i
 The GitHub-backed article-comments https://github.com/dieterbaier/profile/issues/44[feature #44]
 keeps the website static.
 Article metadata generates a prefilled issue-form link into the dedicated
-`dieterbaier/profile-artikelkommentare` repository. Its workflow assigns the
-fixed `Artikelkommentar` label and a validated article-ID label. A local,
+`dieterbaier/profile-artikelkommentare` repository. Public-site deployment
+synchronizes an allowlist derived from published website articles. The comments
+workflow idempotently creates and assigns the fixed `Artikelkommentar` label,
+validates the submitted ID against that allowlist, and assigns the article-ID label. A local,
 framework-free script lists issues matching both labels, but contacts the GitHub
 API only after the reader explicitly requests the list. Failure or rate limiting
 affects only the optional list, never the article content. The observable behaviour is specified in
