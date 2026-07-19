@@ -29,6 +29,12 @@ Proposed (derived).
 === Decision
 
 Keep the public website static and avoid unnecessary third-party runtime behavior.
+Optional integrations may use progressive enhancement when the core content and
+navigation work without them and the reader explicitly triggers any third-party
+request. The article-comments proof of concept follows this boundary: creating a
+comment navigates to GitHub, while loading existing comment issues requires an
+explicit button click. This applies ADR-005 to
+https://github.com/dieterbaier/profile/issues/44[feature #44].
 
 === Context
 
@@ -48,5 +54,9 @@ s| Sum s| +3 s| ? s| -3
 === Consequences
 
 * Positive: The project keeps a coherent source-based publishing workflow.
+* Positive: Reading an article does not automatically disclose the visit to the
+  optional GitHub comments integration.
 * Negative: Contributors need to understand the chosen toolchain.
+* Negative: The optional comment list depends on GitHub availability and its
+  unauthenticated API rate limit.
 * Follow-up: Human review should confirm the derived status and rationale.

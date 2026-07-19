@@ -84,4 +84,5 @@ toc::[]
 // skipped in the readme/markdown export.
 ifeval::["{type}" != "readme"]
 include::{docfile}/../generated/{docname}-navigation.adoc[opts=optional]
+include::{docfile}/../generated/{docname}-comments.adoc[opts=optional]
 endif::[]

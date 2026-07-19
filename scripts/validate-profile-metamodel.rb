@@ -27,6 +27,7 @@ class ProfileArtifactValidator
   RECENT_LIMIT = 10
   # Default display language for article listings when none is requested.
   DEFAULT_LANGUAGE = 'de'
+  ARTICLE_COMMENTS_REPOSITORY = 'dieterbaier/profile'
   LANGUAGES = %w[de en mixed].freeze
   CHANNELS = %w[website cv readme github gitlab markdown-export pdf].freeze
   RELATION_TYPES = %w[addresses depends_on constrains refines supersedes conflicts_with mitigates introduces_risk affects verifies documents relates_to].freeze
@@ -101,6 +102,23 @@ class ProfileArtifactValidator
     end
   end
 
+  # Writes the progressive-enhancement block used to create and display GitHub
+  # issues for an article. The optional issue list is loaded by a local script
+  # only after the reader explicitly requests it.
+  def generate_article_comment_includes(artifacts)
+    articles = artifacts.select { |artifact| artifact.metadata['type'] == 'Article' }
+
+    clean_generated_comment_includes
+
+    articles.map do |article|
+      comments_dir = article_source_path(article).dirname.join('generated')
+      FileUtils.mkdir_p(comments_dir)
+      comments_path = comments_dir.join("#{article_slug(article)}-comments.adoc")
+      comments_path.write(render_article_comments(article), encoding: 'UTF-8')
+      comments_path
+    end
+  end
+
   # Generates the article listings from metadata: a "recent" include fragment
   # (RECENT_LIMIT newest public articles) plus standalone overview pages for all
   # articles, each tag, and each skill. Fragments live under
@@ -169,6 +187,12 @@ class ProfileArtifactValidator
 
   def clean_generated_tag_includes
     Dir.glob(profile_dir.join('**', 'generated', '*-tags.adoc').to_s).each do |path|
+      File.delete(path)
+    end
+  end
+
+  def clean_generated_comment_includes
+    Dir.glob(profile_dir.join('**', 'generated', '*-comments.adoc').to_s).each do |path|
       File.delete(path)
     end
   end
@@ -599,6 +623,33 @@ class ProfileArtifactValidator
      ''].join("\n")
   end
 
+  def render_article_comments(article)
+    article_id = article.metadata['id'].to_s
+    article_title = article.metadata['title'].to_s
+    marker = "[Artikelkommentar][#{article_id}]"
+    issue_title = "#{marker} #{article_title}"
+    issue_body = "Kommentar zum Artikel: #{article_title}\n\nArtikel-ID: #{article_id}\n\nMein Kommentar:\n"
+    new_issue_url = "https://github.com/#{ARTICLE_COMMENTS_REPOSITORY}/issues/new?" \
+                    "title=#{CGI.escape(issue_title)}&body=#{CGI.escape(issue_body)}"
+
+    ['// Generated article comments. Do not edit manually.',
+     'ifdef::buildsite[]',
+     '[subs="attributes"]',
+     '++++',
+     "<section class=\"article-comments\" data-article-comments data-repository=\"#{h(ARTICLE_COMMENTS_REPOSITORY)}\" data-issue-marker=\"#{h(marker)}\">",
+     '  <h2>Kommentare</h2>',
+     '  <p>Fragen, Ergänzungen oder Feedback sind willkommen und werden als öffentliches GitHub-Issue erfasst.</p>',
+     "  <p><a class=\"article-comment-create fingerPointsTo\" href=\"#{h(new_issue_url)}\" target=\"_blank\" rel=\"noopener noreferrer\">Diesen Artikel kommentieren</a></p>",
+     '  <button class="article-comments-load" type="button">Vorhandene Kommentare laden</button>',
+     '  <p class="article-comments-status" aria-live="polite"></p>',
+     '  <ul class="article-comments-list"></ul>',
+     '</section>',
+     '<script src="{basedir}/stylesheet/article-comments.js"></script>',
+     '++++',
+     'endif::[]',
+     ''].join("\n")
+  end
+
   def tag_links_html(tags, from_dir:, articles_dir:)
     tags.map do |tag|
       href = h(article_href(from_dir, tag_page_output_path(articles_dir, tag)))
@@ -833,6 +884,8 @@ if $PROGRAM_NAME == __FILE__
     puts "Generated #{nav_paths.length} article navigation include(s)."
     tag_paths = validator.generate_article_tag_includes(artifacts)
     puts "Generated #{tag_paths.length} article tag include(s)."
+    comment_paths = validator.generate_article_comment_includes(artifacts)
+    puts "Generated #{comment_paths.length} article comment include(s)."
     list_paths = validator.generate_article_lists(artifacts)
     puts "Generated #{list_paths.length} article list file(s)."
   end

@@ -230,4 +230,5 @@ Die Grundlage dafür ist bereits gelegt.
 // Generated article navigation (previous/next and related articles); website only.
 ifeval::["{type}" != "readme"]
 include::{docfile}/../generated/{docname}-navigation.adoc[opts=optional]
+include::{docfile}/../generated/{docname}-comments.adoc[opts=optional]
 endif::[]

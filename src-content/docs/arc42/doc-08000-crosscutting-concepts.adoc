@@ -35,6 +35,18 @@ CI logs, Gradle task output, and validator reports are the operational feedback 
 
 Failed validation or missing tooling stops the build. Missing publication URLs in AI-generated article summaries are represented as placeholders rather than invented values.
 
+== Optional Article Interaction
+
+The GitHub-backed article-comments https://github.com/dieterbaier/profile/issues/44[feature #44]
+keeps the website static.
+Article metadata generates a prefilled GitHub issue link containing a stable
+article marker. A local, framework-free script can list matching issues by title
+and link, but contacts the GitHub API only after the reader explicitly requests
+the list. Failure or rate limiting affects only the optional list, never the
+article content. The observable behaviour is specified in
+`features/article-comments.feature` and bridged to
+`test/profile_comments_test.rb`.
+
 == Sustainability
 
 Generated output is static. The public site avoids runtime backends, trackers, and unnecessary third-party scripts.
