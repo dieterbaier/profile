@@ -57,6 +57,7 @@ skinparam componentStyle rectangle
 
 package "Source Containers" {
   [Public Profile Repository] as PublicRepo
+  [Article Comments Repository] as CommentsRepo
   [Private Profile Repository] as PrivateRepo
   [Architecture Knowledge] as Architecture
   [Theme Assets] as Theme
@@ -93,6 +94,7 @@ Gradle --> CV
 Gradle --> Readme
 Gradle --> ArticleMarkdown
 Gradle --> ArchitectureSite
+PublicSite --> CommentsRepo : create or explicitly load\nlabelled article comments
 @enduml
 ----
 
