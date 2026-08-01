@@ -1,0 +1,209 @@
+---
+id: ADR-010-multilingual-content-fallback
+type: ADR
+title: "Multilingual Content And Language Fallback"
+status: accepted
+owner: "Dieter Baier"
+created: '2026-08-01'
+updated: '2026-08-01'
+reviewed: true
+generated: false
+summary: "Resolve language variants and their fallback to the default language at build time in the generator instead of in AsciiDoc markup or at runtime."
+tags:
+- adr
+- decision
+- profile
+- internationalization
+relations:
+- type: addresses
+  target: QS-003-public-artifact-consistency
+  status: accepted
+  rationale: "Build-time resolution keeps generated listings, navigation, and references complete for every language variant."
+  reviewed: true
+- type: addresses
+  target: QS-004-minimal-static-site
+  status: accepted
+  rationale: "Language selection stays a build-time concern, so no backend or client-side negotiation is required to display content."
+  reviewed: true
+- type: refines
+  target: ADR-006-profile-content-metamodel
+  status: accepted
+  rationale: "The decision extends the profile metamodel with a language dimension and translation grouping."
+  reviewed: true
+- type: constrains
+  target: COMP-005-profile-artifact-generator
+  status: accepted
+  rationale: "The generator must emit per-language navigation, listings, comment blocks, link registries, and fallback stubs."
+  reviewed: true
+- type: affects
+  target: COMP-001-publication-target-generator
+  status: accepted
+  rationale: "Publication targets, canonical URL eligibility, and HTML metadata gain a language dimension."
+  reviewed: true
+- type: introduces_risk
+  target: RISK-001-metadata-drift
+  status: accepted
+  rationale: "Language variants of the same content can drift apart, so generated indexes may present stale translations as current."
+  reviewed: true
+metadata_version: '1.0'
+---
+[[adr-010-multilingual-content-fallback]]
+== ADR-010: Multilingual Content And Language Fallback
+
+=== Status
+
+Accepted.
+
+The decision was drafted AI-assisted, then reviewed and accepted by the accountable owner with all open questions decided and all traceability relations confirmed.
+
+=== Decision
+
+The site becomes multilingual with `de` as the default language, and every language-dependent reference is resolved at build time in the profile artifact generator rather than in AsciiDoc markup or at page runtime.
+
+Four resolution classes are distinguished, because they need different fallback semantics:
+
+* *UI chrome* (menu labels, table-of-contents title, comment section wording, footer): resolved through an attribute cascade, and required to be complete per language. A missing key fails the build.
+* *Content fragments* (reusable includes such as profile prose, CV blocks, contact data): resolved through per-language include trees and required to exist in the language of the including page. A fragment that is not available in the page language fails the build; fragments never fall back.
+* *References to pages* (menu links, footer links, article navigation, tag and skill listings): resolved through a generated per-language link registry. A missing translation falls back to the default-language page, the link is marked with the target language, and the generator warns.
+* *Translation provenance* (which variant is the original, and whether a translation still matches it): recorded in metadata, derived by the generator, overridable by the author, and rendered as a reader-facing note at the top of a translated page.
+
+Fallback and hard failure are therefore deliberately split along the line of what a reader can make sense of. A link that leads to a German page is usable, so it falls back and says so. A German paragraph inside an English article is not, so it fails the build instead of producing a page in mixed languages.
+
+Every language variant of an artifact is a profile artifact in its own right, with its own stable ID, its own sidecar metadata, and its own comment thread.
+
+Default language and original language are deliberately separate concepts. `de` is the default language, which means it is the fallback target when a translation is missing. The original is the variant an artifact was authored in first, which may be any language. An article written in English and translated into German afterwards is therefore an English original with a German translation, while German remains the site's fallback language.
+
+=== Context
+
+The site currently exists in German only. `src-content/profile/includes/docheader.adoc` already defaults `:lang:` to `de`, and article sources already use `{lang}` for external links, so the language attribute exists but carries no structural meaning. All chrome is hard-coded German: `menue.adoc` contains German labels and hard-coded relative page paths, `docheader.adoc` sets `:toc-title: Inhalt`, `includes/docinfo/docinfo-footer.html` links to `{basedir}/legal.html`, and `src-content/theme/article-comments.js` carries German status strings.
+
+The authoring concept relies on reusable includes. Writing an article in another language therefore does not only mean translating the article body; the surrounding generated chrome must switch language as well, and the references inside it must point at same-language pages where those exist.
+
+The core constraint is that AsciiDoc has no file-existence conditional. `ifdef` and `ifeval` evaluate attributes only, and `opts=optional` expresses "include or skip", not "include A, otherwise B". A language-aware `include` or `xref` cannot be expressed in portable AsciiDoc markup. Only the build knows which language variants exist, and the profile artifact generator (`scripts/validate-profile-metamodel.rb`) already owns exactly that knowledge: it reads every `.profile.yaml`, and it already writes per-article navigation, tag, and comment includes plus the article listings.
+
+The comment integration adds a second constraint. Comment threads are keyed by article ID, and `generateProfileArtifacts` synchronizes an allowlist of published article IDs to the comments repository. Any language model that does not produce a stable ID per language variant would break that contract.
+
+=== Decision Drivers
+
+* Authoring must stay previewable in a plain AsciiDoc editor, without a custom build extension.
+* A page reference must never lead nowhere, whether the translation exists or not.
+* A published page must never mix languages in its body text.
+* The reader must be able to tell when a reference leads to another language.
+* Language selection must not require a backend, a redirect layer, or client-side negotiation.
+* Adding a translation must not require manual maintenance of link tables or duplicated chrome.
+* Missing translations must be detectable by validation, not by reading the rendered site.
+* A reader must be able to tell that a page is a translation, which variant it was translated from, and whether it still matches that original.
+
+=== Considered Options
+
+==== Option 1: Build-time resolution in the profile artifact generator
+
+The generator resolves language and emits per-language artifacts: a link registry, per-language navigation, listings, comment blocks, and provenance notes. Markup contains only attribute references that always resolve. UI terms use a plain AsciiDoc attribute cascade, since later attribute assignments override earlier ones. Fragment availability is validated rather than filled in.
+
+==== Option 2: Custom Asciidoctor include processor and inline macro
+
+A Ruby extension registered in the Gradle build handles a custom scheme such as `include::i18n:profile/profile.adoc[]` and implements the fallback chain in code. No generated stub files are needed.
+
+==== Option 3: Runtime language negotiation
+
+The published site keeps a single page set and selects language in the browser or in the hosting layer, for example through JavaScript string swapping or server-side rewrites.
+
+==== Option 4: Fully duplicated language trees without fallback
+
+Each language maintains its own complete copy of chrome, fragments, and pages. No fallback exists; an untranslated page simply does not exist in that language.
+
+=== Pugh Matrix
+
+[.pugh-matrix]
+[cols="3,1,1,1,1", options="header"]
+|===
+| Criterion | Build-time resolution in generator | Asciidoctor extension | Runtime negotiation | Duplicated trees
+| Editor preview works without custom tooling | +1 | -1 | 0 | +1
+| References always resolve | +1 | +1 | 0 | -1
+| Fallback is visible and reviewable | +1 | 0 | -1 | -1
+| Keeps the site static (QS-004) | +1 | +1 | -1 | +1
+| Low authoring effort per translation | +1 | +1 | 0 | -1
+| Missing translations detectable by validation | +1 | 0 | -1 | -1
+| Fits the existing generator responsibility | +1 | 0 | -1 | 0
+s| Sum s| +7 s| +2 s| -4 s| -2
+|===
+
+Option 2 loses mainly on tooling: a custom include processor is invisible to the IntelliJ AsciiDoc preview, which breaks the authoring loop for the person who writes the content. Option 3 contradicts xref:adr-005-minimal-static-site[ADR-005: Minimal Static Site]. Option 4 pushes drift detection to the reader.
+
+=== Language Contract
+
+[cols="1,3", options="header"]
+|===
+| Contract | Rule
+| Default language | `de`. Where fallback applies, it always resolves to the default language, never to an error page or an empty include.
+| Language declaration | Each artifact declares `:lang:` in its AsciiDoc source and `language:` in its `.profile.yaml`. The profile validator rejects a mismatch between the declared language and the file location.
+| Source and URL layout | The default language stays at the site root permanently; it is not moved into a `/de/` subtree. Each additional language mirrors the structure under a language subtree, for example `src-content/profile/site/en/articles/...` published as `/en/articles/...`.
+| Artifact identity | Each language variant is its own artifact with its own ID, for example `ART-003-doc-as-code` and `ART-003-doc-as-code-en`.
+| Original and translation | An artifact without `translation_of` is an original. An artifact with `translation_of: <artifact-id>` is a translation of that original, in any language direction. The original does not need to be in the default language.
+| Translation freshness | A translation records the digest of the original's full source content at translation time. The generator recompares it against the current original and marks the translation as outdated on mismatch. An outdated translation stays publishable; it is never a build failure.
+| Author override | The derived freshness state is a default, not a verdict. The author can re-accept the current original without changing the translation, which clears the outdated state and suppresses its note. This is the intended answer to a cosmetic change in the original, such as a typo fix.
+| Intentional divergence | Independently of freshness, a translation can declare that it deliberately differs from its original. The declaration is shown to the reader even when the translation is in sync.
+| Reader-facing provenance | The generator renders a note at the top of every translated page, in the page language: _"Das ist eine Übersetzung vom Originalartikel …"_ / _"This is a translation of the original …"_, linking to the original. Outdated state and declared divergence are shown as additional notes and may appear together. The note is emitted as a generated per-article include, like the existing tag and comment includes.
+| Language switcher | The switcher is present on a page as soon as the artifact exists in more than one language, and offers the languages in which the artifact really exists.
+| CV outputs | The CV follows the same language model as site pages, and the PDF build produces one PDF per CV language variant.
+| UI chrome | `includes/i18n/ui-de.adoc` defines all keys and is always included first; `includes/i18n/ui-<lang>.adoc` is included afterwards and overrides. The validator enforces key parity and fails the build on a missing key.
+| Content fragments | Fragments live under `includes/i18n/<lang>/`. A page may only include fragments available in its own language. A missing fragment translation fails the build, naming the fragment, the page, and the language. Fragments do not fall back, because a fallback would produce a page in mixed languages.
+| Page references | Chrome and content reference pages through generated attributes such as `{url_articles}`, never through hard-coded paths. A companion attribute such as `{url_articles_lang}` carries the resolved language. A link that falls back to the default language is marked with the target language behind the link text, for example `Curriculum Vitae (de)`.
+| Build failures | Missing UI key for a configured language; fragment not available in the page language; unresolvable link registry key; metadata violations such as an unknown `translation_of` target or a language that contradicts the file location.
+| Warnings | Page references that fall back to the default language because no translation exists, reported per generated language page; untranslated fragments that no page includes yet, reported as translation coverage.
+| Comments | Each language variant gets its own comment thread, keyed by its own artifact ID. The published-ID allowlist synchronization is unchanged and simply covers more IDs.
+| HTML metadata | `scripts/inject-site-metadata.rb` additionally emits `rel="alternate"` `hreflang` links per translation group and `x-default` pointing at the default language, alongside the existing canonical link.
+| Client-side strings | JavaScript in `src-content/theme` reads its user-visible strings from `data-` attributes emitted by the generator instead of carrying literals.
+|===
+
+=== Consequences
+
+==== Positive
+
+* A page reference never leads nowhere; the worst case is a default-language page, explicitly marked as such.
+* A published page is never a mix of languages, because the build refuses to produce one.
+* AsciiDoc sources stay standard: attribute references and ordinary includes, previewable in any editor.
+* The generator already owns per-article generated includes and listings, so the language dimension extends an existing responsibility instead of adding a new component.
+* Fragment resolution needs no generated stub files at all: a fragment either exists in the page language or the build stops, which keeps the include trees free of machine-written filler.
+* Language selection produces plain static files with no runtime negotiation, preserving xref:qs-004-minimal-static-site[QS-004: Minimal Static Site].
+* Existing default-language URLs remain unchanged, so canonical URLs and the comment allowlist keep working.
+* Translation provenance is explicit for the reader instead of implicit, and staleness is detected mechanically rather than remembered by the author.
+* Because the original is declared per artifact rather than fixed to the default language, articles can be authored in any language without inverting the site's fallback rules.
+
+==== Negative
+
+* The generator, the profile validator, and the profile metamodel all grow a language dimension, and the generated file count multiplies with the number of languages.
+* Language variants can drift apart in content while both remain publishable, which increases xref:risk-001-metadata-drift[RISK-001: Metadata Drift].
+* Hard-coded paths in `menue.adoc` and `docinfo-footer.html` and the German literals in `docheader.adoc` and `article-comments.js` must be migrated before the first non-default page is published.
+* Discussion about one article is split across language threads.
+* Translation freshness depends on a recorded digest that must be re-accepted deliberately, which adds a step to the translation workflow.
+* Because the digest covers the full source, a cosmetic edit to an original marks its translations as outdated even when the meaning did not change. The author override exists precisely for this case, but it must be exercised.
+* A page cannot be published in a new language before every fragment it includes is translated. This is the intended trade-off against mixed-language pages, but it makes fragment-heavy artifacts such as the CV an all-or-nothing translation effort rather than an incremental one.
+
+==== Neutral or Follow-Up
+
+* Translation drift is covered by xref:risk-001-metadata-drift[RISK-001: Metadata Drift]; no dedicated risk artifact is created for it.
+* The `language: mixed` value, used by nine profile artifacts, is resolved to a concrete language when the metamodel gains the language dimension. The value disappears from the vocabulary: a page may only include fragments of its own language, so an artifact is always written in exactly one language.
+* The placement of the language switcher in the chrome is a presentation detail left to implementation.
+* Fragment granularity becomes a design lever: the finer the fragments, the smaller the unit that blocks a translated page from being published.
+
+=== Assumptions
+
+* The site is served from the domain root, so root-relative URLs in the generated link registry are valid for the site build while the existing `ifdef::buildsite[]` branch keeps relative paths for PDF and local builds.
+* Language-dependent attributes are not set through the Gradle `attributes(...)` map, because API-set attributes are locked and could not be overridden by `:lang:` in a document.
+* English is the first additional language; no right-to-left language is planned.
+
+=== Open Questions
+
+None. The questions raised while drafting this ADR were decided by the accountable owner and folded into the language contract above: outdated translations stay publishable with a visible note, the digest covers the full article source, freshness and divergence notes may appear together, the author can override the derived freshness state, and the language switcher appears whenever an artifact exists in more than one language.
+
+=== Review Notes
+
+Reviewed and accepted by the accountable owner. The following were confirmed during review:
+
+* the language subtree layout and the `-<lang>` ID suffix convention for translated artifacts;
+* translation drift stays covered by RISK-001 without a dedicated risk artifact;
+* the reader-facing wording for a translated page and the `(de)` marker behind a link that falls back;
+* the split between build failures and warnings recorded in the language contract.
+
+Implementation is tracked in https://github.com/dieterbaier/profile/issues/47[GitHub issue #47] and its slices.
