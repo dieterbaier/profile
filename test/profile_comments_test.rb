@@ -65,6 +65,25 @@ class ProfileCommentsTest < Minitest::Test
     end
   end
 
+  # The script must stay free of wording so a translated page can supply its own.
+  # The block therefore carries the status strings as attribute references, which
+  # the page resolves against its interface terms.
+  def test_comment_status_wording_comes_from_the_page_not_the_script
+    with_article do |validator, artifacts, root|
+      validator.generate_article_comment_includes(artifacts)
+      generated = (root + 'articles/generated/example-comments.adoc').read
+      script = Pathname.new(__dir__).join('../src-content/theme/article-comments.js').read
+
+      assert_includes generated, 'data-i18n-empty="{ui_comments_empty}"'
+      assert_includes generated, 'data-i18n-loading="{ui_comments_loading}"'
+      assert_includes generated, 'data-i18n-error="{ui_comments_error}"'
+      assert_includes generated, 'data-i18n-count-one="{ui_comments_count_one}"'
+      assert_includes generated, 'data-i18n-count-many="{ui_comments_count_many}"'
+      refute_match(/Kommentare werden von GitHub geladen/, script)
+      refute_match(/Noch keine Kommentare vorhanden/, script)
+    end
+  end
+
   def test_non_website_article_exports_omit_the_comment_block
     # Given: a generated article comment include
     with_article do |validator, artifacts, root|

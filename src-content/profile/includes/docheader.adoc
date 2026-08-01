@@ -4,6 +4,13 @@ endif::[]
 ifndef::lang[]
 :lang: de
 endif::[]
+// Interface terms, resolved as a cascade: the default language defines every
+// key, the page language overrides what it translates. Later assignments win in
+// AsciiDoc, so this needs no file-existence check, which AsciiDoc cannot express.
+include::./i18n/ui-de.adoc[]
+ifeval::["{lang}" != "de"]
+include::./i18n/ui-{lang}.adoc[opts=optional]
+endif::[]
 :docinfo: shared
 :docinfodir: {includesdir}/docinfo/
 ifndef::basedir[]
@@ -23,7 +30,7 @@ ifeval::["{backend}" != "pdf"]
 :imagesdir: {basedir}/assets/images/
 endif::[]
 endif::[]
-:toc-title: Inhalt
+:toc-title: {ui_toc_title}
 ifndef::toc[]
 :toc:
 endif::[]

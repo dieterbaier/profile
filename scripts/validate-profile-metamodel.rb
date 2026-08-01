@@ -60,6 +60,7 @@ class ProfileArtifactValidator
     validate_series(artifacts)
     validate_languages(artifacts)
     validate_translations(artifacts)
+    validate_ui_terms(artifacts)
     artifacts
   end
 
@@ -584,6 +585,83 @@ class ProfileArtifactValidator
     end
   end
 
+  # Interface terms must be complete per language. Content references may fall
+  # back to the default language and say so, but a menu label or a status message
+  # has nowhere to say it, so a missing key is an error rather than a fallback.
+  def validate_ui_terms(artifacts)
+    i18n_dir = profile_dir.join('includes', 'i18n')
+    return unless i18n_dir.directory?
+
+    default_path = ui_terms_path(i18n_dir, DEFAULT_LANGUAGE)
+    unless default_path.file?
+      errors << "missing interface terms for the default language: #{relative(default_path)}"
+      return
+    end
+
+    default_keys = ui_terms_keys(default_path)
+    if default_keys.empty?
+      errors << "#{relative(default_path)} defines no 'ui_*' interface terms"
+      return
+    end
+
+    languages_in_use = artifacts.map { |artifact| artifact_language(artifact) }.uniq
+
+    (LANGUAGES - [DEFAULT_LANGUAGE]).each do |language|
+      path = ui_terms_path(i18n_dir, language)
+
+      unless path.file?
+        # Only a language that content actually uses needs its interface terms.
+        errors << "#{language} content exists, but its interface terms are missing: #{relative(path)}" if languages_in_use.include?(language)
+        next
+      end
+
+      keys = ui_terms_keys(path)
+      missing = default_keys - keys
+      unknown = keys - default_keys
+
+      errors << "#{relative(path)} is missing interface term(s): #{missing.sort.join(', ')}" unless missing.empty?
+      errors << "#{relative(path)} defines interface term(s) unknown to #{relative(default_path)}: #{unknown.sort.join(', ')}" unless unknown.empty?
+    end
+
+    ([DEFAULT_LANGUAGE] + LANGUAGES).uniq.each do |language|
+      path = ui_terms_path(i18n_dir, language)
+      validate_ui_terms_format(path) if path.file?
+    end
+  end
+
+  # Interface term files are included into the AsciiDoc document header, where a
+  # blank line - and a comment line inside an include - ends the header. Anything
+  # after that point silently stops being a header attribute, which disables
+  # ':stylesheet:' and ':copycss:' and makes the site render with the default
+  # Asciidoctor theme. The symptom looks nothing like the cause, so the format is
+  # validated rather than left to memory.
+  def validate_ui_terms_format(path)
+    path.read(encoding: 'UTF-8').lines.each_with_index do |line, index|
+      next if line.match?(/\A:ui_[a-z0-9_]+:\s/)
+
+      reason = if line.strip.empty?
+                 'a blank line ends the AsciiDoc header'
+               elsif line.start_with?('//')
+                 'a comment line inside a header include ends the header'
+               else
+                 'only attribute entries are allowed'
+               end
+      errors << "#{relative(path)} line #{index + 1}: #{reason}; interface term files must contain nothing but ':ui_*:' entries"
+    end
+  end
+
+  def ui_terms_path(i18n_dir, language)
+    i18n_dir.join("ui-#{language}.adoc")
+  end
+
+  # Attribute names defined in an interface term file, ignoring comments.
+  def ui_terms_keys(path)
+    path.read(encoding: 'UTF-8').lines.filter_map do |line|
+      match = line.match(/\A:(ui_[a-z0-9_]+):/)
+      match && match[1]
+    end
+  end
+
   # Walks the translation_of chain and reports whether it revisits an artifact.
   def translation_cycle?(artifact, by_id)
     seen = [artifact.metadata['id']].compact
@@ -754,11 +832,22 @@ class ProfileArtifactValidator
                     "template=#{CGI.escape(ARTICLE_COMMENTS_TEMPLATE)}&title=#{CGI.escape(issue_title)}&" \
                     "article_id=#{CGI.escape(article_id)}&article_title=#{CGI.escape(article_title)}"
 
+    # Status wording for the browser script. The values stay AsciiDoc attribute
+    # references so the block's "subs=attributes" resolves them against the page's
+    # own interface terms, which makes the script itself free of any wording.
+    comment_terms = {
+      'i18n-empty' => '{ui_comments_empty}',
+      'i18n-loading' => '{ui_comments_loading}',
+      'i18n-error' => '{ui_comments_error}',
+      'i18n-count-one' => '{ui_comments_count_one}',
+      'i18n-count-many' => '{ui_comments_count_many}'
+    }.map { |name, value| "data-#{name}=\"#{value}\"" }.join(' ')
+
     ['// Generated article comments. Do not edit manually.',
      'ifdef::buildsite[]',
      '[subs="attributes"]',
      '++++',
-     "<section class=\"article-comments\" data-article-comments data-repository=\"#{h(ARTICLE_COMMENTS_REPOSITORY)}\" data-article-id=\"#{h(article_id)}\">",
+     "<section class=\"article-comments\" data-article-comments data-repository=\"#{h(ARTICLE_COMMENTS_REPOSITORY)}\" data-article-id=\"#{h(article_id)}\" #{comment_terms}>",
      '  <h2>Kommentare</h2>',
      '  <p>Fragen, Ergänzungen oder Feedback sind willkommen und werden als öffentliches GitHub-Issue erfasst.</p>',
      "  <p><a class=\"article-comment-create fingerPointsTo\" href=\"#{h(new_issue_url)}\" target=\"_blank\" rel=\"noopener noreferrer\">Diesen Artikel kommentieren</a></p>",
