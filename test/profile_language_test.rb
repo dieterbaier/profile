@@ -18,14 +18,25 @@ require_relative '../scripts/validate-profile-metamodel'
 class ProfileLanguageTest < Minitest::Test
   DIGEST = 'a' * 64
 
+  # Every profile tree owes default interface terms, so the helper writes a
+  # minimal set unless a test states its own. Pass an empty mapping to build a
+  # tree without any interface terms at all.
+  DEFAULT_UI_TERMS = { 'de' => { 'ui_nav_home' => 'Home' } }.freeze
+
+  # Content in a second language requires that language's interface terms, so
+  # tests that publish English content supply both sets.
+  BILINGUAL_UI_TERMS = {
+    'de' => { 'ui_nav_home' => 'Home' },
+    'en' => { 'ui_nav_home' => 'Home' }
+  }.freeze
+
   # Builds an isolated profile tree from lightweight artifact descriptions and
-  # yields the validated validator. Interface term files are written when the
-  # test passes a :ui_terms mapping of language to key/value pairs.
-  def with_artifacts(artifacts, ui_terms: nil)
+  # yields the validated validator. :ui_terms maps a language to key/value pairs.
+  def with_artifacts(artifacts, ui_terms: DEFAULT_UI_TERMS)
     Dir.mktmpdir('profile-language-test') do |dir|
       root = Pathname.new(dir)
 
-      ui_terms&.each do |language, terms|
+      ui_terms.each do |language, terms|
         (root + 'includes/i18n').mkpath
         # Attribute entries only: these files are included into the document
         # header, where a comment or blank line would end it.
@@ -72,11 +83,14 @@ class ProfileLanguageTest < Minitest::Test
   # An original in the default language plus its translation in the language
   # subtree is the reference case and must validate cleanly.
   def test_accepts_original_and_translation_pair
-    with_artifacts([
-                     { id: 'ART-001-example', slug: 'example', language: 'de' },
-                     { id: 'ART-001-example-en', slug: 'example', dir: 'site/en/articles', language: 'en',
-                       translation_of: 'ART-001-example', translation_source_digest: DIGEST }
-                   ]) do |validator|
+    with_artifacts(
+      [
+        { id: 'ART-001-example', slug: 'example', language: 'de' },
+        { id: 'ART-001-example-en', slug: 'example', dir: 'site/en/articles', language: 'en',
+          translation_of: 'ART-001-example', translation_source_digest: DIGEST }
+      ],
+      ui_terms: BILINGUAL_UI_TERMS
+    ) do |validator|
       assert_empty validator.errors
     end
   end
@@ -161,11 +175,14 @@ class ProfileLanguageTest < Minitest::Test
   # German must validate, because the default language is only the fallback
   # target, not the assumed source language.
   def test_accepts_english_original_translated_into_german
-    with_artifacts([
-                     { id: 'ART-001-example-en', slug: 'example', dir: 'site/en/articles', language: 'en' },
-                     { id: 'ART-001-example', slug: 'example', language: 'de',
-                       translation_of: 'ART-001-example-en', translation_source_digest: DIGEST }
-                   ]) do |validator|
+    with_artifacts(
+      [
+        { id: 'ART-001-example-en', slug: 'example', dir: 'site/en/articles', language: 'en' },
+        { id: 'ART-001-example', slug: 'example', language: 'de',
+          translation_of: 'ART-001-example-en', translation_source_digest: DIGEST }
+      ],
+      ui_terms: BILINGUAL_UI_TERMS
+    ) do |validator|
       assert_empty validator.errors
     end
   end
@@ -250,6 +267,24 @@ class ProfileLanguageTest < Minitest::Test
       ui_terms: { 'de' => { 'ui_nav_home' => 'Home' } }
     ) do |validator|
       assert_error_matching(validator, /en content exists, but its interface terms are missing/)
+    end
+  end
+
+  # docheader.adoc includes the default terms unconditionally, so a missing
+  # directory breaks every page. It must produce the same contract error as a
+  # missing file rather than silently skipping the whole check.
+  def test_rejects_missing_interface_terms_directory
+    with_artifacts([{ id: 'ART-001-example', slug: 'example', language: 'de' }], ui_terms: {}) do |validator|
+      assert_error_matching(validator, %r{missing interface terms for the default language: includes/i18n/ui-de\.adoc})
+    end
+  end
+
+  def test_rejects_missing_default_interface_terms_file
+    with_artifacts(
+      [{ id: 'ART-001-example', slug: 'example', language: 'de' }],
+      ui_terms: { 'en' => { 'ui_nav_home' => 'Home' } }
+    ) do |validator|
+      assert_error_matching(validator, /missing interface terms for the default language/)
     end
   end
 
