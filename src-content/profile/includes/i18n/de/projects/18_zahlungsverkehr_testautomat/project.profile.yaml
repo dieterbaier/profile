@@ -1,0 +1,21 @@
+id: PROJECT-016-18-zahlungsverkehr-testautomat
+type: Project
+title: "zahlungsverkehr testautomat"
+status: published
+owner: "Dieter Baier"
+created: '2026-07-04'
+reviewed: false
+generated: false
+language: de
+audience:
+  - employers
+  - clients
+channels:
+  - cv
+  - website
+summary: "Project profile source for zahlungsverkehr testautomat."
+source: src-content/profile/includes/i18n/de/projects/18_zahlungsverkehr_testautomat/master.adoc
+tags:
+  - project
+relations: []
+metadata_version: '1.0'

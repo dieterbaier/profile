@@ -1,0 +1,21 @@
+id: PROJECT-019-21-it-planung-bund
+type: Project
+title: "it planung bund"
+status: published
+owner: "Dieter Baier"
+created: '2026-07-04'
+reviewed: false
+generated: false
+language: de
+audience:
+  - employers
+  - clients
+channels:
+  - cv
+  - website
+summary: "Project profile source for it planung bund."
+source: src-content/profile/includes/i18n/de/projects/21_it_planung_bund/master.adoc
+tags:
+  - project
+relations: []
+metadata_version: '1.0'

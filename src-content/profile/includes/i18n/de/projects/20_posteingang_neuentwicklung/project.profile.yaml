@@ -1,0 +1,21 @@
+id: PROJECT-018-20-posteingang-neuentwicklung
+type: Project
+title: "posteingang neuentwicklung"
+status: published
+owner: "Dieter Baier"
+created: '2026-07-04'
+reviewed: false
+generated: false
+language: de
+audience:
+  - employers
+  - clients
+channels:
+  - cv
+  - website
+summary: "Project profile source for posteingang neuentwicklung."
+source: src-content/profile/includes/i18n/de/projects/20_posteingang_neuentwicklung/master.adoc
+tags:
+  - project
+relations: []
+metadata_version: '1.0'

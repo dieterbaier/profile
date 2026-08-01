@@ -373,6 +373,96 @@ class ProfileLanguageTest < Minitest::Test
     end
   end
 
+  # Builds a tree with a page and fragment files, and validates it.
+  def with_fragments(pages:, fragments:)
+    Dir.mktmpdir('profile-fragment-test') do |dir|
+      root = Pathname.new(dir)
+      (root + 'includes/i18n').mkpath
+      (root + 'includes/i18n/ui-de.adoc').write(":ui_nav_home: Home\n")
+      (root + 'includes/i18n/ui-en.adoc').write(":ui_nav_home: Home\n")
+
+      fragments.each do |relative, body|
+        path = root + "includes/i18n/#{relative}"
+        path.dirname.mkpath
+        path.write(body)
+      end
+
+      pages.each do |relative, body|
+        path = root + "site/#{relative}"
+        path.dirname.mkpath
+        path.write(body)
+      end
+
+      validator = ProfileArtifactValidator.new(root: root, profile_dir: root)
+      validator.validate
+      yield(validator)
+    end
+  end
+
+  # A link leading to a German page is usable, so it falls back. A German
+  # paragraph inside an English page is not, so the build stops instead.
+  def test_rejects_fragment_missing_in_the_page_language
+    with_fragments(
+      pages: { 'en/index.adoc' => "= Index\ninclude::{includesdir}/i18n/{lang}/profile/bio.adoc[]\n" },
+      fragments: { 'de/profile/bio.adoc' => "Deutscher Text\n" }
+    ) do |validator|
+      assert_error_matching(validator, /is written in 'en', but the fragment 'profile\/bio\.adoc' is not available in 'en'/)
+    end
+  end
+
+  def test_rejects_fragment_of_another_language
+    with_fragments(
+      pages: { 'en/index.adoc' => "= Index\ninclude::{includesdir}/i18n/de/profile/bio.adoc[]\n" },
+      fragments: { 'de/profile/bio.adoc' => "Deutscher Text\n" }
+    ) do |validator|
+      assert_error_matching(validator, /includes the 'de' fragment .*a page may only include fragments of its own language/)
+    end
+  end
+
+  def test_accepts_fragment_translated_into_the_page_language
+    with_fragments(
+      pages: { 'en/index.adoc' => "= Index\ninclude::{includesdir}/i18n/{lang}/profile/bio.adoc[]\n" },
+      fragments: {
+        'de/profile/bio.adoc' => "Deutscher Text\n",
+        'en/profile/bio.adoc' => "English text\n"
+      }
+    ) do |validator|
+      assert_empty validator.errors
+    end
+  end
+
+  # Fragments reached through an attribute-driven include must be checked too;
+  # the CV builds its project and experience entries that way.
+  def test_follows_attribute_driven_and_nested_includes
+    with_fragments(
+      pages: { 'en/index.adoc' => "= Index\ninclude::{includesdir}/i18n/{lang}/projects/list.adoc[]\n" },
+      fragments: {
+        'de/projects/list.adoc' => "include::entry/master.adoc[]\n",
+        'de/projects/entry/master.adoc' => ":entry-file: entry/body.adoc\ninclude::../entry.adoc[]\n",
+        'de/projects/entry.adoc' => "include::{entry-file}[]\n",
+        'de/projects/entry/body.adoc' => "Deutscher Text\n",
+        'en/projects/list.adoc' => "include::entry/master.adoc[]\n",
+        'en/projects/entry/master.adoc' => ":entry-file: entry/body.adoc\ninclude::../entry.adoc[]\n",
+        'en/projects/entry.adoc' => "include::{entry-file}[]\n"
+      }
+    ) do |validator|
+      # The English body is the only missing file in the chain and must be named.
+      assert_error_matching(validator, %r{fragment 'projects/entry/body\.adoc' is not available in 'en'})
+    end
+  end
+
+  # Untranslated fragments nobody includes are a gap, not a failure.
+  def test_reports_untranslated_fragments_as_coverage_warning
+    with_fragments(
+      pages: { 'en/index.adoc' => "= Index\n" },
+      fragments: { 'de/profile/bio.adoc' => "Deutscher Text\n" }
+    ) do |validator|
+      assert_empty validator.errors
+      assert validator.warnings.any? { |warning| warning.match?(/en: 1 of 1 content fragment/) },
+             "expected a coverage warning, got: #{validator.warnings.inspect}"
+    end
+  end
+
   # A language nobody writes in yet needs no interface terms.
   def test_accepts_missing_interface_terms_for_unused_language
     with_artifacts(

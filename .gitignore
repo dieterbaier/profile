@@ -47,3 +47,6 @@ bin/
 
 # Generated docs-as-code fragments
 **/generated/
+
+# JVM heap dumps, e.g. from an Asciidoctor build running out of memory
+*.hprof

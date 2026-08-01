@@ -4,4 +4,4 @@ include::{includesdir}/cvheader.adoc[]
 :type: site
 include::{includesdir}/cvappendix.adoc[]
 
-include::{includesdir}/education/certificates.adoc[]
+include::{includesdir}/i18n/{lang}/education/certificates.adoc[]

@@ -1,14 +1,14 @@
 include::{includesdir}/cvheader.adoc[]
 
-include::{includesdir}/contact/setContactAttributes.adoc[]
+include::{includesdir}/i18n/{lang}/contact/setContactAttributes.adoc[]
 ifeval::["{backend}" == "html5"]
 [subs="attributes,macros"]
 ++++
 <div class="intro">
     <img src="{imagesdir}/dieterbaier_image_cv_rounded_comic_200.png" alt="Dieter Baier">
     <div class="cvcontactlanguage">
-include::{includesdir}/contact/contact.adoc[]
-include::{includesdir}/languages/languages.adoc[]
+include::{includesdir}/i18n/{lang}/contact/contact.adoc[]
+include::{includesdir}/i18n/{lang}/languages/languages.adoc[]
 </div>
 </div>
 ++++
@@ -17,9 +17,9 @@ ifeval::["{backend}" != "html5"]
 [cols="2,1", role="compact" frame=none, grid=none]
 |===
 a|
-include::{includesdir}/contact/contact.adoc[]
+include::{includesdir}/i18n/{lang}/contact/contact.adoc[]
 a|
-include::{includesdir}/languages/languages.adoc[]
+include::{includesdir}/i18n/{lang}/languages/languages.adoc[]
 |===
 endif::[]
 
@@ -27,14 +27,14 @@ endif::[]
 == Berufserfahrung
 
 :is-included:
-include::{includesdir}/professional_experience/listOfProfessionalExperience.adoc[]
+include::{includesdir}/i18n/{lang}/professional_experience/listOfProfessionalExperience.adoc[]
 
 <<<
 
 [.new-section]
 == Selected Projects
 
-include::{includesdir}/projects/listOfProjects.adoc[]
+include::{includesdir}/i18n/{lang}/projects/listOfProjects.adoc[]
 
 <<<
 
@@ -42,16 +42,16 @@ include::{includesdir}/projects/listOfProjects.adoc[]
 == Weiter- und Ausbildung
 === Weiterbildung
 
-include::{includesdir}/education/certificates.adoc[]
+include::{includesdir}/i18n/{lang}/education/certificates.adoc[]
 
 === Ausbildung
 
-include::{includesdir}/education/education.adoc[]
+include::{includesdir}/i18n/{lang}/education/education.adoc[]
 
 [.new-section]
 == Kenntnisse
 
-include::{includesdir}/skills/skills_matrix.adoc[]
+include::{includesdir}/i18n/{lang}/skills/skills_matrix.adoc[]
 
 include::{includesdir}/cvappendix.adoc[]
 

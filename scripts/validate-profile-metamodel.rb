@@ -62,6 +62,7 @@ class ProfileArtifactValidator
     validate_translations(artifacts)
     validate_ui_terms(artifacts)
     validate_link_references(artifacts)
+    validate_fragment_languages
     artifacts
   end
 
@@ -618,6 +619,128 @@ class ProfileArtifactValidator
       if artifact_language(original) == artifact_language(artifact)
         errors << "#{location} is declared as a translation of '#{target}', but both are written in '#{artifact_language(artifact)}'"
       end
+    end
+  end
+
+  # Content fragments deliberately do not fall back. A link leading to a German
+  # page is still usable, so it falls back and says so; a German paragraph inside
+  # an English page is not, so the build stops instead of producing a page in
+  # mixed languages. This walks the include tree of every page and rejects any
+  # fragment that is not available in the page's own language.
+  def validate_fragment_languages
+    fragment_root = profile_dir.join('includes', 'i18n')
+
+    pages = page_sources
+    pages.each do |page, language|
+      walk_includes(page, language, fragment_root)
+    end
+
+    report_fragment_coverage(fragment_root, pages.values.uniq)
+  end
+
+  # Pages that carry a language: everything the site renders plus the readme.
+  def page_sources
+    sources = site_pages.values.map { |path| Pathname.new(path) }
+    readme = profile_dir.join('readme', 'README.adoc')
+    sources << readme if readme.file?
+
+    sources.to_h { |path| [path, path_language(path)] }
+  end
+
+  # Language implied by a path, using the same language-subtree rule as the
+  # metadata check.
+  def path_language(path)
+    segments = path.relative_path_from(profile_dir).each_filename.to_a
+    segments.find { |segment| LANGUAGES.include?(segment) && segment != DEFAULT_LANGUAGE } || DEFAULT_LANGUAGE
+  end
+
+  # Follows include directives from a page, carrying the attributes defined along
+  # the way so attribute-driven includes such as '{pe-description-file}' resolve.
+  # Conditional blocks are not evaluated: every branch is walked, which can only
+  # ask for more translations than a build needs, never fewer.
+  def walk_includes(page, language, fragment_root)
+    visited = Set.new
+    queue = [[page, { 'includesdir' => profile_dir.join('includes').to_s, 'lang' => language }]]
+
+    until queue.empty?
+      current, attributes = queue.shift
+      next unless visited.add?(current.to_s)
+      next unless current.file?
+
+      attributes = attributes.dup
+      current.read(encoding: 'UTF-8').each_line do |line|
+        if (definition = line.match(/\A:([a-z0-9_-]+):\s+(\S.*?)\s*\z/))
+          attributes[definition[1]] = definition[2]
+          next
+        end
+
+        target = include_target(line, attributes)
+        next if target.nil?
+
+        resolved = (current.dirname + target).cleanpath
+        next unless check_fragment_language(resolved, page, language, fragment_root)
+
+        queue << [resolved, attributes]
+      end
+    end
+  end
+
+  # The include target of a line, with known attributes substituted, or nil when
+  # the line is not an include, is escaped, or stays unresolvable.
+  def include_target(line, attributes)
+    match = line.match(/\A(\\)?include::([^\[]+)\[/)
+    return nil if match.nil? || match[1]
+
+    target = match[2].gsub(/\{([a-z0-9_-]+)\}/) { attributes[Regexp.last_match(1)] || Regexp.last_match(0) }
+    target.include?('{') ? nil : target
+  end
+
+  # Reports a fragment that belongs to another language or is missing in the
+  # page's language. Returns whether the include tree should be followed further.
+  def check_fragment_language(resolved, page, language, fragment_root)
+    return true unless resolved.to_s.start_with?("#{fragment_root}/")
+
+    fragment_language = resolved.relative_path_from(fragment_root).each_filename.first
+    return true unless LANGUAGES.include?(fragment_language)
+
+    relative_fragment = resolved.relative_path_from(fragment_root.join(fragment_language))
+
+    if fragment_language != language
+      errors << "#{relative(page)} is written in '#{language}' but includes the '#{fragment_language}' fragment " \
+                "#{relative(resolved)}; a page may only include fragments of its own language"
+      return false
+    end
+
+    unless resolved.file?
+      errors << "#{relative(page)} is written in '#{language}', but the fragment '#{relative_fragment}' " \
+                "is not available in '#{language}': #{relative(resolved)} is missing"
+      return false
+    end
+
+    true
+  end
+
+  # Untranslated fragments are not an error on their own - only including one on
+  # a page of another language is. Reporting them makes the gap visible before
+  # someone writes the page that needs them.
+  def report_fragment_coverage(fragment_root, languages_in_use)
+    default_dir = fragment_root.join(DEFAULT_LANGUAGE)
+    return unless default_dir.directory?
+
+    default_fragments = Dir.glob(default_dir.join('**/*.adoc').to_s)
+                           .map { |path| Pathname.new(path).relative_path_from(default_dir).to_s }
+                           .sort
+
+    # Reported for every language that has pages, whether or not its fragment
+    # directory exists yet: a language with no fragments at all is the emptiest
+    # coverage there is, not a reason to stay silent.
+    (languages_in_use - [DEFAULT_LANGUAGE]).sort.each do |language|
+      language_dir = fragment_root.join(language)
+      missing = default_fragments.reject { |fragment| language_dir.join(fragment).file? }
+      next if missing.empty?
+
+      warnings << "#{language}: #{missing.length} of #{default_fragments.length} content fragment(s) are not " \
+                  "translated yet"
     end
   end
 

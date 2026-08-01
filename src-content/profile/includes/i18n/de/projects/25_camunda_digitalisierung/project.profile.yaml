@@ -1,0 +1,21 @@
+id: PROJECT-023-25-camunda-digitalisierung
+type: Project
+title: "camunda digitalisierung"
+status: published
+owner: "Dieter Baier"
+created: '2026-07-04'
+reviewed: false
+generated: false
+language: de
+audience:
+  - employers
+  - clients
+channels:
+  - cv
+  - website
+summary: "Project profile source for camunda digitalisierung."
+source: src-content/profile/includes/i18n/de/projects/25_camunda_digitalisierung/master.adoc
+tags:
+  - project
+relations: []
+metadata_version: '1.0'

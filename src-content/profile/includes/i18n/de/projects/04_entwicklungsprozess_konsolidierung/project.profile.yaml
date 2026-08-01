@@ -1,0 +1,21 @@
+id: PROJECT-004-04-entwicklungsprozess-konsolidierung
+type: Project
+title: "entwicklungsprozess konsolidierung"
+status: published
+owner: "Dieter Baier"
+created: '2026-07-04'
+reviewed: false
+generated: false
+language: de
+audience:
+  - employers
+  - clients
+channels:
+  - cv
+  - website
+summary: "Project profile source for entwicklungsprozess konsolidierung."
+source: src-content/profile/includes/i18n/de/projects/04_entwicklungsprozess_konsolidierung/master.adoc
+tags:
+  - project
+relations: []
+metadata_version: '1.0'

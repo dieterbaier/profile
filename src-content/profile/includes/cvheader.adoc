@@ -25,9 +25,9 @@ endif::[]
 ifeval::["{backend}" == "pdf"]
 :leveloffset: +1
 
-include::./profile/profile.adoc[]
+include::./i18n/{lang}/profile/profile.adoc[]
 
-include::./profile/profile_personal.adoc[]
+include::./i18n/{lang}/profile/profile_personal.adoc[]
 
 :leveloffset: -1
 endif::[]
