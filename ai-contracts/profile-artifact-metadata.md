@@ -24,6 +24,10 @@ Optional:
   fall back to `created`).
 - Language-specific summaries `summary_de` and `summary_en` (article listings
   prefer the language variant and fall back to the neutral `summary`).
+- Translation provenance via `translation_of` (ID of the artifact this one was
+  translated from), `translation_source_digest`, and `translation_divergence`.
+  All three are only valid on a translation; `translation_of` must reference an
+  original, not another translation.
 - A `skills` array of skill slugs an article demonstrates, kept separate from
   `tags`. Each skill gets a generated overview page listing its articles.
 
@@ -50,6 +54,11 @@ as project entries.
 - Prefer meaningful, discriminating tags. Ubiquitous tags (for example `profile`)
   carry no relatedness signal and trigger a validator warning.
 - `previous`/`next` reference existing Articles and stay mutually consistent.
+- `language` is a concrete language and matches the artifact's location: the
+  default language `de` at the root of its tree, every other language below its
+  own `<lang>/` subtree. There is no `mixed` value.
+- The original of a translation may be in any language. The default language is
+  the fallback target, not the assumed source language.
 
 ## Validation
 
