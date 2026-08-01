@@ -590,8 +590,10 @@ class ProfileArtifactValidator
   # has nowhere to say it, so a missing key is an error rather than a fallback.
   def validate_ui_terms(artifacts)
     i18n_dir = profile_dir.join('includes', 'i18n')
-    return unless i18n_dir.directory?
 
+    # Checked without testing the directory first: docheader.adoc includes the
+    # default terms unconditionally, so a missing directory breaks every page and
+    # must produce the same contract error as a missing file.
     default_path = ui_terms_path(i18n_dir, DEFAULT_LANGUAGE)
     unless default_path.file?
       errors << "missing interface terms for the default language: #{relative(default_path)}"
