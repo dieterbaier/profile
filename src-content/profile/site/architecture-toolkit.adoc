@@ -10,4 +10,4 @@ endif::[]
 :active: toolkit
 include::{includesdir}/docheader.adoc[]
 
-include::{includesdir}/skills/skills_matrix.adoc[]
+include::{includesdir}/i18n/{lang}/skills/skills_matrix.adoc[]

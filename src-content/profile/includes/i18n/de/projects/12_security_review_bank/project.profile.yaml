@@ -1,0 +1,21 @@
+id: PROJECT-012-12-security-review-bank
+type: Project
+title: "security review bank"
+status: published
+owner: "Dieter Baier"
+created: '2026-07-04'
+reviewed: false
+generated: false
+language: de
+audience:
+  - employers
+  - clients
+channels:
+  - cv
+  - website
+summary: "Project profile source for security review bank."
+source: src-content/profile/includes/i18n/de/projects/12_security_review_bank/master.adoc
+tags:
+  - project
+relations: []
+metadata_version: '1.0'

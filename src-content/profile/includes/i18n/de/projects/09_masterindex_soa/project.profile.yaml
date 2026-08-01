@@ -1,0 +1,21 @@
+id: PROJECT-009-09-masterindex-soa
+type: Project
+title: "masterindex soa"
+status: published
+owner: "Dieter Baier"
+created: '2026-07-04'
+reviewed: false
+generated: false
+language: de
+audience:
+  - employers
+  - clients
+channels:
+  - cv
+  - website
+summary: "Project profile source for masterindex soa."
+source: src-content/profile/includes/i18n/de/projects/09_masterindex_soa/master.adoc
+tags:
+  - project
+relations: []
+metadata_version: '1.0'

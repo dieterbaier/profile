@@ -5,4 +5,4 @@ include::{includesdir}/cvheader.adoc[]
 include::{includesdir}/cvappendix.adoc[]
 
 :is-included:
-include::{includesdir}/projects/listOfProjects.adoc[]
+include::{includesdir}/i18n/{lang}/projects/listOfProjects.adoc[]

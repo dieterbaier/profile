@@ -19,10 +19,10 @@ include::{includesdir}/docheader.adoc[]
 
 [.highlight]
 --
-include::{includesdir}/profile/profile.adoc[]
-include::{includesdir}/profile/profile_personal.adoc[]
+include::{includesdir}/i18n/{lang}/profile/profile.adoc[]
+include::{includesdir}/i18n/{lang}/profile/profile_personal.adoc[]
 --
 
-include::{includesdir}/profile/about_me_citations.adoc[]
+include::{includesdir}/i18n/{lang}/profile/about_me_citations.adoc[]
 
 xref:{basedir}/cv.adoc[Curriculum Vitae,role="fingerPointsTo"]

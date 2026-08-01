@@ -62,6 +62,32 @@ The same formatting constraint applies to the generated registry, and it is
 guarded by a test: `:name:value` without the space after the colon is not an
 attribute entry and would end the header just like a blank line.
 
+## Content fragments
+
+`<lang>/` holds the reusable content fragments: profile prose, contact data,
+languages, education, professional experience, projects and skills. Pages include
+them language-parameterized:
+
+```asciidoc
+include::{includesdir}/i18n/{lang}/profile/profile.adoc[]
+```
+
+**Fragments do not fall back.** A page may only include fragments of its own
+language; a missing translation fails the build, naming the page, the fragment
+and the language. A link leading to a German page is still usable, so it falls
+back and says so — a German paragraph inside an English page is not, so the
+build stops instead of producing a page in mixed languages.
+
+The validator walks the include tree of every page, carrying attributes along the
+way so attribute-driven includes such as `{pe-description-file}` resolve. It does
+not evaluate `ifdef`/`ifeval` and walks every branch, which can ask for more
+translations than a single build needs but never fewer.
+
+Fragments that are not translated yet are reported as a coverage warning. They
+only become an error once a page in that language includes one, so translation
+can progress fragment by fragment — but a *page* is all-or-nothing: every
+fragment it pulls in has to exist in its language before it can be published.
+
 ## Adding a language
 
 1. Copy `ui-de.adoc` to `ui-<lang>.adoc` and translate every value.
