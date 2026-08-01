@@ -57,7 +57,38 @@ properties:
     default: false
   language:
     type: string
-    enum: [de, en, mixed]
+    description: >-
+      Language the artifact is written in. Must be a concrete language; an
+      artifact cannot be authored in several languages at once, because a page
+      may only include fragments of its own language. Absent means the default
+      language 'de'. The declared value must match the artifact's location:
+      default-language artifacts live at the root of their tree, every other
+      language below its own '<lang>/' subtree.
+    enum: [de, en]
+  translation_of:
+    type: string
+    description: >-
+      Stable ID of the artifact this one was translated from. Absent means this
+      artifact is an original. The original may be in any language and does not
+      have to be the default language; an article can be written in English
+      first and translated into German afterwards.
+    pattern: "^[A-Z]+-[0-9]{3,}(-[a-z0-9]+)*$"
+  translation_source_digest:
+    type: string
+    description: >-
+      Digest of the original's full source content at the time this translation
+      was written or last re-accepted. The generator recomputes it to derive
+      whether the translation is still in sync. Only valid together with
+      'translation_of'.
+    pattern: "^[0-9a-f]{64}$"
+  translation_divergence:
+    type: string
+    minLength: 1
+    description: >-
+      Author-declared description of a deliberate content difference from the
+      original. Its presence marks the translation as intentionally divergent
+      and is shown to the reader independently of the freshness state. Only
+      valid together with 'translation_of'.
   audience:
     type: array
     items:

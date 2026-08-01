@@ -422,6 +422,19 @@ tasks.register('testProfileNavigation') {
     }
 }
 
+tasks.register('testProfileLanguage') {
+    description = 'Runs the profile language and translation metadata validation tests.'
+    group = 'verification'
+    inputs.files('scripts/validate-profile-metamodel.rb', 'test/profile_language_test.rb')
+    inputs.files('metamodel/profile-artifact.schema.yaml')
+
+    doLast {
+        exec {
+            commandLine 'ruby', '-Itest', 'test/profile_language_test.rb'
+        }
+    }
+}
+
 tasks.register('testProfileListings') {
     description = 'Runs the article listing generator behaviour tests.'
     group = 'verification'

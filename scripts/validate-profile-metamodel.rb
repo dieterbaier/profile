@@ -12,7 +12,7 @@ require 'yaml'
 
 class ProfileArtifactValidator
   REQUIRED = %w[id type title status owner created].freeze
-  PROPERTIES = %w[id type title status owner created updated published reviewed generated language audience channels summary summary_de summary_en source tags skills previous next relations metadata_version].freeze
+  PROPERTIES = %w[id type title status owner created updated published reviewed generated language translation_of translation_source_digest translation_divergence audience channels summary summary_de summary_en source tags skills previous next relations metadata_version].freeze
   TYPES = %w[ProfilePage Article ShortThought CV Project ProfessionalExperience Education Skill Contact ProfileFragment].freeze
   STATUSES = %w[draft proposed preview reviewed published private archived deprecated].freeze
   # Statuses whose articles may appear as public "related article" suggestions.
@@ -30,7 +30,11 @@ class ProfileArtifactValidator
   DEFAULT_LANGUAGE = 'de'
   ARTICLE_COMMENTS_REPOSITORY = 'dieterbaier/profile-artikelkommentare'
   ARTICLE_COMMENTS_TEMPLATE = 'artikelkommentar.yml'
-  LANGUAGES = %w[de en mixed].freeze
+  # Concrete authoring languages. There is deliberately no 'mixed' value: a page
+  # may only include fragments of its own language, so an artifact is always
+  # written in exactly one language. Absent metadata means DEFAULT_LANGUAGE.
+  LANGUAGES = %w[de en].freeze
+  DIGEST_PATTERN = /\A[0-9a-f]{64}\z/
   CHANNELS = %w[website cv readme github gitlab markdown-export pdf].freeze
   RELATION_TYPES = %w[addresses depends_on constrains refines supersedes conflicts_with mitigates introduces_risk affects verifies documents relates_to].freeze
   RELATION_STATUSES = %w[proposed reviewed accepted rejected].freeze
@@ -54,6 +58,8 @@ class ProfileArtifactValidator
     validate_ids(artifacts)
     validate_relations(artifacts)
     validate_series(artifacts)
+    validate_languages(artifacts)
+    validate_translations(artifacts)
     artifacts
   end
 
@@ -296,6 +302,9 @@ class ProfileArtifactValidator
       validate_skills(artifact)
       validate_string(artifact, 'previous', pattern: ARTIFACT_ID_PATTERN, required: false)
       validate_string(artifact, 'next', pattern: ARTIFACT_ID_PATTERN, required: false)
+      validate_string(artifact, 'translation_of', pattern: ARTIFACT_ID_PATTERN, required: false)
+      validate_string(artifact, 'translation_source_digest', pattern: DIGEST_PATTERN, required: false)
+      validate_string(artifact, 'translation_divergence', required: false)
       validate_relations_field(artifact)
 
       if artifact.metadata['source']
@@ -492,6 +501,102 @@ class ProfileArtifactValidator
       if !blank?(prv) && (paired = by_id[prv]) && paired.metadata['next'] != self_id
         warnings << "#{relative(artifact.path)} declares previous '#{prv}', but '#{prv}' does not declare next '#{self_id}'"
       end
+    end
+  end
+
+  # Declared language of an artifact. Absent metadata means the default
+  # language, so existing single-language content stays valid unchanged.
+  def artifact_language(artifact)
+    artifact.metadata['language'] || DEFAULT_LANGUAGE
+  end
+
+  # Language implied by an artifact's location. The first path segment naming a
+  # non-default language marks a language subtree; everything else is the
+  # default language. One rule covers site pages ('site/en/...'), fragments
+  # ('includes/i18n/en/...') and CV variants ('cv/en/...') alike.
+  def location_language(artifact)
+    segments = artifact.path.relative_path_from(profile_dir).each_filename.to_a
+    segments.find { |segment| LANGUAGES.include?(segment) && segment != DEFAULT_LANGUAGE } || DEFAULT_LANGUAGE
+  end
+
+  # Keeps the declared language and the file location in sync, so the language
+  # of a page can be derived from either side without them drifting apart.
+  def validate_languages(artifacts)
+    artifacts.each do |artifact|
+      declared = artifact.metadata['language']
+      # An invalid value is already reported by the enum check.
+      next unless declared.nil? || LANGUAGES.include?(declared)
+
+      expected = location_language(artifact)
+      next if declared == expected
+      next if declared.nil? && expected == DEFAULT_LANGUAGE
+
+      if declared.nil?
+        errors << "#{relative(artifact.path)} lies in the '#{expected}' language subtree and must declare 'language: #{expected}'"
+      else
+        errors << "#{relative(artifact.path)} declares 'language: #{declared}', but its location implies '#{expected}'"
+      end
+    end
+  end
+
+  # Validates translation provenance: which artifact an artifact was translated
+  # from, and that the translation fields only appear where they mean something.
+  # The original may be in any language; it does not have to be the default one.
+  def validate_translations(artifacts)
+    by_id = index_by_id(artifacts)
+
+    artifacts.each do |artifact|
+      location = relative(artifact.path)
+      target = artifact.metadata['translation_of']
+
+      if blank?(target)
+        %w[translation_source_digest translation_divergence].each do |field|
+          next if blank?(artifact.metadata[field])
+          errors << "#{location} field '#{field}' is only allowed on a translation, which requires 'translation_of'"
+        end
+        next
+      end
+
+      if target == artifact.metadata['id']
+        errors << "#{location} field 'translation_of' must not reference the artifact itself"
+        next
+      end
+
+      if translation_cycle?(artifact, by_id)
+        errors << "#{location} field 'translation_of' forms a translation cycle through '#{target}'"
+        next
+      end
+
+      original = by_id[target]
+      if original.nil?
+        errors << "#{location} field 'translation_of' references unknown artifact '#{target}'"
+        next
+      end
+
+      unless blank?(original.metadata['translation_of'])
+        errors << "#{location} field 'translation_of' must reference the original, but '#{target}' is itself a translation"
+        next
+      end
+
+      if artifact_language(original) == artifact_language(artifact)
+        errors << "#{location} is declared as a translation of '#{target}', but both are written in '#{artifact_language(artifact)}'"
+      end
+    end
+  end
+
+  # Walks the translation_of chain and reports whether it revisits an artifact.
+  def translation_cycle?(artifact, by_id)
+    seen = [artifact.metadata['id']].compact
+    current = artifact
+
+    loop do
+      target = current.metadata['translation_of']
+      return false if blank?(target)
+      return true if seen.include?(target)
+
+      seen << target
+      current = by_id[target]
+      return false if current.nil?
     end
   end
 
