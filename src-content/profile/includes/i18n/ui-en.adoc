@@ -1,0 +1,22 @@
+:ui_nav_home: Home
+:ui_nav_cv: Curriculum Vitae
+:ui_nav_toolkit: Toolbox & Skills Matrix
+:ui_nav_articles: Articles
+:ui_nav_shorts: Shorts
+:ui_nav_open: Open menu
+:ui_nav_close: Close menu
+:ui_toc_title: Contents
+:ui_footer_legal: Legal notice
+:ui_footer_sustainability_title: This site is deliberately lightweight.
+:ui_footer_sustainability_note: Static · no tracking · reproducible pipeline
+:ui_footer_sustainability_link: Why it is built this way
+:ui_footer_architecture: Architecture of this site
+:ui_comments_heading: Comments
+:ui_comments_intro: Questions, additions and feedback are welcome and are recorded as a public GitHub issue.
+:ui_comments_create: Comment on this article
+:ui_comments_load: Load existing comments
+:ui_comments_empty: No comments yet.
+:ui_comments_loading: Loading comments from GitHub …
+:ui_comments_error: Comments could not be loaded right now. Please try again later.
+:ui_comments_count_one: One comment:
+:ui_comments_count_many: %count% comments:

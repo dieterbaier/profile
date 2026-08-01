@@ -1,0 +1,23 @@
+  id: PAGE-001-website-index-en
+  type: ProfilePage
+  title: "Website Index (English)"
+  status: published
+  owner: "Dieter Baier"
+  created: '2026-08-01'
+  reviewed: false
+  generated: false
+  language: en
+  translation_of: PAGE-001-website-index
+  audience:
+    - employers
+    - clients
+    - technical-community
+  channels:
+    - website
+  summary: "English landing page of the personal website."
+  summary_en: "English landing page of the personal website."
+  source: src-content/profile/site/en/index.adoc
+  tags:
+    - profile
+  relations: []
+  metadata_version: '1.0'

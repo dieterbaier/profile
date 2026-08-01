@@ -1,0 +1,21 @@
+= Dieter Baier
+include::{includesdir}/../../revinfo.adoc[]
+:lang: en
+:revdate!:
+:revnumber!:
+:revremark: Software architect | Integration, architecture and documentation
+ifdef::buildsite[]
+:basedir: ..
+endif::[]
+:active: home
+include::{includesdir}/docheader.adoc[]
+
+[.highlight]
+--
+I help teams structure complex software systems, keep integrations manageable,
+and document and communicate architecture decisions so that they stay
+comprehensible.
+
+This English section of the site is being built up gradually. Pages that are not
+translated yet are linked in German.
+--
