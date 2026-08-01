@@ -54,8 +54,8 @@ class ProfileLanguageTest < Minitest::Test
       end
 
       validator = ProfileArtifactValidator.new(root: root, profile_dir: root)
-      validator.validate
-      yield(validator)
+      artifacts = validator.validate
+      yield(validator, root, artifacts)
     end
   end
 
@@ -303,6 +303,73 @@ class ProfileLanguageTest < Minitest::Test
 
       assert_error_matching(validator, /line 2: a blank line ends the AsciiDoc header/)
       assert_error_matching(validator, /line 3: a comment line inside a header include ends the header/)
+    end
+  end
+
+  # A page reference resolves to the same-language page where one exists and to
+  # the default language otherwise, so it always leads somewhere. The fallback is
+  # marked with the language it leads to.
+  def test_link_registry_resolves_per_language_and_marks_fallbacks
+    with_artifacts(
+      [
+        { id: 'PAGE-001-index', slug: 'index', dir: 'site', type: 'ProfilePage', language: 'de' },
+        { id: 'PAGE-002-legal', slug: 'legal', dir: 'site', type: 'ProfilePage', language: 'de' },
+        { id: 'PAGE-001-index-en', slug: 'index', dir: 'site/en', type: 'ProfilePage', language: 'en',
+          translation_of: 'PAGE-001-index' }
+      ],
+      ui_terms: BILINGUAL_UI_TERMS
+    ) do |validator, root, artifacts|
+      validator.generate_link_registries(artifacts)
+      english = (root + 'includes/generated/i18n/links-en.adoc').read
+
+      # The translated page wins and carries no marker.
+      assert_includes english, ":url_index: {basedir}/en/index.html\n"
+      assert_includes english, ":url_index_lang: en\n"
+      assert_includes english, ":url_index_marker:\n"
+
+      # The untranslated page falls back and says which language it leads to.
+      assert_includes english, ":url_legal: {basedir}/legal.html\n"
+      assert_includes english, ":url_legal_lang: de\n"
+      assert_includes english, ":url_legal_marker: {nbsp}(de)\n"
+
+      assert validator.warnings.any? { |warning| warning.include?('legal.html') },
+             "expected a fallback warning, got: #{validator.warnings.inspect}"
+    end
+  end
+
+  # The registry is included into the AsciiDoc document header. ':name:value'
+  # without the space is not an attribute entry and would end the header, leaving
+  # every later reference unresolved and the site on the default theme.
+  def test_link_registry_contains_only_attribute_entries
+    with_artifacts(
+      [
+        { id: 'PAGE-001-index', slug: 'index', dir: 'site', type: 'ProfilePage', language: 'de' },
+        { id: 'PAGE-001-index-en', slug: 'index', dir: 'site/en', type: 'ProfilePage', language: 'en',
+          translation_of: 'PAGE-001-index' }
+      ],
+      ui_terms: BILINGUAL_UI_TERMS
+    ) do |validator, root, artifacts|
+      validator.generate_link_registries(artifacts).each do |path|
+        path.read.lines.each_with_index do |line, index|
+          assert_match(/\A:[a-z0-9_]+:(\s\S.*)?\n\z/, line,
+                       "#{path.basename} line #{index + 1} is not an attribute entry: #{line.inspect}")
+        end
+      end
+    end
+  end
+
+  def test_rejects_unknown_page_reference
+    Dir.mktmpdir('profile-language-test') do |dir|
+      root = Pathname.new(dir)
+      (root + 'includes/i18n').mkpath
+      (root + 'includes/i18n/ui-de.adoc').write(":ui_nav_home: Home\n")
+      (root + 'site').mkpath
+      (root + 'site/index.adoc').write("= Index\nlink:{url_does_not_exist}[Gone]\n")
+
+      validator = ProfileArtifactValidator.new(root: root, profile_dir: root)
+      validator.validate
+
+      assert_error_matching(validator, /unknown page reference '\{url_does_not_exist\}'/)
     end
   end
 

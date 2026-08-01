@@ -31,6 +31,37 @@ is not an attribute entry.
 
 Document a group of keys here in this file instead of commenting the terms file.
 
+## Page references
+
+`generated/i18n/links-<lang>.adoc` is written by `generateProfileArtifacts` and
+included by `docheader.adoc` right after the interface terms. It defines three
+attributes per site page:
+
+| Attribute | Meaning |
+|---|---|
+| `{url_<page>}` | Path to the page, prefixed with `{basedir}` |
+| `{url_<page>_lang}` | Language the reference resolved to |
+| `{url_<page>_marker}` | Empty, or ` (de)` when the reference fell back |
+
+Keys are derived from the output path, so every page under `site/` and `cv/` is
+linkable without a hand-maintained mapping: `articles/articles.html` becomes
+`{url_articles_articles}`. Chrome and content must use these attributes instead
+of hard-coded paths; the validator rejects a reference no page can satisfy.
+
+Values are relative to `{basedir}`, which every page already sets to the site
+root. That keeps the registry independent of page depth and preserves the
+relative paths the local and PDF builds rely on — root-relative URLs would have
+broken both.
+
+Unlike interface terms, page references **do** fall back: a link leading to a
+German page is still usable, so it resolves to the default language and says so.
+A German paragraph inside an English page is not, which is why fragments follow
+the opposite rule.
+
+The same formatting constraint applies to the generated registry, and it is
+guarded by a test: `:name:value` without the space after the colon is not an
+attribute entry and would end the header just like a blank line.
+
 ## Adding a language
 
 1. Copy `ui-de.adoc` to `ui-<lang>.adoc` and translate every value.

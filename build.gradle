@@ -671,6 +671,12 @@ tasks.named('buildCVSite') {
     dependsOn tasks.named('generateProfileArtifacts')
 }
 
+// The page chrome includes the generated per-language link registry, so every
+// site page depends on it rather than only the article-level generated includes.
+tasks.named('buildSite') {
+    dependsOn tasks.named('generateProfileArtifacts')
+}
+
 tasks.named('generateArchitectureArtifacts') {
     dependsOn tasks.named('validateArchitectureMetamodel')
 }
