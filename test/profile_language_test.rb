@@ -19,10 +19,19 @@ class ProfileLanguageTest < Minitest::Test
   DIGEST = 'a' * 64
 
   # Builds an isolated profile tree from lightweight artifact descriptions and
-  # yields the validated validator.
-  def with_artifacts(artifacts)
+  # yields the validated validator. Interface term files are written when the
+  # test passes a :ui_terms mapping of language to key/value pairs.
+  def with_artifacts(artifacts, ui_terms: nil)
     Dir.mktmpdir('profile-language-test') do |dir|
       root = Pathname.new(dir)
+
+      ui_terms&.each do |language, terms|
+        (root + 'includes/i18n').mkpath
+        # Attribute entries only: these files are included into the document
+        # header, where a comment or blank line would end it.
+        body = terms.map { |key, value| ":#{key}: #{value}\n" }.join
+        (root + "includes/i18n/ui-#{language}.adoc").write(body)
+      end
 
       artifacts.each do |artifact|
         slug = artifact.fetch(:slug)
@@ -186,6 +195,89 @@ class ProfileLanguageTest < Minitest::Test
   def test_rejects_mixed_language
     with_artifacts([{ id: 'ART-001-example', slug: 'example', language: 'mixed' }]) do |validator|
       assert_error_matching(validator, /unknown language 'mixed'/)
+    end
+  end
+
+  # Interface terms are the one class that must never fall back: a menu label has
+  # nowhere to tell the reader it is showing another language.
+  def test_accepts_complete_interface_terms
+    with_artifacts(
+      [{ id: 'ART-001-example', slug: 'example', language: 'de' }],
+      ui_terms: {
+        'de' => { 'ui_nav_home' => 'Home', 'ui_toc_title' => 'Inhalt' },
+        'en' => { 'ui_nav_home' => 'Home', 'ui_toc_title' => 'Contents' }
+      }
+    ) do |validator|
+      assert_empty validator.errors
+    end
+  end
+
+  def test_rejects_missing_interface_term
+    with_artifacts(
+      [{ id: 'ART-001-example', slug: 'example', language: 'de' }],
+      ui_terms: {
+        'de' => { 'ui_nav_home' => 'Home', 'ui_toc_title' => 'Inhalt' },
+        'en' => { 'ui_nav_home' => 'Home' }
+      }
+    ) do |validator|
+      assert_error_matching(validator, /ui-en\.adoc is missing interface term\(s\): ui_toc_title/)
+    end
+  end
+
+  # A key that exists only in a translation is usually a typo in the key name,
+  # which would otherwise silently render as an unresolved attribute.
+  def test_rejects_interface_term_unknown_to_the_default_language
+    with_artifacts(
+      [{ id: 'ART-001-example', slug: 'example', language: 'de' }],
+      ui_terms: {
+        'de' => { 'ui_nav_home' => 'Home' },
+        'en' => { 'ui_nav_home' => 'Home', 'ui_nav_hom' => 'Home' }
+      }
+    ) do |validator|
+      assert_error_matching(validator, /defines interface term\(s\) unknown to .*ui-de\.adoc: ui_nav_hom/)
+    end
+  end
+
+  # Content in a language without interface terms would render German chrome
+  # around a translated page, so the missing file is an error rather than a gap.
+  def test_rejects_content_language_without_interface_terms
+    with_artifacts(
+      [
+        { id: 'ART-001-example', slug: 'example', language: 'de' },
+        { id: 'ART-001-example-en', slug: 'example', dir: 'site/en/articles', language: 'en',
+          translation_of: 'ART-001-example' }
+      ],
+      ui_terms: { 'de' => { 'ui_nav_home' => 'Home' } }
+    ) do |validator|
+      assert_error_matching(validator, /en content exists, but its interface terms are missing/)
+    end
+  end
+
+  # Interface term files are included into the AsciiDoc document header, where a
+  # blank or comment line ends the header and silently disables ':stylesheet:'
+  # and ':copycss:' further down. The site then renders with the default
+  # Asciidoctor theme, so the format is validated instead of trusted.
+  def test_rejects_blank_and_comment_lines_in_interface_terms
+    Dir.mktmpdir('profile-language-test') do |dir|
+      root = Pathname.new(dir)
+      (root + 'includes/i18n').mkpath
+      (root + 'includes/i18n/ui-de.adoc').write(":ui_nav_home: Home\n\n// a group\n:ui_toc_title: Inhalt\n")
+
+      validator = ProfileArtifactValidator.new(root: root, profile_dir: root)
+      validator.validate
+
+      assert_error_matching(validator, /line 2: a blank line ends the AsciiDoc header/)
+      assert_error_matching(validator, /line 3: a comment line inside a header include ends the header/)
+    end
+  end
+
+  # A language nobody writes in yet needs no interface terms.
+  def test_accepts_missing_interface_terms_for_unused_language
+    with_artifacts(
+      [{ id: 'ART-001-example', slug: 'example', language: 'de' }],
+      ui_terms: { 'de' => { 'ui_nav_home' => 'Home' } }
+    ) do |validator|
+      assert_empty validator.errors
     end
   end
 end

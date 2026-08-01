@@ -10,13 +10,19 @@
         link.href = url.toString();
     }
 
+    // User-visible strings come from the page, which resolves them per language
+    // through the interface term cascade. The script carries no wording of its own.
+    function term(container, key) {
+        return container.dataset[key] || "";
+    }
+
     function renderIssues(container, issues) {
         const list = container.querySelector(".article-comments-list");
         const status = container.querySelector(".article-comments-status");
         list.replaceChildren();
 
         if (issues.length === 0) {
-            status.textContent = "Noch keine Kommentare vorhanden.";
+            status.textContent = term(container, "i18nEmpty");
             return;
         }
 
@@ -30,7 +36,9 @@
             item.appendChild(link);
             list.appendChild(item);
         });
-        status.textContent = issues.length === 1 ? "Ein Kommentar:" : issues.length + " Kommentare:";
+        status.textContent = issues.length === 1
+            ? term(container, "i18nCountOne")
+            : term(container, "i18nCountMany").replace("%count%", issues.length);
     }
 
     async function loadIssues(container, button) {
@@ -44,7 +52,7 @@
             "&sort=created&order=desc&per_page=" + perPage;
 
         button.disabled = true;
-        status.textContent = "Kommentare werden von GitHub geladen …";
+        status.textContent = term(container, "i18nLoading");
 
         try {
             const issues = [];
@@ -74,7 +82,7 @@
             renderIssues(container, matchingIssues);
             button.hidden = true;
         } catch (error) {
-            status.textContent = "Kommentare konnten derzeit nicht geladen werden. Bitte versuchen Sie es später erneut.";
+            status.textContent = term(container, "i18nError");
             button.disabled = false;
         }
     }

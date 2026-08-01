@@ -41,9 +41,16 @@ function articleComments(fetch) {
         '.article-comments-list': list
     };
     const container = new Element('section');
+    // The page supplies every user-visible string, resolved per language through
+    // the interface term cascade; the script carries no wording of its own.
     container.dataset = {
         repository: 'dieterbaier/profile-artikelkommentare',
-        articleId: 'ART-101-example'
+        articleId: 'ART-101-example',
+        i18nEmpty: 'Noch keine Kommentare vorhanden.',
+        i18nLoading: 'Kommentare werden von GitHub geladen …',
+        i18nError: 'Kommentare konnten derzeit nicht geladen werden. Bitte versuchen Sie es später erneut.',
+        i18nCountOne: 'Ein Kommentar:',
+        i18nCountMany: '%count% Kommentare:'
     };
     container.querySelector = selector => elements[selector];
 
@@ -54,7 +61,7 @@ function articleComments(fetch) {
     const window = { location: { href: 'http://localhost:63342/articles/example.html' } };
     vm.runInNewContext(script, { document, fetch, URL, window });
 
-    return { button, createLink, list, status };
+    return { button, container, createLink, list, status };
 }
 
 test('existing comments use server-side search pagination and render matching issues', async () => {
@@ -125,4 +132,20 @@ test('searches beyond the GitHub result limit remain retryable', async () => {
     assert.equal(status.textContent, 'Kommentare konnten derzeit nicht geladen werden. Bitte versuchen Sie es später erneut.');
     assert.equal(button.disabled, false);
     assert.equal(button.hidden, false);
+});
+
+test('status wording follows the page language instead of the script', async () => {
+    // Given: a page that supplies English interface terms
+    const fetch = async () => ({
+        ok: true,
+        json: async () => ({ total_count: 0, incomplete_results: false, items: [] })
+    });
+    const { button, status, container } = articleComments(fetch);
+    container.dataset.i18nEmpty = 'No comments yet.';
+
+    // When: the reader loads comments and none exist
+    await button.listener();
+
+    // Then: the script renders the page's wording, not a built-in German string
+    assert.equal(status.textContent, 'No comments yet.');
 });

@@ -1,0 +1,22 @@
+:ui_nav_home: Home
+:ui_nav_cv: Curriculum Vitae
+:ui_nav_toolkit: Werkzeugkasten & Kenntnismatrix
+:ui_nav_articles: Artikel
+:ui_nav_shorts: Shorts
+:ui_nav_open: Menu öffnen
+:ui_nav_close: Menü schließen
+:ui_toc_title: Inhalt
+:ui_footer_legal: Rechtliches
+:ui_footer_sustainability_title: Diese Seite ist bewusst leicht gebaut.
+:ui_footer_sustainability_note: Statisch · kein Tracking · reproduzierbare Pipeline
+:ui_footer_sustainability_link: Warum das so ist
+:ui_footer_architecture: Architektur der Seite
+:ui_comments_heading: Kommentare
+:ui_comments_intro: Fragen, Ergänzungen oder Feedback sind willkommen und werden als öffentliches GitHub-Issue erfasst.
+:ui_comments_create: Diesen Artikel kommentieren
+:ui_comments_load: Vorhandene Kommentare laden
+:ui_comments_empty: Noch keine Kommentare vorhanden.
+:ui_comments_loading: Kommentare werden von GitHub geladen …
+:ui_comments_error: Kommentare konnten derzeit nicht geladen werden. Bitte versuchen Sie es später erneut.
+:ui_comments_count_one: Ein Kommentar:
+:ui_comments_count_many: %count% Kommentare:
