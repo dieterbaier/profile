@@ -61,6 +61,7 @@ class ProfileArtifactValidator
     validate_languages(artifacts)
     validate_translations(artifacts)
     validate_ui_terms(artifacts)
+    validate_link_references(artifacts)
     artifacts
   end
 
@@ -193,6 +194,32 @@ class ProfileArtifactValidator
     written
   end
 
+  # Writes one link registry per language into a generated include. Chrome and
+  # content reference pages through these attributes instead of hard-coded paths,
+  # so a reference resolves to the same-language page where one exists and to the
+  # default language otherwise - always resolving, never leading nowhere.
+  #
+  # Values are prefixed with {basedir}, which every page already sets to the site
+  # root. That keeps the registry independent of how deep a page sits and keeps
+  # the relative paths the local and PDF builds rely on; root-relative URLs would
+  # have broken both.
+  def generate_link_registries(artifacts)
+    registry_dir = profile_dir.join('includes', 'generated', 'i18n')
+    FileUtils.rm_rf(registry_dir)
+    FileUtils.mkdir_p(registry_dir)
+
+    pages = site_pages
+    languages = ([DEFAULT_LANGUAGE] + artifacts.map { |artifact| artifact_language(artifact) }).uniq
+
+    languages.map do |language|
+      entries = link_registry_entries(pages, language)
+      report_link_fallbacks(entries, language)
+      path = registry_dir.join("links-#{language}.adoc")
+      path.write(entries.map { |entry| entry[:lines] }.join, encoding: 'UTF-8')
+      path
+    end
+  end
+
   # Removes previously generated article listings so removed tags, skills, or
   # articles do not leave stale pages or fragments behind.
   def clean_generated_lists(articles_dir)
@@ -238,6 +265,15 @@ class ProfileArtifactValidator
     end
     puts
     puts(errors.empty? ? 'Validation passed.' : 'Validation failed.')
+  end
+
+  # Warnings raised while generating, after the validation report was printed.
+  def report_warnings(since:)
+    new_warnings = warnings.drop(since)
+    return if new_warnings.empty?
+
+    puts "\nWarnings:"
+    new_warnings.each { |warning| puts "  - #{warning}" }
   end
 
   private
@@ -583,6 +619,114 @@ class ProfileArtifactValidator
         errors << "#{location} is declared as a translation of '#{target}', but both are written in '#{artifact_language(artifact)}'"
       end
     end
+  end
+
+  # Page references are attribute references resolved by the generated link
+  # registry. A reference no page can satisfy would render as a dead link on
+  # every page that carries it, so it is rejected at source level.
+  def validate_link_references(artifacts)
+    known = site_pages.keys
+                                 .reject { |output| language_prefixed?(output) }
+                                 .map { |output| link_registry_key(output) }
+                                 .to_set
+
+    source_paths.each do |path|
+      path.read(encoding: 'UTF-8').each_line.with_index do |line, index|
+        line.scan(/\{(url_[a-z0-9_]+)\}/).flatten.each do |reference|
+          next if known.include?(reference.sub(/_(lang|marker)\z/, ''))
+
+          errors << "#{relative(path)} line #{index + 1}: unknown page reference '{#{reference}}'"
+        end
+      end
+    end
+  end
+
+  # Authored profile sources that can carry page references.
+  def source_paths
+    Dir.glob(profile_dir.join('**/*.{adoc,html}').to_s)
+       .reject { |path| path.include?('/generated/') }
+       .sort
+       .map { |path| Pathname.new(path) }
+  end
+
+  # Source roots the site build renders into the site root. Every AsciiDoc file
+  # below them becomes a page, so the registry is derived from the file tree
+  # rather than from metadata: a page without a sidecar - the toolkit, legal and
+  # overview pages - still has to be linkable.
+  SITE_SOURCE_ROOTS = %w[site cv].freeze
+
+  # Site pages keyed by their output path relative to the site root. Language
+  # variants live below their language prefix and are matched to their
+  # default-language page by the remaining path.
+  def site_pages
+    SITE_SOURCE_ROOTS.each_with_object({}) do |source_root, pages|
+      dir = profile_dir.join(source_root)
+      next unless dir.directory?
+
+      Dir.glob(dir.join('**/*.adoc').to_s).sort.each do |path|
+        relative_source = Pathname.new(path).relative_path_from(dir).to_s
+        next if relative_source.include?('generated/')
+        # Editor configuration, not a page.
+        next if File.basename(relative_source).start_with?('.')
+
+        pages[relative_source.sub(/\.adoc\z/, '.html')] = path
+      end
+    end
+  end
+
+  # Attribute name for a page, derived from its output path so every site page
+  # has a stable key without a hand-maintained mapping.
+  def link_registry_key(output_path)
+    "url_#{output_path.sub(/\.html\z/, '').gsub(%r{[/\-.]}, '_')}"
+  end
+
+  def link_registry_entries(pages, language)
+    default_pages = pages.reject { |output, _| language_prefixed?(output) }
+
+    default_pages.keys.sort.map do |output|
+      variant = language == DEFAULT_LANGUAGE ? nil : pages["#{language}/#{output}"]
+      target = variant ? "#{language}/#{output}" : output
+      resolved = variant ? language : DEFAULT_LANGUAGE
+      key = link_registry_key(output)
+
+      # A link that falls back is marked with the language it leads to. The
+      # marker is plain text, because attribute values are substituted into HTML
+      # passthrough blocks where markup would be escaped. It starts with {nbsp}
+      # rather than a space: AsciiDoc strips leading whitespace from attribute
+      # values, and putting the space in the markup instead would leave a
+      # trailing space on every default-language page.
+      marker = resolved == language ? '' : "{nbsp}(#{DEFAULT_LANGUAGE})"
+
+      # An attribute entry needs the space after the colon; ':name:value' is not
+      # one and would end the document header, leaving every later reference
+      # unresolved. An empty value is written as a bare ':name:'.
+      marker_line = marker.empty? ? ":#{key}_marker:" : ":#{key}_marker: #{marker}"
+
+      {
+        key: key,
+        output: output,
+        resolved: resolved,
+        fallback: resolved != language,
+        lines: ":#{key}: {basedir}/#{target}\n:#{key}_lang: #{resolved}\n#{marker_line}\n"
+      }
+    end
+  end
+
+  def language_prefixed?(output_path)
+    prefix = output_path.split('/').first
+    LANGUAGES.include?(prefix) && prefix != DEFAULT_LANGUAGE
+  end
+
+  # Falling back is legitimate, but it is worth knowing about: it is the list of
+  # pages a reader in that language still gets in the default language.
+  def report_link_fallbacks(entries, language)
+    return if language == DEFAULT_LANGUAGE
+
+    falling_back = entries.select { |entry| entry[:fallback] }
+    return if falling_back.empty?
+
+    warnings << "#{language}: #{falling_back.length} of #{entries.length} page reference(s) fall back to " \
+                "'#{DEFAULT_LANGUAGE}': #{falling_back.map { |entry| entry[:output] }.sort.join(', ')}"
   end
 
   # Interface terms must be complete per language. Content references may fall
@@ -1092,6 +1236,8 @@ if $PROGRAM_NAME == __FILE__
   artifacts = validator.validate
   validator.report(artifacts)
   exit(1) unless validator.errors.empty?
+
+  warnings_before_generate = validator.warnings.length
   if options[:generate]
     path = validator.generate(artifacts, output: output)
     puts "Generated: #{path.relative_path_from(root)}"
@@ -1108,5 +1254,8 @@ if $PROGRAM_NAME == __FILE__
     puts "Generated article comment allowlist: #{allowlist_path.relative_path_from(root)}"
     list_paths = validator.generate_article_lists(artifacts)
     puts "Generated #{list_paths.length} article list file(s)."
+    registry_paths = validator.generate_link_registries(artifacts)
+    puts "Generated #{registry_paths.length} link registry file(s)."
+    validator.report_warnings(since: warnings_before_generate)
   end
 end

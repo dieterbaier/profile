@@ -9,7 +9,7 @@
 <nav id="mainnav" class="mainnav" data-active="{active}">
     <ul>
         <li>
-            <a data-nav="home" href="{basedir}/index.html">{ui_nav_home}</a>
+            <a data-nav="home" href="{url_index}">{ui_nav_home}{url_index_marker}</a>
         </li>
     </ul>
     <button class="nav-toggle" aria-label="{ui_nav_open}">☰</button>
@@ -18,20 +18,20 @@
     <ul>
         <li>
 ifdef::buildsite[]
-<a data-nav="cv" href="{basedir}/cv.html">{ui_nav_cv}</a>
+<a data-nav="cv" href="{url_cv}">{ui_nav_cv}{url_cv_marker}</a>
 endif::[]
 ifndef::buildsite[]
 <a data-nav="cv" href="{basedir}/cv/cv.html">{ui_nav_cv}</a>
 endif::[]
         </li>
         <li>
-            <a data-nav="toolkit" href="{basedir}/architecture-toolkit.html">{ui_nav_toolkit}</a>
+            <a data-nav="toolkit" href="{url_architecture_toolkit}">{ui_nav_toolkit}{url_architecture_toolkit_marker}</a>
         </li>
         <li>
-            <a data-nav="articles" href="{basedir}/articles/articles.html">{ui_nav_articles}</a>
+            <a data-nav="articles" href="{url_articles_articles}">{ui_nav_articles}{url_articles_articles_marker}</a>
         </li>
         <li>
-            <a data-nav="shorts" href="{basedir}/shorts/shorts.html">{ui_nav_shorts}</a>
+            <a data-nav="shorts" href="{url_shorts_shorts}">{ui_nav_shorts}{url_shorts_shorts_marker}</a>
         </li>
     </ul>
 </div>

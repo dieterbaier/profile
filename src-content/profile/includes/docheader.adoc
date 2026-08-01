@@ -11,6 +11,10 @@ include::./i18n/ui-de.adoc[]
 ifeval::["{lang}" != "de"]
 include::./i18n/ui-{lang}.adoc[opts=optional]
 endif::[]
+// Page references, generated per language: same-language page where one exists,
+// default language otherwise. Values are relative to {basedir}, so they work at
+// any page depth and in the local and PDF builds.
+include::./generated/i18n/links-{lang}.adoc[opts=optional]
 :docinfo: shared
 :docinfodir: {includesdir}/docinfo/
 ifndef::basedir[]
