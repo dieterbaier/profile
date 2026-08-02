@@ -502,7 +502,9 @@ class ProfileLanguageTest < Minitest::Test
       # Each listing is titled in its own language and lists only its own articles.
       assert_includes german, '= Alle Artikel'
       assert_includes german, 'first.html'
-      refute_includes german, 'en/articles'
+      # Only its own articles are listed. The language navigation does link to
+      # the English listing, so the check is on the article cards themselves.
+      assert_equal 1, german.scan('article-card-title').length
 
       assert_includes english, '= All articles'
       assert_includes english, 'first.html'

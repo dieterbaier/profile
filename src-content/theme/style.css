@@ -728,6 +728,20 @@ footer p {
     cursor: default;
 }
 
+/* Article listings per language: the sub-navigation above a listing offers the
+   same listing in the other languages that have articles. */
+.language-nav {
+    margin-bottom: 1.5rem;
+}
+
+.language-nav .language-nav-current {
+    font-weight: 600;
+    color: var(--text-color);
+    border-bottom: 2px solid #3a7bd5;
+    padding: 0.4rem 0;
+    cursor: default;
+}
+
 .cvcontactlanguage {
     margin-top: 1rem;
     display: flex;
