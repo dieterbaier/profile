@@ -138,3 +138,22 @@ Register danach wählen, was der Lebenszyklus mit einem Text tut, wenn er sich
 als falsch erweist. Die Profiltabelle selbst mussten wir neu füllen. Das ist
 zugleich die erste Evidenz, dass der Mechanismus reist und die Profile nicht;
 im Skill steht es als Bedingung dafür, wann er stromaufwärts gehört.
+
+=== Ein Toolkit-Fehler, den wir nicht geprüft hatten
+
+Beim Clock-out hielt ich fest, das Toolkit widerspreche sich: sein `adr`-Skill
+verlange `derived_from`, sein Schema verbiete es. Der Owner vermutete, der
+Befund existiere bereits als Issue — und diese Vermutung war der Anlass, ihn
+überhaupt zu prüfen.
+
+Das Toolkit-Schema kennt `derived_from` seit Zeile 83. Verboten hat es *unsere
+Kopie*. Ich hatte aus einer lokalen Datei auf einen fremden Defekt geschlossen,
+ohne die fremde Datei zu öffnen — und war im Begriff, ein Issue gegen ein
+Projekt anzulegen, das den Fehler nicht hat.
+
+Plausibel war es, weil beide Dateien denselben Namen tragen und aus derselben
+Quelle stammen. Genau das ist die Eigenschaft von kopierten Assets, die
+docs-as-code-toolkit#26 beschreibt: sie sehen weiter wie das Original aus,
+nachdem sie es nicht mehr sind. Der Fehler war nicht die Vermutung, sondern
+dass ich sie ohne den einen `grep` aufgeschrieben habe, der sie widerlegt.
+
