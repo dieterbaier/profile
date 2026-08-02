@@ -1,0 +1,35 @@
+= Development Diary
+Dieter Baier
+:toc: left
+:toclevels: 2
+:icons: font
+:sectanchors:
+:sectlinks:
+
+A working record of this project: what was decided, what was rejected, and —
+mostly — what turned out to be wrong.
+
+This is not architecture documentation. The decisions live in
+`src-content/docs/arc42/09-architecture-decisions/`, the constraints in
+`src-content/docs/arc42/doc-02000-architecture-constraints.adoc`, and those are
+the authority. This diary is the story around them: the reasoning that did not
+fit in an ADR, and the mistakes an ADR has no place to record.
+
+Each recap is its own document, included here. They are written from the commit
+history, the issues and the pull requests, so the dates and numbers are
+checkable rather than remembered.
+
+Two recaps are cross-cutting rather than chronological, and are the ones worth
+reading first: the through-line, which is the single lesson these days keep
+teaching, and the toolkit validation, which is what using the
+architecture-knowledge-toolkit confirmed or contradicted.
+
+include::through-line.adoc[]
+
+include::2026-08-02-what-only-real-content-revealed.adoc[]
+
+include::toolkit-validation.adoc[]
+
+include::working-agreements.adoc[]
+
+include::open-threads.adoc[]

@@ -1,0 +1,54 @@
+== Toolkit validation
+
+Was die Anwendung des architecture-knowledge-toolkit bestätigt oder widerlegt
+hat. Ein Befund hier ist auch einen Issue stromaufwärts wert.
+
+=== Bestätigt: Slicing vor dem Implementieren trägt die Reihenfolge
+
+`slice-issues` erzeugte zehn Slices mit expliziter Abhängigkeitsordnung. Genau
+eine Abhängigkeit war tragend und wäre ohne das Slicing zu spät aufgefallen: die
+Fragmentregel (#52) musste vor dem CV (#56) liegen, weil erst sie zeigt, dass
+eine CV-Sprachvariante ein Alles-oder-nichts ist.
+
+Die übrigen Abhängigkeiten hätte man auch beim Arbeiten gemerkt. Die eine, die
+zählte, betraf ein Artefakt mit 90 Fragmenten — dort ist „beim Arbeiten merken"
+teuer.
+
+=== Bestätigt, durch Verletzung: der BDD-Default ist der richtige Default
+
+`bdd-specification` schreibt Szenarien als strikten Default für beobachtbares
+Verhalten vor, mit Ausweg nur über einen dokumentierten Waiver. Der Default wurde
+ab #49 stillschweigend ausgesetzt — nicht bewusst, sondern durch Wegrutschen.
+
+Der Nachzug (#65) kostete einen eigenen Slice und brachte drei Dinge ans Licht,
+die beim Mitschreiben nicht entstanden wären: ein Test, der zwei Szenarien
+abdeckte, drei Titel, die unpräziser waren als ihre Tests, und ein
+Kopfkommentar, der seit #51 nicht mehr stimmte.
+
+Bemerkt wurde die Lücke nicht durch das Werkzeug, sondern durch die Frage des
+Owners. Das ist der eigentliche Befund: der Skill formuliert den Default, aber
+nichts erzwingt ihn. Ein `check-scenarios`-Schritt analog zu
+`check-agent-adapters.js` wäre die naheliegende Ergänzung — allerdings untersagt
+der Skill ausdrücklich, im Zuge seiner Anwendung einen Runner zu bauen. Diese
+Spannung gehört stromaufwärts.
+
+=== Bestätigt: ADR-Review vor der Umsetzung fängt Widersprüche
+
+Der `adr`-Skill verlangt explizite Optionen und Review Notes vor der Annahme.
+Beim Review von ADR-010 verwarf der Owner die Fragment-Fallback-Regel — und das
+kollidierte mit einer früheren Festlegung im selben Dokument.
+
+Wäre der Widerspruch erst beim Implementieren aufgefallen, hätte die
+Stub-Generierung bereits existiert. So entfiel sie ersatzlos, bevor sie gebaut
+wurde.
+
+=== Offen: die Metamodell-Schemata kennen keine Provenienz
+
+`metamodel/artifact.schema.yaml` hat `additionalProperties: false` und kein
+`derived_from`, obwohl der `adr`-Skill genau dieses Feld für die Herkunft eines
+ADR vorsieht und sein Template es führt. ADR-010 musste seine Herkunft deshalb in
+der Prosa des Context-Abschnitts tragen.
+
+Entweder das Schema zieht nach, oder der Skill sollte sagen, dass `derived_from`
+optional ist und ein Projekt es weglassen darf. Aktuell widersprechen sich
+Template und Schema stillschweigend.
