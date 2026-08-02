@@ -457,7 +457,14 @@ class ProfileArtifactValidator
     FileUtils.mkdir_p(registry_dir)
 
     pages = site_pages
-    languages = ([DEFAULT_LANGUAGE] + artifacts.map { |artifact| artifact_language(artifact) }).uniq
+    # Languages come from the page tree as well as from the metadata: the keys
+    # are derived from the file tree, so the language list has to be too, or a
+    # language whose pages carry no sidecar would get no registry at all.
+    page_languages = pages.keys.filter_map do |output|
+      prefix = output.split('/').first
+      prefix if LANGUAGES.include?(prefix) && prefix != DEFAULT_LANGUAGE
+    end
+    languages = ([DEFAULT_LANGUAGE] + page_languages + artifacts.map { |artifact| artifact_language(artifact) }).uniq
 
     languages.map do |language|
       entries = link_registry_entries(pages, language)
@@ -1003,7 +1010,7 @@ class ProfileArtifactValidator
     source_paths.each do |path|
       path.read(encoding: 'UTF-8').each_line.with_index do |line, index|
         line.scan(/\{(url_[a-z0-9_]+)\}/).flatten.each do |reference|
-          next if known.include?(reference.sub(/_(lang|marker)\z/, ''))
+          next if known.include?(reference.sub(/_(lang|marker|pdf)\z/, ''))
 
           errors << "#{relative(path)} line #{index + 1}: unknown page reference '{#{reference}}'"
         end
@@ -1072,12 +1079,19 @@ class ProfileArtifactValidator
       # unresolved. An empty value is written as a bare ':name:'.
       marker_line = marker.empty? ? ":#{key}_marker:" : ":#{key}_marker: #{marker}"
 
+      lines = ":#{key}: {basedir}/#{target}\n:#{key}_lang: #{resolved}\n#{marker_line}\n"
+
+      # The CV is the only page that also ships as a PDF, and the PDF is written
+      # next to its HTML. Giving it a registry entry keeps the download link in
+      # the shared CV chrome language-aware like every other reference.
+      lines += ":#{key}_pdf: {basedir}/#{target.sub(/\.html\z/, '.pdf')}\n" if output == 'cv.html'
+
       {
         key: key,
         output: output,
         resolved: resolved,
         fallback: resolved != language,
-        lines: ":#{key}: {basedir}/#{target}\n:#{key}_lang: #{resolved}\n#{marker_line}\n"
+        lines: lines
       }
     end
   end

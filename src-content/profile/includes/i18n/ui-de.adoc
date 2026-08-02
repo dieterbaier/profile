@@ -33,3 +33,10 @@
 :ui_language_switch_label: Sprache wählen
 :ui_language_name_de: Deutsch
 :ui_language_name_en: Englisch
+:ui_cv_subtitle: Software Architekt
+:ui_cv_document_kind: Curriculum Vitae
+:ui_cv_download: Download CV
+:ui_cv_appendix: Appendix
+:ui_cv_nav_projects: Projekte
+:ui_cv_nav_education: Weiterbildung
+:ui_author_prefix: Autor:

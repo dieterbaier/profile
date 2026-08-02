@@ -1,16 +1,7 @@
-ifeval::["{lang}" == ""]
-:lang: de
-endif::[]
-ifndef::lang[]
-:lang: de
-endif::[]
 // Interface terms, resolved as a cascade: the default language defines every
 // key, the page language overrides what it translates. Later assignments win in
 // AsciiDoc, so this needs no file-existence check, which AsciiDoc cannot express.
-include::./i18n/ui-de.adoc[]
-ifeval::["{lang}" != "de"]
-include::./i18n/ui-{lang}.adoc[opts=optional]
-endif::[]
+include::./i18n/cascade.adoc[]
 // Page references, generated per language: same-language page where one exists,
 // default language otherwise. Values are relative to {basedir}, so they work at
 // any page depth and in the local and PDF builds.

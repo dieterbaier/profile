@@ -1,0 +1,10 @@
+ifeval::["{lang}" == ""]
+:lang: de
+endif::[]
+ifndef::lang[]
+:lang: de
+endif::[]
+include::./ui-de.adoc[]
+ifeval::["{lang}" != "de"]
+include::./ui-{lang}.adoc[opts=optional]
+endif::[]
