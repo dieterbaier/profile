@@ -20,3 +20,10 @@
 :ui_comments_error: Kommentare konnten derzeit nicht geladen werden. Bitte versuchen Sie es später erneut.
 :ui_comments_count_one: Ein Kommentar:
 :ui_comments_count_many: %count% Kommentare:
+:ui_article_nav_label: Artikel-Navigation
+:ui_article_nav_prev: (Serie) Vorheriger Artikel
+:ui_article_nav_next: (Serie) Nächster Artikel
+:ui_article_nav_related: Könnte Sie auch interessieren
+:ui_article_list_all: Alle Artikel
+:ui_article_list_tag_prefix: Artikel mit dem Tag:
+:ui_article_list_skill_prefix: Artikel zum Thema:

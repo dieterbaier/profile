@@ -590,12 +590,24 @@ tasks.named('buildSite') {
 // buildSite so it never competes with buildSite's stale-output cleanup, and it
 // re-runs the (idempotent) canonical URL injection so the listing pages are
 // covered as well.
-tasks.register('buildArticleListPages', org.asciidoctor.gradle.jvm.AsciidoctorTask) {
+// Languages that actually have an article source directory. The check uses the
+// committed source tree, not the generated one, so it also holds on a clean
+// checkout where generated/ does not exist yet. A second language registers its
+// own listing task as soon as its articles directory appears.
+def articleListLanguages = ['': 'src-content/profile/site/articles'] +
+        ['en'].findAll { file("src-content/profile/site/${it}/articles").isDirectory() }
+                .collectEntries { [(it): "src-content/profile/site/${it}/articles"] }
+
+articleListLanguages.each { language, articlesDir ->
+    def suffix = language.isEmpty() ? '' : language.capitalize()
+    def outputPrefix = language.isEmpty() ? '' : "${language}/"
+
+tasks.register("buildArticleListPages${suffix}", org.asciidoctor.gradle.jvm.AsciidoctorTask) {
     dependsOn tasks.named('generateProfileArtifacts')
     dependsOn tasks.named('checkEnvironment')
 
-    setSourceDir(file('src-content/profile/site/articles/generated/pages'))
-    setOutputDir(file('build/site/articles/lists'))
+    setSourceDir(file("${articlesDir}/generated/pages"))
+    setOutputDir(file("build/site/${outputPrefix}articles/lists"))
     attributes([
             'includesdir'      : 'src-content/profile/includes',
             'buildsite'        : 'true',
@@ -634,7 +646,8 @@ tasks.register('buildArticleListPages', org.asciidoctor.gradle.jvm.AsciidoctorTa
 }
 
 tasks.named('buildSite') {
-    finalizedBy tasks.named('buildArticleListPages')
+    finalizedBy tasks.named("buildArticleListPages${suffix}")
+}
 }
 
 tasks.register('testSiteMetadata') {

@@ -153,9 +153,23 @@ class ProfileArtifactValidator
   # <articles-dir>/generated/pages. Standalone pages are authored for the output
   # location <articles-dir>/lists, so their links resolve once the dedicated
   # Asciidoctor task renders that directory into the site. Returns written paths.
-  def generate_article_lists(artifacts, language: DEFAULT_LANGUAGE)
+  # One listing set per language, built only from that language's articles: a
+  # reader browsing the English listings should not be handed German articles.
+  #
+  # Unlike the per-article includes, these are standalone pages whose title is
+  # parsed before any interface terms are available, so the wording is baked in
+  # from the terms file rather than referenced as an attribute.
+  def generate_article_lists(artifacts)
     all_articles = artifacts.select { |artifact| artifact.metadata['type'] == 'Article' }
-    articles_dir = articles_base_dir(all_articles)
+    return [] if all_articles.empty?
+
+    all_articles.group_by { |article| artifact_language(article) }.flat_map do |language, articles|
+      generate_article_lists_for(articles, language)
+    end
+  end
+
+  def generate_article_lists_for(articles, language)
+    articles_dir = articles_base_dir(articles)
     return [] if articles_dir.nil?
 
     clean_generated_lists(articles_dir)
@@ -165,9 +179,11 @@ class ProfileArtifactValidator
     FileUtils.mkdir_p(lists_dir)
     FileUtils.mkdir_p(pages_dir)
 
+    terms = ui_terms_values(language)
+
     # The output location of the standalone pages; used to compute link targets.
     output_dir = articles_dir.join('lists')
-    ordered = sort_articles(public_articles(artifacts))
+    ordered = sort_articles(public_articles(articles))
     written = []
 
     recent_path = lists_dir.join('recent.adoc')
@@ -175,20 +191,22 @@ class ProfileArtifactValidator
     written << recent_path
 
     all_path = pages_dir.join('all.adoc')
-    all_path.write(render_list_page(title: 'Alle Artikel', articles: ordered, output_dir: output_dir, articles_dir: articles_dir, language: language), encoding: 'UTF-8')
+    all_path.write(render_list_page(title: terms.fetch('ui_article_list_all'), articles: ordered, output_dir: output_dir, articles_dir: articles_dir, language: language), encoding: 'UTF-8')
     written << all_path
 
     tags_in_use(ordered).each do |tag|
       tagged = ordered.select { |article| Array(article.metadata['tags']).include?(tag) }
       path = pages_dir.join("tag-#{tag}.adoc")
-      path.write(render_list_page(title: "Artikel mit dem Tag: #{tag}", articles: tagged, output_dir: output_dir, articles_dir: articles_dir, language: language), encoding: 'UTF-8')
+      title = "#{terms.fetch('ui_article_list_tag_prefix')} #{tag}"
+      path.write(render_list_page(title: title, articles: tagged, output_dir: output_dir, articles_dir: articles_dir, language: language), encoding: 'UTF-8')
       written << path
     end
 
     skills_in_use(ordered).each do |skill|
       skilled = ordered.select { |article| Array(article.metadata['skills']).include?(skill) }
       path = pages_dir.join("skill-#{skill}.adoc")
-      path.write(render_list_page(title: "Artikel zum Thema: #{humanize_slug(skill)}", articles: skilled, output_dir: output_dir, articles_dir: articles_dir, language: language), encoding: 'UTF-8')
+      title = "#{terms.fetch('ui_article_list_skill_prefix')} #{humanize_slug(skill)}"
+      path.write(render_list_page(title: title, articles: skilled, output_dir: output_dir, articles_dir: articles_dir, language: language), encoding: 'UTF-8')
       written << path
     end
 
@@ -923,6 +941,23 @@ class ProfileArtifactValidator
     i18n_dir.join("ui-#{language}.adoc")
   end
 
+  # Interface terms as values, resolved the same way the AsciiDoc cascade does:
+  # the default language defines every key, the page language overrides what it
+  # translates. Used where a value has to be baked into generated output because
+  # no page header is available to resolve an attribute reference.
+  def ui_terms_values(language)
+    i18n_dir = profile_dir.join('includes', 'i18n')
+    [DEFAULT_LANGUAGE, language].uniq.each_with_object({}) do |candidate, terms|
+      path = ui_terms_path(i18n_dir, candidate)
+      next unless path.file?
+
+      path.read(encoding: 'UTF-8').lines.each do |line|
+        match = line.match(/\A:(ui_[a-z0-9_]+):\s+(\S.*?)\s*\z/)
+        terms[match[1]] = match[2] if match
+      end
+    end
+  end
+
   # Attribute names defined in an interface term file, ignoring comments.
   def ui_terms_keys(path)
     path.read(encoding: 'UTF-8').lines.filter_map do |line|
@@ -1117,10 +1152,10 @@ class ProfileArtifactValidator
      '[subs="attributes"]',
      '++++',
      "<section class=\"article-comments\" data-article-comments data-repository=\"#{h(ARTICLE_COMMENTS_REPOSITORY)}\" data-article-id=\"#{h(article_id)}\" #{comment_terms}>",
-     '  <h2>Kommentare</h2>',
-     '  <p>Fragen, Ergänzungen oder Feedback sind willkommen und werden als öffentliches GitHub-Issue erfasst.</p>',
-     "  <p><a class=\"article-comment-create fingerPointsTo\" href=\"#{h(new_issue_url)}\" target=\"_blank\" rel=\"noopener noreferrer\">Diesen Artikel kommentieren</a></p>",
-     '  <button class="article-comments-load" type="button">Vorhandene Kommentare laden</button>',
+     '  <h2>{ui_comments_heading}</h2>',
+     '  <p>{ui_comments_intro}</p>',
+     "  <p><a class=\"article-comment-create fingerPointsTo\" href=\"#{h(new_issue_url)}\" target=\"_blank\" rel=\"noopener noreferrer\">{ui_comments_create}</a></p>",
+     '  <button class="article-comments-load" type="button">{ui_comments_load}</button>',
      '  <p class="article-comments-status" aria-live="polite"></p>',
      '  <ul class="article-comments-list"></ul>',
      '</section>',
@@ -1151,8 +1186,11 @@ class ProfileArtifactValidator
 
     lines = []
     lines << '// Generated article navigation. Do not edit manually.'
+    # The wording comes from the interface terms of the page this include
+    # lands on, so a translated article gets translated navigation.
+    lines << '[subs="attributes"]'
     lines << '++++'
-    lines << '<nav class="article-nav" aria-label="Artikel-Navigation">'
+    lines << '<nav class="article-nav" aria-label="{ui_article_nav_label}">'
     lines.concat(sections)
     lines << '</nav>'
     lines << '++++'
@@ -1166,7 +1204,7 @@ class ProfileArtifactValidator
     href = h(article_link_href(from_article, target))
     title = h(target.metadata['title'])
     "  <div class=\"article-nav-prev\">\n" \
-      "    <a href=\"#{href}\" rel=\"prev\"><span class=\"article-nav-label\">&#8592; (Serie) Vorheriger Artikel</span>" \
+      "    <a href=\"#{href}\" rel=\"prev\"><span class=\"article-nav-label\">&#8592; {ui_article_nav_prev}</span>" \
       "<span class=\"article-nav-title\">#{title}</span></a>\n" \
       '  </div>'
   end
@@ -1177,7 +1215,7 @@ class ProfileArtifactValidator
     href = h(article_link_href(from_article, target))
     title = h(target.metadata['title'])
     "  <div class=\"article-nav-next\">\n" \
-      "    <a href=\"#{href}\" rel=\"next\"><span class=\"article-nav-label\">(Serie) Nächster Artikel &#8594;</span>" \
+      "    <a href=\"#{href}\" rel=\"next\"><span class=\"article-nav-label\">{ui_article_nav_next} &#8594;</span>" \
       "<span class=\"article-nav-title\">#{title}</span></a>\n" \
       '  </div>'
   end
@@ -1185,11 +1223,13 @@ class ProfileArtifactValidator
   def nav_related_html(from_article, related)
     return nil if related.empty?
 
+    page_language = artifact_language(from_article)
     items = related.map do |target|
-      "      <li><a href=\"#{h(article_link_href(from_article, target))}\">#{h(target.metadata['title'])}</a></li>"
+      marker = artifact_language(target) == page_language ? '' : "&#160;(#{artifact_language(target)})"
+      "      <li><a href=\"#{h(article_link_href(from_article, target))}\">#{h(target.metadata['title'])}#{marker}</a></li>"
     end
     ['  <div class="article-nav-related">',
-     '    <span class="article-nav-heading">Könnte Sie auch interessieren</span>',
+     '    <span class="article-nav-heading">{ui_article_nav_related}</span>',
      '    <ul>',
      *items,
      '    </ul>',
@@ -1214,9 +1254,34 @@ class ProfileArtifactValidator
       { article: candidate, linked: is_linked, shared: shared }
     end
 
-    scored.sort_by do |entry|
+    ranked = scored.sort_by do |entry|
       [entry[:linked] ? 0 : 1, -entry[:shared], -date_ordinal(entry[:article]), entry[:article].metadata['id'].to_s]
-    end.first(RELATED_LIMIT).map { |entry| entry[:article] }
+    end.map { |entry| entry[:article] }
+
+    prefer_same_language(ranked, artifact_language(article), all_articles).first(RELATED_LIMIT)
+  end
+
+  # Recommendations are resolved like page references: the same-language variant
+  # of a suggested article wins, and a suggestion that exists only in the default
+  # language is still offered rather than dropped - a reader can follow it, and
+  # the link says which language it leads to.
+  def prefer_same_language(articles, language, all_articles)
+    groups = all_articles.group_by { |candidate| translation_group_key(candidate) }
+    seen = Set.new
+
+    articles.filter_map do |candidate|
+      key = translation_group_key(candidate)
+      next unless seen.add?(key)
+
+      variant = groups.fetch(key, []).find { |sibling| artifact_language(sibling) == language }
+      variant || candidate
+    end
+  end
+
+  # Articles that are translations of one another share a group key, so a
+  # suggestion can be swapped for its variant in the reader's language.
+  def translation_group_key(article)
+    article.metadata['translation_of'] || article.metadata['id']
   end
 
   def related_relation_ids(article, all_articles)

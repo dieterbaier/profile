@@ -23,6 +23,15 @@ class ProfileListingsTest < Minitest::Test
     Dir.mktmpdir('profile-list-test') do |dir|
       root = Pathname.new(dir)
 
+      # Listing titles are baked in from the interface terms, so every profile
+      # tree needs them - the same contract the validator enforces.
+      (root + 'includes/i18n').mkpath
+      (root + 'includes/i18n/ui-de.adoc').write(
+        ":ui_article_list_all: Alle Artikel\n" \
+        ":ui_article_list_tag_prefix: Artikel mit dem Tag:\n" \
+        ":ui_article_list_skill_prefix: Artikel zum Thema:\n"
+      )
+
       articles.each do |article|
         slug = article.fetch(:slug)
         rel_dir = article.fetch(:dir, 'articles')
@@ -171,8 +180,9 @@ class ProfileListingsTest < Minitest::Test
     ]
 
     with_articles(articles) do |validator, artifacts, root|
-      # When: the article lists are generated in German (the default)
-      validator.generate_article_lists(artifacts, language: 'de')
+      # When: the article lists are generated; the language now follows each
+      # article's own metadata instead of a parameter
+      validator.generate_article_lists(artifacts)
 
       # Then: the first shows the German summary and the second falls back to neutral
       entry = recent(root)

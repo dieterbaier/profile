@@ -54,7 +54,7 @@ class ProfileCommentsTest < Minitest::Test
 
       # When: the reader requests existing comments
       # Then: a local enhancement loads matching issues and renders linked titles
-      assert_includes generated, 'Vorhandene Kommentare laden'
+      assert_includes generated, '{ui_comments_load}'
       assert_includes generated, '[subs="attributes"]'
       assert_includes generated, '<script src="{basedir}/stylesheet/article-comments.js"></script>'
       assert_includes script, 'addEventListener("click"'

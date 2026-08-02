@@ -11,6 +11,7 @@
 require 'minitest/autorun'
 require 'tmpdir'
 require 'pathname'
+require 'json'
 require 'yaml'
 
 require_relative '../scripts/validate-profile-metamodel'
@@ -28,6 +29,22 @@ class ProfileLanguageTest < Minitest::Test
   BILINGUAL_UI_TERMS = {
     'de' => { 'ui_nav_home' => 'Home' },
     'en' => { 'ui_nav_home' => 'Home' }
+  }.freeze
+
+  # Listing titles are baked into generated pages, so those tests need the
+  # terms the generator reads.
+  LIST_TERMS_DE = {
+    'ui_nav_home' => 'Home',
+    'ui_article_list_all' => 'Alle Artikel',
+    'ui_article_list_tag_prefix' => 'Artikel mit dem Tag:',
+    'ui_article_list_skill_prefix' => 'Artikel zum Thema:'
+  }.freeze
+
+  LIST_TERMS_EN = {
+    'ui_nav_home' => 'Home',
+    'ui_article_list_all' => 'All articles',
+    'ui_article_list_tag_prefix' => 'Articles tagged:',
+    'ui_article_list_skill_prefix' => 'Articles about:'
   }.freeze
 
   # Builds an isolated profile tree from lightweight artifact descriptions and
@@ -69,7 +86,7 @@ class ProfileLanguageTest < Minitest::Test
       'created' => '2026-01-01',
       'source' => source_rel
     }
-    %i[language translation_of translation_source_digest translation_divergence].each do |field|
+    %i[language translation_of translation_source_digest translation_divergence tags channels].each do |field|
       metadata[field.to_s] = artifact[field] if artifact.key?(field)
     end
     metadata.to_yaml
@@ -460,6 +477,105 @@ class ProfileLanguageTest < Minitest::Test
       assert_empty validator.errors
       assert validator.warnings.any? { |warning| warning.match?(/en: 1 of 1 content fragment/) },
              "expected a coverage warning, got: #{validator.warnings.inspect}"
+    end
+  end
+
+  # Listings are built per language: a reader browsing the English listings
+  # should not be handed German articles.
+  def test_article_listings_are_generated_per_language
+    with_artifacts(
+      [
+        { id: 'ART-001-de', slug: 'first', dir: 'site/articles', language: 'de', tags: %w[architecture] },
+        { id: 'ART-001-en', slug: 'first', dir: 'site/en/articles', language: 'en', tags: %w[architecture],
+          translation_of: 'ART-001-de' }
+      ],
+      ui_terms: {
+        'de' => LIST_TERMS_DE,
+        'en' => LIST_TERMS_EN
+      }
+    ) do |validator, root, artifacts|
+      validator.generate_article_lists(artifacts)
+
+      german = (root + 'site/articles/generated/pages/all.adoc').read
+      english = (root + 'site/en/articles/generated/pages/all.adoc').read
+
+      # Each listing is titled in its own language and lists only its own articles.
+      assert_includes german, '= Alle Artikel'
+      assert_includes german, 'first.html'
+      refute_includes german, 'en/articles'
+
+      assert_includes english, '= All articles'
+      assert_includes english, 'first.html'
+
+      assert_includes (root + 'site/en/articles/generated/pages/tag-architecture.adoc').read, '= Articles tagged: architecture'
+      assert_includes (root + 'site/articles/generated/pages/tag-architecture.adoc').read, '= Artikel mit dem Tag: architecture'
+    end
+  end
+
+  # Article chrome resolves its wording through the page it lands on, so a
+  # translated article gets translated navigation without a second generator pass.
+  def test_article_chrome_wording_is_resolved_by_the_page
+    with_artifacts(
+      [
+        { id: 'ART-001-de', slug: 'first', dir: 'site/articles', language: 'de', tags: %w[architecture] },
+        { id: 'ART-002-de', slug: 'second', dir: 'site/articles', language: 'de', tags: %w[architecture] }
+      ]
+    ) do |validator, root, artifacts|
+      validator.generate_article_navigation(artifacts)
+      validator.generate_article_comment_includes(artifacts)
+
+      navigation = (root + 'site/articles/generated/first-navigation.adoc').read
+      comments = (root + 'site/articles/generated/first-comments.adoc').read
+
+      assert_includes navigation, '[subs="attributes"]'
+      assert_includes navigation, 'aria-label="{ui_article_nav_label}"'
+      assert_includes navigation, '{ui_article_nav_related}'
+      assert_includes comments, '{ui_comments_heading}'
+      assert_includes comments, '{ui_comments_create}'
+      refute_match(/Könnte Sie auch interessieren|Kommentare<|Diesen Artikel kommentieren/, navigation + comments)
+    end
+  end
+
+  # A recommendation is swapped for its variant in the reader's language, and one
+  # that exists only in the default language is still offered - marked.
+  def test_related_articles_prefer_the_page_language_and_mark_the_rest
+    with_artifacts(
+      [
+        { id: 'ART-001-de', slug: 'first', dir: 'site/articles', language: 'de', tags: %w[architecture] },
+        { id: 'ART-001-en', slug: 'first', dir: 'site/en/articles', language: 'en', tags: %w[architecture],
+          translation_of: 'ART-001-de' },
+        { id: 'ART-002-de', slug: 'second', dir: 'site/articles', language: 'de', tags: %w[architecture] },
+        { id: 'ART-003-en', slug: 'third', dir: 'site/en/articles', language: 'en', tags: %w[architecture] }
+      ],
+      ui_terms: BILINGUAL_UI_TERMS
+    ) do |validator, root, artifacts|
+      validator.generate_article_navigation(artifacts)
+      english = (root + 'site/en/articles/generated/third-navigation.adoc').read
+
+      # The English variant of ART-001 wins over its German original, unmarked.
+      assert_includes english, 'first.html'
+      # ART-002 exists in German only and is offered with its language marked.
+      assert_match(/second\.html">[^<]*&#160;\(de\)</, english)
+    end
+  end
+
+  # Each language variant is its own artifact, so its comment thread and its
+  # allowlist entry follow from its own ID without any extra rule.
+  def test_comment_threads_are_separate_per_language_variant
+    with_artifacts(
+      [
+        { id: 'ART-001-de', slug: 'first', dir: 'site/articles', language: 'de', channels: %w[website] },
+        { id: 'ART-001-en', slug: 'first', dir: 'site/en/articles', language: 'en', channels: %w[website],
+          translation_of: 'ART-001-de' }
+      ],
+      ui_terms: BILINGUAL_UI_TERMS
+    ) do |validator, root, artifacts|
+      validator.generate_article_comment_includes(artifacts)
+      allowlist = validator.generate_article_comment_allowlist(artifacts, output: 'build/allowed.json')
+
+      assert_includes (root + 'site/articles/generated/first-comments.adoc').read, 'data-article-id="ART-001-de"'
+      assert_includes (root + 'site/en/articles/generated/first-comments.adoc').read, 'data-article-id="ART-001-en"'
+      assert_equal %w[ART-001-de ART-001-en], JSON.parse(allowlist.read)['article_ids']
     end
   end
 
