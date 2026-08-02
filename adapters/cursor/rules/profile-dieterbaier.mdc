@@ -26,6 +26,7 @@ Paths are relative to the profile-dieterbaier repository root.
 - `clock-in`: `skills/clock-in/SKILL.md`
 - `clock-out`: `skills/clock-out/SKILL.md`
 - `diary`: `skills/diary/SKILL.md`
+- `language-profile`: `skills/language-profile/SKILL.md`
 - `profile-artifact-maintenance`: `skills/profile-artifact-maintenance/SKILL.md`
 - `write-article`: `skills/write-article/SKILL.md`
 

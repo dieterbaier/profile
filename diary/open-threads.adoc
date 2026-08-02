@@ -50,3 +50,16 @@ vorliegen, bevor die Seite baut. Das ist Autorenarbeit über eine reale Laufbahn
 Die Alternative wäre, den CV feiner zu schneiden, damit kleinere Einheiten
 blockieren — Fragmentgranularität ist seit #52 ein Entwurfshebel und im ADR
 festgehalten.
+
+=== Ein Toolkit-Issue, das noch anzulegen ist
+
+`derived_from` steht im ADR-Template des Toolkits, aber
+`metamodel/artifact.schema.yaml` hat `additionalProperties: false` und kennt das
+Feld nicht. Die Issue-Suche im Toolkit brachte keinen Treffer, der das
+beschreibt.
+
+Offen ist nicht *ob*, sondern in welche Richtung: Schema erweitern, oder im
+Skill festhalten, dass ein Projekt `derived_from` weglassen darf. Die Begründung
+steht in `toolkit-validation.adoc`; hier steht sie, weil sie dieses Projekt
+überlebt.
+
