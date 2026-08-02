@@ -732,7 +732,7 @@ footer p {
    publish articles for it too. A statement, not a control: the language
    switcher in the menu stays the only way to change language. */
 .article-list-languages {
-    margin: 0 0 1.5rem;
+    margin: 1.5rem 0;
     padding: 0.6rem 0.9rem;
     background: var(--bg-surface);
     border-left: 3px solid var(--box-border-strong);
