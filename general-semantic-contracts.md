@@ -28,6 +28,15 @@ committed.
 Generated files under `**/generated/` are reproducible output and are not
 primary editing surfaces.
 
+One family of generated files lives outside that directory: the standalone
+article listing pages under `src-content/profile/site/**/articles/lists/`. They
+are written where they are published so the site build renders them as ordinary
+sources; a dedicated build task pointed at a directory that only appears while
+the build runs, and that proved unreliable. They are generated output all the
+same, are ignored by Git like everything under `**/generated/`, and are not
+edited by hand. The `recent.adoc` fragment they belong with stays under
+`generated/lists/`, because it is an include rather than a page.
+
 ## Architecture Knowledge
 
 Architecture documentation follows the `architecture-knowledge-toolkit`
