@@ -559,6 +559,25 @@ class ProfileLanguageTest < Minitest::Test
     end
   end
 
+  # A translation shares its original's tags, so without excluding the whole
+  # translation group the language-preferring swap turns a variant of the article
+  # into a recommendation to read the article you are already on.
+  def test_an_article_is_not_recommended_as_related_to_its_own_translation
+    with_artifacts(
+      [
+        { id: 'ART-001-de', slug: 'first', dir: 'site/articles', language: 'de', tags: %w[architecture] },
+        { id: 'ART-001-en', slug: 'first', dir: 'site/en/articles', language: 'en', tags: %w[architecture],
+          translation_of: 'ART-001-de' }
+      ],
+      ui_terms: BILINGUAL_UI_TERMS
+    ) do |validator, root, artifacts|
+      validator.generate_article_navigation(artifacts)
+
+      assert_empty (root + 'site/articles/generated/first-navigation.adoc').read
+      assert_empty (root + 'site/en/articles/generated/first-navigation.adoc').read
+    end
+  end
+
   # Each language variant is its own artifact, so its comment thread and its
   # allowlist entry follow from its own ID without any extra rule.
   def test_comment_threads_are_separate_per_language_variant

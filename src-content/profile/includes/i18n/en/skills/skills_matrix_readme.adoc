@@ -1,0 +1,23 @@
+:img_shields_io: https://img.shields.io/badge
+
+*{skill_documentation_title}* +
+!link:{img_shields_io}/{skill_documentation_1_badge}-{skill_documentation_badge_color}[{skill_documentation_1}]
+
+*{skill_integration_title}* +
+!link:{img_shields_io}/{skill_integration_1_badge}-{skill_integration_badge_color}[{skill_integration_1}] !link:{img_shields_io}/{skill_integration_2_badge}-{skill_integration_badge_color}[{skill_integration_2}] !link:{img_shields_io}/{skill_integration_3_badge}-{skill_integration_badge_color}[{skill_integration_3}] !link:{img_shields_io}/{skill_integration_4_badge}-{skill_integration_badge_color}[{skill_integration_4}]
+
+*{skill_development_title}* +
+!link:{img_shields_io}/{skill_development_1_badge}-{skill_development_badge_color}[{skill_development_1}] !link:{img_shields_io}/{skill_development_2_badge}-{skill_development_badge_color}[{skill_development_2}] !link:{img_shields_io}/{skill_development_3_badge}-{skill_development_badge_color}[{skill_development_3}]
+
+*{skill_architecture_title}* +
+!link:{img_shields_io}/{skill_architecture_1_badge}-{skill_architecture_badge_color}[{skill_architecture_1}] !link:{img_shields_io}/{skill_architecture_2_badge}-{skill_architecture_badge_color}[{skill_architecture_2}] !link:{img_shields_io}/{skill_architecture_3_badge}-{skill_architecture_badge_color}[{skill_architecture_3}]
+
+*{skill_methods_title}* +
+!link:{img_shields_io}/{skill_methods_1_badge}-{skill_methods_badge_color}[{skill_methods_1}] !link:{img_shields_io}/{skill_methods_2_badge}-{skill_methods_badge_color}[{skill_methods_2}] !link:{img_shields_io}/{skill_methods_docascode_badge}-{skill_methods_badge_color}[{skill_methods_docascode}] !link:{img_shields_io}/{skill_methods_4_badge}-{skill_methods_badge_color}[{skill_methods_4}] !link:{img_shields_io}/{skill_methods_5_badge}-{skill_methods_badge_color}[{skill_methods_5}]
+
+*{skill_platform_title}* +
+!link:{img_shields_io}/{skill_platform_1_badge}-{skill_platform_badge_color}[{skill_platform_1}] !link:{img_shields_io}/{skill_platform_2_badge}-{skill_platform_badge_color}[{skill_platform_2}] !link:{img_shields_io}/{skill_platform_cicd_badge}-{skill_platform_badge_color}[{skill_platform_cicd}] !link:{img_shields_io}/{skill_platform_4_badge}-{skill_platform_badge_color}[{skill_platform_4}]
+
+*{skill_branches_title}* +
+!link:{img_shields_io}/{skill_branches_1_badge}-{skill_branches_badge_color}[{skill_branches_1}]
+

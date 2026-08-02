@@ -245,15 +245,26 @@ class ProfileArtifactValidator
     !artifact_output_path(artifact).nil?
   end
 
+  # List items for the main navigation, so the switcher sits in the menu row
+  # itself rather than as a separate block. The visible label is a flag; the
+  # language name stays on title and aria-label, because a flag alone is not an
+  # accessible name and stands for a country rather than a language.
   def render_language_switcher(current, variants)
     ordered = variants.sort_by { |variant| artifact_language(variant) }
+
     items = ordered.map do |variant|
       language = artifact_language(variant)
+      flag = "{ui_language_flag_#{language}}"
+      name = "{ui_language_name_#{language}}"
+
       if variant.equal?(current)
-        "    <li><span class=\"language-switch-current\" lang=\"#{language}\">{ui_language_name_#{language}}</span></li>"
+        "        <li class=\"language-switch language-switch-current\">" \
+          "<span lang=\"#{language}\" title=\"#{name}\" aria-current=\"true\">#{flag}</span></li>"
       else
         href = h(article_link_href(current, variant))
-        "    <li><a href=\"#{href}\" lang=\"#{language}\" hreflang=\"#{language}\">{ui_language_name_#{language}}</a></li>"
+        "        <li class=\"language-switch\">" \
+          "<a href=\"#{href}\" lang=\"#{language}\" hreflang=\"#{language}\" title=\"#{name}\" " \
+          "aria-label=\"#{name}\">#{flag}</a></li>"
       end
     end
 
@@ -261,12 +272,7 @@ class ProfileArtifactValidator
     # menu's passthrough block, which already applies attribute substitution.
     # Splitting that block to include it as a block of its own would change the
     # whitespace of every rendered page.
-    ['<nav class="language-switch" aria-label="{ui_language_switch_label}">',
-     '  <ul>',
-     *items,
-     '  </ul>',
-     '</nav>',
-     ''].join("\n")
+    [*items, ''].join("\n")
   end
 
   def clean_generated_language_switchers
@@ -1275,12 +1281,32 @@ class ProfileArtifactValidator
     slug.to_s.tr('-', ' ')
   end
 
-  # Common directory of all article sources; the listings live beneath it.
+  # The articles directory a set of articles belongs to; the listings live
+  # beneath it. Derived from the enclosing 'articles' directory rather than from
+  # the common ancestor of the sources: with a single article in one language the
+  # common ancestor is that article's own subdirectory, which would bury that
+  # language's listings one level too deep.
   def articles_base_dir(articles)
     dirs = articles.map { |article| article_source_path(article).dirname }
     return nil if dirs.empty?
 
+    roots = dirs.filter_map { |dir| enclosing_articles_dir(dir) }.uniq
+    return roots.min_by { |dir| dir.to_s.length } unless roots.empty?
+
     dirs.reduce { |common, dir| common_ancestor(common, dir) }
+  end
+
+  # Nearest ancestor directory named 'articles', or nil when the sources do not
+  # follow that convention.
+  def enclosing_articles_dir(dir)
+    current = dir
+    until current.basename.to_s == 'articles'
+      parent = current.parent
+      return nil if parent == current
+
+      current = parent
+    end
+    current
   end
 
   def common_ancestor(first, second)
@@ -1481,7 +1507,14 @@ class ProfileArtifactValidator
 
   def related_articles(article, all_articles)
     self_id = article.metadata['id']
-    excluded = [self_id, article.metadata['previous'], article.metadata['next']].compact.to_set
+    # Translations of this article are excluded along with the article itself.
+    # They share its tags, and resolving a suggestion to the reader's language
+    # would otherwise turn a variant of this very article into a recommendation
+    # to read it.
+    self_group = translation_group_key(article)
+    own_variants = all_articles.select { |candidate| translation_group_key(candidate) == self_group }
+                               .map { |candidate| candidate.metadata['id'] }
+    excluded = (own_variants + [self_id, article.metadata['previous'], article.metadata['next']]).compact.to_set
     self_tags = meaningful_tags(article)
     linked = related_relation_ids(article, all_articles)
 

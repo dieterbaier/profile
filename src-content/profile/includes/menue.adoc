@@ -8,6 +8,7 @@
 
 <nav id="mainnav" class="mainnav" data-active="{active}">
     <ul>
+include::{docfile}/../generated/{docname}-langswitch.adoc[opts=optional]
         <li>
             <a data-nav="home" href="{url_index}">{ui_nav_home}{url_index_marker}</a>
         </li>
@@ -37,7 +38,6 @@ endif::[]
 </div>
 <div class="nav-overlay"></div>
 </nav>
-include::{docfile}/../generated/{docname}-langswitch.adoc[opts=optional]
 
 <script type="text/javascript" src="{basedir}/stylesheet/navigation.js"></script>
 ++++

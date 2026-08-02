@@ -20,6 +20,10 @@ include::{includesdir}/docheader.adoc[]
 
 [.highlight]
 --
-This English section of the site is being built up gradually. Pages that are not
-translated yet are linked in German.
+include::{includesdir}/i18n/{lang}/profile/profile.adoc[]
+include::{includesdir}/i18n/{lang}/profile/profile_personal.adoc[]
 --
+
+include::{includesdir}/i18n/{lang}/profile/about_me_citations.adoc[]
+
+link:{url_cv}[Curriculum Vitae{url_cv_marker}, role="fingerPointsTo"]
