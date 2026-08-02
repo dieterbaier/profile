@@ -1,12 +1,16 @@
 # frozen_string_literal: true
 
-# Validator tests for the language and translation dimension of the profile
-# metamodel.
+# Tests for the language and translation dimension of the profile metamodel.
 #
-# These rules are author-facing: they decide which metadata the build accepts,
-# not what a reader sees. There is therefore no Gherkin feature bridged here,
-# unlike the navigation, listing, and comment generators. Each test builds an
-# isolated temporary profile tree so the real repository is never touched.
+# Two kinds of test live here. The metadata rules are author-facing: they decide
+# which metadata the build accepts, not what a reader sees, and they carry the
+# waiver recorded in issue #48 instead of a scenario. The remaining tests are
+# bridged to features/language-chrome.feature and
+# features/content-fragment-languages.feature and are named after their scenario
+# titles, with Given/When/Then comment anchors inside them.
+#
+# Each test builds an isolated temporary profile tree so the real repository is
+# never touched.
 
 require 'minitest/autorun'
 require 'tmpdir'
@@ -246,7 +250,7 @@ class ProfileLanguageTest < Minitest::Test
     end
   end
 
-  def test_rejects_missing_interface_term
+  def test_interface_wording_of_a_language_must_be_complete
     with_artifacts(
       [{ id: 'ART-001-example', slug: 'example', language: 'de' }],
       ui_terms: {
@@ -274,7 +278,7 @@ class ProfileLanguageTest < Minitest::Test
 
   # Content in a language without interface terms would render German chrome
   # around a translated page, so the missing file is an error rather than a gap.
-  def test_rejects_content_language_without_interface_terms
+  def test_a_language_that_has_content_must_have_interface_terms
     with_artifacts(
       [
         { id: 'ART-001-example', slug: 'example', language: 'de' },
@@ -290,7 +294,7 @@ class ProfileLanguageTest < Minitest::Test
   # docheader.adoc includes the default terms unconditionally, so a missing
   # directory breaks every page. It must produce the same contract error as a
   # missing file rather than silently skipping the whole check.
-  def test_rejects_missing_interface_terms_directory
+  def test_interface_wording_of_a_language_must_be_completes_directory
     with_artifacts([{ id: 'ART-001-example', slug: 'example', language: 'de' }], ui_terms: {}) do |validator|
       assert_error_matching(validator, %r{missing interface terms for the default language: includes/i18n/ui-de\.adoc})
     end
@@ -326,7 +330,7 @@ class ProfileLanguageTest < Minitest::Test
   # A page reference resolves to the same-language page where one exists and to
   # the default language otherwise, so it always leads somewhere. The fallback is
   # marked with the language it leads to.
-  def test_link_registry_resolves_per_language_and_marks_fallbacks
+  def test_page_reference_resolves_to_the_same_language_page
     with_artifacts(
       [
         { id: 'PAGE-001-index', slug: 'index', dir: 'site', type: 'ProfilePage', language: 'de' },
@@ -354,6 +358,29 @@ class ProfileLanguageTest < Minitest::Test
     end
   end
 
+  def test_page_reference_falls_back_and_names_the_language_it_leads_to
+    # Given: a page that exists in the default language only
+    with_artifacts(
+      [
+        { id: 'PAGE-001-index', slug: 'index', dir: 'site', type: 'ProfilePage', language: 'de' },
+        { id: 'PAGE-002-legal', slug: 'legal', dir: 'site', type: 'ProfilePage', language: 'de' },
+        { id: 'PAGE-001-index-en', slug: 'index', dir: 'site/en', type: 'ProfilePage', language: 'en',
+          translation_of: 'PAGE-001-index' }
+      ],
+      ui_terms: BILINGUAL_UI_TERMS
+    ) do |validator, root, artifacts|
+      # When: the link registries are generated
+      validator.generate_link_registries(artifacts)
+      english = (root + 'includes/generated/i18n/links-en.adoc').read
+
+      # Then: the other language resolves the reference to the default-language
+      # page and marks it
+      assert_includes english, ":url_legal: {basedir}/legal.html\n"
+      assert_includes english, ":url_legal_lang: de\n"
+      assert_includes english, ":url_legal_marker: {nbsp}(de)\n"
+    end
+  end
+
   # The registry is included into the AsciiDoc document header. ':name:value'
   # without the space is not an attribute entry and would end the header, leaving
   # every later reference unresolved and the site on the default theme.
@@ -375,7 +402,7 @@ class ProfileLanguageTest < Minitest::Test
     end
   end
 
-  def test_rejects_unknown_page_reference
+  def test_a_reference_no_page_can_satisfy_is_rejected
     Dir.mktmpdir('profile-language-test') do |dir|
       root = Pathname.new(dir)
       (root + 'includes/i18n').mkpath
@@ -418,7 +445,7 @@ class ProfileLanguageTest < Minitest::Test
 
   # A link leading to a German page is usable, so it falls back. A German
   # paragraph inside an English page is not, so the build stops instead.
-  def test_rejects_fragment_missing_in_the_page_language
+  def test_a_fragment_missing_in_the_page_language_stops_the_build
     with_fragments(
       pages: { 'en/index.adoc' => "= Index\ninclude::{includesdir}/i18n/{lang}/profile/bio.adoc[]\n" },
       fragments: { 'de/profile/bio.adoc' => "Deutscher Text\n" }
@@ -427,7 +454,7 @@ class ProfileLanguageTest < Minitest::Test
     end
   end
 
-  def test_rejects_fragment_of_another_language
+  def test_a_fragment_of_another_language_stops_the_build
     with_fragments(
       pages: { 'en/index.adoc' => "= Index\ninclude::{includesdir}/i18n/de/profile/bio.adoc[]\n" },
       fragments: { 'de/profile/bio.adoc' => "Deutscher Text\n" }
@@ -436,7 +463,7 @@ class ProfileLanguageTest < Minitest::Test
     end
   end
 
-  def test_accepts_fragment_translated_into_the_page_language
+  def test_a_translated_fragment_is_accepted
     with_fragments(
       pages: { 'en/index.adoc' => "= Index\ninclude::{includesdir}/i18n/{lang}/profile/bio.adoc[]\n" },
       fragments: {
@@ -450,7 +477,7 @@ class ProfileLanguageTest < Minitest::Test
 
   # Fragments reached through an attribute-driven include must be checked too;
   # the CV builds its project and experience entries that way.
-  def test_follows_attribute_driven_and_nested_includes
+  def test_fragments_reached_through_attributes_are_checked_too
     with_fragments(
       pages: { 'en/index.adoc' => "= Index\ninclude::{includesdir}/i18n/{lang}/projects/list.adoc[]\n" },
       fragments: {
@@ -469,7 +496,7 @@ class ProfileLanguageTest < Minitest::Test
   end
 
   # Untranslated fragments nobody includes are a gap, not a failure.
-  def test_reports_untranslated_fragments_as_coverage_warning
+  def test_untranslated_fragments_nobody_includes_are_reported_as_coverage
     with_fragments(
       pages: { 'en/index.adoc' => "= Index\n" },
       fragments: { 'de/profile/bio.adoc' => "Deutscher Text\n" }
@@ -516,7 +543,7 @@ class ProfileLanguageTest < Minitest::Test
 
   # Article chrome resolves its wording through the page it lands on, so a
   # translated article gets translated navigation without a second generator pass.
-  def test_article_chrome_wording_is_resolved_by_the_page
+  def test_article_chrome_takes_its_wording_from_the_page_it_lands_on
     with_artifacts(
       [
         { id: 'ART-001-de', slug: 'first', dir: 'site/articles', language: 'de', tags: %w[architecture] },
@@ -538,26 +565,39 @@ class ProfileLanguageTest < Minitest::Test
     end
   end
 
-  # A recommendation is swapped for its variant in the reader's language, and one
-  # that exists only in the default language is still offered - marked.
-  def test_related_articles_prefer_the_page_language_and_mark_the_rest
-    with_artifacts(
-      [
-        { id: 'ART-001-de', slug: 'first', dir: 'site/articles', language: 'de', tags: %w[architecture] },
-        { id: 'ART-001-en', slug: 'first', dir: 'site/en/articles', language: 'en', tags: %w[architecture],
-          translation_of: 'ART-001-de' },
-        { id: 'ART-002-de', slug: 'second', dir: 'site/articles', language: 'de', tags: %w[architecture] },
-        { id: 'ART-003-en', slug: 'third', dir: 'site/en/articles', language: 'en', tags: %w[architecture] }
-      ],
-      ui_terms: BILINGUAL_UI_TERMS
-    ) do |validator, root, artifacts|
-      validator.generate_article_navigation(artifacts)
-      english = (root + 'site/en/articles/generated/third-navigation.adoc').read
+  # Recommendations across languages. Both scenarios share one tree: an article
+  # available in both languages, one available in German only, and the English
+  # article the reader is on.
+  RECOMMENDATION_TREE = [
+    { id: 'ART-001-de', slug: 'first', dir: 'site/articles', language: 'de', tags: %w[architecture] },
+    { id: 'ART-001-en', slug: 'first', dir: 'site/en/articles', language: 'en', tags: %w[architecture],
+      translation_of: 'ART-001-de' },
+    { id: 'ART-002-de', slug: 'second', dir: 'site/articles', language: 'de', tags: %w[architecture] },
+    { id: 'ART-003-en', slug: 'third', dir: 'site/en/articles', language: 'en', tags: %w[architecture] }
+  ].freeze
 
-      # The English variant of ART-001 wins over its German original, unmarked.
-      assert_includes english, 'first.html'
-      # ART-002 exists in German only and is offered with its language marked.
-      assert_match(/second\.html">[^<]*&#160;\(de\)</, english)
+  def test_a_recommendation_is_resolved_to_the_language_of_the_reader
+    # Given: an article recommended in two languages and a reader on an English article
+    with_artifacts(RECOMMENDATION_TREE, ui_terms: BILINGUAL_UI_TERMS) do |validator, root, artifacts|
+      # When: the article navigation is generated
+      validator.generate_article_navigation(artifacts)
+
+      # Then: the English variant is recommended without a language marker
+      english = (root + 'site/en/articles/generated/third-navigation.adoc').read
+      assert_match(%r{first\.html">[^<]*</a>}, english)
+      refute_match(%r{first\.html">[^<]*&\#160;\(de\)}, english)
+    end
+  end
+
+  def test_a_recommendation_available_in_one_language_only_names_that_language
+    # Given: an article that exists in the default language only
+    with_artifacts(RECOMMENDATION_TREE, ui_terms: BILINGUAL_UI_TERMS) do |validator, root, artifacts|
+      # When: the article navigation is generated
+      validator.generate_article_navigation(artifacts)
+
+      # Then: it is still recommended and marked with the language it leads to
+      english = (root + 'site/en/articles/generated/third-navigation.adoc').read
+      assert_match(/second\.html">[^<]*&\#160;\(de\)</, english)
     end
   end
 
@@ -582,7 +622,7 @@ class ProfileLanguageTest < Minitest::Test
 
   # Each language variant is its own artifact, so its comment thread and its
   # allowlist entry follow from its own ID without any extra rule.
-  def test_comment_threads_are_separate_per_language_variant
+  def test_each_language_variant_has_its_own_comment_thread
     with_artifacts(
       [
         { id: 'ART-001-de', slug: 'first', dir: 'site/articles', language: 'de', channels: %w[website] },

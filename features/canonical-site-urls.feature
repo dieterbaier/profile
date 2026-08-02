@@ -33,3 +33,9 @@ Feature: Canonical URLs for the public site
     Given a production site build without a configured base URL
     When public site metadata injection is invoked
     Then the build fails before deployment
+
+  Scenario: Language subtree pages keep their language prefix in the canonical url
+    Given a generated public site whose pages exist below a language prefix
+    When public site metadata is injected
+    Then each variant keeps its own prefix in the canonical URL
+

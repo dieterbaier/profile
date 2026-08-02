@@ -23,7 +23,22 @@ Feature: GitHub-backed article comments
     When the article is rendered for a non-website target
     Then the website-only comment block is omitted
 
-  Scenario: Only published article ids are synchronized
+  Scenario: Only published website article ids are synchronized
     Given published, preview, and non-website articles
     When the deployment allowlist is generated
     Then it contains only article ids eligible for the public website
+
+  # Language variants. Each variant is its own artifact with its own id, so its
+  # discussion is its own too - an English reader should not land in a German
+  # thread.
+
+  Scenario: Comment wording follows the page language
+    Given an article comment block on a page in any language
+    When the comment block is generated
+    Then its wording is left to the page's interface terms and the script carries none
+
+  Scenario: Each language variant has its own comment thread
+    Given an article published in two languages
+    When the comment blocks and the allowlist are generated
+    Then each variant uses its own article id and both ids are synchronized
+
