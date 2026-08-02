@@ -113,10 +113,10 @@ class ProfileCommentsTest < Minitest::Test
     # by the profile generator
     template = Pathname.new(__dir__).join('../templates/write-article/article.adoc').read
     generator = Pathname.new(__dir__).join('../scripts/validate-profile-metamodel.rb').read
-    generated_suffixes = generator.scan(/#\{article_slug\(article\)\}-(navigation|tags|comments)\.adoc/).flatten.uniq
+    generated_suffixes = generator.scan(/#\{article_slug\(article\)\}-(navigation|tags|comments|translation)\.adoc/).flatten.uniq
 
     # Then: new articles include every generated fragment family
-    assert_equal %w[comments navigation tags], generated_suffixes.sort
+    assert_equal %w[comments navigation tags translation], generated_suffixes.sort
     generated_suffixes.each do |suffix|
       assert_includes template, "include::{docfile}/../generated/{docname}-#{suffix}.adoc[opts=optional]"
     end

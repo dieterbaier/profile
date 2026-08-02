@@ -15,6 +15,8 @@ include::{includesdir}/docheader.adoc[]
 // Generated horizontal tag list; website only.
 ifeval::["{type}" != "readme"]
 include::{docfile}/../generated/{docname}-tags.adoc[opts=optional]
+// Generated translation provenance; empty unless the article is a translation.
+include::{docfile}/../generated/{docname}-translation.adoc[opts=optional]
 endif::[]
 
 [.highlight.info]

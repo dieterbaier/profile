@@ -3,6 +3,7 @@
 
 require 'cgi'
 require 'date'
+require 'digest'
 require 'fileutils'
 require 'json'
 require 'optparse'
@@ -211,6 +212,134 @@ class ProfileArtifactValidator
     end
 
     written
+  end
+
+  # Writes one provenance note per article next to it, empty for originals.
+  # A translation always says what it came from; an outdated or deliberately
+  # divergent one additionally says how it relates to that text. Both notes can
+  # appear together, because staleness and intent are independent.
+  def generate_translation_notes(artifacts)
+    articles = artifacts.select { |artifact| artifact.metadata['type'] == 'Article' }
+    by_id = index_by_id(artifacts)
+
+    clean_generated_translation_notes
+
+    articles.map do |article|
+      notes_dir = article_source_path(article).dirname.join('generated')
+      FileUtils.mkdir_p(notes_dir)
+      path = notes_dir.join("#{article_slug(article)}-translation.adoc")
+      path.write(render_translation_note(article, by_id), encoding: 'UTF-8')
+      path
+    end
+  end
+
+  # The freshness of a translation, derived by comparing the digest recorded at
+  # translation time against the original's current source. The derived state is
+  # a default, not a verdict: re-accepting the original clears it, which is the
+  # intended answer to a cosmetic change such as a typo fix.
+  def translation_state(article, by_id)
+    original_id = article.metadata['translation_of']
+    return nil if blank?(original_id)
+
+    original = by_id[original_id]
+    return nil if original.nil?
+
+    recorded = article.metadata['translation_source_digest']
+    outdated = !blank?(recorded) && recorded != source_digest(original)
+
+    {
+      original: original,
+      outdated: outdated,
+      divergent: !blank?(article.metadata['translation_divergence']),
+      untracked: blank?(recorded)
+    }
+  end
+
+  # Digest of an artifact's full source. The whole file counts, because a change
+  # anywhere in it can change what the text says.
+  def source_digest(artifact)
+    path = article_source_path(artifact)
+    return nil unless path.file?
+
+    Digest::SHA256.hexdigest(path.read(encoding: 'UTF-8'))
+  end
+
+  def render_translation_note(article, by_id)
+    state = translation_state(article, by_id)
+    return '' if state.nil?
+
+    href = h(article_link_href(article, state[:original]))
+    title = h(state[:original].metadata['title'])
+
+    lines = ['// Generated translation provenance. Do not edit manually.',
+             '[subs="attributes"]',
+             '++++',
+             '<aside class="translation-note">',
+             "  <p>{ui_translation_of} <a href=\"#{href}\">#{title}</a>.</p>"]
+    lines << '  <p>{ui_translation_outdated}</p>' if state[:outdated]
+    lines << '  <p>{ui_translation_divergent}</p>' if state[:divergent]
+    lines.concat(['</aside>', '++++', ''])
+    lines.join("\n")
+  end
+
+  def clean_generated_translation_notes
+    Dir.glob(profile_dir.join('**', 'generated', '*-translation.adoc').to_s).each do |path|
+      File.delete(path)
+    end
+  end
+
+  # Outdated translations stay publishable, so they are reported to the author
+  # rather than failing the build.
+  def report_translation_states(artifacts)
+    by_id = index_by_id(artifacts)
+
+    artifacts.select { |artifact| artifact.metadata['type'] == 'Article' }.each do |article|
+      state = translation_state(article, by_id)
+      next if state.nil?
+
+      location = relative(article.path)
+      warnings << "#{location} is outdated: its original '#{state[:original].metadata['id']}' changed since " \
+                  'the translation was accepted' if state[:outdated]
+      warnings << "#{location} is a translation without a recorded 'translation_source_digest', so its " \
+                  'freshness cannot be checked' if state[:untracked]
+    end
+  end
+
+  # Records the original's current source digest for a translation without
+  # touching the translation itself. This is the author override: it declares
+  # that the change in the original needed no change here.
+  def accept_translation(artifacts, artifact_id)
+    by_id = index_by_id(artifacts)
+    article = by_id[artifact_id]
+    raise ArgumentError, "unknown artifact '#{artifact_id}'" if article.nil?
+
+    original_id = article.metadata['translation_of']
+    raise ArgumentError, "'#{artifact_id}' is not a translation" if blank?(original_id)
+
+    original = by_id[original_id]
+    raise ArgumentError, "unknown original '#{original_id}'" if original.nil?
+
+    digest = source_digest(original)
+    raise ArgumentError, "original '#{original_id}' has no readable source" if digest.nil?
+
+    write_translation_digest(article, digest)
+  end
+
+  # The digest lives in the sidecar next to the translation, or in the front
+  # matter when the artifact carries its metadata inline.
+  def write_translation_digest(article, digest)
+    path = article.path
+    text = path.read(encoding: 'UTF-8')
+    entry = "translation_source_digest: #{digest}"
+
+    updated = if text.match?(/^(\s*)translation_source_digest:.*$/)
+                text.sub(/^(\s*)translation_source_digest:.*$/) { "#{Regexp.last_match(1)}#{entry}" }
+              else
+                text.sub(/^(\s*)translation_of:.*$/) { "#{Regexp.last_match(0)}\n#{Regexp.last_match(1)}#{entry}" }
+              end
+
+    path.write(updated, encoding: 'UTF-8')
+    path
   end
 
   # Writes one link registry per language into a generated include. Chrome and
@@ -1406,7 +1535,8 @@ if $PROGRAM_NAME == __FILE__
     profile_dir: nil,
     generate: false,
     output: nil,
-    article_comment_allowlist: nil
+    article_comment_allowlist: nil,
+    accept_translation: nil
   }
   OptionParser.new do |parser|
     parser.on('--root PATH') { |value| options[:root] = Pathname.new(value) }
@@ -1414,6 +1544,7 @@ if $PROGRAM_NAME == __FILE__
     parser.on('--generate') { options[:generate] = true }
     parser.on('--output PATH') { |value| options[:output] = value }
     parser.on('--article-comment-allowlist PATH') { |value| options[:article_comment_allowlist] = value }
+    parser.on('--accept-translation ID') { |value| options[:accept_translation] = value }
   end.parse!
 
   root = options[:root]
@@ -1424,6 +1555,12 @@ if $PROGRAM_NAME == __FILE__
   artifacts = validator.validate
   validator.report(artifacts)
   exit(1) unless validator.errors.empty?
+
+  if options[:accept_translation]
+    path = validator.accept_translation(artifacts, options[:accept_translation])
+    puts "Accepted current original for #{options[:accept_translation]}: #{path.relative_path_from(root)}"
+    exit(0)
+  end
 
   warnings_before_generate = validator.warnings.length
   if options[:generate]
@@ -1442,8 +1579,11 @@ if $PROGRAM_NAME == __FILE__
     puts "Generated article comment allowlist: #{allowlist_path.relative_path_from(root)}"
     list_paths = validator.generate_article_lists(artifacts)
     puts "Generated #{list_paths.length} article list file(s)."
+    note_paths = validator.generate_translation_notes(artifacts)
+    puts "Generated #{note_paths.length} translation note(s)."
     registry_paths = validator.generate_link_registries(artifacts)
     puts "Generated #{registry_paths.length} link registry file(s)."
+    validator.report_translation_states(artifacts)
     validator.report_warnings(since: warnings_before_generate)
   end
 end
