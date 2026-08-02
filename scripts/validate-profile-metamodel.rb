@@ -187,14 +187,18 @@ class ProfileArtifactValidator
     clean_generated_lists(articles_dir)
 
     lists_dir = articles_dir.join('generated', 'lists')
-    pages_dir = articles_dir.join('generated', 'pages')
+    # Standalone listing pages are written where they are published, so the main
+    # site build picks them up as ordinary sources. A dedicated Asciidoctor task
+    # pointed at a directory that only appears once the generator has run, and
+    # whether it saw that directory depended on the environment.
+    pages_dir = articles_dir.join('lists')
     FileUtils.mkdir_p(lists_dir)
     FileUtils.mkdir_p(pages_dir)
 
     terms = ui_terms_values(language)
 
-    # The output location of the standalone pages; used to compute link targets.
-    output_dir = articles_dir.join('lists')
+    # Source and output location of the standalone pages are the same now.
+    output_dir = pages_dir
     ordered = sort_articles(public_articles(articles))
     written = []
 
@@ -278,7 +282,7 @@ class ProfileArtifactValidator
     groups = {}
 
     SITE_SOURCE_ROOTS.each do |source_root|
-      Dir.glob(profile_dir.join(source_root, '**', 'generated', 'pages', '*.adoc').to_s).sort.each do |path|
+      Dir.glob(profile_dir.join(source_root, '**', 'articles', 'lists', '*.adoc').to_s).sort.each do |path|
         source = Pathname.new(path)
         relative = site_relative_dir(source.dirname)
         next if relative.nil?
@@ -551,7 +555,7 @@ class ProfileArtifactValidator
   # articles do not leave stale pages or fragments behind.
   def clean_generated_lists(articles_dir)
     FileUtils.rm_rf(articles_dir.join('generated', 'lists'))
-    FileUtils.rm_rf(articles_dir.join('generated', 'pages'))
+    FileUtils.rm_rf(articles_dir.join('lists'))
   end
 
   # Removes previously generated navigation files, including files left behind by
@@ -1700,25 +1704,10 @@ class ProfileArtifactValidator
     article if article && article.metadata['type'] == 'Article'
   end
 
-  # Relative href between two pages, computed on their rendered locations rather
-  # than their sources. Generated listing pages are authored under
-  # 'generated/pages' but rendered into 'lists', so source paths would give the
-  # wrong depth.
+  # Relative href between two pages. Every page, generated listings included, is
+  # rendered where its source lives, so the source paths give the right depth.
   def page_link_href(from_source, to_source)
-    from = page_output_path(from_source)
-    to = page_output_path(to_source)
-    to.relative_path_from(from.dirname).to_s
-  end
-
-  def page_output_path(source)
-    dir = source.dirname
-    return dir.parent.parent.join('lists', source.basename('.adoc').to_s + '.html') if listing_source?(dir)
-
-    source.sub_ext('.html')
-  end
-
-  def listing_source?(dir)
-    dir.basename.to_s == 'pages' && dir.parent.basename.to_s == 'generated'
+    to_source.sub_ext('.html').relative_path_from(from_source.dirname).to_s
   end
 
   def article_link_href(from_article, to_article)

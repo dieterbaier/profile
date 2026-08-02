@@ -71,7 +71,7 @@ class ProfileListingsTest < Minitest::Test
   end
 
   def page(root, name, dir: 'articles')
-    path = root + "#{dir}/generated/pages/#{name}.adoc"
+    path = root + "#{dir}/lists/#{name}.adoc"
     path.exist? ? path.read : ''
   end
 
@@ -287,8 +287,8 @@ class ProfileListingsTest < Minitest::Test
       validator.generate_article_lists(revalidated)
 
       # Then: the stale tag and skill pages are removed
-      refute_path_exists(root + 'articles/generated/pages/tag-legacy.adoc')
-      refute_path_exists(root + 'articles/generated/pages/skill-Legacy-Skill.adoc')
+      refute_path_exists(root + 'articles/lists/tag-legacy.adoc')
+      refute_path_exists(root + 'articles/lists/skill-Legacy-Skill.adoc')
     end
   end
 
@@ -366,8 +366,8 @@ class ProfileListingsTest < Minitest::Test
     with_multilingual_articles(BILINGUAL) do |root|
       # When: the article listings are generated (done by the helper)
       # Then: each language gets its own listing pages containing only its own articles
-      german = (root + 'site/articles/generated/pages/all.adoc').read
-      english = (root + 'site/en/articles/generated/pages/all.adoc').read
+      german = (root + 'site/articles/lists/all.adoc').read
+      english = (root + 'site/en/articles/lists/all.adoc').read
 
       assert_includes german, 'first.html'
       refute_includes german, 'second.html'
@@ -381,8 +381,8 @@ class ProfileListingsTest < Minitest::Test
     with_multilingual_articles(BILINGUAL) do |root|
       # When: the article listings are generated (done by the helper)
       # Then: their pages point back to the site root from their own depth
-      assert_includes (root + 'site/articles/generated/pages/all.adoc').read, ":basedir: ../..\n"
-      assert_includes (root + 'site/en/articles/generated/pages/all.adoc').read, ":basedir: ../../..\n"
+      assert_includes (root + 'site/articles/lists/all.adoc').read, ":basedir: ../..\n"
+      assert_includes (root + 'site/en/articles/lists/all.adoc').read, ":basedir: ../../..\n"
     end
   end
 
@@ -391,8 +391,8 @@ class ProfileListingsTest < Minitest::Test
     with_multilingual_articles(BILINGUAL) do |root|
       # When: the article listings are generated (done by the helper)
       # Then: each complete listing states that articles exist in the other language
-      german = (root + 'site/articles/generated/pages/all.adoc').read
-      english = (root + 'site/en/articles/generated/pages/all.adoc').read
+      german = (root + 'site/articles/lists/all.adoc').read
+      english = (root + 'site/en/articles/lists/all.adoc').read
 
       assert_includes german, 'article-list-languages'
       assert_includes german, 'auch Artikel auf English'
@@ -412,9 +412,9 @@ class ProfileListingsTest < Minitest::Test
     with_multilingual_articles(articles) do |root|
       # When: the article listings are generated (done by the helper)
       # Then: that tag listing states nothing about other languages
-      refute_includes (root + 'site/articles/generated/pages/tag-germanonly.adoc').read, 'article-list-languages'
+      refute_includes (root + 'site/articles/lists/tag-germanonly.adoc').read, 'article-list-languages'
       # The complete listing still does, because both languages publish articles.
-      assert_includes (root + 'site/articles/generated/pages/all.adoc').read, 'article-list-languages'
+      assert_includes (root + 'site/articles/lists/all.adoc').read, 'article-list-languages'
     end
   end
 end

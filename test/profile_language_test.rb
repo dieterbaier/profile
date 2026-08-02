@@ -496,8 +496,8 @@ class ProfileLanguageTest < Minitest::Test
     ) do |validator, root, artifacts|
       validator.generate_article_lists(artifacts)
 
-      german = (root + 'site/articles/generated/pages/all.adoc').read
-      english = (root + 'site/en/articles/generated/pages/all.adoc').read
+      german = (root + 'site/articles/lists/all.adoc').read
+      english = (root + 'site/en/articles/lists/all.adoc').read
 
       # Each listing is titled in its own language and lists only its own articles.
       assert_includes german, '= Alle Artikel'
@@ -509,8 +509,8 @@ class ProfileLanguageTest < Minitest::Test
       assert_includes english, '= All articles'
       assert_includes english, 'first.html'
 
-      assert_includes (root + 'site/en/articles/generated/pages/tag-architecture.adoc').read, '= Articles tagged: architecture'
-      assert_includes (root + 'site/articles/generated/pages/tag-architecture.adoc').read, '= Artikel mit dem Tag: architecture'
+      assert_includes (root + 'site/en/articles/lists/tag-architecture.adoc').read, '= Articles tagged: architecture'
+      assert_includes (root + 'site/articles/lists/tag-architecture.adoc').read, '= Artikel mit dem Tag: architecture'
     end
   end
 
