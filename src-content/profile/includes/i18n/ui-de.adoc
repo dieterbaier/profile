@@ -45,3 +45,4 @@
 :ui_article_list_back: Zurück zur Artikelübersicht
 :ui_article_list_show_all: Alle Artikel anzeigen
 :ui_article_list_recent: Die zuletzt veröffentlichten Artikel:
+:ui_article_list_other_languages: Diese Übersicht zeigt deutschsprachige Artikel. Es gibt auch Artikel auf %languages%.

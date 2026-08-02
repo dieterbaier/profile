@@ -77,3 +77,18 @@ Feature: Article listings
     Given published articles in a language below the site root
     When the article listings are generated
     Then their pages point back to the site root from their own depth
+
+  # A listing titled "all articles" promises a complete set but shows one
+  # language. The note says which other languages publish articles, without
+  # claiming how many: a count would be wrong as soon as the other language has
+  # fewer, and it would have to be right per language, per tag and per skill.
+
+  Scenario: Listing names the other languages that publish articles
+    Given published articles in two languages
+    When the article listings are generated
+    Then each complete listing states that articles exist in the other language
+
+  Scenario: A listing of a tag used by one language only names no other language
+    Given a tag used by articles in one language only
+    When the article listings are generated
+    Then that tag listing states nothing about other languages

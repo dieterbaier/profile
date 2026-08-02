@@ -166,6 +166,15 @@ class ProfileArtifactValidator
 
     by_language = all_articles.group_by { |article| artifact_language(article) }
 
+    @languages_with_articles = by_language.keys
+    @tag_languages = Hash.new { |hash, key| hash[key] = [] }
+    @skill_languages = Hash.new { |hash, key| hash[key] = [] }
+    by_language.each do |language, articles|
+      ordered = public_articles(articles)
+      tags_in_use(ordered).each { |tag| @tag_languages[tag] << language }
+      skills_in_use(ordered).each { |skill| @skill_languages[skill] << language }
+    end
+
     by_language.flat_map do |language, articles|
       generate_article_lists_for(articles, language)
     end
@@ -195,7 +204,8 @@ class ProfileArtifactValidator
 
     all_path = pages_dir.join('all.adoc')
     all_path.write(render_list_page(title: terms.fetch('ui_article_list_all'), articles: ordered,
-                                    output_dir: output_dir, articles_dir: articles_dir, language: language),
+                                    output_dir: output_dir, articles_dir: articles_dir, language: language,
+                                    other_languages: @languages_with_articles - [language]),
                    encoding: 'UTF-8')
     written << all_path
 
@@ -204,7 +214,8 @@ class ProfileArtifactValidator
       path = pages_dir.join("tag-#{tag}.adoc")
       title = "#{terms.fetch('ui_article_list_tag_prefix')} #{tag}"
       path.write(render_list_page(title: title, articles: tagged, output_dir: output_dir,
-                                  articles_dir: articles_dir, language: language),
+                                  articles_dir: articles_dir, language: language,
+                                  other_languages: @tag_languages[tag] - [language]),
                  encoding: 'UTF-8')
       written << path
     end
@@ -214,7 +225,8 @@ class ProfileArtifactValidator
       path = pages_dir.join("skill-#{skill}.adoc")
       title = "#{terms.fetch('ui_article_list_skill_prefix')} #{humanize_slug(skill)}"
       path.write(render_list_page(title: title, articles: skilled, output_dir: output_dir,
-                                  articles_dir: articles_dir, language: language),
+                                  articles_dir: articles_dir, language: language,
+                                  other_languages: @skill_languages[skill] - [language]),
                  encoding: 'UTF-8')
       written << path
     end
@@ -1390,9 +1402,25 @@ class ProfileArtifactValidator
      ''].join("\n")
   end
 
-  def render_list_page(title:, articles:, output_dir:, articles_dir:, language:)
-    body = ['<p class="article-list-back"><a href="../articles.html">&#8592; {ui_article_list_back}</a></p>',
-            article_list_html(articles, from_dir: output_dir, articles_dir: articles_dir, language: language)].join("\n")
+  # Names the other languages that publish articles for this listing. Deliberately
+  # without a count: a number would be a claim about how much is on the other side,
+  # and 'one further article' is already wrong when that language has fewer. Naming
+  # the languages stays true for any number of articles and any number of languages.
+  def other_languages_note(language, others, terms)
+    return '' if others.empty?
+
+    names = others.sort.map { |other| terms.fetch("ui_language_name_#{other}", other) }
+    sentence = terms.fetch('ui_article_list_other_languages', '').sub('%languages%', names.join(', '))
+    return '' if sentence.empty?
+
+    "<p class=\"article-list-languages\">#{h(sentence)}</p>"
+  end
+
+  def render_list_page(title:, articles:, output_dir:, articles_dir:, language:, other_languages: [])
+    body = [other_languages_note(language, other_languages, ui_terms_values(language)),
+            '<p class="article-list-back"><a href="../articles.html">&#8592; {ui_article_list_back}</a></p>',
+            article_list_html(articles, from_dir: output_dir, articles_dir: articles_dir, language: language)]
+           .reject(&:empty?).join("\n")
 
     ['// Generated article list page. Do not edit manually.',
      "= #{title}",

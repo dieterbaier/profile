@@ -321,11 +321,17 @@ class ProfileListingsTest < Minitest::Test
     Dir.mktmpdir('profile-list-language-test') do |dir|
       root = Pathname.new(dir)
       (root + 'includes/i18n').mkpath
-      %w[de en].each do |language|
+      {
+        'de' => 'Es gibt auch Artikel auf %languages%.',
+        'en' => 'There are also articles in %languages%.'
+      }.each do |language, note|
         (root + "includes/i18n/ui-#{language}.adoc").write(
           ":ui_article_list_all: All\n" \
           ":ui_article_list_tag_prefix: Tag:\n" \
-          ":ui_article_list_skill_prefix: Skill:\n"
+          ":ui_article_list_skill_prefix: Skill:\n" \
+          ":ui_language_name_de: Deutsch\n" \
+          ":ui_language_name_en: English\n" \
+          ":ui_article_list_other_languages: #{note}\n"
         )
       end
 
@@ -377,6 +383,38 @@ class ProfileListingsTest < Minitest::Test
       # Then: their pages point back to the site root from their own depth
       assert_includes (root + 'site/articles/generated/pages/all.adoc').read, ":basedir: ../..\n"
       assert_includes (root + 'site/en/articles/generated/pages/all.adoc').read, ":basedir: ../../..\n"
+    end
+  end
+
+  def test_listing_names_the_other_languages_that_publish_articles
+    # Given: published articles in two languages
+    with_multilingual_articles(BILINGUAL) do |root|
+      # When: the article listings are generated (done by the helper)
+      # Then: each complete listing states that articles exist in the other language
+      german = (root + 'site/articles/generated/pages/all.adoc').read
+      english = (root + 'site/en/articles/generated/pages/all.adoc').read
+
+      assert_includes german, 'article-list-languages'
+      assert_includes german, 'auch Artikel auf English'
+      assert_includes english, 'also articles in Deutsch'
+      # No count is claimed, so the sentence cannot go wrong when a language has fewer.
+      refute_match(/\b\d+\b/, german[/<p class="article-list-languages">[^<]*/])
+    end
+  end
+
+  def test_a_listing_of_a_tag_used_by_one_language_only_names_no_other_language
+    # Given: a tag used by articles in one language only
+    articles = [
+      { id: 'ART-001-de', slug: 'first', dir: 'site/articles', language: 'de', tags: %w[germanonly] },
+      { id: 'ART-002-en', slug: 'second', dir: 'site/en/articles', language: 'en', tags: %w[englishonly] }
+    ]
+
+    with_multilingual_articles(articles) do |root|
+      # When: the article listings are generated (done by the helper)
+      # Then: that tag listing states nothing about other languages
+      refute_includes (root + 'site/articles/generated/pages/tag-germanonly.adoc').read, 'article-list-languages'
+      # The complete listing still does, because both languages publish articles.
+      assert_includes (root + 'site/articles/generated/pages/all.adoc').read, 'article-list-languages'
     end
   end
 end
