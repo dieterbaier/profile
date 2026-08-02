@@ -50,3 +50,8 @@ bin/
 
 # JVM heap dumps, e.g. from an Asciidoctor build running out of memory
 *.hprof
+
+# Generated article listing pages. They live where they are published so the
+# site build renders them as ordinary sources, but they remain generated output.
+src-content/profile/site/**/articles/lists/
+src-content/profile/site/articles/lists/

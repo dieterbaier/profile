@@ -109,8 +109,8 @@ class ProfileLanguageAlternatesTest < Minitest::Test
       validator.generate_language_switchers(artifacts)
 
       # Then: the generated article listings of each language offer the switcher too
-      german = switcher(root, 'site/articles/generated/pages/generated/all-langswitch.adoc')
-      english = switcher(root, 'site/en/articles/generated/pages/generated/all-langswitch.adoc')
+      german = switcher(root, 'site/articles/lists/generated/all-langswitch.adoc')
+      english = switcher(root, 'site/en/articles/lists/generated/all-langswitch.adoc')
 
       assert_match(%r{<a href="\.\./\.\./en/articles/lists/all\.html"}, german)
       assert_match(%r{<a href="\.\./\.\./\.\./articles/lists/all\.html"}, english)
