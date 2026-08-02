@@ -31,5 +31,5 @@
 :ui_translation_outdated: The original article has changed since this translation was written.
 :ui_translation_divergent: This text deliberately differs in content from the original.
 :ui_language_switch_label: Choose language
-:ui_language_name_de: Deutsch
+:ui_language_name_de: German
 :ui_language_name_en: English
