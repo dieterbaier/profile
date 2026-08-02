@@ -252,27 +252,34 @@ class ProfileArtifactValidator
   def render_language_switcher(current, variants)
     ordered = variants.sort_by { |variant| artifact_language(variant) }
 
-    items = ordered.map do |variant|
+    entries = ordered.map do |variant|
       language = artifact_language(variant)
       flag = "{ui_language_flag_#{language}}"
       name = "{ui_language_name_#{language}}"
 
       if variant.equal?(current)
-        "        <li class=\"language-switch language-switch-current\">" \
-          "<span lang=\"#{language}\" title=\"#{name}\" aria-current=\"true\">#{flag}</span></li>"
+        "            <span class=\"language-switch-current\" lang=\"#{language}\" title=\"#{name}\" " \
+          "aria-current=\"true\">#{flag}</span>"
       else
         href = h(article_link_href(current, variant))
-        "        <li class=\"language-switch\">" \
-          "<a href=\"#{href}\" lang=\"#{language}\" hreflang=\"#{language}\" title=\"#{name}\" " \
-          "aria-label=\"#{name}\">#{flag}</a></li>"
+        "            <a href=\"#{href}\" lang=\"#{language}\" hreflang=\"#{language}\" title=\"#{name}\" " \
+          "aria-label=\"#{name}\">#{flag}</a>"
       end
     end
 
+    # One list item holding every language, rather than one item per language:
+    # the menu row sets a single gap for all its entries, so separate items could
+    # only be spaced apart by a negative margin that breaks whenever that gap
+    # changes between breakpoints.
+    #
     # Raw HTML without block delimiters: this file is included from inside the
     # menu's passthrough block, which already applies attribute substitution.
     # Splitting that block to include it as a block of its own would change the
     # whitespace of every rendered page.
-    [*items, ''].join("\n")
+    ['        <li class="language-switch">',
+     *entries,
+     '        </li>',
+     ''].join("\n")
   end
 
   def clean_generated_language_switchers

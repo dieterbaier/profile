@@ -702,7 +702,7 @@ footer p {
 .mainnav ul .language-switch {
     display: flex;
     align-items: center;
-    margin-right: -1.4rem;
+    gap: 0.5rem;
     font-size: 1.15rem;
     line-height: 1;
 }
@@ -722,7 +722,7 @@ footer p {
     border-bottom: 2px solid #3a7bd5;
 }
 
-.mainnav ul .language-switch-current span {
+.mainnav ul .language-switch .language-switch-current {
     filter: none;
     opacity: 1;
     cursor: default;
@@ -803,8 +803,16 @@ footer p {
     }
 
     .mainnav ul {
-        flex-direction: column;
         position: relative;
+    }
+
+    /* The top row stays on one line. It carries the language flags next to Home,
+       and the drawer list below has its own rule that stacks its entries. */
+    .mainnav > ul:first-child {
+        flex-direction: row;
+        align-items: center;
+        flex-wrap: nowrap;
+        gap: 1rem;
     }
 
     .mainnav {
