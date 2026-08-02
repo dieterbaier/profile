@@ -30,3 +30,6 @@
 :ui_translation_of: Das ist eine Übersetzung vom Originalartikel
 :ui_translation_outdated: Der Originalartikel wurde seit dieser Übersetzung geändert.
 :ui_translation_divergent: Dieser Text weicht inhaltlich bewusst vom Original ab.
+:ui_language_switch_label: Sprache wählen
+:ui_language_name_de: Deutsch
+:ui_language_name_en: English

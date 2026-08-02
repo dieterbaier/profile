@@ -37,6 +37,7 @@ endif::[]
 </div>
 <div class="nav-overlay"></div>
 </nav>
+include::{docfile}/../generated/{docname}-langswitch.adoc[opts=optional]
 
 <script type="text/javascript" src="{basedir}/stylesheet/navigation.js"></script>
 ++++
