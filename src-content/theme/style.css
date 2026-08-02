@@ -728,6 +728,18 @@ footer p {
     cursor: default;
 }
 
+/* Shown above a listing that promises a complete set, when other languages
+   publish articles for it too. A statement, not a control: the language
+   switcher in the menu stays the only way to change language. */
+.article-list-languages {
+    margin: 0 0 1.5rem;
+    padding: 0.6rem 0.9rem;
+    background: var(--bg-surface);
+    border-left: 3px solid var(--box-border-strong);
+    color: var(--text-color-subtle);
+    font-size: 0.95rem;
+}
+
 .cvcontactlanguage {
     margin-top: 1rem;
     display: flex;
