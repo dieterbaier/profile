@@ -696,6 +696,38 @@ footer p {
     border-bottom: 2px solid #3a7bd5;
 }
 
+/* Language switcher: flags sit ahead of the first menu entry. They carry the
+   language name on title/aria-label, because a flag names a country, not a
+   language, and is no accessible name on its own. */
+.mainnav ul .language-switch {
+    display: flex;
+    align-items: center;
+    margin-right: -1.4rem;
+    font-size: 1.15rem;
+    line-height: 1;
+}
+
+.mainnav ul .language-switch a,
+.mainnav ul .language-switch span {
+    padding: 0.4rem 0;
+    border-bottom: 2px solid transparent;
+    filter: grayscale(0.55);
+    opacity: 0.75;
+    transition: all 0.2s ease;
+}
+
+.mainnav ul .language-switch a:hover {
+    filter: none;
+    opacity: 1;
+    border-bottom: 2px solid #3a7bd5;
+}
+
+.mainnav ul .language-switch-current span {
+    filter: none;
+    opacity: 1;
+    cursor: default;
+}
+
 .cvcontactlanguage {
     margin-top: 1rem;
     display: flex;

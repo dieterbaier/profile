@@ -40,3 +40,5 @@
 :ui_cv_nav_projects: Projekte
 :ui_cv_nav_education: Weiterbildung
 :ui_author_prefix: Autor:
+:ui_language_flag_de: 🇦🇹
+:ui_language_flag_en: 🇬🇧

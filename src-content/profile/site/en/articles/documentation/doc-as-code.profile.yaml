@@ -1,0 +1,27 @@
+  id: ART-003-doc-as-code-en
+  type: Article
+  title: "Documentation as Code"
+  status: published
+  owner: "Dieter Baier"
+  created: '2026-08-02'
+  published: '2026-08-02'
+  reviewed: false
+  generated: false
+  language: en
+  translation_of: ART-003-doc-as-code
+  translation_source_digest: bb768910d2861c86a95a7311ec5ad75e265079e095aa181718c334a1a0fead62
+  audience:
+    - employers
+    - clients
+    - technical-community
+  channels:
+    - website
+  summary: "Article explaining Docs-as-Code as a documentation discipline."
+  summary_en: "What Docs-as-Code means as a documentation discipline, and why documentation should be maintained, versioned and generated like source code."
+  source: src-content/profile/site/en/articles/documentation/doc-as-code.adoc
+  tags:
+    - docs-as-code
+  skills:
+    - Docs-as-Code
+  relations: []
+  metadata_version: '1.0'
