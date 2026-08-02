@@ -25,6 +25,10 @@ description: Maintain profile artifact metadata, indexes, and validation for pro
 - Do not invent project facts, employment facts, dates, URLs, or publication
   channels.
 - Keep generated files under `src-content/profile/generated/` reproducible.
+- Generated output also lives outside `**/generated/`: the standalone article
+  listing pages under `src-content/profile/site/**/articles/lists/` are written
+  where they are published so the site build renders them as ordinary sources.
+  They are Git-ignored and regenerated; do not edit them by hand.
 - Prefer adding relations only when the target artifact ID is known.
 
 ## Outputs

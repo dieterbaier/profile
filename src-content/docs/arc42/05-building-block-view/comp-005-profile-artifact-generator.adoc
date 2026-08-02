@@ -54,7 +54,8 @@ It does not own:
 | Input | validated profile artifacts under `src-content/profile`
 | Output | generated profile artifact index
 | Output | per-article navigation includes next to each article
-| Output | article listing fragment and overview pages under the articles `generated/lists` and `generated/pages` directories
+| Output | article listing fragment under the articles `generated/lists` directory
+| Output | standalone article listing pages under the articles `lists` directory, written where they are published so the site build renders them as ordinary sources
 |===
 
 === Implementation

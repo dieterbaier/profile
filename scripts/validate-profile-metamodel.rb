@@ -149,11 +149,17 @@ class ProfileArtifactValidator
 
   # Generates the article listings from metadata: a "recent" include fragment
   # (RECENT_LIMIT newest public articles) plus standalone overview pages for all
-  # articles, each tag, and each skill. Fragments live under
-  # <articles-dir>/generated/lists and standalone pages under
-  # <articles-dir>/generated/pages. Standalone pages are authored for the output
-  # location <articles-dir>/lists, so their links resolve once the dedicated
-  # Asciidoctor task renders that directory into the site. Returns written paths.
+  # articles, each tag, and each skill.
+  #
+  # The fragment lives under <articles-dir>/generated/lists, because it is an
+  # include. The standalone pages live under <articles-dir>/lists - generated
+  # output outside a 'generated/' directory, which is deliberate: they are
+  # written where they are published, so the ordinary site build renders them.
+  # A dedicated Asciidoctor task pointed at a directory that only appeared while
+  # the build was running, and whether it saw that directory depended on the
+  # environment. The location is Git-ignored like every other generated file.
+  #
+  # Returns written paths.
   # One listing set per language, built only from that language's articles: a
   # reader browsing the English listings should not be handed German articles.
   #

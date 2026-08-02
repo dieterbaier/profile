@@ -48,8 +48,12 @@ as project entries.
 - Stable IDs are preserved after creation.
 - Generated files under `**/generated/` are not edited manually, including the
   per-article navigation includes written to a `generated/` directory next to
-  each article and the article listings written under the articles
-  `generated/lists` and `generated/pages` directories.
+  each article and the `recent.adoc` listing fragment under the articles
+  `generated/lists` directory.
+- The standalone article listing pages under the articles `lists/` directory are
+  generated too, even though they sit outside `**/generated/`. They are written
+  where they are published so the site build renders them as ordinary sources.
+  They are Git-ignored and must not be edited by hand.
 - Public-channel assumptions are explicit when they are not known.
 - Prefer meaningful, discriminating tags. Ubiquitous tags (for example `profile`)
   carry no relatedness signal and trigger a validator warning.
