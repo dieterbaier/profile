@@ -64,23 +64,14 @@ Feature: Article listings
     Then both generations produce identical listing files
 
   # Language variants of the listings. A reader who arrives on an English page
-  # and opens the article list should get English articles, and should be able to
-  # reach the other languages from there.
+  # and opens the article list gets English articles. Switching language is not
+  # part of the listing itself - it is the one language switcher in the page
+  # chrome, specified in features/language-alternates.feature.
 
   Scenario: Article listings are built per language
     Given published articles in two languages
     When the article listings are generated
     Then each language gets its own listing pages containing only its own articles
-
-  Scenario: Listing offers the same listing in the other languages
-    Given published articles in two languages
-    When the article listings are generated
-    Then each listing page links to the same listing in the other language and marks its own
-
-  Scenario: A language is only offered for a tag it actually uses
-    Given a tag used by articles in one language only
-    When the article listings are generated
-    Then that tag page offers no link to the language without such articles
 
   Scenario: Listing pages of a language subtree resolve their assets
     Given published articles in a language below the site root

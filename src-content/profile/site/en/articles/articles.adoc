@@ -10,8 +10,6 @@ endif::[]
 :active: articles
 include::{includesdir}/docheader.adoc[]
 
-include::{docfile}/../generated/lists/languages.adoc[opts=optional]
-
 [.article-list-intro]
 {ui_article_list_recent}
 
