@@ -134,7 +134,7 @@ test('searches beyond the GitHub result limit remain retryable', async () => {
     assert.equal(button.hidden, false);
 });
 
-test('status wording follows the page language instead of the script', async () => {
+test('comment wording follows the page language', async () => {
     // Given: a page that supplies English interface terms
     const fetch = async () => ({
         ok: true,

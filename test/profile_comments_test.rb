@@ -68,7 +68,7 @@ class ProfileCommentsTest < Minitest::Test
   # The script must stay free of wording so a translated page can supply its own.
   # The block therefore carries the status strings as attribute references, which
   # the page resolves against its interface terms.
-  def test_comment_status_wording_comes_from_the_page_not_the_script
+  def test_comment_wording_follows_the_page_language
     with_article do |validator, artifacts, root|
       validator.generate_article_comment_includes(artifacts)
       generated = (root + 'articles/generated/example-comments.adoc').read

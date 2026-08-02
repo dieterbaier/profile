@@ -58,7 +58,7 @@ class SiteMetadataInjectorTest < Minitest::Test
   # The default language stays at the site root while every other language lives
   # in its own subtree, so a language variant must keep its prefix in the
   # canonical URL instead of collapsing onto the German page.
-  def test_language_subtree_pages_keep_their_language_prefix
+  def test_language_subtree_pages_keep_their_language_prefix_in_the_canonical_url
     with_site(%w[index.html en/index.html en/articles/example.html]) do |site|
       injector = SiteMetadataInjector.new(site_dir: site, base_url: 'https://example.test')
 

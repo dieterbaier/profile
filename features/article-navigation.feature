@@ -86,3 +86,23 @@ Feature: Article navigation
     Given a set of articles with tags and series links
     When the article navigation is generated twice
     Then both generations produce identical navigation files
+
+  # Recommendations across languages. A suggestion is resolved to the reader's
+  # language where that variant exists; one that exists only in the default
+  # language is still offered rather than dropped, and says where it leads.
+
+  Scenario: A recommendation is resolved to the language of the reader
+    Given an article recommended in two languages and a reader on an English article
+    When the article navigation is generated
+    Then the English variant is recommended without a language marker
+
+  Scenario: A recommendation available in one language only names that language
+    Given an article that exists in the default language only
+    When the article navigation is generated
+    Then it is still recommended and marked with the language it leads to
+
+  Scenario: An article is not recommended as related to its own translation
+    Given an article and its translation, which share their tags
+    When the article navigation is generated
+    Then neither variant recommends the other
+
