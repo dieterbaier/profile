@@ -16,13 +16,8 @@ It is not architecture documentation. Decisions live in
 is the reasoning that did not fit in an ADR and the mistakes an ADR has no place
 to record.
 
-This skill owns **what an entry contains and where it goes**.
-
-How it *reads* is owned by a `language-profile` skill in the project this was
-taken from, profile 5 "Never revised". That skill is not in this repository yet.
-Until it is, the register rules that matter here are in `Lifecycle` below: a
-closed entry records what we believed at the time, so it is neither softened nor
-mocked in hindsight.
+This skill owns **what an entry contains and where it goes**. How it *reads* is
+`skills/language-profile/SKILL.md`, profile 5 — read it before writing.
 
 ## What belongs here, and what does not
 
@@ -62,8 +57,8 @@ only.**
 - Changing a past claim, softening a past error, or deleting an entry is
   forbidden. That becomes a new entry, which may say the earlier one was wrong.
 
-This section is the rule itself. Once a `language-profile` skill exists here, the
-register consequences belong there and must not be restated in both places.
+The register consequences of this rule are in `language-profile` profile 5. This
+section is the rule itself; do not restate it there.
 
 ## The four cross-cutting documents
 

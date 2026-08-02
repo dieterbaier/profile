@@ -53,10 +53,11 @@ statt in einem Kommentar *in* den Dateien — dort wäre sie selbst der Auslöse
 
 === Eine Entscheidung, die eine Mechanik überflüssig machte
 
-Der ADR sah zunächst vor, dass Fragmente auf Deutsch zurückfallen und der
-Fallback sichtbar markiert wird. Beim Review verwarf der Owner das: ein
-deutscher Absatz mitten in einem englischen Artikel sei für den Leser
-unbrauchbar, der Build solle abbrechen.
+Ich hatte im ADR vorgesehen, dass Fragmente auf Deutsch zurückfallen und der
+Fallback sichtbar markiert wird — analog zu den Verweisen, wo genau das
+funktioniert. Beim Review verwarf der Owner es: ein deutscher Absatz mitten in
+einem englischen Artikel sei für den Leser unbrauchbar, der Build solle
+abbrechen.
 
 Das kollidierte mit der früheren Festlegung und war die stärkere Regel. Die
 Auflösung ergab eine Leitlinie, die den Rest des Epics getragen hat:
@@ -70,10 +71,10 @@ Seitensprache, oder der Build stoppt. Validierung statt Generierung.
 
 === Eine Aussage, die nicht generierbar war
 
-Für die Artikellisten war ein Hinweis geplant: „Auf Englisch ist 1 weiterer
-Artikel verfügbar." Der Owner hielt dagegen, dass „weiterer" falsch wird, sobald
-die andere Sprache *weniger* Artikel hat — und dass die Aussage pro Sprache, pro
-Tag und pro Skill korrekt sein müsste.
+Ich hatte für die Artikellisten einen Hinweis vorgeschlagen: „Auf Englisch ist
+1 weiterer Artikel verfügbar." Der Owner hielt dagegen, dass „weiterer" falsch
+wird, sobald die andere Sprache *weniger* Artikel hat — und dass die Aussage pro
+Sprache, pro Tag und pro Skill korrekt sein müsste.
 
 Die Konsequenz war keine zusätzliche Logik, sondern eine Formulierung ohne
 Mengenaussage: welche Sprachen publizieren, nicht wie viel. Das bleibt bei jeder
@@ -87,13 +88,13 @@ Rest von `/en/` erreichbar war. Das Build-Log der deployenden Ausführung zeigte
 `> Task :buildArticleListPagesEn NO-SOURCE`, obwohl der Generator 50 Sekunden
 vorher im selben Lauf `Generated 11 article list file(s)` gemeldet hatte.
 
-Lokal war es nicht reproduzierbar: sauberer Baum, dieselbe Task-Kombination wie
-CI, ohne Daemon nach `--stop` — jedes Mal grün. Im Container schon; dort liefen
-die beiden Tasks sogar in umgekehrter Reihenfolge.
+Wir konnten es lokal nicht reproduzieren: sauberer Baum, dieselbe
+Task-Kombination wie CI, ohne Daemon nach `--stop` — jedes Mal grün. Im
+Container schon; dort liefen die beiden Tasks sogar in umgekehrter Reihenfolge.
 
 Die Konstruktion hing daran, dass eine Asciidoctor-Task auf ein Verzeichnis
 zeigt, das erst während des Builds entsteht. Statt die Instanz weiter zu jagen,
-wurde die Fehlerklasse entfernt: Listenseiten werden jetzt dort erzeugt, wo sie
+entfernten wir die Fehlerklasse: Listenseiten werden jetzt dort erzeugt, wo sie
 veröffentlicht werden, und der normale Site-Build rendert sie als gewöhnliche
 Quellen. 67 Zeilen Build-Logik fielen weg, dazu eine doppelte
 Canonical-Injektion und ein Streuverzeichnis im Output.
@@ -105,14 +106,35 @@ berührte. Das ist #74.
 
 === Was der BDD-Default gekostet hat, weil er ausgesetzt wurde
 
-Ab #49 entstanden Szenarien nicht mehr mit, obwohl der Toolkit-Skill sie als
-strikten Default für beobachtbares Verhalten vorschreibt. Am deutlichsten bei
+Ab #49 schrieb ich die Szenarien nicht mehr mit, obwohl der Toolkit-Skill sie
+als strikten Default für beobachtbares Verhalten vorschreibt. Am deutlichsten bei
 #53: dessen Verifikationsabschnitt forderte wörtlich die Erweiterung von drei
 Feature-Dateien — geschrieben beim Slicing, umgesetzt beim Implementieren nicht.
 
-Aufgefallen ist es nicht beim Arbeiten, sondern durch die Frage des Owners, ob
-das Absicht sei. Der Nachzug in #65 kostete einen eigenen Slice und brachte drei
-Dinge ans Licht, die beim Mitschreiben nicht entstanden wären: ein Test, der
+Aufgefallen ist es mir nicht beim Arbeiten, sondern durch die Frage des Owners,
+ob das Absicht sei. Der Nachzug in #65 kostete einen eigenen Slice und brachte
+drei Dinge ans Licht, die beim Mitschreiben nicht entstanden wären: ein Test, der
 zwei Szenarien gleichzeitig abdeckte, drei Szenariotitel, die unpräziser waren
 als ihre Tests, und ein Kopfkommentar, der behauptete, in dieser Datei sei kein
 Feature gebrückt — was seit #51 nicht mehr stimmte.
+
+=== Drei Skills aus einem anderen Projekt geholt
+
+Zum Tagesabschluss übernahmen wir `clock-in`, `clock-out` und `diary` aus dem
+Budget-Projekt, damit eine Sitzung übergeben werden kann, ohne sich auf
+Erinnerung zu stützen. Sie sollen später ins architecture-knowledge-toolkit
+wandern; bis dahin liegen sie lokal.
+
+Beim Portieren zeigte sich, dass `diary` an einem vierten Skill hängt:
+`language-profile`, Profil 5, entscheidet, wie ein Eintrag *klingt*. Ein
+Verweis darauf ins Leere hätte die Lücke unsichtbar gemacht, also stand sie
+zuerst benannt im Skill — und wurde im selben Zug geschlossen, als der Owner
+den vierten Skill nachzog.
+
+Die Portierung war keine Kopie. Das Budget-Projekt schreibt sein
+`language-profile` gegen ADR-022 und ADR-023, die es hier nicht gibt, und
+gegen Beispiele aus seiner eigenen Domäne. Übertragbar war der *Mechanismus* —
+Register danach wählen, was der Lebenszyklus mit einem Text tut, wenn er sich
+als falsch erweist. Die Profiltabelle selbst mussten wir neu füllen. Das ist
+zugleich die erste Evidenz, dass der Mechanismus reist und die Profile nicht;
+im Skill steht es als Bedingung dafür, wann er stromaufwärts gehört.

@@ -52,3 +52,12 @@ der Prosa des Context-Abschnitts tragen.
 Entweder das Schema zieht nach, oder der Skill sollte sagen, dass `derived_from`
 optional ist und ein Projekt es weglassen darf. Aktuell widersprechen sich
 Template und Schema stillschweigend.
+
+*Stromaufwärts noch nicht erfasst.* Wir vermuteten, der Befund existiere bereits
+aus einem anderen Projekt, und durchsuchten die Issues des Toolkits nach
+`derived_from` und `schema`: kein Treffer, der ihn beschreibt. Das nächstgelegene
+ist docs-as-code-toolkit#48 „Replace partial artifact metadata validation with
+full JSON Schema validation" — das betrifft die *Tiefe* der Validierung, nicht
+den Widerspruch zwischen Template und Schema. Ein Feld, das das Schema gar nicht
+kennt, wird auch von vollständiger Schema-Validierung nicht erlaubt; #48 löst
+diesen Punkt also nicht mit. Das Issue ist anzulegen.

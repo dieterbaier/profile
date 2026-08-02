@@ -52,7 +52,7 @@ A session does not end tidily just because it stopped.
 
 **3. Write the diary entry.** Follow `skills/diary/SKILL.md` — it owns what the
 entry contains, where it goes, and which of the cross-cutting documents must grow
-today.
+today. `skills/language-profile/SKILL.md` profile 5 owns how it reads.
 
 Write it from the commit history, the issues and the pull requests. At clock-out
 the day is fresh, which is exactly when memory feels reliable enough to skip the
