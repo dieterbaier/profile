@@ -3,10 +3,10 @@
 <nav id="appendixnav" class="subnav noborder" data-active="{active}">
     <ul>
         <li>
-            <a data-nav="projects" href="{basedir}/projects.html">Projekte</a>
+            <a data-nav="projects" href="{url_projects}">{ui_cv_nav_projects}{url_projects_marker}</a>
         </li>
         <li>
-            <a data-nav="education" href="{basedir}/education.html">Weiterbildung</a>
+            <a data-nav="education" href="{url_education}">{ui_cv_nav_education}{url_education_marker}</a>
         </li>
     </ul>
 </nav>

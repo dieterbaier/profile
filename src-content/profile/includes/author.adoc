@@ -1,1 +1,1 @@
-Autor: xref:{basedir}/index.adoc[Dieter Baier]
+{ui_author_prefix} link:{url_index}[Dieter Baier{url_index_marker}]

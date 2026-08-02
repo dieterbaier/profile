@@ -435,6 +435,19 @@ tasks.register('testProfileLanguage') {
     }
 }
 
+tasks.register('testProfileCvLanguage') {
+    description = 'Runs the multilingual CV behaviour tests.'
+    group = 'verification'
+    inputs.files('scripts/validate-profile-metamodel.rb', 'test/profile_cv_language_test.rb')
+    inputs.files('features/multilingual-cv.feature')
+
+    doLast {
+        exec {
+            commandLine 'ruby', '-Itest', 'test/profile_cv_language_test.rb'
+        }
+    }
+}
+
 tasks.register('testProfileLanguageAlternates') {
     description = 'Runs the language switcher and alternate-link behaviour tests.'
     group = 'verification'
@@ -576,6 +589,15 @@ asciidoctorBase('buildCVPersonal','','src-content/profile/cv', 'build/cv', ['cv.
 ])
 asciidoctorBase('buildCVSite','','src-content/profile/cv', 'build/site', [],true) // HTML
 asciidoctorBase('buildCVDownload','buildCVSite','src-content/profile/cv', 'build/site', ['cv.adoc'],false, 'pdf') // PDF download
+// The HTML task above already renders every language, because it filters no
+// sources and the plugin preserves the relative path. Only the downloadable PDF
+// is selected per file, so each additional CV language needs its own task. The
+// check uses the committed source tree, so it also holds on a clean checkout.
+['en'].findAll { file("src-content/profile/cv/${it}/cv.adoc").isFile() }.each { language ->
+    def taskName = "buildCVDownload${language.capitalize()}"
+    asciidoctorBase(taskName, 'buildCVSite', 'src-content/profile/cv', 'build/site', ["${language}/cv.adoc"], false, 'pdf')
+    tasks.named('buildSite') { dependsOn tasks.named(taskName) }
+}
 // Website
 asciidoctorBase('buildSite','buildCVDownload','src-content/profile/site', 'build/site', [],false, "html5",[
                                                                         'site-address-name': env('SITE_ADDRESS_NAME') ?: '.',

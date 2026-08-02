@@ -1,6 +1,7 @@
-:subtitle: Software Architekt
+include::./i18n/cascade.adoc[]
+:subtitle: {ui_cv_subtitle}
 ifeval::["{backend}" == "pdf"]
-:subtitle: {subtitle} - Curriculum Vitae
+:subtitle: {subtitle} - {ui_cv_document_kind}
 endif::[]
 = Dieter Baier
 {subtitle}
@@ -39,7 +40,7 @@ ifdef::buildsite[]
 <nav class="subnav noborder">
     <ul>
         <li>
-            <a class="fingerPointsTo" href="{basedir}/cv.pdf" target="_blank">Download CV</a>
+            <a class="fingerPointsTo" href="{url_cv_pdf}" target="_blank">{ui_cv_download}</a>
         </li>
     </ul>
 </nav>

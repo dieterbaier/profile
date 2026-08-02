@@ -2,6 +2,6 @@ ifeval::["{backend}" == "html5"]
 ifeval::["{type}" == "cv"]
 [.new-section]
 endif::[]
-== Appendix
+== {ui_cv_appendix}
 include::./cvappendixnav.adoc[]
 endif::[]
