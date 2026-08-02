@@ -22,6 +22,11 @@ Feature: Language alternates
     When the language switchers are generated
     Then each variant offers a link to the other and marks its own language as current
 
+  Scenario: Generated listing pages offer the switcher as well
+    Given published articles in two languages
+    When the language switchers are generated
+    Then the generated article listings of each language offer the switcher too
+
   Scenario: Page without a translation offers no language switcher
     Given a page that exists in the default language only
     When the language switchers are generated

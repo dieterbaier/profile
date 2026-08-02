@@ -77,6 +77,46 @@ class ProfileLanguageAlternatesTest < Minitest::Test
     end
   end
 
+  # The listings are generated pages without metadata. Basing the switcher on
+  # artifacts left exactly those pages without one, which is what made a second,
+  # differently shaped switcher look necessary in the first place.
+  def test_generated_listing_pages_offer_the_switcher_as_well
+    # Given: published articles in two languages
+    Dir.mktmpdir('profile-alternates-listing-test') do |dir|
+      root = Pathname.new(dir)
+      (root + 'includes/i18n').mkpath
+      %w[de en].each do |language|
+        (root + "includes/i18n/ui-#{language}.adoc").write(
+          ":ui_article_list_all: All\n:ui_article_list_tag_prefix: Tag:\n:ui_article_list_skill_prefix: Skill:\n"
+        )
+      end
+
+      [['ART-001-de', 'site/articles', 'de'], ['ART-002-en', 'site/en/articles', 'en']].each do |id, rel_dir, language|
+        (root + rel_dir).mkpath
+        source = "#{rel_dir}/entry.adoc"
+        (root + source).write("= entry\n")
+        (root + "#{rel_dir}/entry.profile.yaml").write({
+          'id' => id, 'type' => 'Article', 'title' => id, 'status' => 'published', 'owner' => 'Test Owner',
+          'created' => '2026-01-01', 'language' => language, 'source' => source
+        }.to_yaml)
+      end
+
+      validator = ProfileArtifactValidator.new(root: root, profile_dir: root)
+      artifacts = validator.validate
+      validator.generate_article_lists(artifacts)
+
+      # When: the language switchers are generated
+      validator.generate_language_switchers(artifacts)
+
+      # Then: the generated article listings of each language offer the switcher too
+      german = switcher(root, 'site/articles/generated/pages/generated/all-langswitch.adoc')
+      english = switcher(root, 'site/en/articles/generated/pages/generated/all-langswitch.adoc')
+
+      assert_match(%r{<a href="\.\./\.\./en/articles/lists/all\.html"}, german)
+      assert_match(%r{<a href="\.\./\.\./\.\./articles/lists/all\.html"}, english)
+    end
+  end
+
   def test_page_without_a_translation_offers_no_language_switcher
     # Given: a page that exists in the default language only
     with_pages([{ id: 'PAGE-001-index', slug: 'index', dir: 'site', language: 'de' }]) do |validator, artifacts, root|

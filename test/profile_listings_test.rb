@@ -370,37 +370,6 @@ class ProfileListingsTest < Minitest::Test
     end
   end
 
-  def test_listing_offers_the_same_listing_in_the_other_languages
-    # Given: published articles in two languages
-    with_multilingual_articles(BILINGUAL) do |root|
-      # When: the article listings are generated (done by the helper)
-      # Then: each listing page links to the same listing in the other language
-      german = (root + 'site/articles/generated/pages/all.adoc').read
-      english = (root + 'site/en/articles/generated/pages/all.adoc').read
-
-      assert_includes german, '<li><a href="{basedir}/en/articles/lists/all.html">{ui_articles_in_en}</a></li>'
-      assert_includes german, '{ui_articles_in_de}</span>'
-      assert_includes english, '<li><a href="{basedir}/articles/lists/all.html">{ui_articles_in_de}</a></li>'
-      assert_includes english, '{ui_articles_in_en}</span>'
-    end
-  end
-
-  def test_a_language_is_only_offered_for_a_tag_it_actually_uses
-    # Given: a tag used by articles in one language only
-    articles = [
-      { id: 'ART-001-de', slug: 'first', dir: 'site/articles', language: 'de', tags: %w[germanonly] },
-      { id: 'ART-002-en', slug: 'second', dir: 'site/en/articles', language: 'en', tags: %w[englishonly] }
-    ]
-
-    with_multilingual_articles(articles) do |root|
-      # When: the article listings are generated (done by the helper)
-      # Then: that tag page offers no link to the language without such articles
-      german_tag = (root + 'site/articles/generated/pages/tag-germanonly.adoc').read
-      refute_includes german_tag, '{ui_articles_in_en}'
-      refute_includes german_tag, 'language-nav'
-    end
-  end
-
   def test_listing_pages_of_a_language_subtree_resolve_their_assets
     # Given: published articles in a language below the site root
     with_multilingual_articles(BILINGUAL) do |root|

@@ -166,62 +166,12 @@ class ProfileArtifactValidator
 
     by_language = all_articles.group_by { |article| artifact_language(article) }
 
-    # Every language that has articles, with the site-root-relative location of
-    # its article directory. Listing pages use it to offer the same listing in
-    # the other languages, so a reader is not stuck in the language they landed in.
-    language_roots = by_language.filter_map do |language, articles|
-      dir = articles_base_dir(articles)
-      relative = dir && site_relative_dir(dir)
-      [language, relative.to_s] if relative
-    end.to_h
-
-    @tag_languages = Hash.new { |hash, key| hash[key] = [] }
-    @skill_languages = Hash.new { |hash, key| hash[key] = [] }
-    by_language.each do |language, articles|
-      ordered = public_articles(articles)
-      tags_in_use(ordered).each { |tag| @tag_languages[tag] << language }
-      skills_in_use(ordered).each { |skill| @skill_languages[skill] << language }
-    end
-
     by_language.flat_map do |language, articles|
-      generate_article_lists_for(articles, language, language_roots)
+      generate_article_lists_for(articles, language)
     end
   end
 
-  # Sub-navigation offering the same listing in every language that has articles.
-  # Hrefs are {basedir}-relative, so one fragment works from the landing page and
-  # from the listing pages alike, which sit at different depths.
-  def render_language_nav(current_language, language_roots, page)
-    return '' if language_roots.length < 2
-
-    items = language_roots.keys.sort.map do |language|
-      label = "{ui_articles_in_#{language}}"
-      if language == current_language
-        "        <li><span class=\"language-nav-current\" aria-current=\"true\">#{label}</span></li>"
-      else
-        href = ['{basedir}', language_roots[language], page].reject(&:empty?).join('/')
-        "        <li><a href=\"#{href}\">#{label}</a></li>"
-      end
-    end
-
-    ['<nav class="subnav noborder language-nav" aria-label="{ui_article_list_languages}">',
-     '    <ul>',
-     *items,
-     '    </ul>',
-     '</nav>'].join("\n")
-  end
-
-  # Languages whose public articles use a given tag or skill. A language is only
-  # offered for a tag page it actually has articles for.
-  def tag_languages(tag)
-    @tag_languages.fetch(tag, [])
-  end
-
-  def skill_languages(skill)
-    @skill_languages.fetch(skill, [])
-  end
-
-  def generate_article_lists_for(articles, language, language_roots = {})
+  def generate_article_lists_for(articles, language)
     articles_dir = articles_base_dir(articles)
     return [] if articles_dir.nil?
 
@@ -239,26 +189,13 @@ class ProfileArtifactValidator
     ordered = sort_articles(public_articles(articles))
     written = []
 
-    # Language sub-navigation for the authored article landing page, which sits
-    # at a different depth than the generated listing pages and therefore cannot
-    # share their embedded copy.
-    languages_path = lists_dir.join('languages.adoc')
-    landing_nav = render_language_nav(language, language_roots, 'articles.html')
-    languages_path.write(
-      landing_nav.empty? ? '' : ['// Generated language navigation. Do not edit manually.',
-                                 '[subs="attributes"]', '++++', landing_nav, '++++', ''].join("\n"),
-      encoding: 'UTF-8'
-    )
-    written << languages_path
-
     recent_path = lists_dir.join('recent.adoc')
     recent_path.write(render_list_fragment(ordered.first(RECENT_LIMIT), from_dir: articles_dir, language: language), encoding: 'UTF-8')
     written << recent_path
 
     all_path = pages_dir.join('all.adoc')
-    all_path.write(render_list_page(title: terms.fetch('ui_article_list_all'), articles: ordered, output_dir: output_dir,
-                                    articles_dir: articles_dir, language: language,
-                                    language_nav: render_language_nav(language, language_roots, 'lists/all.html')),
+    all_path.write(render_list_page(title: terms.fetch('ui_article_list_all'), articles: ordered,
+                                    output_dir: output_dir, articles_dir: articles_dir, language: language),
                    encoding: 'UTF-8')
     written << all_path
 
@@ -266,12 +203,8 @@ class ProfileArtifactValidator
       tagged = ordered.select { |article| Array(article.metadata['tags']).include?(tag) }
       path = pages_dir.join("tag-#{tag}.adoc")
       title = "#{terms.fetch('ui_article_list_tag_prefix')} #{tag}"
-      # Only languages that actually use this tag are offered; linking a language
-      # to a tag page it has no articles for would lead to a page that is not there.
-      tag_roots = language_roots.select { |other, _| other == language || tag_languages(tag).include?(other) }
       path.write(render_list_page(title: title, articles: tagged, output_dir: output_dir,
-                                  articles_dir: articles_dir, language: language,
-                                  language_nav: render_language_nav(language, tag_roots, "lists/tag-#{tag}.html")),
+                                  articles_dir: articles_dir, language: language),
                  encoding: 'UTF-8')
       written << path
     end
@@ -280,10 +213,8 @@ class ProfileArtifactValidator
       skilled = ordered.select { |article| Array(article.metadata['skills']).include?(skill) }
       path = pages_dir.join("skill-#{skill}.adoc")
       title = "#{terms.fetch('ui_article_list_skill_prefix')} #{humanize_slug(skill)}"
-      skill_roots = language_roots.select { |other, _| other == language || skill_languages(skill).include?(other) }
       path.write(render_list_page(title: title, articles: skilled, output_dir: output_dir,
-                                  articles_dir: articles_dir, language: language,
-                                  language_nav: render_language_nav(language, skill_roots, "lists/skill-#{skill}.html")),
+                                  articles_dir: articles_dir, language: language),
                  encoding: 'UTF-8')
       written << path
     end
@@ -295,20 +226,62 @@ class ProfileArtifactValidator
   # really exists in more than one language. A page that merely falls back to the
   # default language is not offered as a variant: that would promise a
   # translation nobody wrote.
-  def generate_language_switchers(artifacts)
+  # Derived from the page tree rather than from metadata: the article overview
+  # and the generated listings are real pages a reader can land on, but they carry
+  # no sidecar. Basing the switcher on artifacts left exactly those pages without
+  # one, which is what made a second, differently shaped switcher look necessary.
+  def generate_language_switchers(_artifacts = nil)
     clean_generated_language_switchers
 
-    groups = translation_groups(artifacts)
+    (page_language_groups.values + listing_language_groups.values)
+      .select { |variants| variants.length > 1 }
+      .flat_map { |variants| write_language_switchers(variants) }
+  end
 
-    groups.values.select { |variants| variants.length > 1 }.flat_map do |variants|
-      variants.map do |variant|
-        dir = article_source_path(variant).dirname.join('generated')
-        FileUtils.mkdir_p(dir)
-        path = dir.join("#{article_slug(variant)}-langswitch.adoc")
-        path.write(render_language_switcher(variant, variants), encoding: 'UTF-8')
-        path
+  # One switcher per variant, written next to its source so the fixed include in
+  # the page chrome resolves per page.
+  def write_language_switchers(variants)
+    variants.map do |language, source|
+      dir = source.dirname.join('generated')
+      FileUtils.mkdir_p(dir)
+      path = dir.join("#{source.basename('.adoc')}-langswitch.adoc")
+      path.write(render_language_switcher(language, variants, source), encoding: 'UTF-8')
+      path
+    end
+  end
+
+  # Authored pages grouped by what they are, regardless of language: two pages
+  # are variants when their output paths differ only by the language prefix.
+  def page_language_groups
+    site_pages.each_with_object({}) do |(output, source), groups|
+      language = output_language(output)
+      neutral = language == DEFAULT_LANGUAGE ? output : output.delete_prefix("#{language}/")
+      (groups[neutral] ||= {})[language] = Pathname.new(source)
+    end
+  end
+
+  # The generated listing pages, grouped the same way. They are generated before
+  # the switchers, so their sources can be read from disk.
+  def listing_language_groups
+    groups = {}
+
+    SITE_SOURCE_ROOTS.each do |source_root|
+      Dir.glob(profile_dir.join(source_root, '**', 'generated', 'pages', '*.adoc').to_s).sort.each do |path|
+        source = Pathname.new(path)
+        relative = site_relative_dir(source.dirname)
+        next if relative.nil?
+
+        language = output_language(relative.to_s)
+        (groups["listing:#{source.basename}"] ||= {})[language] = source
       end
     end
+
+    groups
+  end
+
+  def output_language(output_path)
+    prefix = output_path.to_s.split('/').first
+    LANGUAGES.include?(prefix) && prefix != DEFAULT_LANGUAGE ? prefix : DEFAULT_LANGUAGE
   end
 
   # Artifacts that are translations of one another, keyed by their group, and
@@ -326,19 +299,16 @@ class ProfileArtifactValidator
   # itself rather than as a separate block. The visible label is a flag; the
   # language name stays on title and aria-label, because a flag alone is not an
   # accessible name and stands for a country rather than a language.
-  def render_language_switcher(current, variants)
-    ordered = variants.sort_by { |variant| artifact_language(variant) }
-
-    entries = ordered.map do |variant|
-      language = artifact_language(variant)
+  def render_language_switcher(current_language, variants, current_source)
+    entries = variants.keys.sort.map do |language|
       flag = "{ui_language_flag_#{language}}"
       name = "{ui_language_name_#{language}}"
 
-      if variant.equal?(current)
+      if language == current_language
         "            <span class=\"language-switch-current\" lang=\"#{language}\" title=\"#{name}\" " \
           "aria-current=\"true\">#{flag}</span>"
       else
-        href = h(article_link_href(current, variant))
+        href = h(page_link_href(current_source, variants[language]))
         "            <a href=\"#{href}\" lang=\"#{language}\" hreflang=\"#{language}\" title=\"#{name}\" " \
           "aria-label=\"#{name}\">#{flag}</a>"
       end
@@ -1420,11 +1390,9 @@ class ProfileArtifactValidator
      ''].join("\n")
   end
 
-  def render_list_page(title:, articles:, output_dir:, articles_dir:, language:, language_nav: '')
-    body = [language_nav,
-            '<p class="article-list-back"><a href="../articles.html">&#8592; {ui_article_list_back}</a></p>',
-            article_list_html(articles, from_dir: output_dir, articles_dir: articles_dir, language: language)]
-           .reject(&:empty?).join("\n")
+  def render_list_page(title:, articles:, output_dir:, articles_dir:, language:)
+    body = ['<p class="article-list-back"><a href="../articles.html">&#8592; {ui_article_list_back}</a></p>',
+            article_list_html(articles, from_dir: output_dir, articles_dir: articles_dir, language: language)].join("\n")
 
     ['// Generated article list page. Do not edit manually.',
      "= #{title}",
@@ -1702,6 +1670,27 @@ class ProfileArtifactValidator
 
     article = by_id[id]
     article if article && article.metadata['type'] == 'Article'
+  end
+
+  # Relative href between two pages, computed on their rendered locations rather
+  # than their sources. Generated listing pages are authored under
+  # 'generated/pages' but rendered into 'lists', so source paths would give the
+  # wrong depth.
+  def page_link_href(from_source, to_source)
+    from = page_output_path(from_source)
+    to = page_output_path(to_source)
+    to.relative_path_from(from.dirname).to_s
+  end
+
+  def page_output_path(source)
+    dir = source.dirname
+    return dir.parent.parent.join('lists', source.basename('.adoc').to_s + '.html') if listing_source?(dir)
+
+    source.sub_ext('.html')
+  end
+
+  def listing_source?(dir)
+    dir.basename.to_s == 'pages' && dir.parent.basename.to_s == 'generated'
   end
 
   def article_link_href(from_article, to_article)
