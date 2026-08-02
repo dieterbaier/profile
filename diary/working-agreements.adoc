@@ -31,3 +31,10 @@ Owner im Review, nicht beim Schreiben (#57).
 Fakten über fremde Laufbahn, Kunden und Projekte werden nicht erfunden, auch
 nicht als „erster Wurf".:: Kosten: keine — die Grenze wurde beim CV vor der
 Umsetzung gezogen (#56). Der Eintrag steht hier, damit sie gezogen bleibt.
+
+Ein Defekt in einem fremden Projekt wird in dessen Quellen geprüft, bevor er
+aufgeschrieben wird.:: Kosten: der `derived_from`-Befund war aus unserer Kopie
+des Toolkit-Schemas abgeleitet und beschrieb einen Widerspruch, den das Toolkit
+nicht hat. Ein `grep` in der fremden Datei hätte es widerlegt, bevor es im
+Tagebuch stand (docs-as-code-toolkit#26, #75).
+

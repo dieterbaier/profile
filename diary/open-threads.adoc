@@ -51,15 +51,22 @@ Die Alternative wäre, den CV feiner zu schneiden, damit kleinere Einheiten
 blockieren — Fragmentgranularität ist seit #52 ein Entwurfshebel und im ADR
 festgehalten.
 
-=== Ein Toolkit-Issue, das noch anzulegen ist
+=== Das divergierte Metamodell-Schema
 
-`derived_from` steht im ADR-Template des Toolkits, aber
-`metamodel/artifact.schema.yaml` hat `additionalProperties: false` und kennt das
-Feld nicht. Die Issue-Suche im Toolkit brachte keinen Treffer, der das
-beschreibt.
+`metamodel/artifact.schema.yaml` weicht in beide Richtungen vom Toolkit ab: es
+ergänzt `QualityGoal` und `priority`, und ihm fehlt `derived_from`. Ein Abgleich
+muss deshalb zusammenführen statt überschreiben.
 
-Offen ist nicht *ob*, sondern in welche Richtung: Schema erweitern, oder im
-Skill festhalten, dass ein Projekt `derived_from` weglassen darf. Die Begründung
-steht in `toolkit-validation.adoc`; hier steht sie, weil sie dieses Projekt
-überlebt.
+Offen ist, wie oft das wiederholt wird und woran man die nächste Divergenz
+merkt. Stromaufwärts hängt es an docs-as-code-toolkit#26; lokal ist es #75.
 
+=== Wessen Sprache in src-content/profile gilt
+
+Alles unter `src-content/profile` ist Produktarbeit und trägt die Sprache des
+Autors, nicht ein vom Werkzeug zugewiesenes Register. `language-profile` nimmt
+es deshalb ausdrücklich aus.
+
+Wo die Regel stattdessen hingehört — `write-article`, `article-summary-pack`
+oder beides — ist bewusst offen. Der Auslöser, es zu entscheiden, wäre der erste
+Fall, in dem jemand für veröffentlichte Inhalte eine Vorgabe sucht und sie in
+`language-profile` nicht findet.

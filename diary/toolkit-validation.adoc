@@ -42,22 +42,27 @@ Wäre der Widerspruch erst beim Implementieren aufgefallen, hätte die
 Stub-Generierung bereits existiert. So entfiel sie ersatzlos, bevor sie gebaut
 wurde.
 
-=== Offen: die Metamodell-Schemata kennen keine Provenienz
+=== Bestätigt: kopierte Toolkit-Assets driften still — zweite Instanz
 
-`metamodel/artifact.schema.yaml` hat `additionalProperties: false` und kein
-`derived_from`, obwohl der `adr`-Skill genau dieses Feld für die Herkunft eines
-ADR vorsieht und sein Template es führt. ADR-010 musste seine Herkunft deshalb in
-der Prosa des Context-Abschnitts tragen.
+Beim Schreiben von ADR-010 konnte `derived_from` nicht gesetzt werden:
+`metamodel/artifact.schema.yaml` hat `additionalProperties: false` und kennt das
+Feld nicht, obwohl der `adr`-Skill es für die Herkunft eines ADR vorsieht und
+sein Template es führt. Die Herkunft landete deshalb in der Prosa des
+Context-Abschnitts.
 
-Entweder das Schema zieht nach, oder der Skill sollte sagen, dass `derived_from`
-optional ist und ein Projekt es weglassen darf. Aktuell widersprechen sich
-Template und Schema stillschweigend.
+Wir hielten das zunächst für einen Widerspruch im Toolkit zwischen Template und
+Schema. Der Vergleich zeigte das Gegenteil: das Toolkit-Schema *hat*
+`derived_from` seit Zeile 83. Unsere Kopie hat es nicht.
 
-*Stromaufwärts noch nicht erfasst.* Wir vermuteten, der Befund existiere bereits
-aus einem anderen Projekt, und durchsuchten die Issues des Toolkits nach
-`derived_from` und `schema`: kein Treffer, der ihn beschreibt. Das nächstgelegene
-ist docs-as-code-toolkit#48 „Replace partial artifact metadata validation with
-full JSON Schema validation" — das betrifft die *Tiefe* der Validierung, nicht
-den Widerspruch zwischen Template und Schema. Ein Feld, das das Schema gar nicht
-kennt, wird auch von vollständiger Schema-Validierung nicht erlaubt; #48 löst
-diesen Punkt also nicht mit. Das Issue ist anzulegen.
+Die Abweichung geht in beide Richtungen. Unsere Kopie ergänzt `QualityGoal` und
+`priority` — lokale Erweiterungen, die es stromaufwärts nicht gibt. Und ihr
+fehlt der gesamte `derived_from`-Block, eine Toolkit-Ergänzung, die nie ankam.
+Das ist kein veraltetes Vendoring, sondern ein divergiertes.
+
+Damit ist es keine neue Erkenntnis, sondern eine zweite Instanz von
+docs-as-code-toolkit#26 „Define toolkit asset update mechanism for consuming
+projects". Das Issue nennt Metamodell-Schemata und „silently drift" wörtlich und
+ist selbst ein Slice von #22, wo die Drift schon einmal gefunden wurde. Der
+Beitrag dieses Projekts ist der Nachweis, dass sie auch bidirektional auftritt —
+ein reiner Update-Mechanismus, der stromabwärts überschreibt, würde hier lokale
+Erweiterungen zerstören.
