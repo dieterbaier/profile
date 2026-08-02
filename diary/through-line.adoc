@@ -1,0 +1,37 @@
+== The through-line
+
+Die eine Lehre, die sich in diesem Projekt wiederholt: **eine Annahme, die nur
+ein Beispiel kennt, ist nicht falsifizierbar — und wirkt deshalb wie eine
+Invariante.**
+
+Jede Instanz trägt das Artefakt, was es behauptete, und was es gefangen hätte.
+
+=== Instanzen
+
+`articles_base_dir` (2026-08-02):: Behauptete, das Artikelverzeichnis sei der
+gemeinsame Vorfahre aller Artikelquellen. Bei drei Artikeln in zwei
+Unterverzeichnissen stimmt das zufällig. Bei einem Artikel ist es dessen eigenes
+Unterverzeichnis. Gefangen hätte es: ein zweiter Artikelbaum mit genau einem
+Artikel — also der Pilot, der es dann auch fand.
+
+`:basedir: ../..` in generierten Listenseiten (2026-08-02):: Behauptete eine
+feste Tiefe zur Site-Wurzel. Stimmt für die Default-Sprache, die direkt unter der
+Wurzel liegt. Gefangen hätte es: irgendeine Seite eine Ebene tiefer — es gab bis
+zum Sprach-Subtree keine.
+
+Related-Article-Auswahl (2026-08-02):: Behauptete, ein Artikel könne nicht unter
+seinen eigenen Empfehlungen auftauchen, weil seine ID ausgeschlossen war. Mit
+Übersetzungen teilt eine *andere* ID denselben Inhalt. Gefangen hätte es: zwei
+Artefakte, die denselben Text repräsentieren — vor der Übersetzung gab es das
+Konzept nicht.
+
+`.mainnav ul { flex-direction: column }` (2026-08-02):: Behauptete nichts
+Falsches, war aber unbeobachtbar: die obere Navigationszeile enthielt genau ein
+Element. Gefangen hätte es: ein zweites Element in derselben Zeile.
+
+=== Warum die Sammlung nicht wächst wie erwartet
+
+Alle vier stammen vom selben Tag und vom selben Auslöser: dem Moment, in dem
+Testdaten durch echte Inhalte ersetzt wurden. Das ist die Beobachtung, nicht die
+Zahl. Eine fünfte Instanz, die nur einer der vier ähnelt, gehört nicht hierher —
+Ähnlichkeit ist der Punkt des Dokuments und verdünnt sich mit Menge.

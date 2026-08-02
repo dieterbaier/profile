@@ -1,0 +1,33 @@
+== Working agreements
+
+Regeln, die entstanden sind, weil etwas schiefging. Keine Regel, die jemand
+vorgeschlagen hat. Jeder Eintrag ist eine Zeile plus die Kosten, die ihn erzeugt
+haben.
+
+Der gerenderte deutsche Output wird bei jeder Änderung gegen einen Build des
+vorherigen Standes verglichen.:: Kosten: ohne diesen Vergleich wären die
+`{ui_cv_subtitle}`-Literale auf drei Seiten und die stillschweigende Whitespace-
+Änderung jeder Seite unbemerkt live gegangen (#56, #55).
+
+Vor dem Vergleich wird die Vergleichsmethode selbst verifiziert — `main` zweimal
+bauen muss 0 Unterschiede ergeben.:: Kosten: ein stale Diff durch zsh
+`noclobber` führte zu einer halben Stunde Fehlersuche an einem Fehler, der nicht
+existierte (#49).
+
+Eine Regel, die zweimal auf dieselbe Art verletzt wurde, wird von einem Test
+erzwungen — nicht von einem Kommentar.:: Kosten: die Header-Falle (Leerzeile,
+Kommentarzeile, fehlendes Leerzeichen nach dem Doppelpunkt) hat zweimal
+zugeschlagen, bevor `test_link_registry_contains_only_attribute_entries`
+entstand (#49, #51).
+
+Ein Szenario entsteht mit dem Verhalten, nicht danach.:: Kosten: der Nachzug für
+vier Slices kostete einen eigenen Slice (#65), und drei Ungenauigkeiten wären
+beim Mitschreiben gar nicht erst entstanden.
+
+Generierte Prosa macht keine Mengenaussagen.:: Kosten: „1 weiterer Artikel" wäre
+falsch geworden, sobald die andere Sprache weniger Artikel hat — bemerkt vom
+Owner im Review, nicht beim Schreiben (#57).
+
+Fakten über fremde Laufbahn, Kunden und Projekte werden nicht erfunden, auch
+nicht als „erster Wurf".:: Kosten: keine — die Grenze wurde beim CV vor der
+Umsetzung gezogen (#56). Der Eintrag steht hier, damit sie gezogen bleibt.

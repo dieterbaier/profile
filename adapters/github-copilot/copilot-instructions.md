@@ -19,6 +19,9 @@ When GitHub Copilot performs AI-assisted work in this repository:
 Paths are relative to the profile-dieterbaier repository root.
 
 - `article-summary-pack`: `skills/article-summary-pack/SKILL.md`
+- `clock-in`: `skills/clock-in/SKILL.md`
+- `clock-out`: `skills/clock-out/SKILL.md`
+- `diary`: `skills/diary/SKILL.md`
 - `profile-artifact-maintenance`: `skills/profile-artifact-maintenance/SKILL.md`
 - `write-article`: `skills/write-article/SKILL.md`
 

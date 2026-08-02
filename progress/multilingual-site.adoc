@@ -1,0 +1,67 @@
+= Mehrsprachige Site
+
+Die Seite soll jedes Artefakt auch in einer anderen Sprache tragen können, ohne
+dass Wiederverwendung und Fallback zu Handarbeit werden.
+
+*Status:* in flight — die Mechanik steht und läuft zweisprachig live; offen sind
+Diagrammquellen und die Übersetzung der inhaltsschweren Artefakte.
+
+== The plan
+
+Die Reihenfolge kam aus #47: erst das Metamodell, dann die Auflösungsklassen von
+innen nach außen, und die Pilotseite zuletzt — weil sie alles gleichzeitig prüft.
+
+[options="checklist"]
+* [x] Metamodell: Sprach- und Übersetzungsdimension — #48
+* [x] UI-Begriffe als Attribut-Kaskade mit Key-Parität — #49
+* [x] Sprach-Subtree `/en/` als Build-Target — #50
+* [x] Link-Registry statt harter Pfade — #51
+* [x] Content-Fragmente pro Sprache, Build-Abbruch bei Sprachmix — #52
+* [x] Artikel-Chrome und Listen pro Sprache — #53
+* [x] Übersetzungs-Provenienz und Drift-Hinweis — #54
+* [x] hreflang und Sprachumschalter — #55
+* [x] CV im Sprachmodell, PDF pro Sprache — #56
+* [x] Pilot: Home und Docs-as-Code-Artikel auf Englisch — #57
+* [x] BDD-Szenarien der Slices nachgezogen — #65
+* [ ] Sprachprüfung auf `plantuml::`-Quellen ausweiten — #70
+* [ ] Weitere Artefakte übersetzen — Autorenarbeit, kein Generatorthema
+
+Die Reihenfolge war an einer Stelle wirklich tragend: #52 (Fragmentregel) musste
+vor #56 (CV) liegen. Der CV zieht rund 90 Fragmente; ohne die Regel wäre nicht
+sichtbar gewesen, dass eine CV-Sprachvariante ein Alles-oder-nichts ist.
+
+== Where we are
+
+`/en/` ist live mit Startseite, Artikelübersicht, dem übersetzten
+Docs-as-Code-Artikel und den Listen. Ein Sprachumschalter (🇦🇹/🇬🇧) sitzt auf
+jeder Seite links von „Home". Verweise fallen auf Deutsch zurück und sagen es mit
+`(de)`; Fragmente fallen nicht zurück, sondern brechen den Build. Übersetzungen
+tragen eine Provenienz-Notiz mit Digest-basierter Frischeprüfung, die der Autor
+überschreiben kann.
+
+Der CV ist im Sprachmodell, aber nur auf Deutsch vorhanden: seine rund 90
+Fragmente sind echte Laufbahninhalte und damit Autorenarbeit.
+
+== Open in this topic
+
+* Welche Artefakte als nächstes übersetzt werden, und ob der CV das überhaupt
+  soll — die Fragmentregel macht ihn zu einem einzigen großen Schritt.
+* Ob Diagrammquellen unter `i18n/<lang>/` wandern oder mit Sprachsuffix neben
+  dem Artikel bleiben (#70 hält beide Varianten offen).
+* Ob ein Diagramm als sprachneutral markierbar sein soll — `doc-pipeline.puml`
+  ist bereits englisch und funktioniert in beiden Sprachen.
+
+== Checks
+
+Commands, not results. A number copied in here goes stale silently.
+
+[source,sh]
+----
+ruby scripts/validate-profile-metamodel.rb
+./gradlew buildSite
+for t in profile_language profile_cv_language profile_language_alternates \
+         profile_translation profile_navigation profile_listings \
+         profile_comments site_metadata_injector; do
+  ruby -Itest test/${t}_test.rb
+done
+----

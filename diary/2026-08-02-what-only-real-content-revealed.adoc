@@ -1,0 +1,118 @@
+== Day 2 — 2 August 2026: What only real content revealed
+
+Elf Slices des Epics #47 wurden heute integriert (#62 bis #73), dazu die
+Pilotübersetzung und ein Fehler, der erst auf der Live-Seite auffiel. Die
+lehrreichen Stellen waren nicht die Mechanik, sondern das, was die Mechanik erst
+zeigte, als echte Inhalte durch sie liefen.
+
+=== Vier Fehler, die eine zweite Sprache brauchten, um sichtbar zu werden
+
+Bis zum Pilot in #57 gab es genau einen deutschen Artikelbaum. Alles war grün.
+Mit dem zweiten Artikel in einer zweiten Sprache fielen an einem Nachmittag vier
+Dinge auf, die vorher strukturell unentscheidbar waren:
+
+`articles_base_dir` bestimmte das Artikelverzeichnis aus dem gemeinsamen
+Vorfahren aller Artikelquellen. Bei drei deutschen Artikeln in zwei
+Unterverzeichnissen ergibt das zufällig das Richtige. Bei *einem* englischen
+Artikel ergibt es dessen eigenes Unterverzeichnis, und `/en/articles/lists/`
+entstand nie.
+
+Die generierten Listenseiten setzten `:basedir: ../..` hart. Das stimmt nur für
+die Default-Sprache direkt unter der Site-Wurzel. Die englischen Listen luden
+ihr Stylesheet aus `/en/stylesheet/style.css` und waren komplett ungestylt.
+
+Der deutsche Artikel empfahl sich selbst: seine englische Übersetzung teilt seine
+Tags, geriet damit in die Related-Liste, und der Sprach-Swap aus #53 löste diese
+Empfehlung zurück auf das deutsche Original auf.
+
+Der Sprachumschalter stapelte auf Mobilgeräten, weil der Breakpoint
+`flex-direction: column` auf *jede* Navigationsliste setzte. Solange die obere
+Zeile nur „Home" enthielt, war das unsichtbar.
+
+Keiner dieser vier Fehler war ein Denkfehler im Entwurf. Alle vier waren
+Annahmen, die bei einer Sprache und drei Artikeln nicht falsifizierbar waren.
+
+=== Zweimal dieselbe Falle im AsciiDoc-Header
+
+Interface-Begriffe und die Link-Registry werden in den Dokument-Header
+inkludiert. Dort beendet eine Leerzeile den Header — und, wie sich zeigte, auch
+eine Kommentarzeile innerhalb eines Includes. Alles danach hört auf, Header-
+Attribut zu sein. In #49 hieß das: `:stylesheet:` und `:copycss:` wirkungslos,
+die gesamte Seite fiel auf das Asciidoctor-Default-CSS zurück.
+
+Das Symptom sieht nach kaputtem Theme aus, nicht nach kaputtem Include.
+
+In #51 passierte es ein zweites Mal, in anderer Gestalt: `:name:value` ohne
+Leerzeichen nach dem Doppelpunkt ist keine Attributzeile. Der erste
+Fallback-Marker erzeugte genau das, und alle späteren Referenzen blieben als
+`{url_cv}` im Text stehen.
+
+Nach dem zweiten Mal prüft ein Test jede generierte Registry-Zeile gegen das
+Attributformat, und die Regel steht in `src-content/profile/includes/i18n/README.md`
+statt in einem Kommentar *in* den Dateien — dort wäre sie selbst der Auslöser.
+
+=== Eine Entscheidung, die eine Mechanik überflüssig machte
+
+Der ADR sah zunächst vor, dass Fragmente auf Deutsch zurückfallen und der
+Fallback sichtbar markiert wird. Beim Review verwarf der Owner das: ein
+deutscher Absatz mitten in einem englischen Artikel sei für den Leser
+unbrauchbar, der Build solle abbrechen.
+
+Das kollidierte mit der früheren Festlegung und war die stärkere Regel. Die
+Auflösung ergab eine Leitlinie, die den Rest des Epics getragen hat:
+**Verweise fallen zurück, Inhalte nicht.** Ein deutscher Link ist benutzbar und
+sagt `(de)`; ein deutscher Absatz ist es nicht.
+
+Der Nebeneffekt war die eigentliche Überraschung: die geplante
+Stub-Generierung — Spiegeln des `de`-Baums, Marker-Kommentare, eigene
+Clean-Logik — entfiel damit ersatzlos. Ein Fragment existiert in der
+Seitensprache, oder der Build stoppt. Validierung statt Generierung.
+
+=== Eine Aussage, die nicht generierbar war
+
+Für die Artikellisten war ein Hinweis geplant: „Auf Englisch ist 1 weiterer
+Artikel verfügbar." Der Owner hielt dagegen, dass „weiterer" falsch wird, sobald
+die andere Sprache *weniger* Artikel hat — und dass die Aussage pro Sprache, pro
+Tag und pro Skill korrekt sein müsste.
+
+Die Konsequenz war keine zusätzliche Logik, sondern eine Formulierung ohne
+Mengenaussage: welche Sprachen publizieren, nicht wie viel. Das bleibt bei jeder
+Artikelzahl wahr und skaliert auf beliebig viele Sprachen. Die fragile Stelle
+wurde nicht abgesichert, sondern entfernt.
+
+=== Der Fehler, der bis auf die Live-Seite durchkam
+
+`https://dieterbaier.eu/en/articles/lists/all.html` lieferte 404, während der
+Rest von `/en/` erreichbar war. Das Build-Log der deployenden Ausführung zeigte
+`> Task :buildArticleListPagesEn NO-SOURCE`, obwohl der Generator 50 Sekunden
+vorher im selben Lauf `Generated 11 article list file(s)` gemeldet hatte.
+
+Lokal war es nicht reproduzierbar: sauberer Baum, dieselbe Task-Kombination wie
+CI, ohne Daemon nach `--stop` — jedes Mal grün. Im Container schon; dort liefen
+die beiden Tasks sogar in umgekehrter Reihenfolge.
+
+Die Konstruktion hing daran, dass eine Asciidoctor-Task auf ein Verzeichnis
+zeigt, das erst während des Builds entsteht. Statt die Instanz weiter zu jagen,
+wurde die Fehlerklasse entfernt: Listenseiten werden jetzt dort erzeugt, wo sie
+veröffentlicht werden, und der normale Site-Build rendert sie als gewöhnliche
+Quellen. 67 Zeilen Build-Logik fielen weg, dazu eine doppelte
+Canonical-Injektion und ein Streuverzeichnis im Output.
+
+Der Fix hätte es beinahe nicht auf die Seite geschafft: sein Deploy-Lauf wurde
+vom nächsten Merge per `cancel-in-progress` abgebrochen, und der Folgelauf
+übersprang `build-docs`, weil dieser Commit nur `features/` und `test/`
+berührte. Das ist #74.
+
+=== Was der BDD-Default gekostet hat, weil er ausgesetzt wurde
+
+Ab #49 entstanden Szenarien nicht mehr mit, obwohl der Toolkit-Skill sie als
+strikten Default für beobachtbares Verhalten vorschreibt. Am deutlichsten bei
+#53: dessen Verifikationsabschnitt forderte wörtlich die Erweiterung von drei
+Feature-Dateien — geschrieben beim Slicing, umgesetzt beim Implementieren nicht.
+
+Aufgefallen ist es nicht beim Arbeiten, sondern durch die Frage des Owners, ob
+das Absicht sei. Der Nachzug in #65 kostete einen eigenen Slice und brachte drei
+Dinge ans Licht, die beim Mitschreiben nicht entstanden wären: ein Test, der
+zwei Szenarien gleichzeitig abdeckte, drei Szenariotitel, die unpräziser waren
+als ihre Tests, und ein Kopfkommentar, der behauptete, in dieser Datei sei kein
+Feature gebrückt — was seit #51 nicht mehr stimmte.

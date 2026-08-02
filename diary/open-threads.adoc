@@ -1,0 +1,52 @@
+== Open threads
+
+Bewusst unfertig gelassen, mit der Überlegung dabei, damit die nächste
+Entscheidung nicht bei null anfängt. Was mit seinem Thema stirbt, steht in
+dessen Progress-Datei, nicht hier.
+
+=== Ob Listen künftig alle Sprachen zeigen
+
+Der Owner brachte es zweimal auf: eine Liste, die wirklich *alle* Artikel zeigt,
+mit `(de)`/`(en)`-Markern an den Einträgen. Damit wäre „Alle Artikel" wieder
+wörtlich wahr, und das Marker-Muster existiert auf der Seite bereits.
+
+Dagegen steht die Entscheidung aus #53, dass eine englische Liste keine deutschen
+Artikel aushändigt — und dass der Nachteil genau dann wächst, wenn das Setup
+erfolgreich ist: bei durchgängiger Übersetzung verdoppelt sich jede Liste.
+
+Der Auslöser, es neu zu bewerten, wäre eine Beobachtung, dass Leser tatsächlich
+sprachübergreifend suchen. Vorher ist es eine Wette. Aktuell gelöst durch einen
+Hinweis, der nennt, welche Sprachen publizieren.
+
+=== Flaggen oder Wörter im Sprachumschalter
+
+Entschieden für Flaggen (🇦🇹/🇬🇧), mit dem Sprachnamen auf `title` und
+`aria-label`. Eine Flagge bezeichnet streng genommen ein Land, keine Sprache —
+🇦🇹 für Deutsch ist eine Aussage über den Autor, nicht über die Sprache.
+
+Der Wechsel auf Wörter ist eine reine Term-Änderung, weil alles über
+`{ui_language_*}` läuft. Offen bleibt, ob sich die Flaggen im Betrieb als zu
+implizit erweisen; das zeigt sich erst mit Lesern, die nicht wissen, dass es die
+Seite zweisprachig gibt.
+
+=== Wo sprachabhängige Diagrammquellen liegen sollen
+
+#70 hält zwei Varianten offen: unter `i18n/<lang>/` wie alle Fragmente, oder mit
+Sprachsuffix neben dem Artikel wie das heutige `doc-influences-en.puml`. Die
+erste ist konsistent zur Fragmentregel, die zweite hält Assets bei dem Artikel,
+der sie benutzt.
+
+Ungelöst und wichtiger: wie ein Diagramm als *sprachneutral* markiert wird.
+`doc-pipeline.puml` ist bereits englisch beschriftet und funktioniert in beiden
+Sprachen; ohne Markierung bräuchte jedes rein technische Diagramm Kopien pro
+Sprache.
+
+=== Ob der CV überhaupt übersetzt werden soll
+
+Die Mechanik steht, aber die Fragmentregel macht eine CV-Sprachvariante zu einem
+Alles-oder-nichts: rund 90 Fragmente, darunter 66 Projekteinträge, müssen
+vorliegen, bevor die Seite baut. Das ist Autorenarbeit über eine reale Laufbahn.
+
+Die Alternative wäre, den CV feiner zu schneiden, damit kleinere Einheiten
+blockieren — Fragmentgranularität ist seit #52 ein Entwurfshebel und im ADR
+festgehalten.
