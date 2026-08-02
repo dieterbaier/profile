@@ -65,11 +65,15 @@ class ProfileLanguageAlternatesTest < Minitest::Test
 
       # Rendered as menu list items: a flag as the visible label, the language
       # name on title and aria-label, because a flag is no accessible name.
-      assert_includes german, '<li class="language-switch language-switch-current">'
-      assert_includes german, 'title="{ui_language_name_de}"'
+      # One list item holds every language, so the menu row's single gap cannot
+      # push the flags apart. A flag is the visible label only; the language name
+      # stays on title and aria-label, because a flag is no accessible name.
+      assert_includes german, '<li class="language-switch">'
+      assert_includes german, '<span class="language-switch-current" lang="de" title="{ui_language_name_de}"'
       assert_match(%r{<a href="[^"]*en/index\.html" lang="en"[^>]*>\{ui_language_flag_en\}</a>}, german)
-      assert_includes english, '<li class="language-switch language-switch-current">'
+      assert_includes english, '<span class="language-switch-current" lang="en"'
       assert_match(%r{<a href="[^"]*index\.html" lang="de"[^>]*>\{ui_language_flag_de\}</a>}, english)
+      assert_equal 1, german.scan('<li class="language-switch">').length
     end
   end
 
