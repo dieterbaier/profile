@@ -435,6 +435,19 @@ tasks.register('testProfileLanguage') {
     }
 }
 
+tasks.register('testProfileTranslation') {
+    description = 'Runs the translation provenance behaviour tests.'
+    group = 'verification'
+    inputs.files('scripts/validate-profile-metamodel.rb', 'test/profile_translation_test.rb')
+    inputs.files('features/article-translation-provenance.feature')
+
+    doLast {
+        exec {
+            commandLine 'ruby', '-Itest', 'test/profile_translation_test.rb'
+        }
+    }
+}
+
 tasks.register('testProfileListings') {
     description = 'Runs the article listing generator behaviour tests.'
     group = 'verification'

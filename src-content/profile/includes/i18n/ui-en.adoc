@@ -27,3 +27,6 @@
 :ui_article_list_all: All articles
 :ui_article_list_tag_prefix: Articles tagged:
 :ui_article_list_skill_prefix: Articles about:
+:ui_translation_of: This is a translation of the original article
+:ui_translation_outdated: The original article has changed since this translation was written.
+:ui_translation_divergent: This text deliberately differs in content from the original.

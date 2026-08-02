@@ -13,6 +13,8 @@ include::{includesdir}/docheader.adoc[]
 
 ifeval::["{type}" != "readme"]
 include::{docfile}/../generated/{docname}-tags.adoc[opts=optional]
+// Generated translation provenance; empty unless the article is a translation.
+include::{docfile}/../generated/{docname}-translation.adoc[opts=optional]
 endif::[]
 
 :include_next_articles_variante1: false
