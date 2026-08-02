@@ -42,3 +42,9 @@
 :ui_author_prefix: Autor:
 :ui_language_flag_de: 🇦🇹
 :ui_language_flag_en: 🇬🇧
+:ui_article_list_back: Zurück zur Artikelübersicht
+:ui_article_list_show_all: Alle Artikel anzeigen
+:ui_article_list_recent: Die zuletzt veröffentlichten Artikel:
+:ui_article_list_languages: Artikel nach Sprache
+:ui_articles_in_de: Deutsche Artikel
+:ui_articles_in_en: Englische Artikel

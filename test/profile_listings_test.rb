@@ -313,4 +313,101 @@ class ProfileListingsTest < Minitest::Test
       refute_equal '', first.first
     end
   end
+
+  # --- Language variants of the listings -------------------------------------
+
+  # Builds articles in two languages and returns the validator plus the tree.
+  def with_multilingual_articles(articles)
+    Dir.mktmpdir('profile-list-language-test') do |dir|
+      root = Pathname.new(dir)
+      (root + 'includes/i18n').mkpath
+      %w[de en].each do |language|
+        (root + "includes/i18n/ui-#{language}.adoc").write(
+          ":ui_article_list_all: All\n" \
+          ":ui_article_list_tag_prefix: Tag:\n" \
+          ":ui_article_list_skill_prefix: Skill:\n"
+        )
+      end
+
+      articles.each do |article|
+        rel_dir = article.fetch(:dir)
+        slug = article.fetch(:slug)
+        (root + rel_dir).mkpath
+        source = "#{rel_dir}/#{slug}.adoc"
+        (root + source).write("= #{slug}\n")
+        metadata = {
+          'id' => article.fetch(:id), 'type' => 'Article', 'title' => slug, 'status' => 'published',
+          'owner' => 'Test Owner', 'created' => '2026-01-01', 'language' => article.fetch(:language),
+          'source' => source, 'tags' => article.fetch(:tags, [])
+        }
+        (root + "#{rel_dir}/#{slug}.profile.yaml").write(metadata.to_yaml)
+      end
+
+      validator = ProfileArtifactValidator.new(root: root, profile_dir: root)
+      artifacts = validator.validate
+      validator.generate_article_lists(artifacts)
+      yield(root)
+    end
+  end
+
+  BILINGUAL = [
+    { id: 'ART-001-de', slug: 'first', dir: 'site/articles', language: 'de', tags: %w[shared] },
+    { id: 'ART-002-en', slug: 'second', dir: 'site/en/articles', language: 'en', tags: %w[shared] }
+  ].freeze
+
+  def test_article_listings_are_built_per_language
+    # Given: published articles in two languages
+    with_multilingual_articles(BILINGUAL) do |root|
+      # When: the article listings are generated (done by the helper)
+      # Then: each language gets its own listing pages containing only its own articles
+      german = (root + 'site/articles/generated/pages/all.adoc').read
+      english = (root + 'site/en/articles/generated/pages/all.adoc').read
+
+      assert_includes german, 'first.html'
+      refute_includes german, 'second.html'
+      assert_includes english, 'second.html'
+      refute_includes english, 'first.html'
+    end
+  end
+
+  def test_listing_offers_the_same_listing_in_the_other_languages
+    # Given: published articles in two languages
+    with_multilingual_articles(BILINGUAL) do |root|
+      # When: the article listings are generated (done by the helper)
+      # Then: each listing page links to the same listing in the other language
+      german = (root + 'site/articles/generated/pages/all.adoc').read
+      english = (root + 'site/en/articles/generated/pages/all.adoc').read
+
+      assert_includes german, '<li><a href="{basedir}/en/articles/lists/all.html">{ui_articles_in_en}</a></li>'
+      assert_includes german, '{ui_articles_in_de}</span>'
+      assert_includes english, '<li><a href="{basedir}/articles/lists/all.html">{ui_articles_in_de}</a></li>'
+      assert_includes english, '{ui_articles_in_en}</span>'
+    end
+  end
+
+  def test_a_language_is_only_offered_for_a_tag_it_actually_uses
+    # Given: a tag used by articles in one language only
+    articles = [
+      { id: 'ART-001-de', slug: 'first', dir: 'site/articles', language: 'de', tags: %w[germanonly] },
+      { id: 'ART-002-en', slug: 'second', dir: 'site/en/articles', language: 'en', tags: %w[englishonly] }
+    ]
+
+    with_multilingual_articles(articles) do |root|
+      # When: the article listings are generated (done by the helper)
+      # Then: that tag page offers no link to the language without such articles
+      german_tag = (root + 'site/articles/generated/pages/tag-germanonly.adoc').read
+      refute_includes german_tag, '{ui_articles_in_en}'
+      refute_includes german_tag, 'language-nav'
+    end
+  end
+
+  def test_listing_pages_of_a_language_subtree_resolve_their_assets
+    # Given: published articles in a language below the site root
+    with_multilingual_articles(BILINGUAL) do |root|
+      # When: the article listings are generated (done by the helper)
+      # Then: their pages point back to the site root from their own depth
+      assert_includes (root + 'site/articles/generated/pages/all.adoc').read, ":basedir: ../..\n"
+      assert_includes (root + 'site/en/articles/generated/pages/all.adoc').read, ":basedir: ../../..\n"
+    end
+  end
 end

@@ -164,12 +164,64 @@ class ProfileArtifactValidator
     all_articles = artifacts.select { |artifact| artifact.metadata['type'] == 'Article' }
     return [] if all_articles.empty?
 
-    all_articles.group_by { |article| artifact_language(article) }.flat_map do |language, articles|
-      generate_article_lists_for(articles, language)
+    by_language = all_articles.group_by { |article| artifact_language(article) }
+
+    # Every language that has articles, with the site-root-relative location of
+    # its article directory. Listing pages use it to offer the same listing in
+    # the other languages, so a reader is not stuck in the language they landed in.
+    language_roots = by_language.filter_map do |language, articles|
+      dir = articles_base_dir(articles)
+      relative = dir && site_relative_dir(dir)
+      [language, relative.to_s] if relative
+    end.to_h
+
+    @tag_languages = Hash.new { |hash, key| hash[key] = [] }
+    @skill_languages = Hash.new { |hash, key| hash[key] = [] }
+    by_language.each do |language, articles|
+      ordered = public_articles(articles)
+      tags_in_use(ordered).each { |tag| @tag_languages[tag] << language }
+      skills_in_use(ordered).each { |skill| @skill_languages[skill] << language }
+    end
+
+    by_language.flat_map do |language, articles|
+      generate_article_lists_for(articles, language, language_roots)
     end
   end
 
-  def generate_article_lists_for(articles, language)
+  # Sub-navigation offering the same listing in every language that has articles.
+  # Hrefs are {basedir}-relative, so one fragment works from the landing page and
+  # from the listing pages alike, which sit at different depths.
+  def render_language_nav(current_language, language_roots, page)
+    return '' if language_roots.length < 2
+
+    items = language_roots.keys.sort.map do |language|
+      label = "{ui_articles_in_#{language}}"
+      if language == current_language
+        "        <li><span class=\"language-nav-current\" aria-current=\"true\">#{label}</span></li>"
+      else
+        href = ['{basedir}', language_roots[language], page].reject(&:empty?).join('/')
+        "        <li><a href=\"#{href}\">#{label}</a></li>"
+      end
+    end
+
+    ['<nav class="subnav noborder language-nav" aria-label="{ui_article_list_languages}">',
+     '    <ul>',
+     *items,
+     '    </ul>',
+     '</nav>'].join("\n")
+  end
+
+  # Languages whose public articles use a given tag or skill. A language is only
+  # offered for a tag page it actually has articles for.
+  def tag_languages(tag)
+    @tag_languages.fetch(tag, [])
+  end
+
+  def skill_languages(skill)
+    @skill_languages.fetch(skill, [])
+  end
+
+  def generate_article_lists_for(articles, language, language_roots = {})
     articles_dir = articles_base_dir(articles)
     return [] if articles_dir.nil?
 
@@ -187,19 +239,40 @@ class ProfileArtifactValidator
     ordered = sort_articles(public_articles(articles))
     written = []
 
+    # Language sub-navigation for the authored article landing page, which sits
+    # at a different depth than the generated listing pages and therefore cannot
+    # share their embedded copy.
+    languages_path = lists_dir.join('languages.adoc')
+    landing_nav = render_language_nav(language, language_roots, 'articles.html')
+    languages_path.write(
+      landing_nav.empty? ? '' : ['// Generated language navigation. Do not edit manually.',
+                                 '[subs="attributes"]', '++++', landing_nav, '++++', ''].join("\n"),
+      encoding: 'UTF-8'
+    )
+    written << languages_path
+
     recent_path = lists_dir.join('recent.adoc')
     recent_path.write(render_list_fragment(ordered.first(RECENT_LIMIT), from_dir: articles_dir, language: language), encoding: 'UTF-8')
     written << recent_path
 
     all_path = pages_dir.join('all.adoc')
-    all_path.write(render_list_page(title: terms.fetch('ui_article_list_all'), articles: ordered, output_dir: output_dir, articles_dir: articles_dir, language: language), encoding: 'UTF-8')
+    all_path.write(render_list_page(title: terms.fetch('ui_article_list_all'), articles: ordered, output_dir: output_dir,
+                                    articles_dir: articles_dir, language: language,
+                                    language_nav: render_language_nav(language, language_roots, 'lists/all.html')),
+                   encoding: 'UTF-8')
     written << all_path
 
     tags_in_use(ordered).each do |tag|
       tagged = ordered.select { |article| Array(article.metadata['tags']).include?(tag) }
       path = pages_dir.join("tag-#{tag}.adoc")
       title = "#{terms.fetch('ui_article_list_tag_prefix')} #{tag}"
-      path.write(render_list_page(title: title, articles: tagged, output_dir: output_dir, articles_dir: articles_dir, language: language), encoding: 'UTF-8')
+      # Only languages that actually use this tag are offered; linking a language
+      # to a tag page it has no articles for would lead to a page that is not there.
+      tag_roots = language_roots.select { |other, _| other == language || tag_languages(tag).include?(other) }
+      path.write(render_list_page(title: title, articles: tagged, output_dir: output_dir,
+                                  articles_dir: articles_dir, language: language,
+                                  language_nav: render_language_nav(language, tag_roots, "lists/tag-#{tag}.html")),
+                 encoding: 'UTF-8')
       written << path
     end
 
@@ -207,7 +280,11 @@ class ProfileArtifactValidator
       skilled = ordered.select { |article| Array(article.metadata['skills']).include?(skill) }
       path = pages_dir.join("skill-#{skill}.adoc")
       title = "#{terms.fetch('ui_article_list_skill_prefix')} #{humanize_slug(skill)}"
-      path.write(render_list_page(title: title, articles: skilled, output_dir: output_dir, articles_dir: articles_dir, language: language), encoding: 'UTF-8')
+      skill_roots = language_roots.select { |other, _| other == language || skill_languages(skill).include?(other) }
+      path.write(render_list_page(title: title, articles: skilled, output_dir: output_dir,
+                                  articles_dir: articles_dir, language: language,
+                                  language_nav: render_language_nav(language, skill_roots, "lists/skill-#{skill}.html")),
+                 encoding: 'UTF-8')
       written << path
     end
 
@@ -1343,14 +1420,17 @@ class ProfileArtifactValidator
      ''].join("\n")
   end
 
-  def render_list_page(title:, articles:, output_dir:, articles_dir:, language:)
-    body = ['<p class="article-list-back"><a href="../articles.html">&#8592; Zurück zur Artikelübersicht</a></p>',
-            article_list_html(articles, from_dir: output_dir, articles_dir: articles_dir, language: language)].join("\n")
+  def render_list_page(title:, articles:, output_dir:, articles_dir:, language:, language_nav: '')
+    body = [language_nav,
+            '<p class="article-list-back"><a href="../articles.html">&#8592; {ui_article_list_back}</a></p>',
+            article_list_html(articles, from_dir: output_dir, articles_dir: articles_dir, language: language)]
+           .reject(&:empty?).join("\n")
 
     ['// Generated article list page. Do not edit manually.',
      "= #{title}",
+     ':lang: ' + language,
      'ifdef::buildsite[]',
-     ':basedir: ../..',
+     ":basedir: #{site_root_relative_prefix(output_dir)}",
      'endif::[]',
      'include::{includesdir}/../../revinfo.adoc[]',
      ':revdate!:',
@@ -1359,10 +1439,35 @@ class ProfileArtifactValidator
      ':active: articles',
      'include::{includesdir}/docheader.adoc[]',
      '',
+     '[subs="attributes"]',
      '++++',
      body,
      '++++',
      ''].join("\n")
+  end
+
+  # Relative prefix from an output directory back to the site root, used as
+  # {basedir}. A hard-coded '../..' only holds for the default language, which
+  # sits directly under the site root; a language subtree is one level deeper and
+  # would resolve its stylesheet and menu links inside its own directory.
+  def site_root_relative_prefix(output_dir)
+    relative = site_relative_dir(output_dir)
+    return '../..' if relative.nil?
+
+    depth = relative.each_filename.count
+    depth.zero? ? '.' : Array.new(depth, '..').join('/')
+  end
+
+  # Path of a directory relative to the site root it belongs to, or nil when it
+  # is outside the rendered source roots.
+  def site_relative_dir(dir)
+    SITE_SOURCE_ROOTS.each do |source_root|
+      root = profile_dir.join(source_root)
+      next unless dir.to_s == root.to_s || dir.to_s.start_with?("#{root}/")
+
+      return dir.relative_path_from(root)
+    end
+    nil
   end
 
   def article_list_html(articles, from_dir:, articles_dir:, language:)

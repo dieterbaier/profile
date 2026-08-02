@@ -1,10 +1,11 @@
-= Artikel
+= Articles
+:lang: en
 include::{includesdir}/../../revinfo.adoc[]
 :revdate!:
 :revnumber!:
 :revremark!:
 ifdef::buildsite[]
-:basedir: ..
+:basedir: ../..
 endif::[]
 :active: articles
 include::{includesdir}/docheader.adoc[]
