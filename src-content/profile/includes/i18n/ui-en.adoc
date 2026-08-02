@@ -20,3 +20,10 @@
 :ui_comments_error: Comments could not be loaded right now. Please try again later.
 :ui_comments_count_one: One comment:
 :ui_comments_count_many: %count% comments:
+:ui_article_nav_label: Article navigation
+:ui_article_nav_prev: (Series) Previous article
+:ui_article_nav_next: (Series) Next article
+:ui_article_nav_related: You might also be interested in
+:ui_article_list_all: All articles
+:ui_article_list_tag_prefix: Articles tagged:
+:ui_article_list_skill_prefix: Articles about:

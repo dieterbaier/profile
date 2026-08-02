@@ -112,7 +112,7 @@ class ProfileNavigationTest < Minitest::Test
       # Then: each article lists the other under the related heading
       alpha = nav_for(root, 'alpha')
       beta = nav_for(root, 'beta')
-      assert_includes alpha, 'Könnte Sie auch interessieren'
+      assert_includes alpha, '{ui_article_nav_related}'
       assert_includes alpha, 'href="beta.html"'
       assert_includes beta, 'href="alpha.html"'
     end
@@ -192,7 +192,7 @@ class ProfileNavigationTest < Minitest::Test
       # Then: only the previous section is rendered, with the (Serie) label
       second = nav_for(root, 'second')
       assert_includes second, 'article-nav-prev'
-      assert_includes second, '(Serie) Vorheriger Artikel'
+      assert_includes second, '{ui_article_nav_prev}'
       refute_includes second, 'article-nav-related'
       refute_includes second, 'article-nav-next'
     end
