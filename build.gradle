@@ -435,6 +435,19 @@ tasks.register('testProfileLanguage') {
     }
 }
 
+tasks.register('testProfileLanguageAlternates') {
+    description = 'Runs the language switcher and alternate-link behaviour tests.'
+    group = 'verification'
+    inputs.files('scripts/validate-profile-metamodel.rb', 'test/profile_language_alternates_test.rb')
+    inputs.files('features/language-alternates.feature')
+
+    doLast {
+        exec {
+            commandLine 'ruby', '-Itest', 'test/profile_language_alternates_test.rb'
+        }
+    }
+}
+
 tasks.register('testProfileTranslation') {
     description = 'Runs the translation provenance behaviour tests.'
     group = 'verification'
@@ -581,7 +594,8 @@ tasks.named('buildSite') {
         def command = [
                 'ruby',
                 'scripts/inject-site-metadata.rb',
-                '--site-dir', layout.buildDirectory.dir('site').get().asFile
+                '--site-dir', layout.buildDirectory.dir('site').get().asFile,
+                '--alternates', layout.buildDirectory.file('site-metadata/language-alternates.json').get().asFile
         ]
         if (env('SITE_BASE_URL')) {
             command += ['--base-url', env('SITE_BASE_URL')]
@@ -642,7 +656,8 @@ tasks.register("buildArticleListPages${suffix}", org.asciidoctor.gradle.jvm.Asci
         def command = [
                 'ruby',
                 'scripts/inject-site-metadata.rb',
-                '--site-dir', layout.buildDirectory.dir('site').get().asFile
+                '--site-dir', layout.buildDirectory.dir('site').get().asFile,
+                '--alternates', layout.buildDirectory.file('site-metadata/language-alternates.json').get().asFile
         ]
         if (env('SITE_BASE_URL')) {
             command += ['--base-url', env('SITE_BASE_URL')]

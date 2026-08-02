@@ -1,15 +1,46 @@
 # frozen_string_literal: true
 
+require 'json'
 require 'optparse'
 require 'pathname'
 require 'uri'
 
 class SiteMetadataInjector
-  attr_reader :site_dir, :base_url
+  attr_reader :site_dir, :base_url, :alternates, :default_language
 
-  def initialize(site_dir:, base_url:)
+  # The rendered site carries no metadata, so the translation groups are handed
+  # in as output paths: a map of language to path, produced by the profile
+  # generator, which is the only place that knows which pages are variants of
+  # one another. A page that merely falls back to another language is not in it.
+  def initialize(site_dir:, base_url:, alternates: nil)
     @site_dir = Pathname.new(site_dir).expand_path
     @base_url = normalize_base_url(base_url)
+    @default_language = alternates && alternates['default_language']
+    @alternates = index_alternates(alternates)
+  end
+
+  def index_alternates(alternates)
+    return {} if alternates.nil?
+
+    Array(alternates['groups']).each_with_object({}) do |group, index|
+      group.each_value { |path| index[path] = group }
+    end
+  end
+
+  # Alternate links for one output path, or an empty list when the page has no
+  # variants. Every variant of a group links to all variants including itself,
+  # which is what search engines expect, plus x-default for the default language.
+  def alternate_links(relative_path)
+    group = alternates[relative_path]
+    return [] if group.nil?
+
+    links = group.map do |language, path|
+      %(<link rel="alternate" hreflang="#{language}" href="#{canonical_url(site_dir.join(path))}">)
+    end
+
+    fallback = group[default_language]
+    links << %(<link rel="alternate" hreflang="x-default" href="#{canonical_url(site_dir.join(fallback))}">) if fallback
+    links
   end
 
   def inject
@@ -66,6 +97,13 @@ class SiteMetadataInjector
               else
                 content.sub('</head>') { "#{canonical}\n</head>" }
               end
+
+    # Injection is idempotent: previously written alternates are replaced rather
+    # than appended, because the listing pages re-run this step.
+    updated = updated.gsub(%r{^<link\b[^>]*\brel="alternate"[^>]*>\n}, '')
+    links = alternate_links(html_path.relative_path_from(site_dir).to_s.tr('\\', '/'))
+    updated = updated.sub('</head>') { "#{links.join("\n")}\n</head>" } unless links.empty?
+
     html_path.write(updated, encoding: 'UTF-8')
   end
 end
@@ -76,6 +114,7 @@ if $PROGRAM_NAME == __FILE__
     parser.on('--site-dir PATH') { |value| options[:site_dir] = value }
     parser.on('--base-url URL') { |value| options[:base_url] = value }
     parser.on('--required') { options[:required] = true }
+    parser.on('--alternates PATH') { |value| options[:alternates] = value }
   end.parse!
 
   if options[:base_url].nil? || options[:base_url].strip.empty?
@@ -85,5 +124,13 @@ if $PROGRAM_NAME == __FILE__
   end
 
   abort '--site-dir is required' unless options[:site_dir]
-  SiteMetadataInjector.new(site_dir: options[:site_dir], base_url: options[:base_url]).inject
+
+  alternates = nil
+  if options[:alternates] && File.file?(options[:alternates])
+    alternates = JSON.parse(File.read(options[:alternates], encoding: 'UTF-8'))
+  end
+
+  SiteMetadataInjector.new(
+    site_dir: options[:site_dir], base_url: options[:base_url], alternates: alternates
+  ).inject
 end

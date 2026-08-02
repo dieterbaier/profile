@@ -71,6 +71,68 @@ class SiteMetadataInjectorTest < Minitest::Test
     end
   end
 
+  # Scenarios from features/language-alternates.feature that belong to the
+  # injector. The rendered site carries no metadata, so the translation groups
+  # are handed in as output paths.
+  ALTERNATES = {
+    'schema_version' => 1,
+    'default_language' => 'de',
+    'groups' => [{ 'de' => 'index.html', 'en' => 'en/index.html' }]
+  }.freeze
+
+  def alternate_hrefs(path)
+    path.read.scan(/<link rel="alternate" hreflang="([^"]+)" href="([^"]+)">/)
+  end
+
+  def test_translation_group_is_published_as_alternate_links
+    # Given: a rendered site whose page exists in two languages
+    with_site(%w[index.html en/index.html]) do |site|
+      injector = SiteMetadataInjector.new(site_dir: site, base_url: 'https://example.test',
+                                          alternates: ALTERNATES)
+
+      # When: the site metadata is injected
+      injector.inject
+
+      # Then: each variant links to both variants and names the default language as x-default
+      expected = [%w[de https://example.test/], %w[en https://example.test/en/],
+                  ['x-default', 'https://example.test/']]
+      assert_equal expected, alternate_hrefs(site.join('index.html'))
+      assert_equal expected, alternate_hrefs(site.join('en/index.html'))
+    end
+  end
+
+  def test_page_without_variants_carries_no_alternate_links
+    # Given: a rendered site whose page exists in one language only
+    with_site(%w[index.html legal.html en/index.html]) do |site|
+      injector = SiteMetadataInjector.new(site_dir: site, base_url: 'https://example.test',
+                                          alternates: ALTERNATES)
+
+      # When: the site metadata is injected
+      injector.inject
+
+      # Then: that page carries no alternate links
+      assert_empty alternate_hrefs(site.join('legal.html'))
+    end
+  end
+
+  def test_alternate_links_leave_canonical_links_untouched
+    # Given: a rendered site whose page exists in two languages
+    with_site(%w[index.html en/index.html]) do |site|
+      injector = SiteMetadataInjector.new(site_dir: site, base_url: 'https://example.test',
+                                          alternates: ALTERNATES)
+
+      # When: the site metadata is injected, twice, as the listing build does
+      injector.inject
+      injector.inject
+
+      # Then: each variant keeps the canonical URL of its own output path,
+      # and the alternates are replaced rather than appended
+      assert_equal 'https://example.test/', canonical_href(site.join('index.html'))
+      assert_equal 'https://example.test/en/', canonical_href(site.join('en/index.html'))
+      assert_equal 3, alternate_hrefs(site.join('index.html')).length
+    end
+  end
+
   def test_special_characters_in_output_paths_are_percent_encoded
     # Given: a generated public page whose output path contains spaces and non-ASCII characters
     with_site(['articles/Über uns & mehr.html']) do |site|

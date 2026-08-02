@@ -214,6 +214,106 @@ class ProfileArtifactValidator
     written
   end
 
+  # Writes one language switcher per page next to it, empty unless the page
+  # really exists in more than one language. A page that merely falls back to the
+  # default language is not offered as a variant: that would promise a
+  # translation nobody wrote.
+  def generate_language_switchers(artifacts)
+    clean_generated_language_switchers
+
+    groups = translation_groups(artifacts)
+
+    groups.values.select { |variants| variants.length > 1 }.flat_map do |variants|
+      variants.map do |variant|
+        dir = article_source_path(variant).dirname.join('generated')
+        FileUtils.mkdir_p(dir)
+        path = dir.join("#{article_slug(variant)}-langswitch.adoc")
+        path.write(render_language_switcher(variant, variants), encoding: 'UTF-8')
+        path
+      end
+    end
+  end
+
+  # Artifacts that are translations of one another, keyed by their group, and
+  # only those that are rendered as pages.
+  def translation_groups(artifacts)
+    artifacts.select { |artifact| page_artifact?(artifact) }
+             .group_by { |artifact| translation_group_key(artifact) }
+  end
+
+  def page_artifact?(artifact)
+    !artifact_output_path(artifact).nil?
+  end
+
+  def render_language_switcher(current, variants)
+    ordered = variants.sort_by { |variant| artifact_language(variant) }
+    items = ordered.map do |variant|
+      language = artifact_language(variant)
+      if variant.equal?(current)
+        "    <li><span class=\"language-switch-current\" lang=\"#{language}\">{ui_language_name_#{language}}</span></li>"
+      else
+        href = h(article_link_href(current, variant))
+        "    <li><a href=\"#{href}\" lang=\"#{language}\" hreflang=\"#{language}\">{ui_language_name_#{language}}</a></li>"
+      end
+    end
+
+    # Raw HTML without block delimiters: this file is included from inside the
+    # menu's passthrough block, which already applies attribute substitution.
+    # Splitting that block to include it as a block of its own would change the
+    # whitespace of every rendered page.
+    ['<nav class="language-switch" aria-label="{ui_language_switch_label}">',
+     '  <ul>',
+     *items,
+     '  </ul>',
+     '</nav>',
+     ''].join("\n")
+  end
+
+  def clean_generated_language_switchers
+    Dir.glob(profile_dir.join('**', 'generated', '*-langswitch.adoc').to_s).each do |path|
+      File.delete(path)
+    end
+  end
+
+  # The rendered site has no metadata, so the translation groups are handed to
+  # the metadata injector as output paths it can match against the files it walks.
+  def generate_language_alternates(artifacts, output:)
+    groups = translation_groups(artifacts).values.select { |variants| variants.length > 1 }
+
+    entries = groups.map do |variants|
+      variants.sort_by { |variant| artifact_language(variant) }.to_h do |variant|
+        [artifact_language(variant), artifact_output_path(variant)]
+      end
+    end
+
+    output_path = root.join(output)
+    FileUtils.mkdir_p(output_path.dirname)
+    output_path.write(
+      "#{JSON.pretty_generate({ 'schema_version' => 1, 'default_language' => DEFAULT_LANGUAGE, 'groups' => entries })}\n",
+      encoding: 'UTF-8'
+    )
+    output_path
+  end
+
+  # Output path of a page artifact relative to the site root, or nil when the
+  # artifact is not rendered as a site page. Derived from the resolved source
+  # path rather than the raw metadata string, so it follows profile_dir like the
+  # rest of the generator instead of assuming a fixed repository layout.
+  def artifact_output_path(artifact)
+    path = article_source_path(artifact)
+    return nil unless path.to_s.end_with?('.adoc')
+
+    relative = path.relative_path_from(profile_dir).to_s
+    return nil if relative.start_with?('..')
+
+    source_root = SITE_SOURCE_ROOTS.find { |name| relative.start_with?("#{name}/") }
+    return nil if source_root.nil?
+
+    relative.delete_prefix("#{source_root}/").sub(/\.adoc\z/, '.html')
+  rescue ArgumentError
+    nil
+  end
+
   # Writes one provenance note per article next to it, empty for originals.
   # A translation always says what it came from; an outdated or deliberately
   # divergent one additionally says how it relates to that text. Both notes can
@@ -1536,7 +1636,8 @@ if $PROGRAM_NAME == __FILE__
     generate: false,
     output: nil,
     article_comment_allowlist: nil,
-    accept_translation: nil
+    accept_translation: nil,
+    language_alternates: nil
   }
   OptionParser.new do |parser|
     parser.on('--root PATH') { |value| options[:root] = Pathname.new(value) }
@@ -1545,6 +1646,7 @@ if $PROGRAM_NAME == __FILE__
     parser.on('--output PATH') { |value| options[:output] = value }
     parser.on('--article-comment-allowlist PATH') { |value| options[:article_comment_allowlist] = value }
     parser.on('--accept-translation ID') { |value| options[:accept_translation] = value }
+    parser.on('--language-alternates PATH') { |value| options[:language_alternates] = value }
   end.parse!
 
   root = options[:root]
@@ -1581,6 +1683,13 @@ if $PROGRAM_NAME == __FILE__
     puts "Generated #{list_paths.length} article list file(s)."
     note_paths = validator.generate_translation_notes(artifacts)
     puts "Generated #{note_paths.length} translation note(s)."
+    switcher_paths = validator.generate_language_switchers(artifacts)
+    puts "Generated #{switcher_paths.length} language switcher(s)."
+    alternates_path = validator.generate_language_alternates(
+      artifacts,
+      output: options[:language_alternates] || 'build/site-metadata/language-alternates.json'
+    )
+    puts "Generated language alternates: #{alternates_path.relative_path_from(root)}"
     registry_paths = validator.generate_link_registries(artifacts)
     puts "Generated #{registry_paths.length} link registry file(s)."
     validator.report_translation_states(artifacts)
