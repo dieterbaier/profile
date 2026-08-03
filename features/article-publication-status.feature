@@ -41,6 +41,31 @@ Feature: Article selection by publication status
     When the public article selection is computed
     Then the excluded path is the article source, not the sidecar
 
+  Scenario: A sidecar without a source field still names the article beside it
+    Given an unpublished article whose sidecar declares no source
+    When the public article selection is computed
+    Then the article file next to the sidecar is excluded
+
+  Scenario: An unresolvable source stops the selection instead of skipping the article
+    Given an unpublished article whose sidecar names a source file that is absent
+    When the public article selection is computed
+    Then the selection fails naming the article and its status
+
+  Scenario: A published article with an unresolvable source does not stop the selection
+    Given a published article whose sidecar names a source file that is absent
+    When the public article selection is computed
+    Then the selection succeeds and excludes nothing
+
+  Scenario: Output of an article the target must not contain is reported
+    Given a rendered target holding a page and an export of an unpublished article
+    When the rendered target is checked
+    Then both outputs are reported
+
+  Scenario: A rendered target holding only published output is accepted
+    Given a rendered target holding the page of a published article only
+    When the rendered target is checked
+    Then nothing is reported
+
   Scenario: Only published articles appear in public listings and navigation
     Given a published article and a preview article sharing a tag
     When the article listings and navigation are generated
