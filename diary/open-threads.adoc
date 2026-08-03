@@ -60,6 +60,24 @@ muss deshalb zusammenführen statt überschreiben.
 Offen ist, wie oft das wiederholt wird und woran man die nächste Divergenz
 merkt. Stromaufwärts hängt es an docs-as-code-toolkit#26; lokal ist es #75.
 
+=== Ob `language-profile` die Unterscheidung nennen soll, die es heute brauchte
+
+Profil 1 sagt: der Kern einer akzeptierten Entscheidung wird nicht
+überschrieben, eine geänderte Entscheidung wird ein neuer Record. Am 3. August
+lagen zwei Korrekturen an ADR-008 nebeneinander, die gleich aussahen und
+entgegengesetzt behandelt wurden.
+
+`copy` → `move` stand nur im Sequenzdiagramm; die Decision-Sektion sagte immer
+„promoted". Das ist ein Fehler in der Entscheidungs*grundlage*, und der wurde in
+place korrigiert. Basic Auth stand in der Decision-Sektion und in einer datierten
+Bestätigung. Das ist eine geänderte Entscheidung, und daraus wurde ADR-011.
+
+Die Regel trägt beide Fälle, benennt die Unterscheidung aber nicht. Ob sie das
+soll, ist offen: sie in den Skill zu schreiben macht sie nachschlagbar, öffnet
+aber auch die Tür, eine unbequeme Änderung als „nur die Grundlage" zu deklarieren.
+Der Auslöser, es zu entscheiden, wäre der erste Fall, in dem die Zuordnung
+strittig ist — heute war sie es nicht.
+
 === Wessen Sprache in src-content/profile gilt
 
 Alles unter `src-content/profile` ist Produktarbeit und trägt die Sprache des

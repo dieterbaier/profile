@@ -42,6 +42,28 @@ Wäre der Widerspruch erst beim Implementieren aufgefallen, hätte die
 Stub-Generierung bereits existiert. So entfiel sie ersatzlos, bevor sie gebaut
 wurde.
 
+=== Lücke: geschnittene Issues überleben die Entscheidung, die sie geformt hat
+
+`slice-issues` erzeugt Kind-Issues mit eigenen Akzeptanzkriterien und benennt das
+Eltern-Issue als Koordinationspunkt. Was der Skill nicht sagt: was mit den
+Kindern geschieht, wenn sich die Entscheidung ändert, aus der ihr Zuschnitt kam.
+
+Beide Male trat es am selben Tag ein. #79 war gegen ADR-008 geschnitten worden
+und forderte Basic Auth für das Preview-Deployment; ADR-011 schaffte diese
+Schranke ab. #85 war gegen ein Move-Modell geschnitten und forderte vom
+Implementierer, den Umgang mit einem halb gescheiterten Move selbst zu
+*entscheiden* — was ADR-009 inzwischen entschieden hatte. In beiden Fällen stand
+die neue Entscheidung im ADR und die alte im ausführbaren Teil des Issues.
+
+Bemerkt hat es der Owner im Review, nicht der Prozess. Ein Kind-Issue verweist
+auf sein Eltern-Issue, aber keine Relation verbindet es mit dem ADR, dessen
+Annahmen es umsetzt — und selbst wenn es eine gäbe, würde nichts sie prüfen.
+
+Die naheliegende Ergänzung stromaufwärts wäre kein Werkzeug, sondern ein Schritt:
+wer eine Entscheidung ändert, prüft die Issues, die aus ihr geschnitten wurden.
+`architecture-impact` deckt die Richtung Artefakt → Artefakt ab; die Richtung
+Entscheidung → Backlog fehlt.
+
 === Bestätigt: kopierte Toolkit-Assets driften still — zweite Instanz
 
 Beim Schreiben von ADR-010 konnte `derived_from` nicht gesetzt werden:

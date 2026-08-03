@@ -1,0 +1,155 @@
+== Day 3 — 3 August 2026: Claims stronger than their mechanism
+
+Drei Pull Requests gingen heute auf `main` (#81, #82, #92), dazu dreizehn neue
+Issues (#77 bis #91) und zwei akzeptierte Architekturentscheidungen. Der Tag
+drehte sich aber nicht um das Gebaute. Fünfmal stand eine Zusicherung im Text,
+die der Mechanismus dahinter nicht halten konnte — dreimal fand es der Review,
+zweimal fanden wir es selbst, und einmal hätten wir es fast nicht gefunden.
+
+=== Eine Auswahl, die nichts auswählte, wenn sie den Namen nicht kannte
+
+`buildSite` rendert seit #77 nur noch Artikel mit `status: published`. Die
+Auswahl arbeitet auf dem aufgelösten Quellpfad eines Artefakts, und der kam für
+ein Sidecar aus `article_source_path`:
+
+[source,ruby]
+----
+article.path.sub_ext('.adoc')
+----
+
+`sub_ext` tauscht die Extension. Aus `doc-as-code.profile.yaml` wird damit
+`doc-as-code.profile.adoc` — eine Datei, die es nicht gibt. Eine Auswahl, die
+auf einen Pfad ohne Datei zeigt, schließt nichts aus, und die echte
+`doc-as-code.adoc` wurde gerendert. Fail-open an genau der Grenze, die der Slice
+einzieht.
+
+Plausibel war es aus zwei Gründen gleichzeitig. `sub_ext` ist der idiomatische
+Weg, eine Extension zu tauschen, und tut hier genau das, was draufsteht — nur
+ist `.profile.yaml` kein Suffix, sondern zwei. Und der Zweig lief nie: jedes
+reale Sidecar trägt ein `source`-Feld, also wurde der Fallback von keinem Test
+und keinem Build je betreten.
+
+Der Owner fand es im Review von #81. Die Reparatur blieb nicht bei der
+Zuordnung: die Auswahl überspringt seither nicht mehr, was sie nicht benennen
+kann, sondern bricht ab (`UnresolvableArticleSource`). Dazu kam eine Prüfung, die
+das *Ergebnis* statt der Auswahl ansieht —
+`verifyPublicTargetHasOnlyPublishedArticles` scheitert, wenn Output eines nicht
+veröffentlichten Artikels in `build/site` oder `build/articles` liegt, unabhängig
+davon, wie er dorthin kam.
+
+=== Der Quellbaum wird aufgelöst, bevor irgendein Generator läuft
+
+Der erste Entwurf derselben Auswahl ließ `generateProfileArtifacts` eine
+Ausschlussliste schreiben, die die Render-Task beim Durchlaufen ihres Quellbaums
+liest. `buildSite` hängt von `generateProfileArtifacts` ab, also schien die
+Reihenfolge gesichert.
+
+Sie ist es nicht. Das Asciidoctor-Plugin löst den Quellbaum einer Task auf,
+während es deren *Abhängigkeiten bestimmt* — vor jedem Generator. Ein sauberer
+Build endete mit `Could not determine the dependencies of task ':buildSite'`.
+
+Was daran lehrreich ist, ist nicht der Fehler, sondern warum er sich versteckte:
+mehrere Builds davor waren grün. Sie waren grün, weil wir den Generator vorher
+von Hand aufgerufen hatten und die Datei deshalb schon dalag. Jede Beobachtung
+kam aus einem bereits warmen Zustand. Aufgefallen ist es erst, als wir den
+Fehlerpfad *absichtlich* auslösen wollten — und dabei aus einem sauberen
+Verzeichnis starteten.
+
+Die Auflösung war dieselbe wie gestern bei den Listenseiten: nicht um die
+Reihenfolge herumbauen, sondern die Abhängigkeit entfernen. Die Auswahl entsteht
+jetzt zur Konfigurationszeit, wo es keine Task-Reihenfolge gibt.
+
+=== Drei Zusicherungen, die der Review kassierte
+
+Alle drei standen in Texten, nicht in Code, und alle drei klangen wie
+Eigenschaften des Systems.
+
+*„An article lives in exactly one source repository at a time."* Das war die
+Begründung dafür, dass Promotion verschiebt statt kopiert — und als Zusicherung
+unhaltbar. Zwei Git-Repositories lassen sich nicht in einer Transaktion
+schreiben; zwischen dem öffentlichen Push und der privaten Löschung existiert der
+Artikel zwangsläufig zweimal. ADR-009 beschreibt es seither als Saga: führendes
+Repository, Reihenfolge, Stoppzustände, Recovery. *Move* blieb das fachliche
+Ziel, hörte aber auf, eine technische Eigenschaft zu sein.
+
+*„The public validator declares which versions it accepts and rejects the
+rest."* Im Präsens formuliert, während `validate-profile-metamodel.rb` das Feld
+`metadata_version` weiterhin nur auf `string` prüft. Die Architekturdokumentation
+behauptete damit eine aktive Schutzwirkung, die es nicht gab. Beide ADRs tragen
+seither eine `Implementation Status`-Tabelle, die *decided* von *implemented*
+trennt, und #83 ist als Gate benannt, vor dem nichts Privates läuft.
+
+*„The same artifact `id` present in both repositories means a promotion stopped
+after the public push."* Kann es heißen — muss es aber nicht. Dieselbe `id` kann
+auch eine echte Kollision sein, und eine Wiederaufnahme, die allein der `id`
+traut, überschriebe öffentlichen Inhalt mit privatem.
+
+Der dritte ist der interessante, weil er zeigt, wie die anderen entstanden. Wir
+hatten die Saga korrekt beschrieben und dabei ihr Erkennungsmerkmal von einem
+*Signal* zu einem *Beweis* aufgewertet — in demselben Absatz, in dem wir eine
+andere Überspitzung entfernten.
+
+=== Zweimal widersprach sich ADR-008 selbst, und zweimal hatte das Diagramm recht
+
+ADR-008 sagt in seiner Decision-Sektion, ein Artikel werde „promoted", und im
+Sequenzdiagramm daneben stand `copy source and sidecar metadata`. Der Owner
+korrigierte: verschieben, nicht kopieren.
+
+Wenige Stunden später dasselbe Muster an anderer Stelle. Die Decision-Sektion
+verlangte für Preview- und Private-Deployment „behind Basic Auth", eine
+Consequence wiederholte es, und die Review Notes bestätigten es mit Datum
+(2026-07-18). Das Deployment-Diagramm im selben Dokument zeigte Preview als
+`noindex, no canonical` — ohne Basic Auth, das nur beim privaten Target steht.
+Wieder hatte das Diagramm recht.
+
+Zweimal dieselbe Richtung ist keine Anekdote mehr. Die Prosa driftete, die
+Diagramme nicht — vermutlich, weil ein Diagramm beim Ändern als Ganzes gelesen
+wird und ein Absatz nicht.
+
+Die beiden Korrekturen wurden trotzdem verschieden behandelt, und das war die
+eigentliche Frage des Tages. `language-profile` sagt für ADRs: der Kern einer
+akzeptierten Entscheidung wird nicht überschrieben, eine geänderte Entscheidung
+wird ein neuer Record. Bei `copy` → `move` stand das falsche Wort *nur* im
+Diagramm; die Decision-Sektion sagte nie „copy". Also Korrektur der
+Entscheidungs*grundlage*, kein neuer Record. Bei Basic Auth stand es in der
+Decision-Sektion *und* in einer datierten Bestätigung. Also eine geänderte
+Entscheidung, und damit ADR-011.
+
+Die Regel selbst nennt diese Unterscheidung nicht. Sie ergab sich erst daraus,
+dass beide Fälle am selben Tag nebeneinander lagen.
+
+=== Eine Korrektur, die wir als erledigt meldeten, ohne sie nachzulesen
+
+ADR-011 nimmt die Zugangsschranke vor dem Preview weg. Die Folge-Issues mussten
+mit, und #79 („Deployment für preview.dieterbaier.eu") bekam eine Korrektur per
+Skript: Titel, Korrekturabschnitt, Ziel und Scope.
+
+Gemeldet wurde es als erledigt. Tatsächlich hatte von vier Ersetzungen eine nicht
+gegriffen — ausgerechnet die des Acceptance-Criteria-Blocks. Übrig blieb genau
+der *ausführbare* Teil des Contracts: `401`, persistierendes `.htpasswd`,
+Credential-Dokumentation. Wer das Issue nach seiner Checkliste umgesetzt hätte,
+hätte die Grenze wieder eingebaut, die der ADR gerade abgeschafft hatte.
+
+Der Grund ist banal und deshalb wiederholbar: nur ein Teil der Ersetzungen war
+mit einem `assert` abgesichert, die nicht greifende gehörte zu den anderen. Der
+Owner fand es im Review von #92.
+
+=== Ein Zeiger, den die Traceability hätte tragen sollen
+
+ADR-011 verweist auf ADR-008 über eine `refines`-Relation. Der Generator schreibt
+daraufhin eine Traceability-Ansicht für ADR-008, in der die eingehende Relation
+steht. Ein Leser von ADR-008 sieht sie nie:
+
+[source,sh]
+----
+grep -rn "traceability.adoc\[\]" src-content/docs/   # keine Treffer
+----
+
+Die Kapitel binden die generierten `*-includes.adoc` und Indexdateien ein, aber
+keine einzige Traceability-Ansicht — weder pro Artefakt noch pro Kapitel.
+Relationen sind damit nur sichtbar, wenn jemand das Front Matter öffnet.
+
+Wir haben es mit einem handgeschriebenen Satz unter ADR-008s Status überbrückt.
+Das ist genau der handgepflegte Zeiger, den die Relationsmetadaten überflüssig
+machen sollen, und steht deshalb als #90 mit dem Akzeptanzkriterium, den Satz
+danach wieder zu entfernen.

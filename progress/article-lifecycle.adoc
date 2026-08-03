@@ -3,57 +3,85 @@
 Ein Artikel soll entstehen, reviewt und veröffentlicht werden können, ohne dass
 ein Entwurf allein dadurch öffentlich wird, dass er im Repository liegt.
 
-*Status:* in flight — Canonical-URLs stehen, die Statusauswahl ist umgesetzt und
-liegt als PR vor. Danach ist das Schreiben eines Entwurfs im öffentlichen
-Repository gefahrlos.
+*Status:* in flight — die öffentliche Seite wählt nach Status aus, beide
+Architekturentscheidungen stehen. Offen ist alles, was gebaut werden muss.
 
 == The plan
 
-Die Reihenfolge kommt aus #26 und aus einem Gate: ADR-008 ist akzeptiert,
-ADR-009 ist `proposed`. Alles, was private Quellen liest, Promotion automatisiert
-oder ein privates Target baut, wartet auf dessen Review.
+Zwei Pfade, die sich nicht kreuzen. Der öffentliche Preview-Pfad braucht kein
+privates Repository; der private Pfad wartet auf #83.
 
 [options="checklist"]
-* [x] Canonical-URLs aus Basis-URL und Ausgabepfad, Pflicht in Produktion — #26
+* [x] Canonical-URLs aus Basis-URL und Ausgabepfad, Pflicht in Produktion
 * [x] Navigation und Artikellisten aus Metadaten statt Handpflege — kam mit #47
 * [x] `preview` und `private` im Schema und im Validator-Enum
-* [ ] Öffentliches Target nur aus `published` — Renderauswahl aus Metadaten — #77
+* [x] Öffentliches Target nur aus `published`, fail-closed — #77
+* [x] ADR-009 akzeptiert, Gate für private Quellen entschieden — #80
+* [x] ADR-011 akzeptiert, Preview ohne Basic Auth — #89
+
+Öffentlicher Preview-Pfad:
+
+[options="checklist"]
+* [ ] Hinweis am Artikelanfang für nicht veröffentlichte Artikel — #88
 * [ ] `build/site-preview` mit `noindex`, ohne Canonical — #78
-* [ ] Deployment und Basic-Auth-Betrieb für `preview.dieterbaier.eu` — #79
-* [ ] ADR-009 reviewen — hebt das Gate — #80
-* [ ] Danach: erste Promotion-Checks, Promotion-Skript, `build/site-private`,
-  `private.dieterbaier.eu` — noch nicht geschnitten, Zuschnitt hängt an #80
+* [ ] Deployment `preview.dieterbaier.eu`, ohne Zugangsschranke — #79
 
-Die Statusauswahl muss vor allem anderen liegen. Sie ist die einzige Stelle, an
-der ein Entwurf im öffentlichen Repository liegen kann, ohne veröffentlicht zu
-sein — und damit die Bedingung dafür, überhaupt einen neuen Artikel hier zu
-schreiben. Das Preview-Target baut darauf auf: es ist dieselbe Auswahl mit einer
-anderen Statusmenge.
+Privater Pfad:
 
-Das Gate trennt sauber. Alles bis einschließlich Preview arbeitet nur auf
-öffentlicher Quelle und ist von ADR-009 unabhängig.
+[options="checklist"]
+* [ ] `metadata_version` im Validator durchsetzen — #83
+* [ ] Erste Promotion-Checks — #84
+* [ ] Promotion-Skript, Saga aus ADR-009 — #85
+* [ ] `build/site-private` aus privater Quelle — #86
+* [ ] Deployment `private.dieterbaier.eu`, mit Basic Auth — #87
+
+Nebenbefunde:
+
+[options="checklist"]
+* [ ] Artikelquelle ohne Metadaten wird stillschweigend veröffentlicht — #91
+* [ ] Generierte Traceability-Views werden nirgends inkludiert — #90
+
+Zwei Reihenfolgen sind tragend, und beide entstanden erst im Review.
+**#88 vor #79:** ADR-011 nimmt die Zugangsschranke vor dem Preview weg und setzt
+den Hinweis an ihre Stelle. Deployen ohne den Hinweis wäre die Hälfte der
+Entscheidung — die, die eine Kontrolle entfernt. **#83 vor allem Privaten:**
+ADR-009 stützt den Driftschutz auf eine durchgesetzte `metadata_version`, und
+der Validator prüft heute nur, ob das Feld ein String ist. Eine Promotion gegen
+einen nicht durchgesetzten Vertrag ist genau der Fehler, den die Entscheidung zu
+verhindern beansprucht.
 
 == Where we are
 
-Der Build fragt zur Konfigurationszeit beim Profil-Validator ab, welche
-Artikelquellen ein Target ausschließt; `PUBLIC_STATUSES` ist auf `published`
-verengt. Der Weg über eine während des Builds erzeugte Liste funktioniert nicht:
-die Asciidoctor-Task löst ihren Quellbaum schon beim Bestimmen der
-Task-Abhängigkeiten auf, also vor jedem Generator. Das ist dieselbe Fehlerklasse
-wie bei den Listenseiten und steht als Begründung im Crosscutting-Kapitel.
+`build/site` und der Markdown-Export enthalten nur Artikel mit
+`status: published`. Die Auswahl kommt zur Konfigurationszeit aus dem
+Profil-Validator und scheitert, statt zu überspringen, wenn sie eine
+auszuschließende Quelle nicht benennen kann. Zwei Checks stehen dahinter:
+`verifyPublicRenderTasksValidateMetadata` prüft im Task-Graphen, dass jede
+rendernde Task die Validierung erreicht; `verifyPublicTargetHasOnlyPublishedArticles`
+prüft das Ergebnis statt der Auswahl, die es erzeugt hat.
 
-Canonical-Injektion, Basis-URL-Pflicht und ihre Tests stehen seit dem
-Multilingual-Epic. Das Epic führte den Slice noch als offen; das ist korrigiert.
+ADR-009 beschreibt die Promotion als Saga mit dem öffentlichen Repository als
+führender Seite. ADR-011 hält fest, dass Preview ohne Authentifizierung
+ausgeliefert wird und die öffentliche Seite nie dorthin verlinkt. Beide tragen
+eine Implementation-Status-Tabelle, die entschieden von gebaut trennt.
+
+Ein Entwurf *mit* Sidecar ist im öffentlichen Repository sicher. Ein
+Artikel-`.adoc` ohne jede Metadaten ist es nicht — das ist #91.
+
+Der erste echte Durchlauf ist `dieterbaier/profile-private#7`, eine zweiteilige
+Artikelserie über AI-gestützte Architekturarbeit. Sie ist zugleich der
+Testballon: der Lebenszyklus ist heute architektonisch festgezogen, aber außer
+der öffentlichen Statusauswahl ist nichts davon gebaut. Was die Serie an Reibung
+findet, gehört in diese Datei und in die Slices, nicht in eine Ausnahme.
 
 == Open in this topic
 
-* Ob `reviewed` als Status überhaupt bleibt, wenn er weder öffentlich noch
-  privat etwas auswählt.
-* Wie ein Preview-Artikel im öffentlichen Repository davor geschützt wird,
-  versehentlich auf `published` gesetzt zu werden — der erste Promotion-Check
-  könnte hier ansetzen statt erst an der Repository-Grenze.
-* Ob `build/site-preview` ein eigener Gradle-Task ist oder derselbe Task mit
-  einer Statusmenge als Parameter.
+* Ob `reviewed` als Status bleibt. Seit #77 wählt er in keine Richtung mehr
+  etwas aus.
+* Wie „private-only" an Inhalt markiert wird. #84 muss es entscheiden; ohne
+  Markierung ist der Check dafür nicht formulierbar.
+* Ob `build/site-preview` ein eigener Gradle-Task wird oder `buildSite` mit einer
+  Statusmenge als Parameter. #78 entscheidet und begründet es dort.
 
 == Checks
 
@@ -62,8 +90,8 @@ Commands, not results. A number copied in here goes stale silently.
 [source,sh]
 ----
 ruby scripts/validate-profile-metamodel.rb
-./gradlew buildSite
-ruby -Itest test/site_metadata_injector_test.rb
-ruby -Itest test/profile_listings_test.rb
-ruby -Itest test/profile_navigation_test.rb
+ruby -Itest test/profile_publication_status_test.rb
+./gradlew buildSite buildArticlesMarkdown
+./gradlew verifyPublicRenderTasksValidateMetadata
+./gradlew validateArchitectureMetamodel
 ----

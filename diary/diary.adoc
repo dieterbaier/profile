@@ -28,6 +28,8 @@ include::through-line.adoc[]
 
 include::2026-08-02-what-only-real-content-revealed.adoc[]
 
+include::2026-08-03-claims-stronger-than-their-mechanism.adoc[]
+
 include::toolkit-validation.adoc[]
 
 include::working-agreements.adoc[]

@@ -35,3 +35,26 @@ Alle vier stammen vom selben Tag und vom selben Auslöser: dem Moment, in dem
 Testdaten durch echte Inhalte ersetzt wurden. Das ist die Beobachtung, nicht die
 Zahl. Eine fünfte Instanz, die nur einer der vier ähnelt, gehört nicht hierher —
 Ähnlichkeit ist der Punkt des Dokuments und verdünnt sich mit Menge.
+
+=== Zweite Kategorie: das Beispiel enthielt die Antwort schon
+
+2026-08-03 kamen zwei Fälle dazu, die nicht am Mangel an Beispielen lagen,
+sondern an deren Beschaffenheit. Die Annahme war falsifizierbar — nur nicht durch
+das, was wir betrachteten.
+
+Ausschlussliste zur Ausführungszeit (2026-08-03):: Behauptete, `dependsOn` ordne
+die Auflösung des Quellbaums nach dem Generator ein. Mehrere Builds bestätigten
+es. Sie bestätigten es, weil der Generator vorher von Hand gelaufen war und die
+Datei bereits dalag — jede Beobachtung kam aus einem warmen Zustand. Gefangen
+hätte es: ein Build aus einem sauberen Verzeichnis, der ihn dann auch fand
+(#77).
+
+`article_source_path` für Sidecars ohne `source` (2026-08-03):: Behauptete,
+`sub_ext('.adoc')` liefere die Artikeldatei zu einem Sidecar. Kein Test und kein
+Build widersprach, weil der Zweig nie lief: jedes reale Sidecar trägt ein
+`source`-Feld. Gefangen hätte es: ein Artefakt ohne dieses Feld — also der Fall,
+für den der Zweig geschrieben war (#77).
+
+Der Unterschied zur ersten Kategorie ist die Frage, die man stellen muss. Dort:
+„kenne ich ein zweites Beispiel?" Hier: „stammt meine Beobachtung aus einem
+Zustand, den der Fehler bereits überstanden hat?"
