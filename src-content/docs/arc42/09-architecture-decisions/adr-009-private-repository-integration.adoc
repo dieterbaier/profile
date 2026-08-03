@@ -158,7 +158,9 @@ The order follows from which failure is survivable. Removing from private first 
 | Commit and push private | Promotion is complete. | None.
 |===
 
-**The incomplete state is duplication, and it is detectable.** The same artifact `id` present in both repositories means a promotion stopped after the public push. That is the check a resumed promotion looks for, and it is why artifact IDs are stable and unique across the contract rather than per repository.
+**The incomplete state is duplication, and it is detectable.** The same artifact `id` present in both repositories is the signal a resumed promotion looks for, which is why artifact IDs are stable and unique across the contract rather than per repository.
+
+The signal is not conclusive on its own. A shared `id` can also mean a genuine collision — two different articles that ended up with the same identifier — and a resumption that trusted the `id` alone would overwrite public content with private content. Recognizing an interrupted promotion therefore means matching the public artifact against the private one being promoted, not matching identifiers. The three states a public `id` can represent, and their opposite responses, are specified in https://github.com/dieterbaier/profile/issues/85[GitHub issue #85].
 
 **A promoted article is never rolled back by moving it home.** If the article should not have been promoted, it is removed from the public repository like any other public content, and the public Git history keeps the record. Promotion is not reversible by re-running it backwards, because public history cannot be unpublished.
 
