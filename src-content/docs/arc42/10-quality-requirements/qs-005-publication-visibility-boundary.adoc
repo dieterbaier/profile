@@ -48,4 +48,12 @@ xref:qg-004-correctness[QG-004: Correctness]
 
 === Assumptions
 
-The exact verification mechanism is still proposed. It may be implemented as a Gradle verification task that inspects generated HTML and the metadata-derived source set.
+The public half of the response measure is verified: `build/site` is rendered
+from a metadata-derived source set that carries `published` only, specified in
+`features/article-publication-status.feature` and bridged to
+`test/profile_publication_status_test.rb`.
+
+The preview and private half is not. Those targets do not exist yet, so the
+`noindex` and canonical-link part of the measure has nothing to verify against.
+The mechanism for it is still open and may become a Gradle verification task
+that inspects generated HTML.

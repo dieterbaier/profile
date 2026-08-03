@@ -27,6 +27,26 @@ Deployment credentials are scoped by target system. `PROFILE_REPO_TOKEN` grants 
 
 Metadata validation runs before documentation rendering. The architecture validator follows the architecture-knowledge-toolkit metamodel. The profile validator checks profile artifact metadata, relations, and generated indexes.
 
+== Publication Selection
+
+A publication target renders the article statuses that target allows, decided in
+ADR-008. The public target allows `published` and nothing else. An article of any
+other status is absent from `build/site` rather than merely absent from its
+listings, so it has no URL to reach.
+
+Selection is by article metadata, never by where a file sits, so an article is
+kept out of a target by what it says about itself. The build asks the profile
+validator which sources a target excludes while it configures itself, because a
+render task resolves its sources before any generator runs; a list produced
+during the build would be missing exactly when a clean build needs it.
+
+The same selection applies to the markdown export, since CI uploads the whole
+build directory as a workflow artifact of a public repository.
+
+The observable behaviour is specified in
+`features/article-publication-status.feature` and bridged to
+`test/profile_publication_status_test.rb`.
+
 == Observability
 
 CI logs, Gradle task output, and validator reports are the operational feedback loop.

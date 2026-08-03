@@ -99,6 +99,40 @@ def articleSummarySourceExcludes = [
         '**/*_summary_*.html'
 ]
 
+// Article sources the public target must not render, as repository-relative
+// paths. Ruby owns the metadata contract, so the selection is asked for rather
+// than reimplemented here.
+//
+// This runs while the build configures itself, not while it executes. The
+// Asciidoctor plugin resolves a task's source tree when it determines that
+// task's dependencies, which is before any generator has run: a list written
+// during the build would be missing exactly when a clean build needs it. That
+// is the same failure class as the article list pages that once pointed at a
+// mid-build directory, and configuration time removes it rather than ordering
+// around it.
+def publicArticleExclusions = { ->
+    def stdout = new StringWriter()
+    def stderr = new StringWriter()
+    def process = ['ruby', 'scripts/validate-profile-metamodel.rb', '--list-public-source-exclusions']
+            .execute(null, rootDir)
+    process.waitForProcessOutput(stdout, stderr)
+
+    if (process.exitValue() != 0) {
+        throw new GradleException(
+                'Could not determine which articles the public target may render.\n' +
+                        "ruby scripts/validate-profile-metamodel.rb --list-public-source-exclusions failed:\n${stderr}")
+    }
+
+    stdout.toString().readLines().findAll { !it.trim().isEmpty() }.toSet()
+}()
+
+// The list holds repository-relative paths; a source spec matches relative to
+// its own source directory, so the directory prefix comes off again.
+def excludeNonPublicArticles = { PatternFilterable spec, String sourceDir ->
+    publicArticleExclusions.findAll { it.startsWith("${sourceDir}/") }
+            .each { spec.exclude it.substring(sourceDir.length() + 1) }
+}
+
 tasks.register('checkEnvironment') {
     doLast {
         def missing = []
@@ -526,6 +560,16 @@ def articleSources = fileTree('src-content/profile/site/articles') {
 }.sort()
 
 asciidoctorBase('buildArticlesDocbook','','src-content/profile/site/articles', 'build/articles/docbook', articleSources,true, 'docbook', ['type': 'readme'])
+
+// The markdown export is a second rendering of the same article sources, and CI
+// uploads all of build/ as a workflow artifact. Filtering only build/site would
+// leave the full text of an unpublished article in a downloadable artifact of a
+// public repository, so the same metadata selection applies here.
+tasks.named('buildArticlesDocbook') {
+    sources {
+        excludeNonPublicArticles(delegate, 'src-content/profile/site/articles')
+    }
+}
 tasks.register('buildArticlesMarkdown', PandocDirectoryTask) {
     dependsOn tasks.named('buildArticlesDocbook')
     dependsOn tasks.named('buildArticlesDocbookCopyAssets')
@@ -611,6 +655,13 @@ tasks.named('buildSite') {
     inputs.file('scripts/inject-site-metadata.rb')
     inputs.property('siteBaseUrl', env('SITE_BASE_URL') ?: '')
     inputs.property('requireSiteBaseUrl', env('REQUIRE_SITE_BASE_URL', 'false'))
+
+    // The public site renders articles whose metadata says status: published.
+    // Any other status is absent from build/site, not merely absent from the
+    // listings, so an unpublished article has no reachable URL either.
+    sources {
+        excludeNonPublicArticles(delegate, 'src-content/profile/site')
+    }
 
     doLast {
         def command = [

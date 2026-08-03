@@ -16,8 +16,21 @@ class ProfileArtifactValidator
   PROPERTIES = %w[id type title status owner created updated published reviewed generated language translation_of translation_source_digest translation_divergence audience channels summary summary_de summary_en source tags skills previous next relations metadata_version].freeze
   TYPES = %w[ProfilePage Article ShortThought CV Project ProfessionalExperience Education Skill Contact ProfileFragment].freeze
   STATUSES = %w[draft proposed preview reviewed published private archived deprecated].freeze
-  # Statuses whose articles may appear as public "related article" suggestions.
-  PUBLIC_STATUSES = %w[published preview reviewed].freeze
+  # Which article statuses each publication target renders. The target decides
+  # what is built, not where a file sits in the tree, so an article is kept out
+  # of a target by its own metadata and by nothing else.
+  #
+  # 'public' is the deployment of dieterbaier.eu and carries 'published' only.
+  # The article-comment allowlist has always selected on that single status; a
+  # wider definition here meant the repository held two answers to "is this
+  # article public", and the stricter one was the one reaching an external
+  # system.
+  TARGET_STATUSES = {
+    'public' => %w[published].freeze
+  }.freeze
+  # Statuses whose articles are part of the public site: rendered, listed,
+  # navigable, and offered as related-article suggestions.
+  PUBLIC_STATUSES = TARGET_STATUSES.fetch('public')
   # Ubiquitous tags carry no discriminating meaning across articles. They are
   # ignored when computing related-article tag overlap, and the validator warns
   # when an article relies on them. Keep meaningful topical tags (for example
@@ -145,6 +158,38 @@ class ProfileArtifactValidator
     FileUtils.mkdir_p(output_path.dirname)
     output_path.write(JSON.pretty_generate({ 'schema_version' => 1, 'article_ids' => article_ids }) + "\n", encoding: 'UTF-8')
     output_path
+  end
+
+  # Artifacts as they are on disk, without validating them. The build asks for
+  # the publication selection while it configures itself, long before the
+  # validator task runs, and a metadata error must be reported by that task
+  # rather than by every Gradle invocation.
+  def scan_artifacts
+    scan
+  end
+
+  # The article sources a publication target must not render, as
+  # repository-relative paths.
+  #
+  # The build excludes rather than includes because the site tree holds more
+  # than articles: profile pages, the toolkit page, legal, shorts, and generated
+  # list pages carry no article status and must keep rendering. An include list
+  # would have to enumerate all of them and would silently drop whatever it
+  # forgot; an exclude list only ever names articles that metadata rules out.
+  #
+  # Language variants are separate artifacts with their own status, so a
+  # translation is selected on its own metadata and never inherits the status of
+  # the article it was translated from.
+  def excluded_article_sources(artifacts, target:)
+    allowed = TARGET_STATUSES.fetch(target) do
+      raise ArgumentError, "unknown publication target '#{target}'"
+    end
+
+    artifacts.select { |artifact| artifact.metadata['type'] == 'Article' }
+             .reject { |article| allowed.include?(article.metadata['status']) }
+             .map { |article| relative(article_source_path(article)) }
+             .uniq
+             .sort
   end
 
   # Generates the article listings from metadata: a "recent" include fragment
@@ -685,7 +730,31 @@ class ProfileArtifactValidator
         source = root.join(artifact.metadata['source'])
         errors << "#{relative(artifact.path)} source does not exist: #{artifact.metadata['source']}" unless source.exist?
       end
+
+      validate_article_source_resolvable(artifact)
     end
+  end
+
+  # An article kept out of a target is kept out by its resolved source path, so
+  # a path that resolves to nothing would let the article through the filter
+  # instead of stopping the build. A sidecar therefore has to say which file it
+  # describes; front matter is its own source and needs no declaration.
+  def validate_article_source_resolvable(artifact)
+    return unless artifact.metadata['type'] == 'Article'
+    return if artifact.path.extname == '.adoc'
+
+    if blank?(artifact.metadata['source'])
+      errors << "#{relative(artifact.path)} is an Article sidecar and must declare 'source'"
+      return
+    end
+
+    resolved = article_source_path(artifact)
+    return if resolved.file?
+    # An absent source is already reported by the shared source check; this only
+    # adds the case where the path exists but is not a file to render.
+    return unless resolved.exist?
+
+    errors << "#{relative(artifact.path)} source is not a file: #{artifact.metadata['source']}"
   end
 
   def validate_ids(artifacts)
@@ -863,6 +932,13 @@ class ProfileArtifactValidator
           errors << "#{relative(artifact.path)} field '#{field}' references unknown artifact '#{target}'"
         elsif referenced.metadata['type'] != 'Article'
           errors << "#{relative(artifact.path)} field '#{field}' must reference an Article, but '#{target}' is a #{referenced.metadata['type']}"
+        elsif PUBLIC_STATUSES.include?(artifact.metadata['status']) &&
+              !PUBLIC_STATUSES.include?(referenced.metadata['status'])
+          # The public site renders the series link but not its target, so the
+          # reader would follow it into a 404. Naming both sides here is what
+          # separates "still writing the next part" from a broken published page.
+          errors << "#{relative(artifact.path)} is #{artifact.metadata['status']} and declares #{field} '#{target}', " \
+                    "which is #{referenced.metadata['status']} and therefore not on the public site"
         end
       end
 
@@ -1808,7 +1884,8 @@ if $PROGRAM_NAME == __FILE__
     output: nil,
     article_comment_allowlist: nil,
     accept_translation: nil,
-    language_alternates: nil
+    language_alternates: nil,
+    list_public_source_exclusions: false
   }
   OptionParser.new do |parser|
     parser.on('--root PATH') { |value| options[:root] = Pathname.new(value) }
@@ -1818,6 +1895,7 @@ if $PROGRAM_NAME == __FILE__
     parser.on('--article-comment-allowlist PATH') { |value| options[:article_comment_allowlist] = value }
     parser.on('--accept-translation ID') { |value| options[:accept_translation] = value }
     parser.on('--language-alternates PATH') { |value| options[:language_alternates] = value }
+    parser.on('--list-public-source-exclusions') { options[:list_public_source_exclusions] = true }
   end.parse!
 
   root = options[:root]
@@ -1825,6 +1903,16 @@ if $PROGRAM_NAME == __FILE__
   output = options[:output] || 'src-content/profile/generated/profile-artifact-index.adoc'
 
   validator = ProfileArtifactValidator.new(root: root, profile_dir: profile_dir)
+
+  # Answers the build's question about publication selection and nothing else.
+  # It reports no findings and fails on no metadata error, because the build
+  # asks while it configures itself: a validation failure here would break every
+  # Gradle invocation instead of the validator task that owns that report.
+  if options[:list_public_source_exclusions]
+    puts validator.excluded_article_sources(validator.scan_artifacts, target: 'public')
+    exit(0)
+  end
+
   artifacts = validator.validate
   validator.report(artifacts)
   exit(1) unless validator.errors.empty?
