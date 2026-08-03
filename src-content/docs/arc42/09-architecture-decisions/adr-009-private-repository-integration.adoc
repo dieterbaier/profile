@@ -39,7 +39,9 @@ We treat `profile-private` (`dieterbaier/profile-private`) as a separate source 
 
 The two repositories are checked out as siblings. The private build reaches the shared tooling through that sibling checkout and owns no copy of it. Private rendering and verification run locally; the private target needs no GitHub Actions deployment.
 
-Promotion moves an article from the private repository to the public one. It does not copy it: an article lives in exactly one source repository at a time, so there is never a second place to edit it and no question which one is true.
+Promotion moves an article from the private repository to the public one rather than copying it, so that an article has exactly one authoritative source and no second place to edit it.
+
+Move is the outcome, not a property of the operation. Two repositories cannot be written atomically: the promotion is a saga with an ordering, states it can stop in, and a recovery step. The `Promotion Saga` section below defines them.
 
 The public repository remains the owner of shared build logic, validators, generators, theme assets, profile metadata contracts, and architecture documentation. The private repository owns private article, note, and protocol source content. Private content is rendered by reusing the public repository's build tooling through a documented checkout or local path contract.
 
@@ -92,8 +94,9 @@ PrivateBuild --> Generators : generate private target inputs
 PrivateBuild --> Theme : reuse presentation
 PrivateBuild --> PrivateDeployConfig : deploy protected target
 
-Promotion --> PrivateArticles : select and remove cleaned article
-Promotion --> PublicArticles : move in as status=preview
+Promotion --> PrivateArticles : 1. select and validate cleaned article
+Promotion --> PublicArticles : 2. write as status=preview (leading side)
+Promotion --> PrivateArticles : 3. remove the promoted article
 
 PublicBuild --> PublicArticles : render public and preview targets
 PublicBuild --> Gradle
@@ -132,10 +135,32 @@ s| Sum s| +6 s| 0 s| +1 s| -2
 | Tooling access | The two repositories are checked out as siblings. The private build uses the public checkout's tooling directly; no submodule, no packaged version, no vendored copy.
 | No second implementation | The private repository holds no schema, validator, or generator of its own. Its build stops when it finds one.
 | Contract version | Every artifact declares `metadata_version`. The public validator declares which versions it accepts and rejects the rest, so content written against an older contract fails by name.
-| Promotion | A reviewed script validates an article against the public contract, then moves its source and sidecar metadata from private to public source and sets `status: preview`. Validation precedes the move, because a move that fails afterwards leaves the article in neither repository's intended state.
+| Promotion | A reviewed script validates an article against the public contract, then transfers its source and sidecar metadata from private to public source and sets `status: preview`. Validation precedes any write, and the transfer follows the promotion saga below. Its outcome is a move; its execution is not atomic.
 | Private deployment | Private rendering and verification run locally. No GitHub Actions deployment for the private target.
 | Architecture documentation | Architecture decisions stay in the public repository unless private-only implementation creates a separate architectural concern.
 |===
+
+=== Promotion Saga
+
+Two Git repositories cannot be written in one transaction. Promotion therefore has a defined order, and every point it can stop at is a state someone has to be able to recognize and finish.
+
+**The public repository leads.** From the moment the promoted article lands there, it is the authoritative copy. Everything after that point is cleanup of the private side, never a source of truth.
+
+The order follows from which failure is survivable. Removing from private first would put the article nowhere if the public write then fails. Writing to public first can only ever produce a duplicate, and a duplicate is recoverable while a loss is not.
+
+[cols="1,2,2", options="header"]
+|===
+| Step | Stops here means | Recovery
+| Validate the article against the public contract | Nothing was written. The article is private and unchanged. | None needed. Fix the article and start over.
+| Write source and sidecar into public, `status: preview` | The public working tree holds an uncommitted addition. | Discard the working tree change and start over.
+| Commit and push public | The article is public and authoritative. The private copy still exists. | Continue with the private removal.
+| Remove the article from private | The private working tree holds an uncommitted deletion. | Discard or complete the deletion; either way the public copy stands.
+| Commit and push private | Promotion is complete. | None.
+|===
+
+**The incomplete state is duplication, and it is detectable.** The same artifact `id` present in both repositories means a promotion stopped after the public push. That is the check a resumed promotion looks for, and it is why artifact IDs are stable and unique across the contract rather than per repository.
+
+**A promoted article is never rolled back by moving it home.** If the article should not have been promoted, it is removed from the public repository like any other public content, and the public Git history keeps the record. Promotion is not reversible by re-running it backwards, because public history cannot be unpublished.
 
 === Preventing Contract Drift
 
@@ -143,9 +168,27 @@ Two rules carry the drift concern, and they divide the failure between them.
 
 The **no second implementation** rule removes drift in the tooling rather than detecting it. A vendored copy keeps looking like the original after it has stopped being one, which is the property that made the divergence in `metamodel/artifact.schema.yaml` invisible; a repository that holds no copy cannot diverge in one.
 
-The **contract version** rule covers what remains: a sibling checkout that is simply older than the content beside it. `metadata_version` already exists in every artifact and in the schema, but nothing enforces its value, so the field carries no meaning today. Enforcing it makes a stale contract fail with a name attached, and makes raising the version the deliberate act it should be when the contract changes.
+The **contract version** rule covers what remains: a sibling checkout that is simply older than the content beside it. Enforcing `metadata_version` will make a stale contract fail with a name attached, and will make raising the version the deliberate act it should be when the contract changes.
 
 Neither rule catches a contract change nobody versioned. That is a discipline gap rather than a mechanism gap, and no inexpensive check closes it.
+
+=== Implementation Status
+
+The decision holds; the rules it accepts are at different stages, and this section says which is which so the documentation does not claim protection that does not exist yet.
+
+[cols="2,1,2", options="header"]
+|===
+| Rule | State | Where
+| Sibling checkout as the tooling access mechanism | decided, not implemented | The private build, https://github.com/dieterbaier/profile/issues/86[#86]
+| No second implementation in the private repository | decided, not implemented | Checked by the private build, https://github.com/dieterbaier/profile/issues/86[#86], and by the promotion checks, https://github.com/dieterbaier/profile/issues/84[#84]
+| `metadata_version` accepted-version set enforced | decided, not implemented | https://github.com/dieterbaier/profile/issues/83[#83]
+| Promotion saga: validate, then public, then private | decided, not implemented | https://github.com/dieterbaier/profile/issues/84[#84] and https://github.com/dieterbaier/profile/issues/85[#85]
+| Private deployment runs locally | decided, not implemented | https://github.com/dieterbaier/profile/issues/87[#87]
+|===
+
+Today `metadata_version` is present in every artifact and in the schema, and the validator checks only that it is a string. Until https://github.com/dieterbaier/profile/issues/83[#83] closes, the field records an intention rather than enforcing one, and the drift protection rests on the no-second-implementation rule alone.
+
+**This is the gate on private-source work.** No slice that reads private source or promotes an article runs before the accepted-version check exists, because a promotion validated against an unenforced contract is the exact failure this decision claims to prevent.
 
 === Consequences
 
@@ -161,7 +204,8 @@ Negative:
 * The private repository build must locate the sibling public checkout, and fails without it.
 * A sibling checkout can lag behind the content beside it. The contract version rule turns that into a named failure rather than a silent one.
 * Local development requires two checkouts for private builds.
-* A failed promotion is more expensive than under a copy, because the article has left its origin. Validation before the move is what keeps that cost theoretical.
+* Promotion crosses a repository boundary and cannot be atomic. Its incomplete state is a duplicated article, which someone or something has to notice and finish. The saga puts that state on the recoverable side rather than removing it.
+* A promotion cannot be undone by reversing it. Once the public push has happened, the article is in public history, and withdrawing it is a public change rather than a return.
 
 Neutral or follow-up:
 
@@ -178,3 +222,5 @@ The site owner confirmed the four open points at acceptance:
 * drift is prevented by the no-second-implementation rule together with an enforced `metadata_version`.
 
 The same review corrected promotion from a copy to a move.
+
+A second review round sharpened two claims this record had overstated. A cross-repository move is not atomic, so the promotion is described as a saga with a leading repository, an order, its stop states, and their recovery. The `metadata_version` protection is decided but not yet built, so the `Implementation Status` section separates what holds from what runs.
