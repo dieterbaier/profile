@@ -83,7 +83,7 @@ The private target is a different case and keeps its access boundary. Its source
 s| Sum s| +5 s| -4 s| -1
 |===
 
-Basic Auth loses on every criterion that matters here. It costs credential handling, rotation, and a handshake with every reviewer, and it buys protection for content that is public in source. It also misleads: a reader who gets past it reasonably concludes the page was worth protecting.
+Basic Auth ties the chosen option on exactly one criterion — keeping the page out of search results — and `noindex` achieves that without it. On the other five it loses. It costs credential handling, rotation, and a handshake with every reviewer, and it buys protection for content that is public in source. It also misleads: a reader who gets past it reasonably concludes the page was worth protecting.
 
 Unguessable URLs lose for the same reason without the operational cost. Obscurity that is described as protection is the more dangerous of the two, because nothing about it fails visibly.
 
@@ -128,4 +128,4 @@ The decision holds; the mechanisms that carry it are at different stages.
 | Visible notice on every article that is not published | decided, not implemented | https://github.com/dieterbaier/profile/issues/88[#88]
 |===
 
-Until the notice exists, a preview page carries no reader-facing signal at all. The preview target should not be deployed before https://github.com/dieterbaier/profile/issues/88[#88] is done, because the decision that removes the access boundary depends on the notice replacing it.
+Until the notice exists, a preview page carries no reader-facing signal at all. The preview deployment therefore waits for https://github.com/dieterbaier/profile/issues/88[#88]: the decision removes an access boundary and puts the notice in its place, so deploying the one without the other would leave an unfinished article publicly readable with nothing saying so. This is a blocking dependency of https://github.com/dieterbaier/profile/issues/79[#79], recorded there and in the epic rather than only here.
