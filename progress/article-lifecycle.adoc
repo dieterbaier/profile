@@ -1,0 +1,69 @@
+= Artikel-Lebenszyklus privat nach öffentlich
+
+Ein Artikel soll entstehen, reviewt und veröffentlicht werden können, ohne dass
+ein Entwurf allein dadurch öffentlich wird, dass er im Repository liegt.
+
+*Status:* in flight — Canonical-URLs stehen, die Statusauswahl ist umgesetzt und
+liegt als PR vor. Danach ist das Schreiben eines Entwurfs im öffentlichen
+Repository gefahrlos.
+
+== The plan
+
+Die Reihenfolge kommt aus #26 und aus einem Gate: ADR-008 ist akzeptiert,
+ADR-009 ist `proposed`. Alles, was private Quellen liest, Promotion automatisiert
+oder ein privates Target baut, wartet auf dessen Review.
+
+[options="checklist"]
+* [x] Canonical-URLs aus Basis-URL und Ausgabepfad, Pflicht in Produktion — #26
+* [x] Navigation und Artikellisten aus Metadaten statt Handpflege — kam mit #47
+* [x] `preview` und `private` im Schema und im Validator-Enum
+* [ ] Öffentliches Target nur aus `published` — Renderauswahl aus Metadaten — #77
+* [ ] `build/site-preview` mit `noindex`, ohne Canonical — #78
+* [ ] Deployment und Basic-Auth-Betrieb für `preview.dieterbaier.eu` — #79
+* [ ] ADR-009 reviewen — hebt das Gate — #80
+* [ ] Danach: erste Promotion-Checks, Promotion-Skript, `build/site-private`,
+  `private.dieterbaier.eu` — noch nicht geschnitten, Zuschnitt hängt an #80
+
+Die Statusauswahl muss vor allem anderen liegen. Sie ist die einzige Stelle, an
+der ein Entwurf im öffentlichen Repository liegen kann, ohne veröffentlicht zu
+sein — und damit die Bedingung dafür, überhaupt einen neuen Artikel hier zu
+schreiben. Das Preview-Target baut darauf auf: es ist dieselbe Auswahl mit einer
+anderen Statusmenge.
+
+Das Gate trennt sauber. Alles bis einschließlich Preview arbeitet nur auf
+öffentlicher Quelle und ist von ADR-009 unabhängig.
+
+== Where we are
+
+Der Build fragt zur Konfigurationszeit beim Profil-Validator ab, welche
+Artikelquellen ein Target ausschließt; `PUBLIC_STATUSES` ist auf `published`
+verengt. Der Weg über eine während des Builds erzeugte Liste funktioniert nicht:
+die Asciidoctor-Task löst ihren Quellbaum schon beim Bestimmen der
+Task-Abhängigkeiten auf, also vor jedem Generator. Das ist dieselbe Fehlerklasse
+wie bei den Listenseiten und steht als Begründung im Crosscutting-Kapitel.
+
+Canonical-Injektion, Basis-URL-Pflicht und ihre Tests stehen seit dem
+Multilingual-Epic. Das Epic führte den Slice noch als offen; das ist korrigiert.
+
+== Open in this topic
+
+* Ob `reviewed` als Status überhaupt bleibt, wenn er weder öffentlich noch
+  privat etwas auswählt.
+* Wie ein Preview-Artikel im öffentlichen Repository davor geschützt wird,
+  versehentlich auf `published` gesetzt zu werden — der erste Promotion-Check
+  könnte hier ansetzen statt erst an der Repository-Grenze.
+* Ob `build/site-preview` ein eigener Gradle-Task ist oder derselbe Task mit
+  einer Statusmenge als Parameter.
+
+== Checks
+
+Commands, not results. A number copied in here goes stale silently.
+
+[source,sh]
+----
+ruby scripts/validate-profile-metamodel.rb
+./gradlew buildSite
+ruby -Itest test/site_metadata_injector_test.rb
+ruby -Itest test/profile_listings_test.rb
+ruby -Itest test/profile_navigation_test.rb
+----
