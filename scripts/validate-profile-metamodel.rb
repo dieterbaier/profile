@@ -56,6 +56,10 @@ class ProfileArtifactValidator
   ARTIFACT_ID_PATTERN = /\A[A-Z]+-[0-9]{3,}(-[a-z0-9]+)*\z/
   TAG_PATTERN = /\A[A-Za-z0-9][A-Za-z0-9-]*\z/
 
+  # Raised when the publication selection cannot name the source of an article
+  # it has to exclude. It is deliberately fatal: see excluded_article_sources.
+  class UnresolvableArticleSource < StandardError; end
+
   Artifact = Struct.new(:path, :metadata, keyword_init: true)
   attr_reader :errors, :warnings, :root, :profile_dir
 
@@ -185,11 +189,53 @@ class ProfileArtifactValidator
       raise ArgumentError, "unknown publication target '#{target}'"
     end
 
-    artifacts.select { |artifact| artifact.metadata['type'] == 'Article' }
-             .reject { |article| allowed.include?(article.metadata['status']) }
-             .map { |article| relative(article_source_path(article)) }
-             .uniq
-             .sort
+    excluded = artifacts.select { |artifact| artifact.metadata['type'] == 'Article' }
+                        .reject { |article| allowed.include?(article.metadata['status']) }
+
+    unresolved = excluded.reject { |article| article_source_path(article).file? }
+    unless unresolved.empty?
+      # Fail closed. This selection is the only thing keeping an unpublished
+      # article out of the target, and an article whose source cannot be named
+      # cannot be kept out of anything. Continuing here would produce a list
+      # that looks complete and silently omits exactly the articles that must
+      # not be rendered, so the build stops instead.
+      named = unresolved.map do |article|
+        "#{relative(article.path)} (#{article.metadata['status']}) -> #{relative(article_source_path(article))}"
+      end.sort
+      raise UnresolvableArticleSource,
+            "cannot determine the source file of #{unresolved.length} article(s) that must be excluded " \
+            "from the '#{target}' target:\n  #{named.join("\n  ")}"
+    end
+
+    excluded.map { |article| relative(article_source_path(article)) }.uniq.sort
+  end
+
+  # Where a rendered target keeps the output of a given source tree.
+  # Article sources live below the site tree, so an article source is rendered
+  # into both the site and the markdown export and has to be checked in both.
+  RENDER_ROOTS = [
+    { source_dir: 'src-content/profile/site', output_dir: 'build/site', extension: '.html' },
+    { source_dir: 'src-content/profile/site/articles', output_dir: 'build/articles', extension: '.md' }
+  ].freeze
+
+  # Outputs present in a rendered target that belong to an article the target
+  # must not contain.
+  #
+  # This checks the result rather than the selection. Whatever the build did
+  # with the exclusion list — applied it, mis-applied it, or was invoked in a
+  # way that skipped it — an article that must not be public either has output
+  # here or it does not.
+  def unexpected_target_outputs(artifacts, target:, render_roots: RENDER_ROOTS)
+    excluded_article_sources(artifacts, target: target).flat_map do |source|
+      render_roots.filter_map do |render_root|
+        prefix = "#{render_root[:source_dir]}/"
+        next unless source.start_with?(prefix)
+
+        rendered = source.delete_prefix(prefix).sub(/\.adoc\z/, render_root[:extension])
+        candidate = root.join(render_root[:output_dir], rendered)
+        relative(candidate) if candidate.exist?
+      end
+    end.uniq.sort
   end
 
   # Generates the article listings from metadata: a "recent" include fragment
@@ -735,10 +781,13 @@ class ProfileArtifactValidator
     end
   end
 
-  # An article kept out of a target is kept out by its resolved source path, so
-  # a path that resolves to nothing would let the article through the filter
-  # instead of stopping the build. A sidecar therefore has to say which file it
-  # describes; front matter is its own source and needs no declaration.
+  # A sidecar says which file it describes. This is not what keeps the
+  # publication selection safe — `article_source_path` resolves a sidecar to the
+  # article beside it, and `excluded_article_sources` stops the build when it
+  # cannot resolve one. It is a separate rule: an article whose source is
+  # implicit is one rename away from describing a different file, and the
+  # metamodel treats `source` as the link between metadata and content.
+  # Front matter is its own source and needs no declaration.
   def validate_article_source_resolvable(artifact)
     return unless artifact.metadata['type'] == 'Article'
     return if artifact.path.extname == '.adoc'
@@ -1798,9 +1847,21 @@ class ProfileArtifactValidator
     target.relative_path_from(from_dir).to_s
   end
 
+  # The article file an artifact describes.
+  #
+  # A sidecar is named '<slug>.profile.yaml', so its article is found by
+  # dropping the whole '.profile.yaml' suffix. Replacing only the extension
+  # yields '<slug>.profile.adoc', a file that does not exist — and a selection
+  # built on a path that resolves to nothing excludes nothing, which is how a
+  # draft would reach a public target.
   def article_source_path(article)
     source = article.metadata['source']
     return root.join(source) if source.is_a?(String) && !source.empty?
+
+    basename = article.path.basename.to_s
+    if (slug = basename[/\A(.+)\.profile\.ya?ml\z/, 1])
+      return article.path.dirname.join("#{slug}.adoc")
+    end
 
     article.path.sub_ext('.adoc')
   end
@@ -1885,7 +1946,8 @@ if $PROGRAM_NAME == __FILE__
     article_comment_allowlist: nil,
     accept_translation: nil,
     language_alternates: nil,
-    list_public_source_exclusions: false
+    list_public_source_exclusions: false,
+    verify_public_target_output: false
   }
   OptionParser.new do |parser|
     parser.on('--root PATH') { |value| options[:root] = Pathname.new(value) }
@@ -1896,6 +1958,7 @@ if $PROGRAM_NAME == __FILE__
     parser.on('--accept-translation ID') { |value| options[:accept_translation] = value }
     parser.on('--language-alternates PATH') { |value| options[:language_alternates] = value }
     parser.on('--list-public-source-exclusions') { options[:list_public_source_exclusions] = true }
+    parser.on('--verify-public-target-output') { options[:verify_public_target_output] = true }
   end.parse!
 
   root = options[:root]
@@ -1909,8 +1972,34 @@ if $PROGRAM_NAME == __FILE__
   # asks while it configures itself: a validation failure here would break every
   # Gradle invocation instead of the validator task that owns that report.
   if options[:list_public_source_exclusions]
-    puts validator.excluded_article_sources(validator.scan_artifacts, target: 'public')
+    begin
+      puts validator.excluded_article_sources(validator.scan_artifacts, target: 'public')
+    rescue ProfileArtifactValidator::UnresolvableArticleSource => e
+      warn "Publication selection failed: #{e.message}"
+      exit(1)
+    end
     exit(0)
+  end
+
+  # Checks the rendered output rather than the selection that produced it, so
+  # the guarantee holds even for a build invoked in a way that skipped the
+  # selection.
+  if options[:verify_public_target_output]
+    begin
+      unexpected = validator.unexpected_target_outputs(validator.scan_artifacts, target: 'public')
+    rescue ProfileArtifactValidator::UnresolvableArticleSource => e
+      warn "Publication selection failed: #{e.message}"
+      exit(1)
+    end
+
+    if unexpected.empty?
+      puts 'Public target contains no output of a non-published article.'
+      exit(0)
+    end
+
+    warn "Public target contains output of #{unexpected.length} article(s) that are not published:"
+    unexpected.each { |path| warn "  - #{path}" }
+    exit(1)
   end
 
   artifacts = validator.validate

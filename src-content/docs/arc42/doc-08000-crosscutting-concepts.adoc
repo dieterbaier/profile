@@ -43,6 +43,19 @@ during the build would be missing exactly when a clean build needs it.
 The same selection applies to the markdown export, since CI uploads the whole
 build directory as a workflow artifact of a public repository.
 
+The selection fails closed. An article that must be kept out of a target and
+whose source file cannot be named stops the build, because a list that silently
+omits such an article looks complete while leaving out exactly what must not be
+rendered.
+
+Two checks stand behind the selection rather than beside it.
+`verifyPublicRenderTasksValidateMetadata` asserts that every task rendering
+article sources reaches metadata validation through its dependencies, so the
+contract survives a refactoring instead of resting on a transitive edge.
+`verifyPublicTargetHasOnlyPublishedArticles` inspects the rendered result: an
+article that must not be public either has output there or it does not,
+whatever the build did with the selection.
+
 The observable behaviour is specified in
 `features/article-publication-status.feature` and bridged to
 `test/profile_publication_status_test.rb`.

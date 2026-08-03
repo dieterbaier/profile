@@ -67,6 +67,22 @@ class ProfilePublicationStatusTest < Minitest::Test
     validator.excluded_article_sources(artifacts, target: 'public')
   end
 
+  # The temporary tree has no src-content/profile/site, so the render roots are
+  # named here instead of using the repository's own.
+  def test_render_roots
+    [
+      { source_dir: 'articles', output_dir: 'out/site', extension: '.html' },
+      { source_dir: 'articles', output_dir: 'out/articles', extension: '.md' }
+    ]
+  end
+
+  def write_output(root, relative_path)
+    path = root + relative_path
+    path.dirname.mkpath
+    path.write("rendered\n")
+    path
+  end
+
   def test_a_published_article_is_rendered_into_the_public_target
     # Given: an article whose status is published
     with_artifacts([{ id: 'ART-101-live', slug: 'live', status: 'published' }]) do |validator, artifacts, _root|
@@ -137,6 +153,87 @@ class ProfilePublicationStatusTest < Minitest::Test
       # Then: the excluded path is the article source, not the sidecar
       assert_equal ['articles/sidecar.adoc'], result
       refute_includes result.join("\n"), '.profile.yaml'
+    end
+  end
+
+  def test_a_sidecar_without_a_source_field_still_names_the_article_beside_it
+    # Given: an unpublished article whose sidecar declares no source
+    spec = [{ id: 'ART-1001-implicit', slug: 'implicit', status: 'draft', omit_source: true }]
+
+    with_artifacts(spec) do |validator, artifacts, _root|
+      # When: the public article selection is computed
+      result = excluded(validator, artifacts)
+
+      # Then: the article file next to the sidecar is excluded
+      assert_equal ['articles/implicit.adoc'], result
+    end
+  end
+
+  def test_an_unresolvable_source_stops_the_selection_instead_of_skipping_the_article
+    # Given: an unpublished article whose sidecar names a source file that is absent
+    spec = [{ id: 'ART-1101-gone', slug: 'gone', status: 'draft', source: 'articles/not-here.adoc' }]
+
+    with_artifacts(spec) do |validator, artifacts, _root|
+      # When: the public article selection is computed
+      error = assert_raises(ProfileArtifactValidator::UnresolvableArticleSource) do
+        excluded(validator, artifacts)
+      end
+
+      # Then: the selection fails naming the article and its status
+      assert_includes error.message, 'gone.profile.yaml'
+      assert_includes error.message, 'draft'
+      assert_includes error.message, 'public'
+    end
+  end
+
+  def test_a_published_article_with_an_unresolvable_source_does_not_stop_the_selection
+    # Given: a published article whose sidecar names a source file that is absent
+    spec = [{ id: 'ART-1201-live', slug: 'live', status: 'published', source: 'articles/not-here.adoc' }]
+
+    with_artifacts(spec) do |validator, artifacts, _root|
+      # When: the public article selection is computed
+      result = excluded(validator, artifacts)
+
+      # Then: the selection succeeds and excludes nothing
+      assert_empty result
+    end
+  end
+
+  def test_output_of_an_article_the_target_must_not_contain_is_reported
+    # Given: a rendered target holding a page and an export of an unpublished article
+    spec = [
+      { id: 'ART-1301-live', slug: 'live', status: 'published' },
+      { id: 'ART-1302-draft', slug: 'draft', status: 'draft' }
+    ]
+
+    with_artifacts(spec) do |validator, artifacts, root|
+      write_output(root, 'out/site/draft.html')
+      write_output(root, 'out/articles/draft.md')
+      write_output(root, 'out/site/live.html')
+
+      # When: the rendered target is checked
+      result = validator.unexpected_target_outputs(artifacts, target: 'public', render_roots: test_render_roots)
+
+      # Then: both outputs are reported
+      assert_equal ['out/articles/draft.md', 'out/site/draft.html'], result
+    end
+  end
+
+  def test_a_rendered_target_holding_only_published_output_is_accepted
+    # Given: a rendered target holding the page of a published article only
+    spec = [
+      { id: 'ART-1401-live', slug: 'live', status: 'published' },
+      { id: 'ART-1402-draft', slug: 'draft', status: 'draft' }
+    ]
+
+    with_artifacts(spec) do |validator, artifacts, root|
+      write_output(root, 'out/site/live.html')
+
+      # When: the rendered target is checked
+      result = validator.unexpected_target_outputs(artifacts, target: 'public', render_roots: test_render_roots)
+
+      # Then: nothing is reported
+      assert_empty result
     end
   end
 

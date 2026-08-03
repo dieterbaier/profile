@@ -117,6 +117,8 @@ def publicArticleExclusions = { ->
             .execute(null, rootDir)
     process.waitForProcessOutput(stdout, stderr)
 
+    // Fail closed. Without a trustworthy list the safe answer is to render
+    // nothing, not to render everything.
     if (process.exitValue() != 0) {
         throw new GradleException(
                 'Could not determine which articles the public target may render.\n' +
@@ -125,6 +127,10 @@ def publicArticleExclusions = { ->
 
     stdout.toString().readLines().findAll { !it.trim().isEmpty() }.toSet()
 }()
+
+// The tasks that render article sources into a publishable target. Named once
+// so the validation contract below and its test refer to the same list.
+def publicRenderTasks = ['buildSite', 'buildArticlesDocbook']
 
 // The list holds repository-relative paths; a source spec matches relative to
 // its own source directory, so the directory prefix comes off again.
@@ -578,6 +584,70 @@ tasks.register('buildArticlesMarkdown', PandocDirectoryTask) {
     setOutputDirectory(layout.buildDirectory.dir("articles"))
 }
 
+// Checks the rendered result rather than the selection that produced it. The
+// source filter and this task fail independently: the filter decides what is
+// rendered, this asks whether anything unpublished ended up in the output
+// anyway. A build invoked in a way that bypassed the filter still fails here.
+// Asserts the contract itself rather than trusting it: every task that renders
+// article sources into a publishable target reaches metadata validation through
+// its dependencies. Checking the task graph rather than the build script text
+// means a dependency that moves still counts, and one that disappears does not.
+tasks.register('verifyPublicRenderTasksValidateMetadata') {
+    description = 'Fails when a task rendering article sources does not depend on profile metadata validation.'
+    group = 'verification'
+
+    doLast {
+        def required = tasks.named('validateProfileMetamodel').get()
+        def missing = publicRenderTasks.findAll { taskName ->
+            def start = tasks.named(taskName).get()
+            def seen = [start.path] as Set
+            def queue = [start]
+            def reached = false
+
+            while (!queue.isEmpty() && !reached) {
+                def current = queue.remove(0)
+                current.taskDependencies.getDependencies(current).each { dependency ->
+                    if (dependency.path == required.path) {
+                        reached = true
+                    } else if (seen.add(dependency.path)) {
+                        queue << dependency
+                    }
+                }
+            }
+
+            !reached
+        }
+
+        if (!missing.isEmpty()) {
+            throw new GradleException(
+                    'These tasks render article sources into a publishable target but do not depend on ' +
+                            "${required.path}, so they could render unvalidated metadata:\n- ${missing.join('\n- ')}")
+        }
+    }
+}
+
+tasks.register('verifyPublicTargetHasOnlyPublishedArticles') {
+    description = 'Fails when build/site or build/articles contains output of an article that is not published.'
+    group = 'verification'
+
+    dependsOn tasks.named('verifyPublicRenderTasksValidateMetadata')
+    mustRunAfter tasks.named('buildSite')
+    mustRunAfter tasks.named('buildArticlesMarkdown')
+
+    inputs.files(fileTree('src-content/profile') {
+        include '**/*.adoc'
+        include '**/*.profile.yaml'
+        exclude '**/generated/**'
+    })
+    inputs.files('scripts/validate-profile-metamodel.rb')
+
+    doLast {
+        exec {
+            commandLine 'ruby', 'scripts/validate-profile-metamodel.rb', '--verify-public-target-output'
+        }
+    }
+}
+
 tasks.register('verifyNoArticleSummariesInGeneratedOutputs') {
     mustRunAfter tasks.named('buildSite')
     mustRunAfter tasks.named('buildArticlesMarkdown')
@@ -620,6 +690,7 @@ tasks.register('verifyNoArticleSummariesInGeneratedOutputs') {
 
 tasks.named('buildArticlesMarkdown') {
     finalizedBy tasks.named('verifyNoArticleSummariesInGeneratedOutputs')
+    finalizedBy tasks.named('verifyPublicTargetHasOnlyPublishedArticles')
 }
 // CV
 asciidoctorBase('buildCVPersonal','','src-content/profile/cv', 'build/cv', ['cv.adoc'],true, 'pdf', [ // personal PDF (not deployed to the site)
@@ -682,6 +753,7 @@ tasks.named('buildSite') {
     }
 
     finalizedBy tasks.named('verifyNoArticleSummariesInGeneratedOutputs')
+    finalizedBy tasks.named('verifyPublicTargetHasOnlyPublishedArticles')
 }
 
 tasks.register('testSiteMetadata') {
@@ -722,6 +794,18 @@ tasks.named('buildCVSite') {
 // site page depends on it rather than only the article-level generated includes.
 tasks.named('buildSite') {
     dependsOn tasks.named('generateProfileArtifacts')
+}
+
+// Every task that renders article sources into a publishable target states its
+// dependency on metadata validation itself, rather than inheriting it through
+// generateProfileArtifacts. The publication selection is only as trustworthy as
+// the metadata behind it, and a transitive edge is one refactoring away from
+// disappearing without anything failing. verifyPublicRenderTasksValidateMetadata
+// asserts these edges, so removing one breaks a check rather than a guarantee.
+publicRenderTasks.each { taskName ->
+    tasks.named(taskName) {
+        dependsOn tasks.named('validateProfileMetamodel')
+    }
 }
 
 tasks.named('generateArchitectureArtifacts') {
