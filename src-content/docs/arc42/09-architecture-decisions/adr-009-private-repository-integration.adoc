@@ -2,10 +2,10 @@
 id: ADR-009-private-repository-integration
 type: ADR
 title: "Private Repository Integration"
-status: proposed
+status: accepted
 owner: "Dieter Baier"
 created: '2026-07-07'
-reviewed: false
+reviewed: true
 generated: false
 summary: "Treat the private repository as a separate source component of the profile application and integrate it through explicit content and promotion contracts."
 tags:
@@ -16,14 +16,14 @@ tags:
 relations:
 - type: mitigates
   target: RISK-004-source-boundary-leakage
-  status: proposed
+  status: accepted
   rationale: "Explicit repository boundaries and promotion contracts reduce accidental private source disclosure."
-  reviewed: false
+  reviewed: true
 - type: addresses
   target: QS-005-publication-visibility-boundary
-  status: proposed
+  status: accepted
   rationale: "The private repository strategy supports source and publication visibility boundaries."
-  reviewed: false
+  reviewed: true
 metadata_version: '1.0'
 ---
 [[adr-009-private-repository-integration]]
@@ -31,11 +31,15 @@ metadata_version: '1.0'
 
 === Status
 
-Proposed.
+Accepted by the site owner.
 
 === Decision
 
-We propose to treat `profile-private` (`dieterbaier/profile-private`) as a separate source component of the same profile application, integrated through explicit content and promotion contracts instead of Git submodules or duplicated build logic.
+We treat `profile-private` (`dieterbaier/profile-private`) as a separate source component of the same profile application, integrated through explicit content and promotion contracts instead of Git submodules or duplicated build logic.
+
+The two repositories are checked out as siblings. The private build reaches the shared tooling through that sibling checkout and owns no copy of it. Private rendering and verification run locally; the private target needs no GitHub Actions deployment.
+
+Promotion moves an article from the private repository to the public one. It does not copy it: an article lives in exactly one source repository at a time, so there is never a second place to edit it and no question which one is true.
 
 The public repository remains the owner of shared build logic, validators, generators, theme assets, profile metadata contracts, and architecture documentation. The private repository owns private article, note, and protocol source content. Private content is rendered by reusing the public repository's build tooling through a documented checkout or local path contract.
 
@@ -88,8 +92,8 @@ PrivateBuild --> Generators : generate private target inputs
 PrivateBuild --> Theme : reuse presentation
 PrivateBuild --> PrivateDeployConfig : deploy protected target
 
-Promotion --> PrivateArticles : select cleaned article
-Promotion --> PublicArticles : copy as status=preview
+Promotion --> PrivateArticles : select and remove cleaned article
+Promotion --> PublicArticles : move in as status=preview
 
 PublicBuild --> PublicArticles : render public and preview targets
 PublicBuild --> Gradle
@@ -117,18 +121,31 @@ ArchitectureDocs ..> PrivateRepo : documents application-level decisions
 s| Sum s| +6 s| 0 s| +1 s| -2
 |===
 
-=== Proposed Integration Contract
+=== Integration Contract
 
 [cols="1,3", options="header"]
 |===
-| Contract | Proposed rule
+| Contract | Rule
 | Source ownership | Public source stays in `profile`; private source stays in `profile-private`.
 | Tooling ownership | Shared Gradle tasks, generators, validators, schemas, and theme assets are owned by `profile-dieterbaier`.
 | Private build input | The private repository provides content roots that match the public profile article metadata contract.
-| Tooling access | Private builds use a checked-out public repository path or a later packaged toolkit version; no submodule is required initially.
-| Promotion | A reviewed script copies selected article source and metadata from private to public source and sets `status: preview`.
+| Tooling access | The two repositories are checked out as siblings. The private build uses the public checkout's tooling directly; no submodule, no packaged version, no vendored copy.
+| No second implementation | The private repository holds no schema, validator, or generator of its own. Its build stops when it finds one.
+| Contract version | Every artifact declares `metadata_version`. The public validator declares which versions it accepts and rejects the rest, so content written against an older contract fails by name.
+| Promotion | A reviewed script validates an article against the public contract, then moves its source and sidecar metadata from private to public source and sets `status: preview`. Validation precedes the move, because a move that fails afterwards leaves the article in neither repository's intended state.
+| Private deployment | Private rendering and verification run locally. No GitHub Actions deployment for the private target.
 | Architecture documentation | Architecture decisions stay in the public repository unless private-only implementation creates a separate architectural concern.
 |===
+
+=== Preventing Contract Drift
+
+Two rules carry the drift concern, and they divide the failure between them.
+
+The **no second implementation** rule removes drift in the tooling rather than detecting it. A vendored copy keeps looking like the original after it has stopped being one, which is the property that made the divergence in `metamodel/artifact.schema.yaml` invisible; a repository that holds no copy cannot diverge in one.
+
+The **contract version** rule covers what remains: a sibling checkout that is simply older than the content beside it. `metadata_version` already exists in every artifact and in the schema, but nothing enforces its value, so the field carries no meaning today. Enforcing it makes a stale contract fail with a name attached, and makes raising the version the deliberate act it should be when the contract changes.
+
+Neither rule catches a contract change nobody versioned. That is a discipline gap rather than a mechanism gap, and no inexpensive check closes it.
 
 === Consequences
 
@@ -141,20 +158,23 @@ Positive:
 
 Negative:
 
-* The private repository build must locate compatible shared tooling.
-* Contract drift between repositories becomes possible and needs validation.
+* The private repository build must locate the sibling public checkout, and fails without it.
+* A sibling checkout can lag behind the content beside it. The contract version rule turns that into a named failure rather than a silent one.
 * Local development requires two checkouts for private builds.
+* A failed promotion is more expensive than under a copy, because the article has left its origin. Validation before the move is what keeps that cost theoretical.
 
 Neutral or follow-up:
 
 * A later packaging step may turn shared tooling into a reusable toolkit artifact if local path coupling becomes painful.
 * A Git submodule can be reconsidered if reproducible pinning becomes more important than simple authoring.
 
-=== Review Notes
+=== Review Outcome
 
-Before acceptance, confirm:
+The site owner confirmed the four open points at acceptance:
 
-* the private repository name is confirmed as `dieterbaier/profile-private`;
-* the initial tooling access mechanism, such as sibling checkout path versus packaged toolkit version;
-* whether private deployment runs locally, in GitHub Actions from the private repository, or both;
-* which compatibility check prevents private/public metadata contract drift.
+* the private repository is `dieterbaier/profile-private`;
+* tooling access is a sibling checkout, not a packaged version and not a submodule;
+* private deployment runs locally, not in GitHub Actions;
+* drift is prevented by the no-second-implementation rule together with an enforced `metadata_version`.
+
+The same review corrected promotion from a copy to a move.

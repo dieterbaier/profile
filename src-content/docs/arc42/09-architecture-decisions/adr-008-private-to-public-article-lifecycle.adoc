@@ -104,7 +104,9 @@ participant "preview.dieterbaier.eu" as PreviewSite
 Author -> Promote : select article for preview
 Promote -> PrivateRepo : read article source and metadata
 Promote -> Promote : remove private-only material and set status preview
-Promote -> PublicRepo : copy source and sidecar metadata
+Promote -> Promote : validate against the public contract before moving
+Promote -> PublicRepo : move source and sidecar metadata in
+Promote -> PrivateRepo : remove the promoted article
 Author -> PublicRepo : review diff before push
 PublicRepo -> PreviewSite : build and deploy noindex preview
 Author -> PreviewSite : share rendered preview for feedback
