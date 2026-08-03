@@ -1,0 +1,131 @@
+---
+id: ADR-011-preview-visibility-without-authentication
+type: ADR
+title: "Preview Visibility Without Authentication"
+status: accepted
+owner: "Dieter Baier"
+created: '2026-08-03'
+reviewed: true
+generated: false
+summary: "Serve the preview target without authentication, keep it unreachable from the public site, and replace the access boundary with a visible notice on every article that is not published."
+tags:
+- adr
+- decision
+- publishing
+- article-lifecycle
+relations:
+- type: refines
+  target: ADR-008-private-to-public-article-lifecycle
+  status: accepted
+  rationale: "Replaces the Basic Auth requirement ADR-008 states for the preview target; the rest of ADR-008, including Basic Auth for the private target, stands unchanged."
+  reviewed: true
+- type: addresses
+  target: QS-005-publication-visibility-boundary
+  status: accepted
+  rationale: "The scenario's preview response is noindex and no canonical link; this decision states what carries the boundary once authentication does not."
+  reviewed: true
+- type: introduces_risk
+  target: RISK-005-preview-mispublication
+  status: accepted
+  rationale: "An unfinished article becomes readable by anyone holding its URL, which raises the human-reader side of the risk that search indexing does not cover."
+  reviewed: true
+metadata_version: '1.0'
+---
+[[adr-011-preview-visibility-without-authentication]]
+== ADR-011: Preview Visibility Without Authentication
+
+=== Status
+
+Accepted by the site owner.
+
+=== Decision
+
+The site owner decides that `preview.dieterbaier.eu` serves the preview target without authentication. Preview pages carry `noindex` metadata and no canonical link, and every article whose status is not `published` carries a visible notice saying that it is not finished.
+
+The public site never links to the preview target. No page, listing, navigation entry, related-article suggestion, or link registry entry generated into `dieterbaier.eu` points at `preview.dieterbaier.eu`. A preview URL is something a reviewer is handed, not something a reader can arrive at.
+
+Basic Auth stays on the private target, where it protects content whose source is not public.
+
+=== What This Replaces In ADR-008
+
+xref:adr-008-private-to-public-article-lifecycle[ADR-008] remains accepted. Three statements in it are replaced by this record:
+
+* its Decision section, where preview and private deployments are described as rendering "without canonical links, with `noindex` metadata, and behind Basic Auth" — for the preview target the last clause no longer holds;
+* its consequence "Basic Auth is required for generated preview and private deployments";
+* its Review Notes entry confirming that "preview and private deployments require Basic Auth".
+
+ADR-008's own publication target deployment diagram already shows the preview target as `noindex, no canonical` with no Basic Auth, and names Basic Auth on the private target only. The diagram agrees with this record; the prose did not.
+
+Everything else in ADR-008 stands, including the repository boundary, the metadata-driven targets, and Basic Auth for the private target.
+
+=== Context
+
+The preview target is built from the public repository. An article reaches it by being promoted into public source, which means its text is already readable in Git by anyone before any page is deployed. Authentication in front of the rendered pages therefore guards a copy of something already published in another form.
+
+What the preview target does need is that its pages are not mistaken for finished work: not indexed, not canonical, and not read as a statement the author stands behind. The first two are technical and invisible to a reader. The third is what a password was standing in for, badly — a credential prompt says "you may not read this", which is not the message, and once a reviewer has the credential the prompt says nothing at all.
+
+Reachability is a separate question from indexing. `noindex` keeps a preview page out of search results; a link from the public site would put it in front of readers who never searched for it, and would make an unfinished article part of the site's navigable surface. The two rules cover the two ways a reader arrives.
+
+The private target is a different case and keeps its access boundary. Its source is not public, so the deployment is the only place its content could leak.
+
+=== Options
+
+[.pugh-matrix]
+[cols="3,1,1,1", options="header"]
+|===
+| Criterion | Open preview with noindex and a visible notice | Basic Auth in front of the preview target | Unguessable preview URLs
+| Protects something not already public | 0 | -1 | -1
+| Tells a reader the article is unfinished | +1 | -1 | -1
+| Keeps the page out of search results | +1 | +1 | +1
+| Lets a reviewer read it without a credential handshake | +1 | -1 | +1
+| Honest about what it protects | +1 | -1 | -1
+| Low operational overhead | +1 | -1 | 0
+s| Sum s| +5 s| -4 s| -1
+|===
+
+Basic Auth loses on every criterion that matters here. It costs credential handling, rotation, and a handshake with every reviewer, and it buys protection for content that is public in source. It also misleads: a reader who gets past it reasonably concludes the page was worth protecting.
+
+Unguessable URLs lose for the same reason without the operational cost. Obscurity that is described as protection is the more dangerous of the two, because nothing about it fails visibly.
+
+=== Consequences
+
+Positive:
+
+* No credentials to issue, rotate, or revoke for review; a preview link is shareable as a link.
+* The signal a reader needs is on the page, where a reader can act on it, instead of in HTTP metadata that only a crawler reads.
+* The preview target's access rule now matches ADR-008's deployment diagram, so the two no longer disagree.
+* The no-link rule needs little new machinery. Public listings, navigation, and related-article suggestions are generated from metadata and already carry `published` articles only, so a preview article has no generated route into the public site.
+
+Negative:
+
+* An unfinished article is readable by anyone holding its URL. This raises xref:risk-005-preview-mispublication[RISK-005] on the human-reader side; `noindex` addresses only crawlers.
+* The notice becomes load-bearing. If it is missing, wrong, or unreadable in one language, nothing else tells the reader what they are looking at.
+* The no-link rule holds for generated links by construction, but a hand-written link in article prose is outside that guarantee and needs a check of its own.
+
+Neutral or follow-up:
+
+* The notice is a signal, not a control. Nothing about preview visibility may be relied on for confidentiality; content that must not be readable does not belong in public source, which is ADR-008's rule and is unchanged.
+* Wording, per-status text, and language parity for the notice are implementation work tracked as https://github.com/dieterbaier/profile/issues/88[GitHub issue #88].
+
+=== Review Outcome
+
+The site owner raised the contradiction, confirmed that the deployment diagram and not the prose states the intent, and answered both open points at acceptance:
+
+* a preview page carrying `noindex`, no canonical link, and a visible notice is sufficient for the review use case;
+* the preview target must never be reachable from the public site, which is why the no-link rule is part of the decision rather than a follow-up.
+
+=== Implementation Status
+
+The decision holds; the mechanisms that carry it are at different stages.
+
+[cols="2,1,2", options="header"]
+|===
+| Rule | State | Where
+| Preview served without authentication | decided | Nothing to implement; the preview deployment is https://github.com/dieterbaier/profile/issues/79[#79]
+| `noindex`, no canonical link on preview pages | decided, not implemented | https://github.com/dieterbaier/profile/issues/78[#78]
+| No generated link from the public site to preview | implemented | Public listings, navigation, and related entries carry `published` only
+| No hand-written link from the public site to preview | decided, not implemented | Checked as part of https://github.com/dieterbaier/profile/issues/79[#79]
+| Visible notice on every article that is not published | decided, not implemented | https://github.com/dieterbaier/profile/issues/88[#88]
+|===
+
+Until the notice exists, a preview page carries no reader-facing signal at all. The preview target should not be deployed before https://github.com/dieterbaier/profile/issues/88[#88] is done, because the decision that removes the access boundary depends on the notice replacing it.

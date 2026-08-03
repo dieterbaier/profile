@@ -49,6 +49,8 @@ metadata_version: '1.0'
 
 Accepted.
 
+The Basic Auth requirement this record states for the preview target is replaced by xref:adr-011-preview-visibility-without-authentication[ADR-011]. Everything else here stands, including Basic Auth for the private target.
+
 === Decision
 
 We separate article privacy from article publication quality by combining repository boundaries with metadata-driven build targets.
