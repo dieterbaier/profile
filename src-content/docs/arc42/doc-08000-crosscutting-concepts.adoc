@@ -83,6 +83,42 @@ The observable behaviour is specified in
 `features/article-publication-status.feature` and bridged to
 `test/profile_publication_status_test.rb`.
 
+== Private Content Target
+
+A second target renders the private repository's content locally, so a draft can
+be read as a finished page before anything is decided about it. It carries
+`private`, `preview`, and `published`, which is a wider status set than the
+public target and safe only because it is a wider set for a target that is
+deployed nowhere.
+
+Both targets ask the same question of the same validator; only the answer
+differs, because the status set belongs to the target rather than to the
+mechanism. The private target renders to HTML alone: the markdown export exists
+so public articles can be published elsewhere, and a private draft is published
+nowhere.
+
+The private repository holds content only. Its build reaches this repository's
+tooling through a sibling checkout, resolved from `PROFILE_PRIVATE_DIR` or from
+the sibling path, and the build stops when that checkout carries a schema,
+validator, generator, or build of its own. The interface terms and theme come
+from this repository too, which is why the validator takes the includes tree as
+a parameter rather than assuming it sits inside the content root.
+
+Every page of the target carries a robots `noindex` tag and no canonical link.
+The two belong together: a page that says it must not be indexed while also
+claiming to be the canonical location of its content states two opposite things,
+and the build refuses to be asked for both. Neither is a confidentiality control.
+
+A checkout without the sibling is an ordinary state of this repository. Nothing
+about the private target may fail while the build configures itself, because that
+would break every Gradle invocation instead of the one task that needs the
+sibling.
+
+The observable behaviour is specified in
+`features/private-content-target.feature` and bridged to
+`test/profile_private_target_test.rb` and
+`test/private_checkout_contract_test.rb`.
+
 == Observability
 
 CI logs, Gradle task output, and validator reports are the operational feedback loop.
