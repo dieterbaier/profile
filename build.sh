@@ -45,6 +45,21 @@ for var in "${PASS_ENV[@]}"; do
     fi
 done
 
+# The private content root is a sibling checkout, which means it sits outside
+# $PWD and is therefore not in the container unless it is mounted. Without this,
+# ./gradlew and ./build.sh disagree about whether the private target can be
+# built at all, and the container reports a missing sibling that is present on
+# the host.
+#
+# Mounted only when it exists: a checkout without the sibling is an ordinary
+# state of this repository, and Podman fails on a missing bind-mount source
+# rather than creating it.
+PRIVATE_ARGS=()
+PRIVATE_DIR="${PROFILE_PRIVATE_DIR:-$PWD/../profile-private}"
+if [ -d "$PRIVATE_DIR" ]; then
+    PRIVATE_ARGS=(-v "$(cd "$PRIVATE_DIR" && pwd)":/private -e PROFILE_PRIVATE_DIR=/private)
+fi
+
 # Gradle cache location. Defaults to a named volume for local reuse; CI overrides
 # it with a host path (for example $HOME/.gradle) so actions/cache can persist it.
 GRADLE_CACHE="${GRADLE_CACHE:-gradle-cache}"
@@ -61,6 +76,7 @@ $ENGINE run --rm \
     $ENV_FILE \
     "${ENV_ARGS[@]}" \
     -v "$PWD":/app \
+    "${PRIVATE_ARGS[@]}" \
     -v "$GRADLE_CACHE":/root/.gradle \
     -w /app \
     "$IMAGE_NAME" \
