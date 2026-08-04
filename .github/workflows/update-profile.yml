@@ -152,14 +152,7 @@ jobs:
             generateArchitectureArtifacts \
             generateArticleSummaries \
             checkAgentAdapters \
-            testAgentAdapters \
-            testProfileNavigation \
-            testProfileListings \
-            testProfileComments \
-            testProfileMetadataVersion \
-            testProfilePrivateTarget \
-            testPrivateCheckoutContract \
-            testSiteMetadata
+            testAll
 
   deploy-site:
     needs: [build-docs, detect-changes]
