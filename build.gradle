@@ -756,6 +756,228 @@ tasks.named('buildSite') {
     finalizedBy tasks.named('verifyPublicTargetHasOnlyPublishedArticles')
 }
 
+// ---------------------------------------------------------------------------
+// Private target — ADR-009, issue #86
+// ---------------------------------------------------------------------------
+// The private repository holds content and nothing else. It reaches this
+// repository's tooling through a sibling checkout, so everything below reads a
+// tree outside this project.
+//
+// That tree is optional. A checkout without the sibling is an ordinary state of
+// this repository, not a broken one, so nothing here may fail while the build
+// configures itself: that would break every Gradle invocation instead of the one
+// task that needs the sibling.
+def privateCheckoutDir = file(env('PROFILE_PRIVATE_DIR') ?: "${rootDir}/../profile-private")
+def privateContentDir = new File(privateCheckoutDir, 'src-content/profile')
+def privateSiteDir = new File(privateContentDir, 'site')
+def publicIncludesDir = file('src-content/profile/includes')
+
+// ADR-009's "no second implementation" rule, read as a question about files.
+// A copy of the schema, validator, or build keeps looking like the original
+// after it has stopped being one, which is the drift the rule removes rather
+// than detects.
+def privateSecondImplementations = { File dir ->
+    def found = ['metamodel', 'build.gradle', 'settings.gradle', 'gradlew'].findAll { new File(dir, it).exists() }
+    def scripts = new File(dir, 'scripts')
+    if (scripts.isDirectory()) {
+        found += (scripts.listFiles() ?: new File[0])
+                .findAll { it.name ==~ /^(validate|generate)-.*\.(rb|js|mjs)$/ }
+                .collect { "scripts/${it.name}" }
+                .sort()
+    }
+    found
+}
+
+def requirePrivateCheckout = { ->
+    if (!privateCheckoutDir.isDirectory()) {
+        throw new GradleException(
+                "The private content checkout was not found.\n" +
+                "  expected: ${privateCheckoutDir}\n" +
+                "  ADR-009 checks the two repositories out as siblings. Clone dieterbaier/profile-private to that\n" +
+                "  path, or set PROFILE_PRIVATE_DIR to where it already is.")
+    }
+    if (!privateSiteDir.isDirectory()) {
+        throw new GradleException(
+                "The private checkout has no content root.\n" +
+                "  checkout: ${privateCheckoutDir}\n" +
+                "  expected: ${privateSiteDir}\n" +
+                "  The private tree mirrors this repository's layout so the same tooling reads both.")
+    }
+    def found = privateSecondImplementations(privateCheckoutDir)
+    if (!found.isEmpty()) {
+        throw new GradleException(
+                "The private checkout carries its own tooling, which ADR-009 forbids:\n" +
+                found.collect { "  - ${it}" }.join('\n') + "\n" +
+                "  The private repository holds content only; schema, validators, generators, and the build stay\n" +
+                "  in this repository. Remove the copy rather than keeping it in step.")
+    }
+}
+
+// Asked of the private tree the same way the public one is asked, and only when
+// there is a tree to ask about. Without a sibling the list is empty and the
+// render task never runs, because requirePrivateCheckout stops it first.
+def privateArticleExclusions = {
+    if (!privateSiteDir.isDirectory()) {
+        return [] as Set
+    }
+
+    def stdout = new StringWriter()
+    def stderr = new StringWriter()
+    def process = ['ruby', 'scripts/validate-profile-metamodel.rb',
+                   '--list-public-source-exclusions',
+                   '--target', 'private',
+                   '--root', privateCheckoutDir.absolutePath,
+                   '--profile-dir', privateContentDir.absolutePath,
+                   '--includes-dir', publicIncludesDir.absolutePath].execute(null, rootDir)
+    process.waitForProcessOutput(stdout, stderr)
+
+    // Fail closed, as the public selection does: without a trustworthy list the
+    // safe answer is to render nothing.
+    if (process.exitValue() != 0) {
+        throw new GradleException(
+                'Could not determine which articles the private target may render.\n' +
+                        "ruby scripts/validate-profile-metamodel.rb --target private failed:\n${stderr}")
+    }
+
+    stdout.toString().readLines().findAll { !it.trim().isEmpty() }.toSet()
+}()
+
+tasks.register('checkPrivateCheckout') {
+    description = 'Verifies the sibling private checkout exists and carries no tooling of its own.'
+    group = 'verification'
+    doLast {
+        requirePrivateCheckout()
+        println "Private checkout: ${privateCheckoutDir}"
+    }
+}
+
+tasks.register('validateProfilePrivateMetamodel') {
+    description = 'Validates the private content root against this repository\'s profile metamodel.'
+    group = 'verification'
+    dependsOn tasks.named('checkPrivateCheckout')
+
+    doLast {
+        exec {
+            commandLine 'ruby', 'scripts/validate-profile-metamodel.rb',
+                    '--root', privateCheckoutDir.absolutePath,
+                    '--profile-dir', privateContentDir.absolutePath,
+                    '--includes-dir', publicIncludesDir.absolutePath
+        }
+    }
+}
+
+// The private target renders from the sibling checkout into this repository's
+// build directory. The includes stay here: the private repository owns no theme
+// and no interface terms, so the attribute is an absolute path into this tree.
+asciidoctorBase('buildSitePrivate', '', privateSiteDir, 'build/site-private', [], true, "html5", [
+                                                                        'includesdir': publicIncludesDir.absolutePath,
+                                                                        'site-address-name': env('SITE_ADDRESS_NAME') ?: '.',
+                                                                        'site-street': env('SITE_STREET') ?: '.',
+                                                                        'site-plz'   : env('SITE_PLZ') ?: '.',
+                                                                        'site-city'  : env('SITE_CITY') ?: '.',
+                                                                        'site-tel'   : env('SITE_TEL') ?: '.',
+                                                                        'site-email' : env('SITE_EMAIL') ?: '.'
+])
+tasks.named('buildSitePrivate') {
+    description = 'Renders the private content root locally, including drafts, into build/site-private.'
+    dependsOn tasks.named('validateProfilePrivateMetamodel')
+    inputs.file('scripts/inject-site-metadata.rb')
+
+    // The private target renders what exists before an article is public, and
+    // the public statuses too, so a draft is read in the same shape as a
+    // finished page. Anything outside that set is absent from the target rather
+    // than merely unlinked.
+    sources {
+        def prefix = "${privateSiteDir.absolutePath}/"
+        privateArticleExclusions.each { exclusion ->
+            // The list is relative to the private root; a source spec matches
+            // relative to its own source directory.
+            def absolute = new File(privateCheckoutDir, exclusion).absolutePath
+            if (absolute.startsWith(prefix)) {
+                exclude absolute.substring(prefix.length())
+            }
+        }
+    }
+
+    doFirst {
+        requirePrivateCheckout()
+    }
+
+    // No canonical link and a robots tag on every page. The target is read
+    // locally and deployed nowhere, and the two rules are what keep it from
+    // claiming to be the official location of anything.
+    doLast {
+        exec {
+            commandLine 'ruby', 'scripts/inject-site-metadata.rb',
+                    '--site-dir', layout.buildDirectory.dir('site-private').get().asFile,
+                    '--noindex'
+        }
+    }
+
+    finalizedBy tasks.named('verifyPrivateTargetHasOnlyAllowedArticles')
+}
+
+// Checks the rendered result rather than the selection that produced it, the
+// same way the public target is checked. The private target is allowed more
+// statuses, not any status.
+tasks.register('verifyPrivateTargetHasOnlyAllowedArticles') {
+    description = 'Fails when build/site-private holds output of an article that target must not carry.'
+    group = 'verification'
+
+    doLast {
+        requirePrivateCheckout()
+        exec {
+            commandLine 'ruby', 'scripts/validate-profile-metamodel.rb',
+                    '--verify-public-target-output',
+                    '--target', 'private',
+                    '--root', privateCheckoutDir.absolutePath,
+                    '--profile-dir', privateContentDir.absolutePath,
+                    '--includes-dir', publicIncludesDir.absolutePath,
+                    '--output-root', rootDir.absolutePath
+        }
+    }
+}
+
+tasks.register('testProfileMetadataVersion') {
+    description = 'Runs the metadata contract version behaviour tests.'
+    group = 'verification'
+    inputs.files('scripts/validate-profile-metamodel.rb', 'metamodel/profile-artifact.schema.yaml',
+                 'test/profile_metadata_version_test.rb', 'features/metadata-contract-version.feature')
+
+    doLast {
+        exec {
+            commandLine 'ruby', '-Itest', 'test/profile_metadata_version_test.rb'
+        }
+    }
+}
+
+tasks.register('testProfilePrivateTarget') {
+    description = 'Runs the private content target behaviour tests.'
+    group = 'verification'
+    inputs.files('scripts/validate-profile-metamodel.rb', 'scripts/inject-site-metadata.rb',
+                 'test/profile_private_target_test.rb', 'features/private-content-target.feature')
+
+    doLast {
+        exec {
+            commandLine 'ruby', '-Itest', 'test/profile_private_target_test.rb'
+        }
+    }
+}
+
+// Invokes the build itself, because the sibling-checkout rules live in the
+// build. Kept in its own task so the fast metadata suites stay fast.
+tasks.register('testPrivateCheckoutContract') {
+    description = 'Runs the sibling private checkout contract tests.'
+    group = 'verification'
+    inputs.files('build.gradle', 'test/private_checkout_contract_test.rb', 'features/private-content-target.feature')
+
+    doLast {
+        exec {
+            commandLine 'ruby', '-Itest', 'test/private_checkout_contract_test.rb'
+        }
+    }
+}
+
 tasks.register('testSiteMetadata') {
     description = 'Runs the canonical public-site metadata behaviour tests.'
     group = 'verification'
