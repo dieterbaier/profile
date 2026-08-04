@@ -185,14 +185,16 @@ The decision holds; the rules it accepts are at different stages, and this secti
 [cols="2,1,2", options="header"]
 |===
 | Rule | State | Where
-| Sibling checkout as the tooling access mechanism | decided, not implemented | The private build, https://github.com/dieterbaier/profile/issues/86[#86]
-| No second implementation in the private repository | decided, not implemented | Checked by the private build, https://github.com/dieterbaier/profile/issues/86[#86], and by the promotion checks, https://github.com/dieterbaier/profile/issues/84[#84]
+| Sibling checkout as the tooling access mechanism | implemented | `buildSitePrivate` in `build.gradle`, resolved from `PROFILE_PRIVATE_DIR` or the sibling path, https://github.com/dieterbaier/profile/issues/86[#86]
+| No second implementation in the private repository | implemented for the private build | `checkPrivateCheckout` stops the build when the checkout carries a schema, validator, generator, or build of its own, https://github.com/dieterbaier/profile/issues/86[#86]. The promotion checks still have to apply it, https://github.com/dieterbaier/profile/issues/84[#84]
 | `metadata_version` accepted-version set enforced | implemented | Declared in `metamodel/profile-artifact.schema.yaml`, enforced by `scripts/validate-profile-metamodel.rb`, https://github.com/dieterbaier/profile/issues/83[#83]
 | Promotion saga: validate, then public, then private | decided, not implemented | https://github.com/dieterbaier/profile/issues/84[#84] and https://github.com/dieterbaier/profile/issues/85[#85]
 | Private deployment runs locally | decided, not implemented | https://github.com/dieterbaier/profile/issues/87[#87]
 |===
 
-`metadata_version` is required on every artifact, and the validator rejects a version outside the accepted set by name. Both drift rules are therefore in force for content, and what remains unbuilt is the private build that would use them.
+`metadata_version` is required on every artifact, and the validator rejects a version outside the accepted set by name. Both drift rules are in force, and the private build applies them: `buildSitePrivate` validates the private content root with this repository's validator before rendering it, and reads the accepted versions from this checkout rather than from the tree beside the content.
+
+What the private build does not yet do is run the generators against the private tree, so a private page carries no tags, no article navigation, and no series links. The generators write link registries into the includes tree, which for the private target is this repository's — a generator run would write into the public checkout while rendering private content. That is a real coupling and not a detail of wiring, so it is left to a slice of its own rather than solved in passing.
 
 **This was the gate on private-source work.** No slice that reads private source or promotes an article was to run before the accepted-version check existed, because a promotion validated against an unenforced contract is the exact failure this decision claims to prevent. https://github.com/dieterbaier/profile/issues/83[#83] closed that gate; the remaining private slices are ordered by their own dependencies.
 
