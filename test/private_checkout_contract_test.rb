@@ -80,6 +80,52 @@ class PrivateCheckoutContractTest < Minitest::Test
     end
   end
 
+  # A checkout that exists but whose content cannot be resolved. The sidecar
+  # names an article file that is not there, which is what the publication
+  # selection refuses to guess at.
+  def unresolvable_content(dir)
+    articles = content_root(dir)
+    (articles + 'ghost.profile.yaml').write(<<~YAML)
+      id: ART-999-ghost
+      type: Article
+      title: "Ghost"
+      status: draft
+      owner: "Test Owner"
+      created: '2026-01-01'
+      source: src-content/profile/site/articles/ghost.adoc
+      metadata_version: '1.0'
+    YAML
+  end
+
+  def test_an_unreadable_sibling_leaves_the_rest_of_the_build_alone
+    # Given: a private checkout whose content cannot be resolved
+    Dir.mktmpdir('profile-private-unreadable') do |dir|
+      unresolvable_content(dir)
+
+      # When: a task that has nothing to do with the private target runs
+      _out, err, status = gradle('validateArchitectureMetamodel', private_dir: dir)
+
+      # Then: it succeeds. The private selection runs while the build configures
+      # itself, so a failure there would break every invocation rather than the
+      # one task that needs the private tree.
+      assert_predicate status, :success?, err
+    end
+  end
+
+  def test_an_unreadable_sibling_stops_the_private_target
+    # Given: a private checkout whose content cannot be resolved
+    Dir.mktmpdir('profile-private-unreadable') do |dir|
+      unresolvable_content(dir)
+
+      # When: the private target is built
+      out, err, status = gradle('buildSitePrivate', private_dir: dir)
+
+      # Then: the build stops naming the content it could not resolve
+      refute_predicate status, :success?
+      assert_includes(out + err, 'ghost.adoc')
+    end
+  end
+
   def test_an_absent_sibling_leaves_the_rest_of_the_build_alone
     # Given: no private checkout at the configured path
     missing = File.join(Dir.tmpdir, 'profile-private-absent-on-purpose')

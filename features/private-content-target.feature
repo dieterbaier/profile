@@ -91,3 +91,13 @@ Feature: Private content target
     Given no private checkout at the configured path
     When a task that has nothing to do with the private target runs
     Then it succeeds, because a checkout without the sibling is an ordinary state
+
+  Scenario: An unreadable sibling leaves the rest of the build alone
+    Given a private checkout whose content cannot be resolved
+    When a task that has nothing to do with the private target runs
+    Then it succeeds, because the private selection is not that task's business
+
+  Scenario: An unreadable sibling stops the private target
+    Given a private checkout whose content cannot be resolved
+    When the private target is built
+    Then the build stops naming the content it could not resolve

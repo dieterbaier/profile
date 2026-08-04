@@ -531,6 +531,9 @@ tasks.register('testProfileComments') {
     description = 'Runs the GitHub-backed article comments behaviour tests.'
     group = 'verification'
     inputs.files('scripts/validate-profile-metamodel.rb', 'test/profile_comments_test.rb')
+    // The task runs this file too; leaving it undeclared meant a change to it
+    // did not make the task out of date.
+    inputs.files('test/article_comments_test.mjs')
     inputs.files('features/article-comments.feature', 'src-content/theme/article-comments.js', 'src-content/theme/style.css')
     inputs.files('templates/write-article/article.adoc')
 
@@ -814,8 +817,22 @@ def requirePrivateCheckout = { ->
 }
 
 // Asked of the private tree the same way the public one is asked, and only when
-// there is a tree to ask about. Without a sibling the list is empty and the
-// render task never runs, because requirePrivateCheckout stops it first.
+// there is a tree to ask about.
+//
+// This runs while the build configures itself, and it has to: the Asciidoctor
+// plugin resolves a task's source tree when it determines that task's
+// dependencies, so there is no later point at which an exclusion still applies.
+//
+// What it must not do is fail there. A private checkout that exists but cannot
+// be read is not the same as no checkout at all, and an exception here would
+// break `./gradlew tasks`, `validateArchitectureMetamodel`, and every other
+// invocation that has nothing to do with private content. The first version of
+// this block did exactly that.
+//
+// So the failure is carried instead of thrown, and the target fails closed:
+// without a trustworthy list it renders nothing, and the tasks that need the
+// list report why when they run.
+def privateSelectionFailure = null
 def privateArticleExclusions = {
     if (!privateSiteDir.isDirectory()) {
         return [] as Set
@@ -831,12 +848,11 @@ def privateArticleExclusions = {
                    '--includes-dir', publicIncludesDir.absolutePath].execute(null, rootDir)
     process.waitForProcessOutput(stdout, stderr)
 
-    // Fail closed, as the public selection does: without a trustworthy list the
-    // safe answer is to render nothing.
     if (process.exitValue() != 0) {
-        throw new GradleException(
+        privateSelectionFailure =
                 'Could not determine which articles the private target may render.\n' +
-                        "ruby scripts/validate-profile-metamodel.rb --target private failed:\n${stderr}")
+                "ruby scripts/validate-profile-metamodel.rb --target private failed:\n${stderr}"
+        return null
     }
 
     stdout.toString().readLines().findAll { !it.trim().isEmpty() }.toSet()
@@ -888,19 +904,29 @@ tasks.named('buildSitePrivate') {
     // finished page. Anything outside that set is absent from the target rather
     // than merely unlinked.
     sources {
-        def prefix = "${privateSiteDir.absolutePath}/"
-        privateArticleExclusions.each { exclusion ->
-            // The list is relative to the private root; a source spec matches
-            // relative to its own source directory.
-            def absolute = new File(privateCheckoutDir, exclusion).absolutePath
-            if (absolute.startsWith(prefix)) {
-                exclude absolute.substring(prefix.length())
+        if (privateSelectionFailure != null) {
+            // No trustworthy list, so nothing is rendered. The task still fails
+            // below with the reason; this is what holds if that guard is ever
+            // removed.
+            exclude '**/*'
+        } else {
+            def prefix = "${privateSiteDir.absolutePath}/"
+            privateArticleExclusions.each { exclusion ->
+                // The list is relative to the private root; a source spec matches
+                // relative to its own source directory.
+                def absolute = new File(privateCheckoutDir, exclusion).absolutePath
+                if (absolute.startsWith(prefix)) {
+                    exclude absolute.substring(prefix.length())
+                }
             }
         }
     }
 
     doFirst {
         requirePrivateCheckout()
+        if (privateSelectionFailure != null) {
+            throw new GradleException(privateSelectionFailure)
+        }
     }
 
     // No canonical link and a robots tag on every page. The target is read
@@ -926,6 +952,9 @@ tasks.register('verifyPrivateTargetHasOnlyAllowedArticles') {
 
     doLast {
         requirePrivateCheckout()
+        if (privateSelectionFailure != null) {
+            throw new GradleException(privateSelectionFailure)
+        }
         exec {
             commandLine 'ruby', 'scripts/validate-profile-metamodel.rb',
                     '--verify-public-target-output',
@@ -934,6 +963,19 @@ tasks.register('verifyPrivateTargetHasOnlyAllowedArticles') {
                     '--profile-dir', privateContentDir.absolutePath,
                     '--includes-dir', publicIncludesDir.absolutePath,
                     '--output-root', rootDir.absolutePath
+        }
+    }
+}
+
+tasks.register('testProfilePublicationStatus') {
+    description = 'Runs the publication status selection behaviour tests.'
+    group = 'verification'
+    inputs.files('scripts/validate-profile-metamodel.rb', 'test/profile_publication_status_test.rb',
+                 'features/article-publication-status.feature')
+
+    doLast {
+        exec {
+            commandLine 'ruby', '-Itest', 'test/profile_publication_status_test.rb'
         }
     }
 }
@@ -1043,4 +1085,49 @@ tasks.register('buildAll') {
     dependsOn tasks.named('buildCVPersonal')
     dependsOn tasks.named('buildReadme')
     dependsOn tasks.named('buildArchitecture')
+}
+
+// Every behaviour test task, collected rather than listed.
+//
+// The list of test tasks was previously written out again in the CI workflow,
+// and it drifted: four registered tasks were never run there, and two test
+// files had no task at all. A test nothing runs is not a check, and the drift
+// is invisible because the pipeline stays green either way.
+//
+// Matching by name keeps a new test task from having to be remembered twice.
+tasks.register('testAll') {
+    description = 'Runs every behaviour test task.'
+    group = 'verification'
+    dependsOn tasks.matching { it.name.startsWith('test') && it.name != 'testAll' }
+    dependsOn tasks.named('verifyEveryTestFileHasATask')
+}
+
+// The other half of the same drift: a test file that no task names is invisible
+// whether or not the pipeline runs an aggregate. This asserts the contract
+// itself rather than trusting it, the way the public render tasks are asserted
+// to reach metadata validation.
+tasks.register('verifyEveryTestFileHasATask') {
+    description = 'Fails when a file under test/ is not an input of any test task.'
+    group = 'verification'
+
+    doLast {
+        def declared = tasks.matching { it.name.startsWith('test') && it.name != 'testAll' }
+                .collect { it.inputs.files.files }
+                .flatten()
+                .collect { it.absolutePath }
+                .toSet()
+
+        def orphans = fileTree('test').matching { include '**/*_test.rb'; include '**/*test*.mjs' }
+                .files
+                .findAll { !declared.contains(it.absolutePath) }
+                .collect { it.name }
+                .sort()
+
+        if (!orphans.isEmpty()) {
+            throw new GradleException(
+                    "No test task names these test file(s), so nothing runs them:\n" +
+                    orphans.collect { "  - test/${it}" }.join('\n') + "\n" +
+                    "  Register a task for each and let testAll pick it up.")
+        }
+    }
 }
