@@ -27,6 +27,29 @@ Deployment credentials are scoped by target system. `PROFILE_REPO_TOKEN` grants 
 
 Metadata validation runs before documentation rendering. The architecture validator follows the architecture-knowledge-toolkit metamodel. The profile validator checks profile artifact metadata, relations, and generated indexes.
 
+== Metadata Contract Version
+
+Every profile artifact declares the version of the metadata contract it was
+written against, and the validator accepts only versions it knows. The accepted
+versions are declared once, as the `metadata_version` enum in
+`metamodel/profile-artifact.schema.yaml`; the validator reads them from there
+instead of holding a second list, and any build can read the same file without
+running the validator.
+
+The set is read from the validator's own checkout rather than from the tree it
+was pointed at. Content validated from elsewhere — the private repository
+reaching the shared tooling through a sibling checkout, as ADR-009 accepts — is
+judged by the contract of the tooling doing the validating, which is what makes
+a checkout older than the content beside it fail by name instead of passing.
+
+An artifact that declares no version fails as a missing field. Treating absence
+as the initial version would let content say nothing about its contract and
+still pass, and the silent case is the one this field exists to remove.
+
+The observable behaviour is specified in
+`features/metadata-contract-version.feature` and bridged to
+`test/profile_metadata_version_test.rb`.
+
 == Publication Selection
 
 A publication target renders the article statuses that target allows, decided in
