@@ -1,0 +1,154 @@
+---
+id: ADR-012-private-reading-context
+type: ADR
+title: "Reading Context of the Private Target"
+status: proposed
+owner: "Dieter Baier"
+created: '2026-08-04'
+reviewed: false
+generated: false
+summary: "Render the private target from the public site tree together with the private content root, so a draft is read inside the site it will live in rather than on its own."
+tags:
+- adr
+- decision
+- publishing
+- article-lifecycle
+relations:
+- type: refines
+  target: ADR-008-private-to-public-article-lifecycle
+  status: proposed
+  rationale: "ADR-008 names the private target and its visibility rules but does not say what a page in it is surrounded by."
+  reviewed: false
+- type: depends_on
+  target: ADR-009-private-repository-integration
+  status: proposed
+  rationale: "The private repository holds content only, which is why the surrounding site has to come from somewhere else."
+  reviewed: false
+- type: introduces_risk
+  target: RISK-003-private-data-exposure
+  status: proposed
+  rationale: "A target that renders as a complete site is easier to mistake for a deployable one while it contains unpublished drafts."
+  reviewed: false
+metadata_version: '1.0'
+---
+[[adr-012-private-reading-context]]
+== ADR-012: Reading Context of the Private Target
+
+=== Status
+
+Proposed. Drafted after the first private render in
+https://github.com/dieterbaier/profile/issues/86[GitHub issue #86] showed the
+question, and not yet accepted.
+
+=== Decision
+
+The private target is rendered from the public site tree **and** the private
+content root together, into one output. A draft is read inside the site it will
+live in: the same menu, the same start page, the same legal notice, the same
+article listings.
+
+The private content root wins where both trees offer the same output path, so a
+draft can stand in for a page that already exists publicly without the public
+copy hiding it.
+
+=== Context
+
+ADR-009 gives the private repository content and nothing else. The first private
+render therefore produced exactly what the private repository contains: three
+article pages, the theme, and no site around them. Every link in the page chrome
+— start page, CV, legal notice, article listings, language switcher — points at a
+file that is not in the target.
+
+The target exists so that a draft can be read as a finished page before anything
+is decided about it. A page whose navigation is entirely broken is not the page
+being decided about, and the reader has to hold in their head which of the
+defects are the draft's and which are the target's.
+
+**The preview target does not have this problem**, and the difference is worth
+stating so the two are not solved twice. Promotion moves an article into the
+public repository and sets `status: preview` there. `build/site-preview` is built
+from public source only, as
+https://github.com/dieterbaier/profile/issues/78[#78] specifies, so it already
+contains the whole public site plus the preview articles. Only the private
+target reads from a tree that holds articles alone.
+
+The cheap answer — leave it as it is — is not obviously wrong. The private target
+is read by one person who knows why the links fail, and rendering the entire
+public site to look at three drafts is a real cost on every run.
+
+=== Options
+
+[.pugh-matrix]
+[cols="3,1,1,1,1", options="header"]
+|===
+| Criterion | Compose public site and private content | Private content only | Generated minimal shell | Read only after promotion to preview
+| A draft is read as the page it will become | +1 | -1 | 0 | +1
+| Links in the site chrome resolve | +1 | -1 | 0 | +1
+| An unfinished article is not published in order to read it | +1 | +1 | +1 | -1
+| A draft is read without leaving the private repository | +1 | +1 | +1 | -1
+| No invented structure that matches no real site | +1 | +1 | -1 | +1
+| Cost of one private render | -1 | +1 | 0 | +1
+| Failure modes are easy to reason about | 0 | +1 | -1 | +1
+s| Sum s| +4 s| +3 s| 0 s| +3
+|===
+
+*Compose public site and private content* renders both trees into one target.
+The surrounding site is the real one rather than a stand-in, and it costs a full
+public render on every private build.
+
+*Private content only* is what #86 built. It is the cheapest and the most
+predictable, and it is the option whose output most obviously must never be
+deployed, because it plainly is not a site.
+
+*Generated minimal shell* would produce just enough index and menu targets for
+the links to resolve. It invents a structure that matches no real site, so a
+draft would be read inside a fourth thing that exists only in this target.
+
+*Read only after promotion to preview* removes the private reading target
+entirely. It scores well on everything except the reason the private path exists:
+the article would be publicly reachable — ADR-011 removed the access boundary in
+front of preview — before its author has read it as a page once.
+
+=== Consequences
+
+Positive:
+
+* A draft is read in the context that decides whether it works, not in isolation.
+* The private and preview readings have the same shape, so what the private read
+  shows carries over to the preview one.
+* No structure is invented for this target; the context is the public site as it
+  actually is.
+
+Negative:
+
+* Every private render also renders the public site, which is most of the build
+  time for three drafts.
+* The output looks like a complete, deployable site while containing unpublished
+  content. That is the risk this record introduces, and it is the reason the
+  target keeps `noindex` on every page and is deployed by nothing.
+* A composition rule is now part of the build: two trees, one output, and a
+  defined winner. That is one more thing to understand when the target surprises
+  someone.
+
+=== Open Questions For Review
+
+. **Collision rule.** The decision above says the private tree wins. The
+  alternative — fail the build on a collision — would catch a draft that
+  accidentally shadows a published page. Which is wanted is not obvious, and the
+  answer belongs in this record before it is accepted.
+. **Whether the public articles appear in the private target's listings.** The
+  private status set includes `published`, so they would. That is probably right,
+  and it means the listings in the private target are longer than the ones in the
+  private repository's own content.
+. **What keeps the merged output from being deployed.** Today nothing deploys it
+  and `noindex` is on every page. Whether that is enough once the output looks
+  like a whole site is a question for this record rather than for the slice that
+  implements it.
+
+=== Implementation Status
+
+Not implemented. https://github.com/dieterbaier/profile/issues/86[#86] built the
+*private content only* option, which is the second column of the matrix above. If
+this record is accepted, that behaviour changes and the change belongs to its own
+slice rather than to #86, which is already complete against its own acceptance
+criteria.
