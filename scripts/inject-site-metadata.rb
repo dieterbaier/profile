@@ -5,6 +5,52 @@ require 'optparse'
 require 'pathname'
 require 'uri'
 
+# Marks every page of a target as one search engines must not index, and strips
+# any canonical link it carries.
+#
+# The two belong together. A target that says "do not index me" while also
+# claiming to be the canonical location of its content states two opposite
+# things about the same page, and which one wins is the search engine's choice
+# rather than ours. ADR-008 requires both for the preview and private targets.
+#
+# This is a signal, not a control: the pages are readable by anyone who has the
+# URL. Nothing here may be relied on for confidentiality.
+class RobotsNoindexInjector
+  ROBOTS_TAG = '<meta name="robots" content="noindex, nofollow">'
+  ROBOTS_PATTERN = %r{<meta\b[^>]*\bname\s*=\s*["']robots["'][^>]*>}i
+  CANONICAL_PATTERN = %r{<link\b[^>]*\brel\s*=\s*["']canonical["'][^>]*>\n?}i
+
+  attr_reader :site_dir
+
+  def initialize(site_dir:)
+    @site_dir = Pathname.new(site_dir).expand_path
+  end
+
+  # Returns the pages it marked, so a caller can report a number it produced
+  # rather than one it assumed.
+  def inject
+    Pathname.glob(site_dir.join('**/*.html')).sort.select { |path| inject_file(path) }
+  end
+
+  private
+
+  def inject_file(html_path)
+    content = html_path.read(encoding: 'UTF-8')
+    return false unless content.include?('</head>')
+
+    updated = content.gsub(CANONICAL_PATTERN, '')
+    # Idempotent: re-running replaces the tag instead of stacking copies.
+    updated = if updated.match?(ROBOTS_PATTERN)
+                updated.sub(ROBOTS_PATTERN) { ROBOTS_TAG }
+              else
+                updated.sub('</head>') { "#{ROBOTS_TAG}\n</head>" }
+              end
+
+    html_path.write(updated, encoding: 'UTF-8')
+    true
+  end
+end
+
 class SiteMetadataInjector
   attr_reader :site_dir, :base_url, :alternates, :default_language
 
@@ -115,7 +161,22 @@ if $PROGRAM_NAME == __FILE__
     parser.on('--base-url URL') { |value| options[:base_url] = value }
     parser.on('--required') { options[:required] = true }
     parser.on('--alternates PATH') { |value| options[:alternates] = value }
+    parser.on('--noindex') { options[:noindex] = true }
   end.parse!
+
+  # A target is either the canonical home of its content or one that must not be
+  # indexed. Asking for both is a contradiction the build should not resolve
+  # silently by preferring one of them.
+  if options[:noindex]
+    abort '--site-dir is required' unless options[:site_dir]
+    if options[:base_url] && !options[:base_url].strip.empty?
+      abort '--noindex and --base-url are mutually exclusive: a target that is not indexed claims no canonical URL'
+    end
+
+    marked = RobotsNoindexInjector.new(site_dir: options[:site_dir]).inject
+    puts "Marked #{marked.length} page(s) as noindex, without canonical links."
+    exit 0
+  end
 
   if options[:base_url].nil? || options[:base_url].strip.empty?
     abort 'SITE_BASE_URL is required for this build' if options[:required]
