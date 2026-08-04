@@ -51,7 +51,8 @@ class ProfileTranslationTest < Minitest::Test
   def metadata(id, language, source, extra = {})
     {
       'id' => id, 'type' => 'Article', 'title' => id, 'status' => 'published',
-      'owner' => 'Test Owner', 'created' => '2026-01-01', 'language' => language, 'source' => source
+      'owner' => 'Test Owner', 'created' => '2026-01-01', 'language' => language, 'source' => source,
+      'metadata_version' => ProfileArtifactValidator.supported_metadata_versions.first
     }.merge(extra).to_yaml
   end
 

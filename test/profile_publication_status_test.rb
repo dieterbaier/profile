@@ -54,7 +54,8 @@ class ProfilePublicationStatusTest < Minitest::Test
       'title' => spec.fetch(:title, spec.fetch(:slug)),
       'status' => spec.fetch(:status, 'published'),
       'owner' => 'Test Owner',
-      'created' => spec.fetch(:created, '2026-01-01')
+      'created' => spec.fetch(:created, '2026-01-01'),
+      'metadata_version' => ProfileArtifactValidator.supported_metadata_versions.first
     }
     metadata['source'] = spec.fetch(:source, source_rel) unless spec[:omit_source]
     %i[language translation_of previous next tags].each do |key|

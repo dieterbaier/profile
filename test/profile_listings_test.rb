@@ -55,6 +55,7 @@ class ProfileListingsTest < Minitest::Test
       'status' => article.fetch(:status, 'published'),
       'owner' => 'Test Owner',
       'created' => article.fetch(:created, '2026-01-01'),
+      'metadata_version' => ProfileArtifactValidator.supported_metadata_versions.first,
       'source' => source_rel
     }
     %i[published summary summary_de summary_en].each do |key|
@@ -344,7 +345,7 @@ class ProfileListingsTest < Minitest::Test
         metadata = {
           'id' => article.fetch(:id), 'type' => 'Article', 'title' => slug, 'status' => 'published',
           'owner' => 'Test Owner', 'created' => '2026-01-01', 'language' => article.fetch(:language),
-          'source' => source, 'tags' => article.fetch(:tags, [])
+          'metadata_version' => ProfileArtifactValidator.supported_metadata_versions.first, 'source' => source, 'tags' => article.fetch(:tags, [])
         }
         (root + "#{rel_dir}/#{slug}.profile.yaml").write(metadata.to_yaml)
       end

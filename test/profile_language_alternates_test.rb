@@ -32,7 +32,7 @@ class ProfileLanguageAlternatesTest < Minitest::Test
         metadata = {
           'id' => page.fetch(:id), 'type' => 'ProfilePage', 'title' => slug, 'status' => 'published',
           'owner' => 'Test Owner', 'created' => '2026-01-01', 'language' => page.fetch(:language),
-          'source' => source
+          'metadata_version' => ProfileArtifactValidator.supported_metadata_versions.first, 'source' => source
         }
         metadata['translation_of'] = page[:translation_of] if page[:translation_of]
         (root + "#{rel_dir}/#{slug}.profile.yaml").write(metadata.to_yaml)
@@ -97,7 +97,8 @@ class ProfileLanguageAlternatesTest < Minitest::Test
         (root + source).write("= entry\n")
         (root + "#{rel_dir}/entry.profile.yaml").write({
           'id' => id, 'type' => 'Article', 'title' => id, 'status' => 'published', 'owner' => 'Test Owner',
-          'created' => '2026-01-01', 'language' => language, 'source' => source
+          'created' => '2026-01-01', 'language' => language, 'source' => source,
+          'metadata_version' => ProfileArtifactValidator.supported_metadata_versions.first
         }.to_yaml)
       end
 
