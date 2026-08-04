@@ -108,10 +108,13 @@ Feld, das so, wie es geschrieben ist, niemand durchsetzen kann. Entweder es
 bekommt eine Deklaration der akzeptierten Versionen, oder es ist Dekoration und
 sagt das besser selbst.
 
-Zum Vergleich für ein Issue stromaufwärts, das es noch nicht gibt: im Profil
-liegt die akzeptierte Menge als `enum` am Feld im Schema, der Validator liest sie
-aus dem eigenen Checkout statt aus dem Baum, auf den er gezeigt wird, und ein
-fehlender Wert ist ein Fehler und nicht die Ausgangsversion.
+Der Befund ging als architecture-knowledge-toolkit#75 stromaufwärts. Er nennt die
+beiden Auflösungen — akzeptierte Versionen deklarieren oder das Feld als
+informativ kennzeichnen — und überlässt die Wahl dem Toolkit. Zum Vergleich, was
+im Profil entschieden wurde: die akzeptierte Menge liegt als `enum` am Feld im
+Schema, der Validator liest sie aus dem eigenen Checkout statt aus dem Baum, auf
+den er gezeigt wird, und ein fehlender Wert ist ein Fehler und nicht die
+Ausgangsversion.
 
 Damit ist es keine neue Erkenntnis, sondern eine zweite Instanz von
 docs-as-code-toolkit#26 „Define toolkit asset update mechanism for consuming
