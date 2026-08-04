@@ -88,3 +88,26 @@ Wo die Regel stattdessen hingehört — `write-article`, `article-summary-pack`
 oder beides — ist bewusst offen. Der Auslöser, es zu entscheiden, wäre der erste
 Fall, in dem jemand für veröffentlichte Inhalte eine Vorgabe sucht und sie in
 `language-profile` nicht findet.
+
+=== Ob die Generatoren je gegen den privaten Baum laufen sollen
+
+Das private Target rendert, aber ohne Generatorlauf: eine private Seite hat keine
+Tags, keine Artikelnavigation und keine Serienlinks. Die `previous`/`next`-Felder
+der Entwürfe stehen in den Metadaten und erscheinen nirgends.
+
+Der Grund ist eine Kopplung, keine offene Verdrahtung. Die Generatoren schreiben
+Link-Registries in den Includes-Baum, und der ist für dieses Target der
+öffentliche. Ein Generatorlauf gegen privaten Inhalt schriebe also in das
+öffentliche Checkout — und zwar Dateien, die aus Inhalt abgeleitet sind, den das
+öffentliche Repository nicht kennen darf.
+
+Drei Auswege sind denkbar und keiner ist offensichtlich billiger: die
+Registry-Ausgabe als eigenen Parameter führen; die Generatoren für dieses Target
+auf die per-Artikel-Includes beschränken; oder akzeptieren, dass ein Entwurf ohne
+Navigation gelesen wird, weil ADR-012 ohnehin entschieden hat, dass er ohne
+Seitenkontext gelesen wird.
+
+Der Auslöser, es zu entscheiden, wäre der erste Entwurf, bei dem die fehlende
+Serie beim Lesen wirklich stört — die AI-Serie aus `profile-private#7` ist
+dreiteilig und damit der erste Kandidat.
+

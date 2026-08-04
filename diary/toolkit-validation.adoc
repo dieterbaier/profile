@@ -123,3 +123,30 @@ ist selbst ein Slice von #22, wo die Drift schon einmal gefunden wurde. Der
 Beitrag dieses Projekts ist der Nachweis, dass sie auch bidirektional auftritt —
 ein reiner Update-Mechanismus, der stromabwärts überschreibt, würde hier lokale
 Erweiterungen zerstören.
+
+=== Lücke: der BDD-Default fordert ein Szenario, nicht die Bruchstelle
+
+`bdd-specification` verlangt für beobachtbares Verhalten ein Szenario und
+mindestens eine identifizierbare automatisierte Verifikation. Beides lag am
+4. August vor — und die Zusicherung war trotzdem ungeprüft.
+
+Der Kommentar im Build sicherte zu, dass nur der Task scheitert, der den privaten
+Geschwister-Checkout braucht. Das Szenario dazu hieß „An absent sibling leaves
+the rest of the build alone" und prüfte den *fehlenden* Checkout: den Fall, in
+dem die Zusicherung trivial hält, weil ohne Verzeichnis gar keine Selektion
+läuft. Ein vorhandener und unlesbarer Checkout brach jeden `./gradlew`-Aufruf.
+Der Owner fand es im Review von PR #96.
+
+Nach dem Buchstaben des Skills war alles erfüllt. Was fehlt, ist die Frage, die
+ein Szenario beantworten müsste: *an welcher Stelle bricht die Zusicherung, und
+berührt der Test genau die?* Ein Szenario, das den Grenzfall meidet, sieht von
+einem Szenario, das ihn trifft, nicht unterscheidbar aus — beide bestehen aus
+einem Titel und drei Schritten.
+
+Das ist verwandt mit architecture-knowledge-toolkit#74, aber nicht dasselbe. Dort
+geht es darum, dass der strikte Default ein Szenario verlangt, das gar nicht
+scheitern *kann*, weil der Defekt unterhalb der Bridge-Schicht liegt. Hier kann
+das Szenario scheitern — es zielt nur nicht dorthin. Der Beitrag dieses Projekts
+ist der zweite Fall und ein möglicher Zusatz zum Skill: zu jeder Zusicherung
+gehört das Szenario, das sie verletzt, nicht nur das, das sie bestätigt.
+

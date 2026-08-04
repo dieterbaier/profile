@@ -66,6 +66,11 @@ waits on a review it has nothing to do with. The branch is named
 `session-diary` and not `diary` because a branch named after a directory makes
 `git log diary` ambiguous.
 
+The progress refresh from step 2 goes on the same branch when clock-out is what
+writes it. Both are this ritual's output and are integrated together in step 5.
+A progress file corrected mid-day, while working on a topic, belongs to that
+work and stays with it — the rule is about who is writing, not about the file.
+
 **4. Close the day, or do not.** A day file is open until the day is closed and
 append-only afterwards. Say plainly which of the two just happened, so that a
 later session knows whether it may still edit the file.

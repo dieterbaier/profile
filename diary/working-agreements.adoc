@@ -57,3 +57,22 @@ repository at a time" über einen nicht-atomaren Move, der Validator lehne falsc
 `metadata_version`-Werte ab (er prüft `string`), und eine geteilte `id` *bedeute*
 eine unterbrochene Promotion (sie kann eine Kollision sein) (PR #82).
 
+Ein Szenario, das eine Zusicherung behauptet, deckt den Fall ab, in dem sie
+bricht — nicht den, in dem sie trivial hält.:: Kosten: „An absent sibling leaves
+the rest of the build alone" war grün, während ein vorhandener, unlesbarer
+privater Checkout jeden `./gradlew`-Aufruf brach. Der fehlende Checkout ist der
+Fall, in dem gar keine Selektion läuft; die Zusicherung war für den anderen
+geschrieben. Gefunden im Review, nicht vom Test (#86, PR #96).
+
+Ein neuer Task wird über den dokumentierten Weg ausgeführt, bevor er als fertig
+gilt — nicht nur über den, auf dem er entstanden ist.:: Kosten:
+`./build.sh buildSitePrivate` meldete einen fehlenden Sibling, den es auf dem
+Host gab. Der Container ist der Weg, den CI geht, und er war kein einziges Mal
+ausgeführt worden (#86).
+
+Was CI ausführen soll, wird nicht ein zweites Mal aufgeschrieben.:: Kosten: die
+Workflow-Datei zählte ihre Testtasks von Hand auf und war gedriftet — vier
+registrierte Tasks fehlten dort, zwei Testdateien hatten gar keinen Task. 62
+Testläufe waren unsichtbar, und die Pipeline blieb grün, weil ein Test, den
+niemand ausführt, nicht scheitern kann (PR #96).
+

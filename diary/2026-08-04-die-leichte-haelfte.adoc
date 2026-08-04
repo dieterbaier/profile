@@ -1,0 +1,122 @@
+== Day 4 — 4 August 2026: Die leichte Hälfte
+
+Zwei Pull Requests gingen auf `main` (#93, #96), zwei Issues wurden geschlossen
+(#83, #86), drei neu geöffnet (#94, #95 und stromaufwärts
+architecture-knowledge-toolkit#75), und das private Repository hat zum ersten
+Mal Inhalt.
+
+Der Tag drehte sich aber nicht um das Gebaute, sondern um eine Sorte Prüfung, die
+wir viermal geschrieben oder vorgefunden haben: eine, die genau die Hälfte
+abdeckt, in der sie nicht scheitern kann.
+
+=== Ein Feld, das eine Absicht festhielt, die niemand prüfte
+
+Gestern stand es als Überspitzung im Tagebuch: ADR-009 stützt den Driftschutz auf
+eine durchgesetzte `metadata_version`, und der Validator prüfte nur, ob das Feld
+ein String ist. #83 hat den Mechanismus nachgeliefert.
+
+Drei Dinge waren zu entscheiden, und alle drei hingen an derselben Frage — wer
+den Vertrag besitzt.
+
+Die akzeptierten Versionen stehen als `enum` am Feld im Schema, und der Validator
+liest sie von dort statt eine zweite Liste zu führen. Damit können die beiden
+nicht auseinanderlaufen, und ein fremder Build erfährt ohne Ruby, was ein
+Checkout akzeptiert.
+
+Er liest sie aus dem *eigenen* Verzeichnis, nicht aus `--root`. Auf privaten
+Inhalt gerichtet, antwortet er weiterhin mit seinem eigenen Vertrag. Andersherum
+läse er das Metamodell, das neben dem zu prüfenden Inhalt liegt — also gar keine
+Prüfung.
+
+Ein fehlender Wert ist ein Fehler, nicht die Ausgangsversion. Alle 38 Artefakte
+tragen das Feld längst, der reale Baum validiert unverändert.
+
+Bemerkenswert war der Nebeneffekt: sieben Testdateien mussten mit. Ihre Fixtures
+bauten Metadaten *ohne* `metadata_version` — sie modellierten also Artefakte, die
+es nach dieser Änderung nicht geben darf. Dass die Tests trotzdem grün waren,
+lag daran, dass die meisten von ihnen `errors` nie ansehen.
+
+=== Das Szenario prüfte die Hälfte, die nicht scheitern konnte
+
+#86 rendert den privaten Geschwister-Checkout. Die Ausschlussliste dafür entsteht
+zur Konfigurationszeit — sie muss, weil das Asciidoctor-Plugin den Quellbaum
+auflöst, während es Abhängigkeiten bestimmt. Darüber stand ein Kommentar mit der
+Zusicherung, dass nur der Task scheitert, der den Sibling braucht.
+
+Der Kommentar stimmte nicht. Die Closure warf bei jedem Fehlschlag der Selektion,
+also bei jedem `./gradlew`-Aufruf, sobald der private Checkout existierte und
+nicht lesbar war:
+
+[source,sh]
+----
+$ PROFILE_PRIVATE_DIR=/tmp/broken-private ./gradlew validateArchitectureMetamodel
+> A problem occurred evaluating root project 'profile-dieterbaier'.
+  > Could not determine which articles the private target may render.
+----
+
+Der Owner fand es im Review von #96. Die Reparatur war klein: den Grund tragen
+statt werfen, das Target fällt ohne verlässliche Liste geschlossen aus, und die
+Tasks, die die Liste brauchen, melden den Grund beim Ausführen.
+
+Der Befund ist nicht die Zeile, sondern das Szenario daneben. Wir hatten eines
+geschrieben — „An absent sibling leaves the rest of the build alone" — und es
+prüfte den *fehlenden* Checkout. Der fehlende ist der Fall, an den man denkt, und
+er ist der Fall, in dem die Garantie trivial hält: ohne Verzeichnis läuft die
+Selektion gar nicht erst. Der vorhandene und unlesbare Checkout ist der Fall, für
+den die Zusicherung geschrieben war, und ihn deckte nichts ab.
+
+Plausibel war es, weil das Szenario und der Kommentar denselben Satz sagten. Wer
+beides nebeneinander liest, sieht eine Zusicherung und einen Test dazu — und
+prüft nicht mehr, ob der Test die Zusicherung an ihrer Bruchstelle berührt.
+
+=== Der dokumentierte Weg war der ungeprüfte
+
+`./gradlew buildSitePrivate` lief. `./build.sh buildSitePrivate` meldete einen
+fehlenden Sibling, den es auf dem Host gab: der Container mountet `$PWD`, und der
+Geschwister-Checkout liegt daneben, nicht darin.
+
+Auch das fand der Owner, und zwar dadurch, dass er den in der README
+dokumentierten Weg benutzte statt den, auf dem die Sache entstanden ist. Der
+Container ist der Weg, den CI geht; wir hatten ihn kein einziges Mal ausgeführt.
+
+=== Vier Tests, die nirgends liefen
+
+Beim Verdrahten der neuen Testtasks fiel auf, dass die Pipeline ihre Testtasks
+von Hand aufzählt — und die Aufzählung war gedriftet. `testProfileLanguage`,
+`testProfileCvLanguage`, `testProfileLanguageAlternates` und
+`testProfileTranslation` waren registriert und standen nicht in der Workflow-
+Datei. Zwei Testdateien hatten überhaupt keinen Task: die aus #77 und die aus
+#83, also ausgerechnet die beiden Slices, die den Publikationsschutz tragen.
+
+62 Testläufe waren für die Pipeline unsichtbar, und sie blieb grün, weil ein
+Test, den niemand ausführt, nicht scheitern kann.
+
+Die Reparatur läuft jetzt über `testAll`, das die Tasks nach Namen einsammelt
+statt sie ein zweites Mal aufzuschreiben. Die andere Hälfte — eine Testdatei, die
+kein Task nennt — bleibt unabhängig davon unsichtbar, also prüft
+`verifyEveryTestFileHasATask` das seitdem.
+
+Dieser Check fand beim ersten Lauf sofort etwas: `article_comments_test.mjs`
+wurde von `testProfileComments` *ausgeführt*, war aber nicht als Input
+deklariert. Eine Änderung daran machte die Task also nicht veraltet.
+
+=== Eine Entscheidung, die die Matrix nicht getroffen hat
+
+Der erste private Render warf eine Frage auf, die keiner der bestehenden Records
+beantwortet: was einen Entwurf umgibt. Heute umgibt ihn nichts — jeder Link im
+Seitenrahmen zeigt auf eine Datei, die im Target fehlt.
+
+Die Pugh-Matrix in ADR-012 gibt der komponierenden Variante +4 und der heutigen
++3. Der Owner hat sich für die heutige entschieden und den Unterschied benannt:
+das Target liest die Person, die den Inhalt geschrieben hat und weiß, warum die
+Links fehlen.
+
+Wir haben die Matrix so stehen lassen, wie sie gescort war. Eine Matrix, die man
+nachgewichtet, bis sie die bereits getroffene Entscheidung ergibt, hält nichts
+fest. Der Record sagt stattdessen in einem eigenen Abschnitt, warum sie nicht
+entschieden hat.
+
+Nebenbei hat sich die Sorge selbst aufgelöst: das Preview-Target hat das Problem
+gar nicht. Promotion verschiebt einen Artikel *ins* öffentliche Repository, also
+rendert `build/site-preview` ohnehin die ganze öffentliche Seite. Das steht jetzt
+im Record, damit es niemand ein zweites Mal löst.

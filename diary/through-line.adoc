@@ -58,3 +58,36 @@ für den der Zweig geschrieben war (#77).
 Der Unterschied zur ersten Kategorie ist die Frage, die man stellen muss. Dort:
 „kenne ich ein zweites Beispiel?" Hier: „stammt meine Beobachtung aus einem
 Zustand, den der Fehler bereits überstanden hat?"
+
+=== Dritte Kategorie: die Prüfung deckte die Hälfte ab, in der sie nicht scheitern konnte
+
+2026-08-04 kamen drei Fälle dazu, in denen eine Prüfung existierte — und genau
+den Fall nicht berührte, für den die Zusicherung geschrieben war.
+
+Szenario „An absent sibling leaves the rest of the build alone" (2026-08-04):: Der
+Kommentar im Build sicherte zu, dass nur der Task scheitert, der den privaten
+Checkout braucht. Das Szenario prüfte den *fehlenden* Checkout — den Fall, in dem
+die Zusicherung trivial hält, weil ohne Verzeichnis gar keine Selektion läuft. Ein
+vorhandener, unlesbarer Checkout brach jeden `./gradlew`-Aufruf. Gefangen hätte es:
+derselbe Test mit einem Checkout, der da ist und nicht funktioniert (#86, PR #96).
+
+`./build.sh` gegen `./gradlew` (2026-08-04):: Der private Render war über
+`./gradlew` mehrfach grün. Der in der README dokumentierte Weg lief kein einziges
+Mal und war kaputt, weil der Container `$PWD` mountet und der Geschwister-Checkout
+daneben liegt. Gefangen hätte es: den dokumentierten Aufruf einmal ausführen (#86).
+
+Testtasks, die CI nicht aufzählte (2026-08-04):: Vier registrierte Testtasks
+standen nicht in der Workflow-Datei, und zwei Testdateien hatten überhaupt keinen
+Task — darunter die aus #77 und #83, also die beiden Slices, die den
+Publikationsschutz tragen. 62 Testläufe waren unsichtbar, und die Pipeline blieb
+grün, weil ein Test, den niemand ausführt, nicht scheitern kann. Gefangen hätte
+es: die Frage, ob die Liste in der Pipeline und die Liste im Build noch dieselbe
+ist (PR #96).
+
+Die Frage dieser Kategorie ist wieder eine andere. Erste Kategorie: „kenne ich ein
+zweites Beispiel?" Zweite: „stammt meine Beobachtung aus einem warmen Zustand?"
+Dritte: „berührt meine Prüfung die Stelle, an der die Zusicherung bricht — und
+läuft sie überhaupt?"
+
+Die drei Fälle sind auffällig billig zu finden gewesen, sobald die Frage gestellt
+war. Zwei davon fand der Owner, nicht der Prozess.
