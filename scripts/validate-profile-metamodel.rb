@@ -25,8 +25,15 @@ class ProfileArtifactValidator
   # wider definition here meant the repository held two answers to "is this
   # article public", and the stricter one was the one reaching an external
   # system.
+  #
+  # 'private' is the local reading target for the private repository. It carries
+  # the statuses that exist before an article is public, plus the public ones, so
+  # that the owner reads a draft in the same shape as a finished page. It is not
+  # a deployment: the target is rendered locally and never published, which is
+  # why a wider status set is safe here and would not be above.
   TARGET_STATUSES = {
-    'public' => %w[published].freeze
+    'public' => %w[published].freeze,
+    'private' => %w[private preview published].freeze
   }.freeze
   # Statuses whose articles are part of the public site: rendered, listed,
   # navigable, and offered as related-article suggestions.
@@ -102,11 +109,18 @@ class ProfileArtifactValidator
   end
 
   Artifact = Struct.new(:path, :metadata, keyword_init: true)
-  attr_reader :errors, :warnings, :root, :profile_dir
+  attr_reader :errors, :warnings, :root, :profile_dir, :includes_dir
 
-  def initialize(root:, profile_dir:)
+  # `includes_dir` is where the shared interface terms, images, and docheader
+  # live. It defaults to the content root's own `includes`, which is what the
+  # public tree has. A content root that owns no includes passes the tree that
+  # does: ADR-009 lets the private repository hold content only, so its build
+  # reads the public checkout's includes rather than keeping a copy that would
+  # drift.
+  def initialize(root:, profile_dir:, includes_dir: nil)
     @root = Pathname.new(root).expand_path
     @profile_dir = Pathname.new(profile_dir).expand_path
+    @includes_dir = Pathname.new(includes_dir || @profile_dir.join('includes')).expand_path
     @errors = []
     @warnings = []
   end
@@ -259,6 +273,18 @@ class ProfileArtifactValidator
     { source_dir: 'src-content/profile/site/articles', output_dir: 'build/articles', extension: '.md' }
   ].freeze
 
+  # The private target renders to HTML only and has no markdown export, because
+  # nothing consumes one: the export exists so the public articles can be
+  # published elsewhere, and a private draft is published nowhere.
+  PRIVATE_RENDER_ROOTS = [
+    { source_dir: 'src-content/profile/site', output_dir: 'build/site-private', extension: '.html' }
+  ].freeze
+
+  TARGET_RENDER_ROOTS = {
+    'public' => RENDER_ROOTS,
+    'private' => PRIVATE_RENDER_ROOTS
+  }.freeze
+
   # Outputs present in a rendered target that belong to an article the target
   # must not contain.
   #
@@ -266,15 +292,23 @@ class ProfileArtifactValidator
   # with the exclusion list — applied it, mis-applied it, or was invoked in a
   # way that skipped it — an article that must not be public either has output
   # here or it does not.
-  def unexpected_target_outputs(artifacts, target:, render_roots: RENDER_ROOTS)
+  #
+  # `output_root` is where the rendered target lives, which is not always the
+  # root the content came from. The private target is rendered by the public
+  # checkout into its own build directory, so its sources are relative to the
+  # private root while its output is relative to the public one.
+  def unexpected_target_outputs(artifacts, target:, render_roots: nil, output_root: nil)
+    render_roots ||= TARGET_RENDER_ROOTS.fetch(target, RENDER_ROOTS)
+    output_root = Pathname.new(output_root || root).expand_path
+
     excluded_article_sources(artifacts, target: target).flat_map do |source|
       render_roots.filter_map do |render_root|
         prefix = "#{render_root[:source_dir]}/"
         next unless source.start_with?(prefix)
 
         rendered = source.delete_prefix(prefix).sub(/\.adoc\z/, render_root[:extension])
-        candidate = root.join(render_root[:output_dir], rendered)
-        relative(candidate) if candidate.exist?
+        candidate = output_root.join(render_root[:output_dir], rendered)
+        relative_to(candidate, output_root) if candidate.exist?
       end
     end.uniq.sort
   end
@@ -666,7 +700,7 @@ class ProfileArtifactValidator
   # the relative paths the local and PDF builds rely on; root-relative URLs would
   # have broken both.
   def generate_link_registries(artifacts)
-    registry_dir = profile_dir.join('includes', 'generated', 'i18n')
+    registry_dir = includes_dir.join('generated', 'i18n')
     FileUtils.rm_rf(registry_dir)
     FileUtils.mkdir_p(registry_dir)
 
@@ -1153,7 +1187,7 @@ class ProfileArtifactValidator
   # mixed languages. This walks the include tree of every page and rejects any
   # fragment that is not available in the page's own language.
   def validate_fragment_languages
-    fragment_root = profile_dir.join('includes', 'i18n')
+    fragment_root = includes_dir.join('i18n')
 
     pages = page_sources
     pages.each do |page, language|
@@ -1185,7 +1219,7 @@ class ProfileArtifactValidator
   # ask for more translations than a build needs, never fewer.
   def walk_includes(page, language, fragment_root)
     visited = Set.new
-    queue = [[page, { 'includesdir' => profile_dir.join('includes').to_s, 'lang' => language }]]
+    queue = [[page, { 'includesdir' => includes_dir.to_s, 'lang' => language }]]
 
     until queue.empty?
       current, attributes = queue.shift
@@ -1388,7 +1422,7 @@ class ProfileArtifactValidator
   # back to the default language and say so, but a menu label or a status message
   # has nowhere to say it, so a missing key is an error rather than a fallback.
   def validate_ui_terms(artifacts)
-    i18n_dir = profile_dir.join('includes', 'i18n')
+    i18n_dir = includes_dir.join('i18n')
 
     # Checked without testing the directory first: docheader.adoc includes the
     # default terms unconditionally, so a missing directory breaks every page and
@@ -1460,7 +1494,7 @@ class ProfileArtifactValidator
   # translates. Used where a value has to be baked into generated output because
   # no page header is available to resolve an attribute reference.
   def ui_terms_values(language)
-    i18n_dir = profile_dir.join('includes', 'i18n')
+    i18n_dir = includes_dir.join('i18n')
     [DEFAULT_LANGUAGE, language].uniq.each_with_object({}) do |candidate, terms|
       path = ui_terms_path(i18n_dir, candidate)
       next unless path.file?
@@ -1994,7 +2028,14 @@ class ProfileArtifactValidator
   end
 
   def relative(path)
-    Pathname.new(path).expand_path.relative_path_from(root).to_s
+    relative_to(path, root)
+  end
+
+  # Paths are reported relative to the tree they belong to. A rendered target may
+  # live under a different root than the content that produced it, so the base is
+  # passed in rather than always being `root`.
+  def relative_to(path, base)
+    Pathname.new(path).expand_path.relative_path_from(Pathname.new(base).expand_path).to_s
   rescue ArgumentError
     path.to_s
   end
@@ -2011,7 +2052,10 @@ if $PROGRAM_NAME == __FILE__
     accept_translation: nil,
     language_alternates: nil,
     list_public_source_exclusions: false,
-    verify_public_target_output: false
+    verify_public_target_output: false,
+    includes_dir: nil,
+    target: 'public',
+    output_root: nil
   }
   OptionParser.new do |parser|
     parser.on('--root PATH') { |value| options[:root] = Pathname.new(value) }
@@ -2023,13 +2067,30 @@ if $PROGRAM_NAME == __FILE__
     parser.on('--language-alternates PATH') { |value| options[:language_alternates] = value }
     parser.on('--list-public-source-exclusions') { options[:list_public_source_exclusions] = true }
     parser.on('--verify-public-target-output') { options[:verify_public_target_output] = true }
+    # Where the shared includes live. A content root that owns none - the private
+    # repository, per ADR-009 - points at the tree that does.
+    parser.on('--includes-dir PATH') { |value| options[:includes_dir] = Pathname.new(value) }
+    # Which publication target the selection and output questions are about.
+    parser.on('--target NAME') { |value| options[:target] = value }
+    # Where the rendered target lives, when that is not the content root.
+    parser.on('--output-root PATH') { |value| options[:output_root] = Pathname.new(value) }
   end.parse!
 
   root = options[:root]
   profile_dir = options[:profile_dir] || root.join('src-content/profile')
   output = options[:output] || 'src-content/profile/generated/profile-artifact-index.adoc'
 
-  validator = ProfileArtifactValidator.new(root: root, profile_dir: profile_dir)
+  target = options[:target]
+  unless ProfileArtifactValidator::TARGET_STATUSES.key?(target)
+    warn "unknown target '#{target}'; known targets: #{ProfileArtifactValidator::TARGET_STATUSES.keys.join(', ')}"
+    exit(1)
+  end
+
+  validator = ProfileArtifactValidator.new(
+    root: root,
+    profile_dir: profile_dir,
+    includes_dir: options[:includes_dir]
+  )
 
   # Answers the build's question about publication selection and nothing else.
   # It reports no findings and fails on no metadata error, because the build
@@ -2037,7 +2098,7 @@ if $PROGRAM_NAME == __FILE__
   # Gradle invocation instead of the validator task that owns that report.
   if options[:list_public_source_exclusions]
     begin
-      puts validator.excluded_article_sources(validator.scan_artifacts, target: 'public')
+      puts validator.excluded_article_sources(validator.scan_artifacts, target: target)
     rescue ProfileArtifactValidator::UnresolvableArticleSource => e
       warn "Publication selection failed: #{e.message}"
       exit(1)
@@ -2050,18 +2111,23 @@ if $PROGRAM_NAME == __FILE__
   # selection.
   if options[:verify_public_target_output]
     begin
-      unexpected = validator.unexpected_target_outputs(validator.scan_artifacts, target: 'public')
+      unexpected = validator.unexpected_target_outputs(
+        validator.scan_artifacts,
+        target: target,
+        output_root: options[:output_root]
+      )
     rescue ProfileArtifactValidator::UnresolvableArticleSource => e
       warn "Publication selection failed: #{e.message}"
       exit(1)
     end
 
     if unexpected.empty?
-      puts 'Public target contains no output of a non-published article.'
+      puts "The '#{target}' target contains no output of an article it must not carry."
       exit(0)
     end
 
-    warn "Public target contains output of #{unexpected.length} article(s) that are not published:"
+    warn "The '#{target}' target contains output of #{unexpected.length} article(s) it must not carry " \
+         "(accepted statuses: #{ProfileArtifactValidator::TARGET_STATUSES.fetch(target).join(', ')}):"
     unexpected.each { |path| warn "  - #{path}" }
     exit(1)
   end
