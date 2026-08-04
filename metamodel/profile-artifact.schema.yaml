@@ -11,6 +11,7 @@ required:
   - status
   - owner
   - created
+  - metadata_version
 properties:
   id:
     type: string
@@ -151,7 +152,16 @@ properties:
       $ref: "relations.schema.yaml#/$defs/relation"
   metadata_version:
     type: string
-    default: "1.0"
+    description: >-
+      The version of this metadata contract the artifact was written against.
+      The enum is the single declaration of which versions are accepted: the
+      validator reads it from this file rather than carrying its own list, so a
+      build using a checkout of this repository as its metamodel can report what
+      that checkout accepts without running Ruby. Raising it is a deliberate act
+      described in ai-contracts/profile-artifact-metadata.md; a value outside
+      the enum, and an absent value, both fail validation.
+    enum:
+      - "1.0"
 allOf:
   # Article-series navigation is only meaningful for articles.
   - if:

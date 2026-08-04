@@ -21,6 +21,7 @@ class ProfileCommentsTest < Minitest::Test
         'status' => 'published',
         'owner' => 'Test Owner',
         'created' => '2026-01-01',
+        'metadata_version' => ProfileArtifactValidator.supported_metadata_versions.first,
         'source' => 'articles/example.adoc'
       }.to_yaml)
       validator = ProfileArtifactValidator.new(root: root, profile_dir: root)
@@ -142,6 +143,7 @@ class ProfileCommentsTest < Minitest::Test
           'status' => status,
           'owner' => 'Test Owner',
           'created' => '2026-01-01',
+          'metadata_version' => ProfileArtifactValidator.supported_metadata_versions.first,
           'channels' => channels,
           'source' => "articles/#{slug}.adoc"
         }.to_yaml)

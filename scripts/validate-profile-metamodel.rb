@@ -12,7 +12,7 @@ require 'set'
 require 'yaml'
 
 class ProfileArtifactValidator
-  REQUIRED = %w[id type title status owner created].freeze
+  REQUIRED = %w[id type title status owner created metadata_version].freeze
   PROPERTIES = %w[id type title status owner created updated published reviewed generated language translation_of translation_source_digest translation_divergence audience channels summary summary_de summary_en source tags skills previous next relations metadata_version].freeze
   TYPES = %w[ProfilePage Article ShortThought CV Project ProfessionalExperience Education Skill Contact ProfileFragment].freeze
   STATUSES = %w[draft proposed preview reviewed published private archived deprecated].freeze
@@ -56,9 +56,50 @@ class ProfileArtifactValidator
   ARTIFACT_ID_PATTERN = /\A[A-Z]+-[0-9]{3,}(-[a-z0-9]+)*\z/
   TAG_PATTERN = /\A[A-Za-z0-9][A-Za-z0-9-]*\z/
 
+  # Where the accepted metadata contract versions are declared.
+  #
+  # ADR-009 rests its contract-drift protection on an enforced version, and that
+  # rule only holds while there is exactly one declaration of the accepted set.
+  # It lives in the schema, next to the field it governs, and is read from there
+  # rather than restated here. A build that borrows this repository as its
+  # metamodel — the sibling-checkout arrangement ADR-009 accepts — reads the same
+  # file to find out what that checkout accepts, without running this script.
+  #
+  # Resolved from this script's own directory and not from `--root`: the set
+  # describes the validator, not the content under validation. Pointed at another
+  # checkout's content, this one still answers with its own contract, which is
+  # the whole point of enforcing the version.
+  SCHEMA_PATH = Pathname.new(__dir__).join('..', 'metamodel', 'profile-artifact.schema.yaml').expand_path
+
   # Raised when the publication selection cannot name the source of an article
   # it has to exclude. It is deliberately fatal: see excluded_article_sources.
   class UnresolvableArticleSource < StandardError; end
+
+  # Raised when the schema cannot say which contract versions are accepted.
+  # Fatal by construction: a validator that cannot state its own contract cannot
+  # enforce it, and falling back to a built-in default here would restore the
+  # silent mismatch the field exists to prevent.
+  class UnreadableMetadataContract < StandardError; end
+
+  # Reads the accepted contract versions from the schema. A class method because
+  # the answer belongs to the checkout rather than to a validation run, and
+  # because a private build may want it without scanning any content.
+  def self.supported_metadata_versions(schema_path = SCHEMA_PATH)
+    schema_path = Pathname.new(schema_path)
+    raise UnreadableMetadataContract, "metamodel schema not found: #{schema_path}" unless schema_path.file?
+
+    schema = YAML.safe_load(schema_path.read, aliases: false)
+    versions = schema.is_a?(Hash) ? schema.dig('properties', 'metadata_version', 'enum') : nil
+    unless versions.is_a?(Array) && !versions.empty? && versions.all? { |version| version.is_a?(String) }
+      raise UnreadableMetadataContract,
+            "#{schema_path} declares no metadata_version enum of strings; " \
+            'the accepted contract versions are undefined'
+    end
+
+    versions.map(&:freeze).freeze
+  rescue Psych::SyntaxError => e
+    raise UnreadableMetadataContract, "#{schema_path} is not valid YAML: #{e.message.lines.first.strip}"
+  end
 
   Artifact = Struct.new(:path, :metadata, keyword_init: true)
   attr_reader :errors, :warnings, :root, :profile_dir
@@ -751,7 +792,8 @@ class ProfileArtifactValidator
       validate_string(artifact, 'summary_de', required: false)
       validate_string(artifact, 'summary_en', required: false)
       validate_string(artifact, 'source', required: false)
-      validate_string(artifact, 'metadata_version', required: false)
+      validate_string(artifact, 'metadata_version')
+      validate_metadata_version(artifact)
       validate_enum(artifact, 'type', TYPES)
       validate_enum(artifact, 'status', STATUSES)
       validate_enum(artifact, 'language', LANGUAGES, required: false)
@@ -779,6 +821,28 @@ class ProfileArtifactValidator
 
       validate_article_source_resolvable(artifact)
     end
+  end
+
+  # An artifact says which version of this metadata contract it was written
+  # against, and the validator accepts only versions it knows. `metadata_version`
+  # is in REQUIRED, so an absent value is already reported as a missing field:
+  # absence is not read as the initial version. A default here would let content
+  # say nothing about its contract and still pass, and a checkout older than the
+  # content beside it would then accept it silently — the mismatch ADR-009 names
+  # and the reason the field exists.
+  def validate_metadata_version(artifact)
+    value = artifact.metadata['metadata_version']
+    # Absent, empty, or not a string: already reported by REQUIRED and
+    # validate_string. Only the value is this check's business.
+    return unless value.is_a?(String) && !value.empty?
+    return if supported_metadata_versions.include?(value)
+
+    errors << "#{relative(artifact.path)} declares metadata_version '#{value}', " \
+              "which this checkout does not accept (accepted: #{supported_metadata_versions.join(', ')})"
+  end
+
+  def supported_metadata_versions
+    @supported_metadata_versions ||= self.class.supported_metadata_versions
   end
 
   # A sidecar says which file it describes. This is not what keeps the

@@ -45,6 +45,7 @@ class ProfileNavigationTest < Minitest::Test
       'status' => article.fetch(:status, 'published'),
       'owner' => 'Test Owner',
       'created' => article.fetch(:created, '2026-01-01'),
+      'metadata_version' => ProfileArtifactValidator.supported_metadata_versions.first,
       'source' => source_rel
     }
     metadata['tags'] = article[:tags] if article.key?(:tags)

@@ -88,6 +88,7 @@ class ProfileLanguageTest < Minitest::Test
       'status' => artifact.fetch(:status, 'published'),
       'owner' => 'Test Owner',
       'created' => '2026-01-01',
+      'metadata_version' => ProfileArtifactValidator.supported_metadata_versions.first,
       'source' => source_rel
     }
     %i[language translation_of translation_source_digest translation_divergence tags channels].each do |field|
