@@ -68,6 +68,45 @@ Additional steps:
 
 ---
 
+## 🔒 Private-to-public article lifecycle
+
+An article should be able to be written, reviewed, and published without
+becoming public merely by existing in a repository. Drafts therefore live in a
+second, private repository —
+[`dieterbaier/profile-private`](https://github.com/dieterbaier/profile-private),
+which is not publicly reachable — and move here when they are ready to be seen.
+
+```
+profile-private            profile (this repository)
+  drafts, notes    ──────▶   preview  ──────▶  published
+  status: private            status: preview   status: published
+```
+
+* **This repository owns the tooling.** Build, validators, generators, schemas,
+  and theme live here. The private repository holds content only and reaches
+  them through a sibling checkout; its build stops if it ever grows a copy of
+  its own.
+* **Targets are selected by metadata, not by location.** The public site renders
+  `status: published` and nothing else, and fails rather than skips when it
+  cannot name a source it must exclude.
+* **Promotion is a move, not a copy**, so an article has one authoritative
+  source. Because two repositories cannot be written in one transaction, it is a
+  saga with a leading side and a defined recovery for every point it can stop at.
+
+The decisions are ADR-008 (the lifecycle), ADR-009 (private repository
+integration), ADR-011 (preview visibility without authentication), and ADR-012
+(what the private target renders), all in
+[the architecture documentation](https://architecture.dieterbaier.eu). Most of
+the workflow is decided and documented; what is built is recorded per rule in
+each record's implementation status, rather than implied by the diagram above.
+
+To render the private drafts locally, check the two repositories out as siblings
+and run `./gradlew buildSitePrivate` (or `./build.sh buildSitePrivate`) here. The
+target lands in `build/site-private`, carries `noindex` on every page, and is
+deployed by nothing.
+
+---
+
 ## 🚀 Usage
 
 Available tasks:
