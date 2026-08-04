@@ -47,6 +47,7 @@ Locate the toolkit in this order:
 - Start a session with `skills/clock-in/SKILL.md`: establish the repository state from the tools, then pick up a topic from `progress/`.
 - End a session with `skills/clock-out/SKILL.md`: refresh the progress files for the topics touched and write the day's diary entry.
 - Write diary entries with `skills/diary/SKILL.md`. The diary records why a wrong belief was plausible; it is not architecture documentation.
+- Commit diary entries on the `session-diary` branch, never on an issue branch. Clock-out integrates that branch into `main`.
 - `progress/<topic>.adoc` says where a topic is and is rewritten wholesale. `diary/YYYY-MM-DD-<slug>.adoc` says what was learned and is append-only once the day is closed.
 - Choose the register before writing with `skills/language-profile/SKILL.md`. It decides how an artifact reads; the toolkit decides what it contains.
 - These four skills are local for now. They are expected to move into the architecture-knowledge-toolkit; until then do not reference a toolkit equivalent.

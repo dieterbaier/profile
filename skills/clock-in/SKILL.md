@@ -31,6 +31,15 @@ Note anything that contradicts what the progress files will claim. Uncommitted
 work, a branch that is not `main`, an open pull request — these are facts about
 where the last session stopped, and they outrank any file.
 
+Check `session-diary` too. Diary entries are committed there and integrated at
+clock-out, so commits on it that `main` does not have mean the last session ended
+without clocking out — and the newest entry step 4 sends you to is on that branch
+rather than on `main`.
+
+```sh
+git log --oneline main..session-diary
+```
+
 **2. List the topics from the directory, not from an index.**
 
 Every file in `progress/` is a topic. There is no index to go stale. For each

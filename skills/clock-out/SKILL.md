@@ -58,11 +58,32 @@ Write it from the commit history, the issues and the pull requests. At clock-out
 the day is fresh, which is exactly when memory feels reliable enough to skip the
 check.
 
+Diary commits go on the `session-diary` branch, never on an issue branch. A
+finding usually surfaces while implementing something else, and committing it
+where it surfaced puts the day's record inside a pull request about a different
+subject: the reviewer gets a file that is not theirs to review, and the entry
+waits on a review it has nothing to do with. The branch is named
+`session-diary` and not `diary` because a branch named after a directory makes
+`git log diary` ambiguous.
+
 **4. Close the day, or do not.** A day file is open until the day is closed and
 append-only afterwards. Say plainly which of the two just happened, so that a
 later session knows whether it may still edit the file.
 
-**5. Say what is open — in the files, not only in the conversation.** The chat
+**5. Integrate `session-diary` into `main`.** The day's record is the one thing
+clock-out publishes. It has no acceptance criteria, no checks to wait for, and no
+reviewer but us, so leaving it on a branch only means the next session reads a
+stale `main`.
+
+```sh
+git log --oneline main..session-diary
+```
+
+Integrate it, and leave the branch in place for the next session's entries. If
+the day produced no entry, there is nothing to integrate and that is a normal
+day, not an omission to correct.
+
+**6. Say what is open — in the files, not only in the conversation.** The chat
 is gone tomorrow. A thread that outlives its topic goes to
 `diary/open-threads.adoc`; one that dies with the topic stays in the progress
 file.
@@ -70,7 +91,9 @@ file.
 ## What this skill does not do
 
 - It does not decide whether work is finished. Checks and reviews do that.
-- It does not merge, push to `main`, or close issues to make a day look complete.
+- It does not merge work branches, push work to `main`, or close issues to make a
+  day look complete. Integrating `session-diary` is the exception, and it is not
+  one: publishing the record of a day claims nothing about the work in it.
 - It does not restate the commit format or the pull-request workflow. Those are
   the toolkit's.
 

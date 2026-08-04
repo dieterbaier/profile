@@ -46,6 +46,16 @@ what the day turned on rather than what was worked on — `domain-model`,
 - Sections are `===` headings that state a finding, not a topic. "The figure that
   was answering a different question", not "Calculator work".
 
+## Where entries are committed
+
+On the `session-diary` branch, which `skills/clock-out/SKILL.md` integrates into
+`main` at the end of the day. Never on an issue branch: an entry written while
+implementing something else would otherwise sit in a pull request about a
+different subject and wait on its review.
+
+The four cross-cutting documents below follow the same rule. They are edited on
+the same branch, on the day the finding appeared.
+
 ## Lifecycle
 
 **A day file is open until the day it covers is closed. After that, append
