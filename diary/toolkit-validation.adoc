@@ -81,6 +81,38 @@ Die Abweichung geht in beide Richtungen. Unsere Kopie ergänzt `QualityGoal` und
 fehlt der gesamte `derived_from`-Block, eine Toolkit-Ergänzung, die nie ankam.
 Das ist kein veraltetes Vendoring, sondern ein divergiertes.
 
+=== Lücke: `metadata_version` ist stromaufwärts nicht durchsetzbar formuliert
+
+Beim Durchsetzen von `metadata_version` im Profil-Validator (#83) fiel auf, dass
+`scripts/validate-metamodel.rb` — der Architektur-Validator aus dem Toolkit — das
+Feld überhaupt nicht kennt, obwohl jedes Architektur-Artefakt es führt.
+
+Das allein ist keine neue Erkenntnis, sondern genau die Prämisse von
+architecture-knowledge-toolkit#48 „Replace partial artifact metadata validation
+with full JSON Schema validation". Das Issue nennt `enum values` ausdrücklich
+unter den Regeln, die eine vollständige Schemavalidierung abdecken würde.
+
+Der Beitrag dieses Projekts ist, dass #48 den Befund nur zur Hälfte auflöst.
+`metamodel/artifact.schema.yaml:134` deklariert das Feld als `type: string` mit
+`default: "1.0"`, ohne `enum`, und führt es nicht unter `required`. Ein
+JSON-Schema-`default` ist eine Annotation und keine Validierungsregel: Auch eine
+vollständige Schemavalidierung würde also jeden String und jedes Fehlen
+akzeptieren. #48 schließt die Mechanik-Lücke; die Vertrags-Lücke bleibt, und sie
+liegt im Schema.
+
+Der Owner hat entschieden, dass die Architekturdokumentation keine Strategie wie
+die des Profils braucht — der Private-nach-öffentlich-Lebenszyklus gehört zum
+Profilinhalt, nicht zur Architekturdokumentation. Der Befund lautet deshalb nicht
+„das Toolkit sollte tun, was wir getan haben", sondern: das Toolkit führt ein
+Feld, das so, wie es geschrieben ist, niemand durchsetzen kann. Entweder es
+bekommt eine Deklaration der akzeptierten Versionen, oder es ist Dekoration und
+sagt das besser selbst.
+
+Zum Vergleich für ein Issue stromaufwärts, das es noch nicht gibt: im Profil
+liegt die akzeptierte Menge als `enum` am Feld im Schema, der Validator liest sie
+aus dem eigenen Checkout statt aus dem Baum, auf den er gezeigt wird, und ein
+fehlender Wert ist ein Fehler und nicht die Ausgangsversion.
+
 Damit ist es keine neue Erkenntnis, sondern eine zweite Instanz von
 docs-as-code-toolkit#26 „Define toolkit asset update mechanism for consuming
 projects". Das Issue nennt Metamodell-Schemata und „silently drift" wörtlich und
