@@ -3,13 +3,14 @@
 Ein Artikel soll entstehen, reviewt und veröffentlicht werden können, ohne dass
 ein Entwurf allein dadurch öffentlich wird, dass er im Repository liegt.
 
-*Status:* in flight — die öffentliche Seite wählt nach Status aus, beide
-Architekturentscheidungen stehen. Offen ist alles, was gebaut werden muss.
+*Status:* in flight — beide Pfade sind angefangen. Der private Pfad rendert
+lokal, das private Repository hat Inhalt, und die erste Artikelserie liegt als
+Entwurf darin. Offen sind die Promotion und beide Deployments.
 
 == The plan
 
 Zwei Pfade, die sich nicht kreuzen. Der öffentliche Preview-Pfad braucht kein
-privates Repository; der private Pfad wartet auf #83.
+privates Repository; der private Pfad brauchte #83, das jetzt steht.
 
 [options="checklist"]
 * [x] Canonical-URLs aus Basis-URL und Ausgabepfad, Pflicht in Produktion
@@ -18,6 +19,9 @@ privates Repository; der private Pfad wartet auf #83.
 * [x] Öffentliches Target nur aus `published`, fail-closed — #77
 * [x] ADR-009 akzeptiert, Gate für private Quellen entschieden — #80
 * [x] ADR-011 akzeptiert, Preview ohne Basic Auth — #89
+* [x] `metadata_version` im Validator durchsetzen — #83
+* [x] `build/site-private` aus privater Quelle — #86
+* [x] ADR-012 akzeptiert, Lesekontext des privaten Targets entschieden
 
 Öffentlicher Preview-Pfad:
 
@@ -29,11 +33,15 @@ privates Repository; der private Pfad wartet auf #83.
 Privater Pfad:
 
 [options="checklist"]
-* [ ] `metadata_version` im Validator durchsetzen — #83
+* [ ] Kollisionen privat/öffentlich sofort als Fehler — #94
 * [ ] Erste Promotion-Checks — #84
 * [ ] Promotion-Skript, Saga aus ADR-009 — #85
-* [ ] `build/site-private` aus privater Quelle — #86
 * [ ] Deployment `private.dieterbaier.eu`, mit Basic Auth — #87
+
+Absicherung:
+
+[options="checklist"]
+* [ ] CI darf privates und Preview-Target nie öffentlich ausliefern — #95
 
 Nebenbefunde:
 
@@ -41,38 +49,43 @@ Nebenbefunde:
 * [ ] Artikelquelle ohne Metadaten wird stillschweigend veröffentlicht — #91
 * [ ] Generierte Traceability-Views werden nirgends inkludiert — #90
 
-Zwei Reihenfolgen sind tragend, und beide entstanden erst im Review.
-**#88 vor #79:** ADR-011 nimmt die Zugangsschranke vor dem Preview weg und setzt
-den Hinweis an ihre Stelle. Deployen ohne den Hinweis wäre die Hälfte der
-Entscheidung — die, die eine Kontrolle entfernt. **#83 vor allem Privaten:**
-ADR-009 stützt den Driftschutz auf eine durchgesetzte `metadata_version`, und
-der Validator prüft heute nur, ob das Feld ein String ist. Eine Promotion gegen
-einen nicht durchgesetzten Vertrag ist genau der Fehler, den die Entscheidung zu
-verhindern beansprucht.
+Zwei Reihenfolgen sind weiterhin tragend. **#88 vor #79:** ADR-011 nimmt die
+Zugangsschranke vor dem Preview weg und setzt den Hinweis an ihre Stelle;
+deployen ohne den Hinweis wäre die Hälfte der Entscheidung — die, die eine
+Kontrolle entfernt. **#94 vor #85:** eine Promotion, die eine Kollision erst beim
+Schreiben ins öffentliche Repository bemerkt, findet sie im denkbar
+ungünstigsten Moment.
+
+Die dritte Reihenfolge aus dem ursprünglichen Plan ist erledigt: #83 war das Gate
+vor allem Privaten und ist zu.
 
 == Where we are
 
 `build/site` und der Markdown-Export enthalten nur Artikel mit
-`status: published`. Die Auswahl kommt zur Konfigurationszeit aus dem
-Profil-Validator und scheitert, statt zu überspringen, wenn sie eine
-auszuschließende Quelle nicht benennen kann. Zwei Checks stehen dahinter:
-`verifyPublicRenderTasksValidateMetadata` prüft im Task-Graphen, dass jede
-rendernde Task die Validierung erreicht; `verifyPublicTargetHasOnlyPublishedArticles`
-prüft das Ergebnis statt der Auswahl, die es erzeugt hat.
+`status: published`, fail-closed, mit zwei Checks dahinter
+(`verifyPublicRenderTasksValidateMetadata` prüft den Task-Graphen,
+`verifyPublicTargetHasOnlyPublishedArticles` das Ergebnis).
 
-ADR-009 beschreibt die Promotion als Saga mit dem öffentlichen Repository als
-führender Seite. ADR-011 hält fest, dass Preview ohne Authentifizierung
-ausgeliefert wird und die öffentliche Seite nie dorthin verlinkt. Beide tragen
-eine Implementation-Status-Tabelle, die entschieden von gebaut trennt.
+`metadata_version` ist Pflicht. Die akzeptierten Versionen stehen als `enum` am
+Feld im Schema, der Validator liest sie aus dem eigenen Checkout, und ein
+fehlender Wert ist ein Fehler statt der Ausgangsversion.
 
-Ein Entwurf *mit* Sidecar ist im öffentlichen Repository sicher. Ein
-Artikel-`.adoc` ohne jede Metadaten ist es nicht — das ist #91.
+`buildSitePrivate` rendert den privaten Geschwister-Checkout nach
+`build/site-private`: Statusmenge `private`/`preview`/`published`, `noindex` auf
+jeder Seite, kein Canonical, Theme und Includes aus diesem Repository. Der
+Checkout wird über `PROFILE_PRIVATE_DIR` oder den Geschwisterpfad gefunden; fehlt
+er, scheitert nur der Task, der ihn braucht. `./build.sh` mountet ihn ebenfalls.
 
-Der erste echte Durchlauf ist `dieterbaier/profile-private#7`, eine zweiteilige
-Artikelserie über AI-gestützte Architekturarbeit. Sie ist zugleich der
-Testballon: der Lebenszyklus ist heute architektonisch festgezogen, aber außer
-der öffentlichen Statusauswahl ist nichts davon gebaut. Was die Serie an Reibung
-findet, gehört in diese Datei und in die Slices, nicht in eine Ausnahme.
+`dieterbaier/profile-private` ist nicht mehr leer. Es trägt die zweiteilige
+AI-Artikelserie aus `profile-private#7` plus einen Landing-Artikel, alle mit
+`status: private`, dazu Lizenz und README. Die beiden Inhaltsartikel sind
+Gerüste: Abschnitte und Stichpunkte aus dem Issue, ohne Fließtext.
+
+Was das private Target *nicht* tut: Generatoren laufen nicht gegen den privaten
+Baum, also hat eine private Seite keine Tags, keine Navigation und keine
+Serienlinks. Der Grund steht in ADR-009 und ist eine Kopplung, keine offene
+Verdrahtung — die Generatoren schreiben Link-Registries in den Includes-Baum, und
+der ist für dieses Target der öffentliche.
 
 == Open in this topic
 
@@ -82,6 +95,8 @@ findet, gehört in diese Datei und in die Slices, nicht in eine Ausnahme.
   Markierung ist der Check dafür nicht formulierbar.
 * Ob `build/site-preview` ein eigener Gradle-Task wird oder `buildSite` mit einer
   Statusmenge als Parameter. #78 entscheidet und begründet es dort.
+* Ob die Generatoren je gegen den privaten Baum laufen sollen. Steht als Thread
+  in `diary/open-threads.adoc`, weil die Antwort das Target überlebt.
 
 == Checks
 
@@ -90,8 +105,9 @@ Commands, not results. A number copied in here goes stale silently.
 [source,sh]
 ----
 ruby scripts/validate-profile-metamodel.rb
-ruby -Itest test/profile_publication_status_test.rb
-./gradlew buildSite buildArticlesMarkdown
-./gradlew verifyPublicRenderTasksValidateMetadata
-./gradlew validateArchitectureMetamodel
+./gradlew validateProfileMetamodel validateArchitectureMetamodel
+./gradlew testAll
+./gradlew buildSite
+./gradlew buildSitePrivate      # braucht den Geschwister-Checkout
+./build.sh buildSitePrivate
 ----
