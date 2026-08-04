@@ -170,7 +170,11 @@ Two rules carry the drift concern, and they divide the failure between them.
 
 The **no second implementation** rule removes drift in the tooling rather than detecting it. A vendored copy keeps looking like the original after it has stopped being one, which is the property that made the divergence in `metamodel/artifact.schema.yaml` invisible; a repository that holds no copy cannot diverge in one.
 
-The **contract version** rule covers what remains: a sibling checkout that is simply older than the content beside it. Enforcing `metadata_version` will make a stale contract fail with a name attached, and will make raising the version the deliberate act it should be when the contract changes.
+The **contract version** rule covers what remains: a sibling checkout that is simply older than the content beside it. Enforcing `metadata_version` makes a stale contract fail with a name attached, and makes raising the version the deliberate act it should be when the contract changes.
+
+The rule needs one place where the accepted versions are declared, and it is the `metadata_version` enum in `metamodel/profile-artifact.schema.yaml`. The validator reads it from there rather than carrying a second list, and reads it from its own checkout rather than from the tree it was pointed at, so a run against private content answers with the contract of the tooling doing the validating. A build that borrows this repository as its metamodel can read the same file to report what its checkout accepts.
+
+Absence is not read as the initial version. An artifact that declares no `metadata_version` fails as a missing field, because a default would let content say nothing about its contract and still pass — and a checkout older than that content would then accept it silently, which is the mismatch this rule exists to catch.
 
 Neither rule catches a contract change nobody versioned. That is a discipline gap rather than a mechanism gap, and no inexpensive check closes it.
 
@@ -183,14 +187,14 @@ The decision holds; the rules it accepts are at different stages, and this secti
 | Rule | State | Where
 | Sibling checkout as the tooling access mechanism | decided, not implemented | The private build, https://github.com/dieterbaier/profile/issues/86[#86]
 | No second implementation in the private repository | decided, not implemented | Checked by the private build, https://github.com/dieterbaier/profile/issues/86[#86], and by the promotion checks, https://github.com/dieterbaier/profile/issues/84[#84]
-| `metadata_version` accepted-version set enforced | decided, not implemented | https://github.com/dieterbaier/profile/issues/83[#83]
+| `metadata_version` accepted-version set enforced | implemented | Declared in `metamodel/profile-artifact.schema.yaml`, enforced by `scripts/validate-profile-metamodel.rb`, https://github.com/dieterbaier/profile/issues/83[#83]
 | Promotion saga: validate, then public, then private | decided, not implemented | https://github.com/dieterbaier/profile/issues/84[#84] and https://github.com/dieterbaier/profile/issues/85[#85]
 | Private deployment runs locally | decided, not implemented | https://github.com/dieterbaier/profile/issues/87[#87]
 |===
 
-Today `metadata_version` is present in every artifact and in the schema, and the validator checks only that it is a string. Until https://github.com/dieterbaier/profile/issues/83[#83] closes, the field records an intention rather than enforcing one, and the drift protection rests on the no-second-implementation rule alone.
+`metadata_version` is required on every artifact, and the validator rejects a version outside the accepted set by name. Both drift rules are therefore in force for content, and what remains unbuilt is the private build that would use them.
 
-**This is the gate on private-source work.** No slice that reads private source or promotes an article runs before the accepted-version check exists, because a promotion validated against an unenforced contract is the exact failure this decision claims to prevent.
+**This was the gate on private-source work.** No slice that reads private source or promotes an article was to run before the accepted-version check existed, because a promotion validated against an unenforced contract is the exact failure this decision claims to prevent. https://github.com/dieterbaier/profile/issues/83[#83] closed that gate; the remaining private slices are ordered by their own dependencies.
 
 === Consequences
 

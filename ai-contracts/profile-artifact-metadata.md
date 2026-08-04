@@ -63,6 +63,34 @@ as project entries.
   own `<lang>/` subtree. There is no `mixed` value.
 - The original of a translation may be in any language. The default language is
   the fallback target, not the assumed source language.
+- Every artifact declares `metadata_version`, and it is one of the versions
+  `metamodel/profile-artifact.schema.yaml` accepts. An absent version is an
+  error, not the initial version: content that says nothing about its contract
+  would pass against a checkout too old to understand it.
+
+## Contract Version
+
+`metadata_version` says which version of this contract an artifact was written
+against. The accepted versions live in one place, the `metadata_version` enum in
+`metamodel/profile-artifact.schema.yaml`. The validator reads them from that file
+in its own checkout, so content validated through a checkout of this repository
+is judged by that checkout's contract rather than by whatever metamodel sits
+beside the content.
+
+New artifacts declare the current version. Copy it from the enum or from
+`templates/write-article/article.profile.yaml`; do not invent a value.
+
+Raise the version when a change to this contract would make older metadata
+wrong rather than merely incomplete — a field that changes meaning, a value that
+stops being accepted, a rule that reinterprets what is already written. Adding
+an optional field does not need a new version, because existing artifacts remain
+true under it.
+
+Raising it is a deliberate act with three parts, all in the same change: add the
+new version to the schema enum, migrate the artifacts that are being moved to
+it, and decide whether the previous version stays in the enum. Dropping a
+version from the enum is what makes unmigrated content fail by name, so drop it
+only when nothing that must still validate declares it.
 
 ## Validation
 
