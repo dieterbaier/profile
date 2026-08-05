@@ -111,3 +111,35 @@ Der Auslöser, es zu entscheiden, wäre der erste Entwurf, bei dem die fehlende
 Serie beim Lesen wirklich stört — die AI-Serie aus `profile-private#7` ist
 dreiteilig und damit der erste Kandidat.
 
+=== Ob ein Watcher die gerenderte Seite beim Schreiben aktuell hält
+
+Der Owner brachte es auf, während er an den Artikeln schrieb: ein
+Verzeichnis-Watcher auf dem privaten Inhalt, der bei jeder Änderung neu rendert,
+dazu ein lokaler Webserver auf dem Ergebnis — auf einem Bildschirm der Editor,
+auf dem anderen die Seite, die nur noch ein `F5` braucht. Wir haben es
+zurückgestellt und stattdessen die Editor-Vorschau reparabel gemacht.
+
+Zurückgestellt, weil das Kostenbild schlechter ist, als es zunächst aussah.
+Gradle bringt den Watcher mit, `./gradlew -t`, und für den öffentlichen Baum
+funktioniert er auch — für `buildSitePrivate` löst er nicht aus, weder bei einer
+geänderten noch bei einer neu angelegten Datei. Gradle beobachtet nur
+Hierarchien unterhalb des Projektverzeichnisses, und der private Checkout liegt
+daneben. Es bräuchte also doch eine eigene Schleife: `fswatch`, `watchexec` und
+`entr` sind auf der Maschine des Owners keines installiert.
+
+Der Server ist dabei nicht die Kür. `article-comments.js` macht ein `fetch()`,
+das über `file://` an CORS scheitert, also fehlen die Kommentare ausgerechnet
+dort, wo eine Artikelseite beurteilt wird.
+
+Zwei Nebenbefunde, die für eine spätere Entscheidung zählen: `./gradlew -t
+buildSite` baut beim Start eine zusätzliche Runde, weil
+`generateProfileArtifacts` nach `src-content/**/generated/` schreibt und damit in
+seine eigenen Inputs; und `./build.sh` ruft `./gradlew --no-daemon` auf, also
+wäre der Container für eine Schreibschleife der falsche Ort — dort kostet jeder
+Durchlauf den JVM-Start, den der warme Daemon spart.
+
+Der Auslöser, es neu zu bewerten, wäre der erste Fall, in dem die
+Einzeldokument-Vorschau nicht mehr genügt: eine Beurteilung, die Navigation,
+Serienlinks oder die Kommentarspalte braucht. Beim reinen Verfassen von Fließtext
+tut sie es.
+
