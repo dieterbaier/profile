@@ -6,8 +6,8 @@ architecture-knowledge-toolkit#75), und das private Repository hat zum ersten
 Mal Inhalt.
 
 Der Tag drehte sich aber nicht um das Gebaute, sondern um eine Sorte Prüfung, die
-wir viermal geschrieben oder vorgefunden haben: eine, die genau die Hälfte
-abdeckt, in der sie nicht scheitern kann.
+viermal geschrieben oder vorgefunden wurde: eine, die genau die Hälfte abdeckt,
+in der sie nicht scheitern kann.
 
 === Ein Feld, das eine Absicht festhielt, die niemand prüfte
 
@@ -54,13 +54,13 @@ $ PROFILE_PRIVATE_DIR=/tmp/broken-private ./gradlew validateArchitectureMetamode
   > Could not determine which articles the private target may render.
 ----
 
-Der Owner fand es im Review von #96. Die Reparatur war klein: den Grund tragen
-statt werfen, das Target fällt ohne verlässliche Liste geschlossen aus, und die
-Tasks, die die Liste brauchen, melden den Grund beim Ausführen.
+Ich fand es im Review von #96. Die Reparatur war klein: den Grund tragen statt
+werfen, das Target fällt ohne verlässliche Liste geschlossen aus, und die Tasks,
+die die Liste brauchen, melden den Grund beim Ausführen.
 
-Der Befund ist nicht die Zeile, sondern das Szenario daneben. Wir hatten eines
-geschrieben — „An absent sibling leaves the rest of the build alone" — und es
-prüfte den *fehlenden* Checkout. Der fehlende ist der Fall, an den man denkt, und
+Der Befund ist nicht die Zeile, sondern das Szenario daneben. Es gab eines — „An
+absent sibling leaves the rest of the build alone" — und es prüfte den
+*fehlenden* Checkout. Der fehlende ist der Fall, an den man denkt, und
 er ist der Fall, in dem die Garantie trivial hält: ohne Verzeichnis läuft die
 Selektion gar nicht erst. Der vorhandene und unlesbare Checkout ist der Fall, für
 den die Zusicherung geschrieben war, und ihn deckte nichts ab.
@@ -75,9 +75,9 @@ prüft nicht mehr, ob der Test die Zusicherung an ihrer Bruchstelle berührt.
 fehlenden Sibling, den es auf dem Host gab: der Container mountet `$PWD`, und der
 Geschwister-Checkout liegt daneben, nicht darin.
 
-Auch das fand der Owner, und zwar dadurch, dass er den in der README
-dokumentierten Weg benutzte statt den, auf dem die Sache entstanden ist. Der
-Container ist der Weg, den CI geht; wir hatten ihn kein einziges Mal ausgeführt.
+Auch das fand ich, und zwar dadurch, dass ich den in der README dokumentierten
+Weg benutzte statt den, auf dem die Sache entstanden ist. Der Container ist der
+Weg, den CI geht; ausgeführt worden war er kein einziges Mal.
 
 === Vier Tests, die nirgends liefen
 
@@ -107,11 +107,11 @@ beantwortet: was einen Entwurf umgibt. Heute umgibt ihn nichts — jeder Link im
 Seitenrahmen zeigt auf eine Datei, die im Target fehlt.
 
 Die Pugh-Matrix in ADR-012 gibt der komponierenden Variante +4 und der heutigen
-+3. Der Owner hat sich für die heutige entschieden und den Unterschied benannt:
-das Target liest die Person, die den Inhalt geschrieben hat und weiß, warum die
-Links fehlen.
++3. Ich habe mich für die heutige entschieden und den Unterschied benannt: das
+Target liest die Person, die den Inhalt geschrieben hat und weiß, warum die Links
+fehlen.
 
-Wir haben die Matrix so stehen lassen, wie sie gescort war. Eine Matrix, die man
+Die Matrix blieb so stehen, wie sie gescort war. Eine Matrix, die man
 nachgewichtet, bis sie die bereits getroffene Entscheidung ergibt, hält nichts
 fest. Der Record sagt stattdessen in einem eigenen Abschnitt, warum sie nicht
 entschieden hat.

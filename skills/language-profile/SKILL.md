@@ -208,9 +208,19 @@ Read by someone tracing why a decision reads the way it does.
 
 Read by us, later, looking for why a mistake was plausible.
 
-- **First person plural by default.** Use "I" only where the distinction carries
-  the lesson — where one of us proposed something and the other caught it, a
-  blanket plural hides who skipped the check.
+- **First person singular, and it is always the owner's.** The diary is one
+  person's record of what they observed during a day, written in the voice they
+  would use with no assistant present. "Ich" is the owner, everywhere, without
+  exception.
+- **Never "der Owner".** A reader who meets both an "ich" and an "Owner" in the
+  same entry counts two people and cannot tell which one is the author. This is
+  the rule the earlier entries broke, and they were rewritten for it.
+- **Name the assistant in the third person where the distinction carries the
+  lesson** — where it proposed something the owner caught, or missed a check the
+  owner ran. "Der Assistent" is the term; it names the role and survives a change
+  of model.
+- **No "wir".** Where it does not matter who acted, state the fact without an
+  actor. A plural that stands in for one person and a tool records neither.
 - Past tense.
 - **Unsparing about the error, generous about its plausibility.** Both halves are
   required. Naming the mistake without explaining why it convinced anyone leaves a

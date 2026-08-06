@@ -6,7 +6,7 @@ dessen Progress-Datei, nicht hier.
 
 === Ob Listen künftig alle Sprachen zeigen
 
-Der Owner brachte es zweimal auf: eine Liste, die wirklich *alle* Artikel zeigt,
+Ich brachte es zweimal auf: eine Liste, die wirklich *alle* Artikel zeigt,
 mit `(de)`/`(en)`-Markern an den Einträgen. Damit wäre „Alle Artikel" wieder
 wörtlich wahr, und das Marker-Muster existiert auf der Seite bereits.
 
@@ -64,8 +64,8 @@ merkt. Stromaufwärts hängt es an docs-as-code-toolkit#26; lokal ist es #75.
 
 Profil 1 sagt: der Kern einer akzeptierten Entscheidung wird nicht
 überschrieben, eine geänderte Entscheidung wird ein neuer Record. Am 3. August
-lagen zwei Korrekturen an ADR-008 nebeneinander, die gleich aussahen und
-entgegengesetzt behandelt wurden.
+lagen zwei Korrekturen an ADR-008 nebeneinander, die gleich aussahen und die ich
+entgegengesetzt behandelt habe.
 
 `copy` → `move` stand nur im Sequenzdiagramm; die Decision-Sektion sagte immer
 „promoted". Das ist ein Fehler in der Entscheidungs*grundlage*, und der wurde in
@@ -113,11 +113,11 @@ dreiteilig und damit der erste Kandidat.
 
 === Ob ein Watcher die gerenderte Seite beim Schreiben aktuell hält
 
-Der Owner brachte es auf, während er an den Artikeln schrieb: ein
-Verzeichnis-Watcher auf dem privaten Inhalt, der bei jeder Änderung neu rendert,
-dazu ein lokaler Webserver auf dem Ergebnis — auf einem Bildschirm der Editor,
-auf dem anderen die Seite, die nur noch ein `F5` braucht. Wir haben es
-zurückgestellt und stattdessen die Editor-Vorschau reparabel gemacht.
+Die Idee kam mir, während ich an den Artikeln schrieb: ein Verzeichnis-Watcher
+auf dem privaten Inhalt, der bei jeder Änderung neu rendert, dazu ein lokaler
+Webserver auf dem Ergebnis — auf einem Bildschirm der Editor, auf dem anderen die
+Seite, die nur noch ein `F5` braucht. Zurückgestellt, und stattdessen ist die
+Editor-Vorschau reparabel geworden.
 
 Zurückgestellt, weil das Kostenbild schlechter ist, als es zunächst aussah.
 Gradle bringt den Watcher mit, `./gradlew -t`, und für den öffentlichen Baum
@@ -125,7 +125,7 @@ funktioniert er auch — für `buildSitePrivate` löst er nicht aus, weder bei e
 geänderten noch bei einer neu angelegten Datei. Gradle beobachtet nur
 Hierarchien unterhalb des Projektverzeichnisses, und der private Checkout liegt
 daneben. Es bräuchte also doch eine eigene Schleife: `fswatch`, `watchexec` und
-`entr` sind auf der Maschine des Owners keines installiert.
+`entr` ist auf meiner Maschine keines installiert.
 
 Der Server ist dabei nicht die Kür. `article-comments.js` macht ein `fetch()`,
 das über `file://` an CORS scheitert, also fehlen die Kommentare ausgerechnet

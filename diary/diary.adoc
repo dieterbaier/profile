@@ -19,6 +19,11 @@ Each recap is its own document, included here. They are written from the commit
 history, the issues and the pull requests, so the dates and numbers are
 checkable rather than remembered.
 
+„Ich" ist durchgehend der Autor dieses Repositories. Die Prosa entsteht zu einem
+großen Teil mit einem AI-Assistenten und wird hier auch nicht anders behauptet;
+wo der Unterschied zwischen Autor und Assistent die Lehre trägt, steht „der
+Assistent" im Text. Das letzte Wort über jeden Eintrag hat der Autor.
+
 Two recaps are cross-cutting rather than chronological, and are the ones worth
 reading first: the through-line, which is the single lesson these days keep
 teaching, and the toolkit validation, which is what using the

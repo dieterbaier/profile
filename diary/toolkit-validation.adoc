@@ -25,8 +25,8 @@ die beim Mitschreiben nicht entstanden wären: ein Test, der zwei Szenarien
 abdeckte, drei Titel, die unpräziser waren als ihre Tests, und ein
 Kopfkommentar, der seit #51 nicht mehr stimmte.
 
-Bemerkt wurde die Lücke nicht durch das Werkzeug, sondern durch die Frage des
-Owners. Das ist der eigentliche Befund: der Skill formuliert den Default, aber
+Bemerkt wurde die Lücke nicht durch das Werkzeug, sondern durch meine Frage. Das
+ist der eigentliche Befund: der Skill formuliert den Default, aber
 nichts erzwingt ihn. Ein `check-scenarios`-Schritt analog zu
 `check-agent-adapters.js` wäre die naheliegende Ergänzung — allerdings untersagt
 der Skill ausdrücklich, im Zuge seiner Anwendung einen Runner zu bauen. Diese
@@ -35,7 +35,7 @@ Spannung gehört stromaufwärts.
 === Bestätigt: ADR-Review vor der Umsetzung fängt Widersprüche
 
 Der `adr`-Skill verlangt explizite Optionen und Review Notes vor der Annahme.
-Beim Review von ADR-010 verwarf der Owner die Fragment-Fallback-Regel — und das
+Beim Review von ADR-010 verwarf ich die Fragment-Fallback-Regel — und das
 kollidierte mit einer früheren Festlegung im selben Dokument.
 
 Wäre der Widerspruch erst beim Implementieren aufgefallen, hätte die
@@ -55,7 +55,7 @@ Implementierer, den Umgang mit einem halb gescheiterten Move selbst zu
 *entscheiden* — was ADR-009 inzwischen entschieden hatte. In beiden Fällen stand
 die neue Entscheidung im ADR und die alte im ausführbaren Teil des Issues.
 
-Bemerkt hat es der Owner im Review, nicht der Prozess. Ein Kind-Issue verweist
+Bemerkt habe ich es im Review, nicht der Prozess. Ein Kind-Issue verweist
 auf sein Eltern-Issue, aber keine Relation verbindet es mit dem ADR, dessen
 Annahmen es umsetzt — und selbst wenn es eine gäbe, würde nichts sie prüfen.
 
@@ -72,11 +72,11 @@ Feld nicht, obwohl der `adr`-Skill es für die Herkunft eines ADR vorsieht und
 sein Template es führt. Die Herkunft landete deshalb in der Prosa des
 Context-Abschnitts.
 
-Wir hielten das zunächst für einen Widerspruch im Toolkit zwischen Template und
-Schema. Der Vergleich zeigte das Gegenteil: das Toolkit-Schema *hat*
-`derived_from` seit Zeile 83. Unsere Kopie hat es nicht.
+Zunächst sah das nach einem Widerspruch im Toolkit zwischen Template und Schema
+aus. Der Vergleich zeigte das Gegenteil: das Toolkit-Schema *hat* `derived_from`
+seit Zeile 83. Die Kopie in diesem Repository hat es nicht.
 
-Die Abweichung geht in beide Richtungen. Unsere Kopie ergänzt `QualityGoal` und
+Die Abweichung geht in beide Richtungen. Diese Kopie ergänzt `QualityGoal` und
 `priority` — lokale Erweiterungen, die es stromaufwärts nicht gibt. Und ihr
 fehlt der gesamte `derived_from`-Block, eine Toolkit-Ergänzung, die nie ankam.
 Das ist kein veraltetes Vendoring, sondern ein divergiertes.
@@ -100,11 +100,11 @@ vollständige Schemavalidierung würde also jeden String und jedes Fehlen
 akzeptieren. #48 schließt die Mechanik-Lücke; die Vertrags-Lücke bleibt, und sie
 liegt im Schema.
 
-Der Owner hat entschieden, dass die Architekturdokumentation keine Strategie wie
-die des Profils braucht — der Private-nach-öffentlich-Lebenszyklus gehört zum
+Ich habe entschieden, dass die Architekturdokumentation keine Strategie wie die
+des Profils braucht — der Private-nach-öffentlich-Lebenszyklus gehört zum
 Profilinhalt, nicht zur Architekturdokumentation. Der Befund lautet deshalb nicht
-„das Toolkit sollte tun, was wir getan haben", sondern: das Toolkit führt ein
-Feld, das so, wie es geschrieben ist, niemand durchsetzen kann. Entweder es
+„das Toolkit sollte tun, was dieses Projekt getan hat", sondern: das Toolkit
+führt ein Feld, das so, wie es geschrieben ist, niemand durchsetzen kann. Entweder es
 bekommt eine Deklaration der akzeptierten Versionen, oder es ist Dekoration und
 sagt das besser selbst.
 
@@ -135,7 +135,7 @@ Geschwister-Checkout braucht. Das Szenario dazu hieß „An absent sibling leave
 the rest of the build alone" und prüfte den *fehlenden* Checkout: den Fall, in
 dem die Zusicherung trivial hält, weil ohne Verzeichnis gar keine Selektion
 läuft. Ein vorhandener und unlesbarer Checkout brach jeden `./gradlew`-Aufruf.
-Der Owner fand es im Review von PR #96.
+Ich fand es im Review von PR #96.
 
 Nach dem Buchstaben des Skills war alles erfüllt. Was fehlt, ist die Frage, die
 ein Szenario beantworten müsste: *an welcher Stelle bricht die Zusicherung, und

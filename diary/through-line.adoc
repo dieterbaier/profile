@@ -40,7 +40,7 @@ Zahl. Eine fünfte Instanz, die nur einer der vier ähnelt, gehört nicht hierhe
 
 2026-08-03 kamen zwei Fälle dazu, die nicht am Mangel an Beispielen lagen,
 sondern an deren Beschaffenheit. Die Annahme war falsifizierbar — nur nicht durch
-das, was wir betrachteten.
+das, was betrachtet wurde.
 
 Ausschlussliste zur Ausführungszeit (2026-08-03):: Behauptete, `dependsOn` ordne
 die Auflösung des Quellbaums nach dem Generator ein. Mehrere Builds bestätigten
@@ -90,4 +90,4 @@ Dritte: „berührt meine Prüfung die Stelle, an der die Zusicherung bricht —
 läuft sie überhaupt?"
 
 Die drei Fälle sind auffällig billig zu finden gewesen, sobald die Frage gestellt
-war. Zwei davon fand der Owner, nicht der Prozess.
+war. Zwei davon fand ich, nicht der Prozess.

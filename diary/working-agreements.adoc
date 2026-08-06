@@ -25,18 +25,18 @@ vier Slices kostete einen eigenen Slice (#65), und drei Ungenauigkeiten wären
 beim Mitschreiben gar nicht erst entstanden.
 
 Generierte Prosa macht keine Mengenaussagen.:: Kosten: „1 weiterer Artikel" wäre
-falsch geworden, sobald die andere Sprache weniger Artikel hat — bemerkt vom
-Owner im Review, nicht beim Schreiben (#57).
+falsch geworden, sobald die andere Sprache weniger Artikel hat — bemerkt von mir
+im Review, nicht beim Schreiben (#57).
 
 Fakten über fremde Laufbahn, Kunden und Projekte werden nicht erfunden, auch
 nicht als „erster Wurf".:: Kosten: keine — die Grenze wurde beim CV vor der
 Umsetzung gezogen (#56). Der Eintrag steht hier, damit sie gezogen bleibt.
 
 Ein Defekt in einem fremden Projekt wird in dessen Quellen geprüft, bevor er
-aufgeschrieben wird.:: Kosten: der `derived_from`-Befund war aus unserer Kopie
-des Toolkit-Schemas abgeleitet und beschrieb einen Widerspruch, den das Toolkit
-nicht hat. Ein `grep` in der fremden Datei hätte es widerlegt, bevor es im
-Tagebuch stand (docs-as-code-toolkit#26, #75).
+aufgeschrieben wird.:: Kosten: der `derived_from`-Befund war aus der Kopie des
+Toolkit-Schemas in diesem Repository abgeleitet und beschrieb einen Widerspruch,
+den das Toolkit nicht hat. Ein `grep` in der fremden Datei hätte es widerlegt,
+bevor es im Tagebuch stand (docs-as-code-toolkit#26, #75).
 
 Eine Änderung, die ein Skript an einer Datei vornimmt, wird nachgelesen, bevor
 sie als erledigt gemeldet wird — und jede einzelne Ersetzung trägt ein
@@ -52,7 +52,7 @@ Hand gelaufen war. Der erste saubere Build brach sie sofort (#77).
 
 Eine Zusicherung in einem Record nennt den Mechanismus, der sie hält — oder sie
 wird zur Absicht umformuliert.:: Kosten: drei Überspitzungen in zwei Pull
-Requests, jede vom Owner gefunden: ein Artikel liege „in exactly one source
+Requests, jede von mir gefunden: ein Artikel liege „in exactly one source
 repository at a time" über einen nicht-atomaren Move, der Validator lehne falsche
 `metadata_version`-Werte ab (er prüft `string`), und eine geteilte `id` *bedeute*
 eine unterbrochene Promotion (sie kann eine Kollision sein) (PR #82).
@@ -81,6 +81,6 @@ mit dem Dateinamen, nicht mit dem Gedächtnis.:: Kosten: eine
 `.asciidoctorconfig.adoc` für `profile-private` neu entworfen, während zehn
 davon im öffentlichen Repository lagen und die Antwort in acht davon steht. Die
 Prüfung war grün und konnte es nicht sehen: sie beantwortete „rendert diese
-Datei", nicht „hat dieses Repository dafür schon eine Form". Gefunden vom Owner,
+Datei", nicht „hat dieses Repository dafür schon eine Form". Gefunden von mir,
 nicht vom Test.
 
