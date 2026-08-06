@@ -32,6 +32,8 @@ include::2026-08-03-claims-stronger-than-their-mechanism.adoc[]
 
 include::2026-08-04-die-leichte-haelfte.adoc[]
 
+include::2026-08-05-die-antwort-lag-schon-da.adoc[]
+
 include::toolkit-validation.adoc[]
 
 include::working-agreements.adoc[]

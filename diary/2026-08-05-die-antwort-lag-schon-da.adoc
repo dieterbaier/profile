@@ -1,0 +1,111 @@
+== Day 5 — 5 August 2026: Die Antwort lag schon im Repository
+
+Ein Schreibtag. Im öffentlichen Repository entstand ein einziger Commit
+(`84f3c65`, ein Eintrag in `open-threads.adoc`), kein Pull Request, kein Issue
+geöffnet oder geschlossen. Die Arbeit lag in `profile-private`: zwei Commits auf
+`issue_7`, und `ai-als-assistent.adoc` wuchs von 405 auf 1517 Wörter.
+
+Der Tag drehte sich trotzdem um etwas anderes — um ein Feature, das wir nicht
+gebaut haben, und darum, dass die Lösung des Problems dahinter längst zehnmal im
+Repository lag.
+
+=== Ein Feature, dessen Kostenbild erst beim Messen kippte
+
+Der Owner brachte eine Idee mit: ein Verzeichnis-Watcher auf dem privaten
+Inhalt, der bei jeder Änderung neu rendert, dazu ein lokaler Webserver auf dem
+Ergebnis. Auf einem Bildschirm der Editor, auf dem anderen die fertige Seite.
+
+Die erste Zahl sprach dafür. `./gradlew buildSitePrivate` braucht bei warmem
+Daemon rund vier Sekunden für eine Artikeländerung, und den Watcher bringt
+Gradle mit — `./gradlew -t` beobachtet die deklarierten Task-Inputs und baut neu.
+Aus der Nähe sah es nach Konfiguration statt nach Feature aus.
+
+Ausprobiert kippte es. `./gradlew -t buildSitePrivate` baute einmal, schrieb
+`Waiting for changes to input files...` und rührte sich danach weder bei einer
+geänderten noch bei einer neu angelegten Datei im privaten Checkout. Gegen den
+öffentlichen Baum funktionierte derselbe Aufruf sofort. Gradle beobachtet nur
+Hierarchien unterhalb des Projektverzeichnisses, und der private Checkout liegt
+daneben — genau dort, wo geschrieben wird, greift das mitgelieferte Werkzeug
+nicht.
+
+Damit fiel der billige Weg weg: eine eigene Schleife, und `fswatch`, `watchexec`
+und `entr` sind auf der Maschine des Owners keines installiert. Dazu der Server,
+der keine Kür ist, weil `article-comments.js` ein `fetch()` macht, das über
+`file://` an CORS scheitert.
+
+Der Owner hat es daraufhin zurückgestellt. Die Begründung steht in
+`open-threads.adoc`, samt dem Auslöser, es neu zu bewerten. Sein Satz danach ist
+der Grund, warum dieser Abschnitt hier steht und nicht nur dort: „Ich hätte
+ansonsten ein viel zu schwergewichtiges Feature gebaut."
+
+=== Die Diagnose war das Symptom
+
+Die Idee kam aus einer echten Beobachtung: seit der Aufteilung rendert die
+IntelliJ-Vorschau die privaten Artikel schlecht, und die naheliegende Erklärung
+war, dass die Stylesheets fehlen.
+
+Sie stimmte nicht. Ein privater Artikel beginnt mit
+`include::{includesdir}/docheader.adoc[]`, und `{includesdir}` setzt der
+Gradle-Build als absoluten Pfad in das öffentliche Repository. Ohne das Attribut
+scheitern zwei Includes, und die Vorschau zeigt einen Artikel ohne Dokumentkopf
+und ohne Menü. Ein nachgereichtes Stylesheet hätte eine unvollständige Seite
+hübsch gemacht.
+
+Das ist der Preis der Aufteilung, den bis dahin niemand aufgeschrieben hatte: die
+privaten Artikel sind keine eigenständigen Dokumente mehr. Sie sind Fragmente,
+die ihr Umfeld aus dem öffentlichen Repository beziehen, und was der Build ihnen
+mitgibt, muss ein Editor separat erfahren.
+
+=== Ich habe eine Konvention neu erfunden, die zehnmal danebenlag
+
+Die Reparatur war eine `.asciidoctorconfig.adoc` im privaten Repository. Ich habe
+sie von Grund auf entworfen: `includesdir`, dazu `stylesdir` und `stylesheet`,
+damit das Theme greift. Dann habe ich sie geprüft — alle drei Artikel gerendert,
+null Fehler, null Warnungen, Menü da, das 1054-zeilige `style.css` eingebettet
+statt der 426 Zeilen Asciidoctor-Default — und sie als fertig gemeldet.
+
+Der Owner ergänzte `basedir` und wies dabei auf eine Datei hin, die es schon gab:
+`src-content/profile/site/articles/architecture/.asciidoctorconfig.adoc`. Erst
+danach habe ich gesucht. `find src-content -name ".asciidoctorconfig*"` findet
+zehn Stück: acht tragen `includesdir` und `basedir`, zwei tragen nur
+`:includesdir: .`, weil sie neben ihrem eigenen Include-Baum liegen. Keine
+einzige setzt `stylesdir`, weil sie es nicht muss — mit gesetztem `basedir` löst
+`docheader.adoc` sein `{basedir}/../theme` selbst korrekt auf. Meine beiden
+Zusatzzeilen taten dasselbe auf einem anderen Weg und hätten die Kaskade
+überschrieben, weil vom Plugin gesetzte Attribute gesperrt sind.
+
+`profile-private` war nicht der Ort, an dem eine neue Konvention gebraucht wurde.
+Es war der eine Inhaltsbaum, der beim Aufteilen keine abbekommen hat.
+
+Plausibel war es, weil die Prüfung grün war und den Fehler nicht sehen konnte.
+Sie beantwortete „rendert diese Datei" und nicht „ist diese Datei die Form, die
+dieses Repository für diese Frage schon hat". Ein `find src-content -name
+".asciidoctorconfig*"` hätte es in einer Sekunde widerlegt — es ist genau der
+Befehl, den ich später ausgeführt habe, nur eine Nachricht zu spät.
+
+Die Endfassung des Owners ist kürzer als mein Entwurf und leitet den zweiten Wert
+aus dem ersten ab:
+
+[source,asciidoc]
+----
+:basedir: {asciidoctorconfigdir}/../profile-dieterbaier/src-content/profile
+:includesdir: {basedir}/includes
+----
+
+=== Was der Tag über den Include-Baum nebenbei zeigte
+
+Der Owner hat beim Lesen von `docheader.adoc` selbst angemerkt, dass die
+Konstruktion aus Includes, `ifdef::buildsite[]` und `ifeval`-Zweigen komplexer
+geworden ist als beabsichtigt. Die Prämisse dahinter war, Code nicht zu
+duplizieren und die Konfiguration einer Seite auf wenige Attribute plus einen
+Include zu reduzieren.
+
+Bemerkenswert ist, dass genau diese Konstruktion den Tag gerettet hat.
+`docheader.adoc` trägt für den Fall ohne `buildsite` bereits einen vollständigen
+Zweig — `{basedir}/../theme`, `copycss`, kein `linkcss` —, und dieser Zweig war
+seit der Aufteilung tot, weil `basedir` nirgends mehr gesetzt wurde. Zwei Zeilen
+Editor-Konfiguration haben ihn wieder eingeschaltet.
+
+Eine Verschlankung ist damit nicht widerlegt. Sie hat nur jetzt einen Datenpunkt
+gegen sich, den sie berücksichtigen muss: die Zweige sind nicht unbenutzt, sie
+sind nur nicht von jedem Aufrufer belegt.

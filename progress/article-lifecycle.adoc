@@ -78,8 +78,17 @@ er, scheitert nur der Task, der ihn braucht. `./build.sh` mountet ihn ebenfalls.
 
 `dieterbaier/profile-private` ist nicht mehr leer. Es trägt die zweiteilige
 AI-Artikelserie aus `profile-private#7` plus einen Landing-Artikel, alle mit
-`status: private`, dazu Lizenz und README. Die beiden Inhaltsartikel sind
-Gerüste: Abschnitte und Stichpunkte aus dem Issue, ohne Fließtext.
+`status: private`, dazu Lizenz und README. `ai-als-assistent` ist in Arbeit und
+trägt Fließtext, `ai-harness` ist noch ein Gerüst aus Abschnitten und
+Stichpunkten. Beide markieren die offenen Stellen mit `TODO(dieter)`.
+
+Geschrieben wird mit der Editor-Vorschau: `.asciidoctorconfig.adoc` im Wurzel-
+verzeichnis des privaten Checkouts setzt `basedir` und `includesdir` auf den
+öffentlichen Baum, damit ein Artikel dort denselben Dokumentkopf bekommt, den ihm
+der Build gibt. Ohne die Datei scheitern die Includes, weil ein privater Artikel
+kein eigenständiges Dokument ist. `buildSitePrivate` bleibt der Weg zur fertigen
+Seite; ein Watcher dafür ist bewusst nicht gebaut, die Begründung steht in
+`diary/open-threads.adoc`.
 
 Was das private Target *nicht* tut: Generatoren laufen nicht gegen den privaten
 Baum, also hat eine private Seite keine Tags, keine Navigation und keine

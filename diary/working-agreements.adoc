@@ -76,3 +76,11 @@ registrierte Tasks fehlten dort, zwei Testdateien hatten gar keinen Task. 62
 Testläufe waren unsichtbar, und die Pipeline blieb grün, weil ein Test, den
 niemand ausführt, nicht scheitern kann (PR #96).
 
+Bevor eine Konventionsdatei geschrieben wird, wird nach der Konvention gesucht —
+mit dem Dateinamen, nicht mit dem Gedächtnis.:: Kosten: eine
+`.asciidoctorconfig.adoc` für `profile-private` neu entworfen, während zehn
+davon im öffentlichen Repository lagen und die Antwort in acht davon steht. Die
+Prüfung war grün und konnte es nicht sehen: sie beantwortete „rendert diese
+Datei", nicht „hat dieses Repository dafür schon eine Form". Gefunden vom Owner,
+nicht vom Test.
+
