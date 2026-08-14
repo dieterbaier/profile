@@ -13,8 +13,10 @@ ifndef::basedir[]
 endif::[]
 :stylesheet: style.css
 :stylesdir: {basedir}/../theme
-:iconsdir: {stylesdir}/icons
+:iconsdir: {stylesdir}/
+ifndef::imagesdir[]
 :imagesdir: {includesdir}/images/
+endif::[]
 :copycss: {basedir}/src-content/theme/style.css
 :icons: image
 ifdef::buildsite[]
