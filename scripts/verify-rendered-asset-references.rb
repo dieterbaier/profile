@@ -27,7 +27,12 @@ module RenderedAssetReferences
   # Anything the target does not host and cannot be asked about.
   EXTERNAL = %r{\A(?:[a-z][a-z0-9+.-]*:|//|#|\?)}i.freeze
 
-  Reference = Struct.new(:page, :target, :line, keyword_init: true)
+  # `reason` separates the two ways a reference fails, because they read very
+  # differently to whoever has to fix them. A file that is simply absent is
+  # absent everywhere; one that escapes the target resolves against the checkout
+  # and exists on the machine that built it, so reporting it as "not found"
+  # would send the author looking for a file they can see.
+  Reference = Struct.new(:page, :target, :line, :reason, keyword_init: true)
 
   module_function
 
@@ -62,6 +67,19 @@ module RenderedAssetReferences
     (base + relative.sub(%r{\A/}, '')).cleanpath
   end
 
+  # Whether a resolved path is still part of the target.
+  #
+  # `..` segments are normalised away before this, so a reference can climb out
+  # of the target and land somewhere in the checkout that built it. Asking only
+  # whether the file exists would call that reference good on the build machine
+  # and leave it broken everywhere the target is actually served, which is the
+  # one place this check is about.
+  def within?(path, root)
+    path = path.expand_path.to_s
+    root = root.expand_path.to_s
+    path == root || path.start_with?(root.end_with?(File::SEPARATOR) ? root : "#{root}#{File::SEPARATOR}")
+  end
+
   def unresolved(root)
     root = Pathname.new(root).expand_path
     return [] unless root.directory?
@@ -70,9 +88,17 @@ module RenderedAssetReferences
     Pathname.glob(root.join('**', '*.{html,md}')).sort.each do |page|
       references(page.read(encoding: 'UTF-8')).each do |target, line|
         next unless asset?(target)
-        next if resolve(target, page, root).file?
 
-        missing << Reference.new(page: page.relative_path_from(root).to_s, target: target, line: line)
+        resolved = resolve(target, page, root)
+        reason = if !within?(resolved, root)
+                   :outside_target
+                 elsif !resolved.file?
+                   :missing
+                 end
+        next unless reason
+
+        missing << Reference.new(page: page.relative_path_from(root).to_s, target: target,
+                                 line: line, reason: reason)
       end
     rescue ArgumentError, Errno::EILSEQ
       # A page that cannot be read as text carries no reference this can judge.
@@ -109,7 +135,10 @@ if $PROGRAM_NAME == __FILE__
   end
 
   warn "The '#{label}' target asks for #{missing.length} file(s) it does not contain:"
-  missing.each { |reference| warn "  - #{reference.page}:#{reference.line} -> #{reference.target}" }
+  missing.each do |reference|
+    note = reference.reason == :outside_target ? '  (leaves the target; resolves only in this checkout)' : ''
+    warn "  - #{reference.page}:#{reference.line} -> #{reference.target}#{note}"
+  end
   warn '  The page renders without complaint and shows a broken image, so this is reported here'
   warn '  rather than by the renderer.'
   exit(1)

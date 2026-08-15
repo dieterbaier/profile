@@ -58,6 +58,16 @@ Feature: Rendered asset references
     When the target is checked
     Then it resolves rather than being reported as a missing file
 
+  Scenario: A reference that leaves the target is missing even when the file exists
+    Given a page climbing out of the target at a file that is really there
+    When the target is checked
+    Then it is reported as having left the target, not as resolved
+
+  Scenario: A sibling target whose name extends this one is not mistaken for it
+    Given two targets side by side, one named as a prefix of the other
+    When the shorter-named target is checked
+    Then the reference counts as outside it
+
   Scenario: A target that was never rendered reports nothing
     Given no rendered target at all
     When a directory that does not exist is checked
