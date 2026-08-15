@@ -137,6 +137,15 @@ footer {
     margin-left: 2rem;
 }
 
+/* The size and float classes above are set on an image block, so the image
+   inside it scales to whatever width that block was given rather than to its
+   own pixel size. Without this, `role="size-50"` narrows the block and the
+   image keeps overflowing it. */
+.imageblock img {
+    max-width: 100%;
+    height: auto;
+}
+
 .size-25 {
     max-width: 25%;
 }
@@ -1076,5 +1085,18 @@ footer p {
 
     .article-nav-next a {
         align-items: flex-start;
+    }
+
+    .mobile-size-25 {
+        max-width: 25%;
+    }
+    .mobile-size-50 {
+        max-width: 50%;
+    }
+    .mobile-size-75 {
+        max-width: 75%;
+    }
+    .mobile-size-full {
+        max-width: 100%;
     }
 }

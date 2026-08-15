@@ -135,6 +135,7 @@ class ProfileArtifactValidator
     validate_translations(artifacts)
     validate_ui_terms(artifacts)
     validate_link_references(artifacts)
+    validate_article_assets(artifacts)
     validate_fragment_languages
     artifacts
   end
@@ -263,6 +264,66 @@ class ProfileArtifactValidator
     end
 
     excluded.map { |article| relative(article_source_path(article)) }.uniq.sort
+  end
+
+  # An article's own assets live in a directory named after its ID, next to the
+  # article source. Everything that article alone needs at read time goes there:
+  # images the page requests from the rendered site, and diagram sources the
+  # build compiles while rendering it.
+  def article_asset_dir(article)
+    article_source_path(article).dirname.join(article.metadata['id'].to_s)
+  end
+
+  # The asset directories a publication target may publish, as
+  # repository-relative paths.
+  #
+  # This is an include list where `excluded_article_sources` is an exclude list,
+  # and the asymmetry is deliberate. That one selects from a tree that holds
+  # more than articles, so naming what may render would mean enumerating profile
+  # pages, lists, and legal text, and silently dropping whatever the list
+  # forgot. This one selects from directories that exist only because an article
+  # owns them, so the complete set is derivable and an unnamed directory is not
+  # a page that stopped rendering — it is an asset nobody can reach, which is
+  # the state this convention exists to make impossible.
+  #
+  # So it fails closed. A directory whose owning article is absent, excluded by
+  # status, or unresolvable is not listed and therefore not published; the
+  # orphan case is reported separately by `validate_article_assets`, where a
+  # finding belongs.
+  def article_asset_dirs(artifacts, target:)
+    allowed = TARGET_STATUSES.fetch(target) do
+      raise ArgumentError, "unknown publication target '#{target}'"
+    end
+
+    artifacts.select { |artifact| artifact.metadata['type'] == 'Article' }
+             .select { |article| allowed.include?(article.metadata['status']) }
+             .map { |article| article_asset_dir(article) }
+             .select(&:directory?)
+             .map { |dir| relative(dir) }
+             .uniq
+             .sort
+  end
+
+  # An asset directory is reached by being named after an article. One that no
+  # article claims is not an unused file: it is a directory the author filled on
+  # purpose and no target will ever copy, which reads as "the images are broken"
+  # rather than as "the folder is misnamed". The build cannot notice it — it
+  # only ever looks up the directories it already knows — so the validator does.
+  def validate_article_assets(artifacts)
+    claimed = artifacts.select { |artifact| artifact.metadata['type'] == 'Article' }
+                       .map { |article| article_asset_dir(article).expand_path }
+                       .to_set
+
+    site_dir = profile_dir.join('site')
+    return unless site_dir.directory?
+
+    Pathname.glob(site_dir.join('**', '*')).select(&:directory?).sort.each do |dir|
+      next unless dir.basename.to_s =~ ARTIFACT_ID_PATTERN
+      next if claimed.include?(dir.expand_path)
+
+      errors << "#{relative(dir)} is named like an artifact but no article declares that id; " \
+                'no target publishes it'
+    end
   end
 
   # Where a rendered target keeps the output of a given source tree.
@@ -2052,6 +2113,7 @@ if $PROGRAM_NAME == __FILE__
     accept_translation: nil,
     language_alternates: nil,
     list_public_source_exclusions: false,
+    list_target_asset_dirs: false,
     verify_public_target_output: false,
     includes_dir: nil,
     target: 'public',
@@ -2066,6 +2128,7 @@ if $PROGRAM_NAME == __FILE__
     parser.on('--accept-translation ID') { |value| options[:accept_translation] = value }
     parser.on('--language-alternates PATH') { |value| options[:language_alternates] = value }
     parser.on('--list-public-source-exclusions') { options[:list_public_source_exclusions] = true }
+    parser.on('--list-target-asset-dirs') { options[:list_target_asset_dirs] = true }
     parser.on('--verify-public-target-output') { options[:verify_public_target_output] = true }
     # Where the shared includes live. A content root that owns none - the private
     # repository, per ADR-009 - points at the tree that does.
@@ -2099,6 +2162,19 @@ if $PROGRAM_NAME == __FILE__
   if options[:list_public_source_exclusions]
     begin
       puts validator.excluded_article_sources(validator.scan_artifacts, target: target)
+    rescue ProfileArtifactValidator::UnresolvableArticleSource => e
+      warn "Publication selection failed: #{e.message}"
+      exit(1)
+    end
+    exit(0)
+  end
+
+  # Asked the same way and for the same reason as the selection above: while the
+  # build configures itself, so it reports no findings and fails on no metadata
+  # error.
+  if options[:list_target_asset_dirs]
+    begin
+      puts validator.article_asset_dirs(validator.scan_artifacts, target: target)
     rescue ProfileArtifactValidator::UnresolvableArticleSource => e
       warn "Publication selection failed: #{e.message}"
       exit(1)

@@ -11,6 +11,12 @@ include::{includesdir}/../../revinfo.adoc[]
 :revnumber: 1.1
 :active: articles
 include::{includesdir}/docheader.adoc[]
+// This article's own assets — see the German original for what the two lines do.
+// A translation owns its directory the same way an original does: it is named
+// after this artifact's ID, not the ID it was translated from, so a diagram that
+// carries language keeps a per-language source and a per-language rendering.
+:assetsdir: ART-003-doc-as-code-en
+:imagesdir: {assetsdir}
 
 ifeval::["{type}" != "readme"]
 include::{docfile}/../generated/{docname}-tags.adoc[opts=optional]
@@ -118,7 +124,7 @@ On top of that come the *different views*. I have to be able to prepare my docum
 
 So a number of different forces act on documentation:
 
-plantuml::{includesdir}/../site/articles/assets/doc-as-code/doc-influences-en.puml[format=svg, alt="Forces acting on documentation",width=100%]
+plantuml::{docfile}/../{assetsdir}/doc-influences-en.puml[format=svg, alt="Forces acting on documentation",width=100%]
 
 [.highlight.info]
 --
@@ -178,7 +184,7 @@ So: *different audience, different presentation*.
 
 The pipeline for documentation can of course differ in its details. That depends heavily on the environment. The following picture shows, as an example, the pipeline for this website:
 
-plantuml::{includesdir}/../site/articles/assets/doc-as-code/doc-pipeline.puml[format=svg, alt="Documentation build pipeline",width=100%]
+plantuml::{includesdir}/diagrams/doc-pipeline.puml[format=svg, alt="Documentation build pipeline",width=100%]
 
 The _build system_ is visible as the central component. This website is built with `Gradle` and `asciidoctor`. That can of course vary. There could be other frameworks around or in front of `asciidoctor`, such as the https://doctoolchain.org[docToolchain^]. The idea, however, is always the same:
 

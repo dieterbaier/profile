@@ -10,6 +10,21 @@ include::{includesdir}/../../revinfo.adoc[]
 :revnumber: 1.1
 :active: articles
 include::{includesdir}/docheader.adoc[]
+// This article's own assets, in the directory named after its ID next to this
+// file. Declared once here and derived below, so the ID is written in one place.
+//
+// {imagesdir} is set after the docheader so the shared images it pulls still
+// resolve against the site-wide one; from here on the name means this article's
+// directory. It stays a relative path on purpose: the same string addresses the
+// source tree and the rendered output, so promotion between the private and the
+// public repository moves the files and rewrites no reference.
+//
+// A diagram source is not reached that way. It is read while the page is built
+// rather than fetched from the rendered site, and asciidoctor-diagram resolves
+// its target against the project root, so it is addressed from {docfile}. The SVG
+// does land in {imagesdir}, next to the article, like every other image.
+:assetsdir: ART-003-doc-as-code
+:imagesdir: {assetsdir}
 
 ifeval::["{type}" != "readme"]
 include::{docfile}/../generated/{docname}-tags.adoc[opts=optional]
@@ -117,7 +132,7 @@ Dann kommen aber auch noch die *unterschiedlichen Sichten* hinzu. Ich muss also 
 
 Es wirken also unterschiedliche Dinge auf eine Dokumentation ein:
 
-plantuml::{includesdir}/../site/articles/assets/doc-as-code/doc-influences.puml[format=svg, alt="Einflussfaktoren auf die Dokumentation",width=100%]
+plantuml::{docfile}/../{assetsdir}/doc-influences.puml[format=svg, alt="Einflussfaktoren auf die Dokumentation",width=100%]
 
 [.highlight.info]
 --
@@ -177,7 +192,10 @@ Also: *unterschiedliche Zielgruppe, unterschiedliche Aufbereitung*.
 
 Die Pipeline für eine Dokumentation kann natürlich im Detail unterschiedlich aussehen. Das hängt stark vom Umfeld ab. Das folgende Bild zeigt als Beispiel die Pipeline für diese Website:
 
-plantuml::{includesdir}/../site/articles/assets/doc-as-code/doc-pipeline.puml[format=svg, alt="Dokumentations Build-Pipeline",width=100%]
+// Shared with the English translation, so it is not this article's to own. The
+// rendered SVG still lands in this article's {imagesdir}, which is what keeps
+// two articles from writing one file.
+plantuml::{includesdir}/diagrams/doc-pipeline.puml[format=svg, alt="Dokumentations Build-Pipeline",width=100%]
 
 Man sieht als zentrale Komponente das _Build System_. Diese Website wird mit `Gradle` und `asciidoctor` gebaut. Das kann natürlich variieren. Z.B. könnte es noch andere Frameworks, wie z.B. die https://doctoolchain.org[docToolchain^] vor oder rund um `asciidoctor` geben. Die Idee ist aber immer die gleiche:
 

@@ -30,6 +30,21 @@ description: Maintain profile artifact metadata, indexes, and validation for pro
   where they are published so the site build renders them as ordinary sources.
   They are Git-ignored and regenerated; do not edit them by hand.
 - Prefer adding relations only when the target artifact ID is known.
+- Put what an article alone owns — its images, its diagram sources — in a
+  directory named after its artifact ID next to the article, and address it
+  relatively: `:assetsdir: <ARTIFACT-ID>` with `:imagesdir: {assetsdir}` after
+  the docheader include, `image::<file>[alt, role="…"]` for an image, and
+  `plantuml::{docfile}/../{assetsdir}/<file>.puml[…]` for a diagram source.
+  Never `{includesdir}` for those: it points at the public checkout, so the
+  reference breaks when the article is promoted from the private repository.
+- Use `{includesdir}` only for what more than one article shares — site chrome
+  under `includes/images/`, diagram sources under `includes/diagrams/`.
+- Do not place an article image in an `++++` passthrough block as a raw `<img>`
+  tag. It is copied into the page verbatim, so nothing resolves its `src` and
+  the editor preview shows a broken image even where the rendered site works.
+  Pass CSS classes through `role="…"` on the `image::` macro instead.
+- Do not name a directory after an artifact ID that no article declares; the
+  validator rejects it, because no target would publish it.
 
 ## Outputs
 
