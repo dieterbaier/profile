@@ -138,6 +138,46 @@ class RenderedAssetReferencesTest < Minitest::Test
     end
   end
 
+  def test_a_reference_that_leaves_the_target_is_missing_even_when_the_file_exists
+    # Given: a page climbing out of the target at a file that is really there
+    Dir.mktmpdir('rendered-assets-test') do |dir|
+      root = Pathname.new(dir)
+      (root + 'target/articles').mkpath
+      (root + 'outside').mkpath
+      (root + 'outside/leak.png').write('binary')
+      (root + 'target/articles/a.html').write('<img src="../../outside/leak.png">')
+
+      # When: the target is checked
+      missing = RenderedAssetReferences.unresolved(root + 'target')
+
+      # Then: it is reported, and reported as having left the target. The file
+      # exists on the machine that built it and nowhere the target is served, so
+      # asking only whether it exists would pass here and break on deployment.
+      assert_equal 1, missing.length
+      assert_equal :outside_target, missing.first.reason
+    end
+  end
+
+  def test_a_sibling_target_whose_name_extends_this_one_is_not_mistaken_for_it
+    # Given: two targets side by side, one named as a prefix of the other, as
+    # build/site and build/site-private are
+    Dir.mktmpdir('rendered-assets-test') do |dir|
+      root = Pathname.new(dir)
+      (root + 'site/a').mkpath
+      (root + 'site-private').mkpath
+      (root + 'site-private/x.png').write('binary')
+      (root + 'site/a/p.html').write('<img src="../../site-private/x.png">')
+
+      # When: the shorter-named target is checked
+      missing = RenderedAssetReferences.unresolved(root + 'site')
+
+      # Then: the reference counts as outside it. Comparing the paths as plain
+      # strings would read 'site-private' as living below 'site'.
+      assert_equal 1, missing.length
+      assert_equal :outside_target, missing.first.reason
+    end
+  end
+
   def test_a_target_that_was_never_rendered_reports_nothing
     # Given: no rendered target at all
     Dir.mktmpdir('rendered-assets-test') do |dir|
