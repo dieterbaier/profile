@@ -147,6 +147,40 @@ def publicArticleAssetDirs = { ->
     stdout.toString().readLines().findAll { !it.trim().isEmpty() }.collect { file(it) }
 }()
 
+// Asked of a rendered target rather than of the selection that produced it, the
+// same way the publication status is asked twice. A target can hold the right
+// assets in the wrong place — the Markdown export moves them while it converts —
+// and no renderer reports that, because a missing image reaches the reader
+// rather than the build.
+// `afterTasks` names what writes into the target last, usually the copy that
+// puts the assets there. Finalizers of one task are not ordered against each
+// other, so without this the check runs against a half-written target and
+// reports files that the build was still about to copy. The first version of
+// this did exactly that.
+def verifyAssetReferences = { taskName, targetDir, label, List<String> afterTasks ->
+    tasks.register(taskName) {
+        description = "Fails when a page in ${label} asks for a file that target does not contain."
+        group = 'verification'
+        inputs.file('scripts/verify-rendered-asset-references.rb')
+        afterTasks.each { mustRunAfter tasks.named(it) }
+
+        doLast {
+            exec {
+                commandLine 'ruby', 'scripts/verify-rendered-asset-references.rb',
+                        '--target-dir', file(targetDir).absolutePath,
+                        '--label', label
+            }
+        }
+    }
+}
+
+verifyAssetReferences('verifySiteAssetReferences', 'build/site', 'build/site',
+        ['buildSite', 'buildSiteCopyAssets', 'buildCVSiteCopyAssets'])
+verifyAssetReferences('verifyArticlesAssetReferences', 'build/articles', 'build/articles',
+        ['buildArticlesMarkdown', 'buildArticlesDocbookCopyAssets'])
+verifyAssetReferences('verifyPrivateSiteAssetReferences', 'build/site-private', 'build/site-private',
+        ['buildSitePrivate', 'buildSitePrivateCopyAssets'])
+
 // The tasks that render article sources into a publishable target. Named once
 // so the validation contract below and its test refer to the same list.
 def publicRenderTasks = ['buildSite', 'buildArticlesDocbook']
@@ -312,21 +346,23 @@ def asciidoctorBase = { taskName, taskDependsOnTask, sourceDir, outputDir, List<
         // it. Nothing here decides which directories those are: the selection
         // follows the article's status, so an article a target must not carry
         // cannot leave its images behind in that target either.
+        //
+        // Callers pass the whole selection for a publication target, and a task
+        // takes the part of it that lies below the tree it renders. The targets
+        // do not all render the same tree — the Markdown export reads only the
+        // default-language articles — so a directory outside this one belongs to
+        // an article this task does not render, which is an ordinary state and
+        // not a misplaced file. A directory no article claims at all is caught
+        // by the validator, where the metadata to judge it lives.
         def assetSourceRoot = file(sourceDir).toPath().toAbsolutePath().normalize()
-        articleAssetDirs.each { assetDir ->
-            def assetPath = assetDir.toPath().toAbsolutePath().normalize()
-            if (!assetPath.startsWith(assetSourceRoot)) {
-                throw new GradleException(
-                        "Article asset directory lies outside the rendered source tree:\n" +
-                        "  asset:  ${assetPath}\n" +
-                        "  source: ${assetSourceRoot}\n" +
-                        "  It is published at its position below the source tree, which it has none of.")
-            }
-            from(assetDir) {
-                into assetSourceRoot.relativize(assetPath).toString()
-                articleAssetBuildInputs.each { exclude it }
-            }
-        }
+        articleAssetDirs.collect { it.toPath().toAbsolutePath().normalize() }
+                .findAll { it.startsWith(assetSourceRoot) }
+                .each { assetPath ->
+                    from(assetPath.toFile()) {
+                        into assetSourceRoot.relativize(assetPath).toString()
+                        articleAssetBuildInputs.each { exclude it }
+                    }
+                }
 
     }
 
@@ -622,7 +658,11 @@ def articleSources = fileTree('src-content/profile/site/articles') {
     file('src-content/profile/site/articles').toPath().relativize(it.toPath()).toString()
 }.sort()
 
-asciidoctorBase('buildArticlesDocbook','','src-content/profile/site/articles', 'build/articles/docbook', articleSources,true, 'docbook', ['type': 'readme'])
+// The Markdown export is a second publication target and carries the same
+// assets. Pandoc rewrites the references while it converts, but only for files
+// it can find next to the DocBook it reads, so they have to be copied into the
+// DocBook tree rather than beside the Markdown.
+asciidoctorBase('buildArticlesDocbook','','src-content/profile/site/articles', 'build/articles/docbook', articleSources,true, 'docbook', ['type': 'readme'], publicArticleAssetDirs)
 
 // The markdown export is a second rendering of the same article sources, and CI
 // uploads all of build/ as a workflow artifact. Filtering only build/site would
@@ -748,6 +788,7 @@ tasks.register('verifyNoArticleSummariesInGeneratedOutputs') {
 tasks.named('buildArticlesMarkdown') {
     finalizedBy tasks.named('verifyNoArticleSummariesInGeneratedOutputs')
     finalizedBy tasks.named('verifyPublicTargetHasOnlyPublishedArticles')
+    finalizedBy tasks.named('verifyArticlesAssetReferences')
 }
 // CV
 asciidoctorBase('buildCVPersonal','','src-content/profile/cv', 'build/cv', ['cv.adoc'],true, 'pdf', [ // personal PDF (not deployed to the site)
@@ -811,6 +852,7 @@ tasks.named('buildSite') {
 
     finalizedBy tasks.named('verifyNoArticleSummariesInGeneratedOutputs')
     finalizedBy tasks.named('verifyPublicTargetHasOnlyPublishedArticles')
+    finalizedBy tasks.named('verifySiteAssetReferences')
 }
 
 // ---------------------------------------------------------------------------
@@ -1030,6 +1072,7 @@ tasks.named('buildSitePrivate') {
     }
 
     finalizedBy tasks.named('verifyPrivateTargetHasOnlyAllowedArticles')
+    finalizedBy tasks.named('verifyPrivateSiteAssetReferences')
 }
 
 // Checks the rendered result rather than the selection that produced it, the
@@ -1065,6 +1108,19 @@ tasks.register('testProfilePublicationStatus') {
     doLast {
         exec {
             commandLine 'ruby', '-Itest', 'test/profile_publication_status_test.rb'
+        }
+    }
+}
+
+tasks.register('testRenderedAssetReferences') {
+    description = 'Runs the rendered-target asset reference behaviour tests.'
+    group = 'verification'
+    inputs.files('scripts/verify-rendered-asset-references.rb', 'test/rendered_asset_references_test.rb',
+                 'features/rendered-asset-references.feature')
+
+    doLast {
+        exec {
+            commandLine 'ruby', '-Itest', 'test/rendered_asset_references_test.rb'
         }
     }
 }
