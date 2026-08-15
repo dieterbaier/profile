@@ -131,10 +131,12 @@ footer {
 .left {
     float: left;
     margin-right: 2rem;
+    margin-bottom: 1rem;
 }
 .right {
     float: right;
     margin-left: 2rem;
+    margin-bottom: 1rem;
 }
 
 /* The size and float classes above are set on an image block, so the image
@@ -144,6 +146,10 @@ footer {
 .imageblock img {
     max-width: 100%;
     height: auto;
+}
+
+.center {
+    margin: auto
 }
 
 .size-25 {
