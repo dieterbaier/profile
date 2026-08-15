@@ -139,7 +139,16 @@ CSS classes onto the image block, which is where `.left`, `.size-50` and the
 
 The build asks `validate-profile-metamodel.rb --list-target-asset-dirs` which
 directories a target may publish and copies exactly those, to the position they
-hold in the source tree. Two things follow:
+hold in the source tree. Every publishing target gets them, including the
+Markdown export, where pandoc rewrites the references as it moves the files.
+
+Afterwards `verify-rendered-asset-references.rb` asks each rendered target
+whether the files its own pages request are in it. Selection and result fail
+independently — assets can be selected correctly and copied to the wrong place —
+and no renderer reports the difference, because a missing image reaches the
+reader rather than the build.
+
+Two things follow from the naming rule itself:
 
 * **Assets are selected by the same rule as their article.** An article a target
   must not render cannot leave its pictures reachable in that target.
