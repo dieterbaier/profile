@@ -135,3 +135,25 @@ Artikel gehen weiter.
 Zwei Dinge fand ich, eines fand der Assistent an sich selbst, und keines fand ein
 Test, der vorher schon da war. Die Tests, die es künftig finden würden, gibt es
 seit heute.
+
+=== Nachtrag: Google als Werkzeug, nicht als Plattform
+
+Nach dem Clock-Out kam noch ein ganz anderes Learning mit dem neuen Fairphone 6
+und /e/OS 4.1.1 dazu. Das für den Microsoft Authenticator in microG hinterlegte
+Google-Konto ist tatsächlich eine systemweite Google-Identität innerhalb der
+Kompatibilitätsschicht. Deshalb war Google Maps nach der Installation sofort mit
+diesem Konto angemeldet — ohne dass dafür ein separates natives Google-Konto mit
+Mail-, Kalender- oder Kontakte-Synchronisierung eingerichtet wäre.
+
+Für Maps passt trotzdem ein bewusst kleiner Google-Sandkasten: standardmäßig im
+Inkognito-Modus navigieren, damit Suche und Navigation nicht dem Maps-Profil
+zugeordnet werden, und das Profil nur gezielt einschalten, wenn ein Ort gespeichert
+werden soll. Der Maps-Inkognito-Modus ist dabei rein app-lokal; er verändert weder
+das microG-Konto noch die Google-Geräte-Registrierung und damit auch nicht die
+Authenticator-Konfiguration.
+
+Das ist wahrscheinlich der brauchbarste Umgang mit /e/OS für mich: Google nicht
+dogmatisch verbannen, sondern dort zulassen, wo der funktionale Mehrwert groß ist,
+und die Integration ansonsten so klein wie möglich halten. Magic Earth bekommt
+für die normale Navigation trotzdem seine Chance; Google Maps bleibt der Joker,
+wenn Verkehrslage und dynamische Zielführung entscheidend sind.
