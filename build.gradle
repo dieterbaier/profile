@@ -128,6 +128,25 @@ def publicArticleExclusions = { ->
     stdout.toString().readLines().findAll { !it.trim().isEmpty() }.toSet()
 }()
 
+// The asset directories the public target may publish, asked of the same owner
+// of the metadata contract and at the same time as the selection above, so a
+// page and the files it asks for are chosen by one rule rather than two.
+def publicArticleAssetDirs = { ->
+    def stdout = new StringWriter()
+    def stderr = new StringWriter()
+    def process = ['ruby', 'scripts/validate-profile-metamodel.rb', '--list-target-asset-dirs', '--target', 'public']
+            .execute(null, rootDir)
+    process.waitForProcessOutput(stdout, stderr)
+
+    if (process.exitValue() != 0) {
+        throw new GradleException(
+                'Could not determine which article assets the public target may publish.\n' +
+                        "ruby scripts/validate-profile-metamodel.rb --list-target-asset-dirs failed:\n${stderr}")
+    }
+
+    stdout.toString().readLines().findAll { !it.trim().isEmpty() }.collect { file(it) }
+}()
+
 // The tasks that render article sources into a publishable target. Named once
 // so the validation contract below and its test refer to the same list.
 def publicRenderTasks = ['buildSite', 'buildArticlesDocbook']
@@ -180,8 +199,23 @@ tasks.register('housekeeping', Delete) {
     }
 }
 
+// Files an article's asset directory holds for the build rather than for the
+// reader: diagram sources the renderer compiles into the page, fragments it
+// inlines, and what a file manager leaves behind. Everything else is published.
+//
+// A deny-list rather than an allow-list of image types, so a format the site has
+// not used before works by being committed. An allow-list would drop it without
+// saying so, which is the failure this whole convention exists to remove.
+def articleAssetBuildInputs = ['**/*.puml', '**/*.dot', '**/*.adoc', '**/.DS_Store']
+
 // gemeinsame Konfiguration
-def asciidoctorBase = { taskName, taskDependsOnTask, sourceDir, outputDir, List<String> sourcesToBuild, clean = false, backend = "html5", extraAttrs = [:] ->
+// `articleAssetDirs` names the per-article asset directories this target may
+// publish, as absolute paths below `sourceDir`. They are copied to the position
+// they hold in the source tree, so a page and the files it asks for keep the
+// same relative arrangement before and after rendering — which is what lets an
+// article address them without an attribute, and keeps that reference correct
+// when the article is promoted from the private repository to this one.
+def asciidoctorBase = { taskName, taskDependsOnTask, sourceDir, outputDir, List<String> sourcesToBuild, clean = false, backend = "html5", extraAttrs = [:], List<File> articleAssetDirs = [] ->
     var asciidocAttributes = ['includesdir': 'src-content/profile/includes',
                       'buildsite': 'true',
                       'skip-front-matter': '',
@@ -272,6 +306,26 @@ def asciidoctorBase = { taskName, taskDependsOnTask, sourceDir, outputDir, List<
 
         from("src-content/profile/includes/images") {
             into "assets/images"
+        }
+
+        // Each asset directory keeps its place relative to the article that owns
+        // it. Nothing here decides which directories those are: the selection
+        // follows the article's status, so an article a target must not carry
+        // cannot leave its images behind in that target either.
+        def assetSourceRoot = file(sourceDir).toPath().toAbsolutePath().normalize()
+        articleAssetDirs.each { assetDir ->
+            def assetPath = assetDir.toPath().toAbsolutePath().normalize()
+            if (!assetPath.startsWith(assetSourceRoot)) {
+                throw new GradleException(
+                        "Article asset directory lies outside the rendered source tree:\n" +
+                        "  asset:  ${assetPath}\n" +
+                        "  source: ${assetSourceRoot}\n" +
+                        "  It is published at its position below the source tree, which it has none of.")
+            }
+            from(assetDir) {
+                into assetSourceRoot.relativize(assetPath).toString()
+                articleAssetBuildInputs.each { exclude it }
+            }
         }
 
     }
@@ -724,7 +778,7 @@ asciidoctorBase('buildSite','buildCVDownload','src-content/profile/site', 'build
                                                                         'site-city'  : env('SITE_CITY') ?: '.',
                                                                         'site-tel'   : env('SITE_TEL') ?: '.',
                                                                         'site-email' : env('SITE_EMAIL') ?: '.'
-])
+], publicArticleAssetDirs)
 tasks.named('buildSite') {
     inputs.file('scripts/inject-site-metadata.rb')
     inputs.property('siteBaseUrl', env('SITE_BASE_URL') ?: '')
@@ -858,6 +912,37 @@ def privateArticleExclusions = {
     stdout.toString().readLines().findAll { !it.trim().isEmpty() }.toSet()
 }()
 
+// The assets side of the same selection, carried the same way. It fails closed
+// on its own: no list means no asset directory is published, which renders an
+// article without its pictures rather than publishing pictures of an article
+// this target must not carry.
+def privateArticleAssetDirs = {
+    if (!privateSiteDir.isDirectory() || privateSelectionFailure != null) {
+        return []
+    }
+
+    def stdout = new StringWriter()
+    def stderr = new StringWriter()
+    def process = ['ruby', 'scripts/validate-profile-metamodel.rb',
+                   '--list-target-asset-dirs',
+                   '--target', 'private',
+                   '--root', privateCheckoutDir.absolutePath,
+                   '--profile-dir', privateContentDir.absolutePath,
+                   '--includes-dir', publicIncludesDir.absolutePath].execute(null, rootDir)
+    process.waitForProcessOutput(stdout, stderr)
+
+    if (process.exitValue() != 0) {
+        privateSelectionFailure =
+                'Could not determine which article assets the private target may publish.\n' +
+                "ruby scripts/validate-profile-metamodel.rb --list-target-asset-dirs failed:\n${stderr}"
+        return []
+    }
+
+    // Reported relative to the private checkout, which is not this project.
+    stdout.toString().readLines().findAll { !it.trim().isEmpty() }
+            .collect { new File(privateCheckoutDir, it) }
+}()
+
 tasks.register('checkPrivateCheckout') {
     description = 'Verifies the sibling private checkout exists and carries no tooling of its own.'
     group = 'verification'
@@ -885,6 +970,10 @@ tasks.register('validateProfilePrivateMetamodel') {
 // The private target renders from the sibling checkout into this repository's
 // build directory. The includes stay here: the private repository owns no theme
 // and no interface terms, so the attribute is an absolute path into this tree.
+//
+// Its assets do not. An article illustrates itself from its own repository, and
+// carries those files with it when it is promoted, so they are published from
+// the tree that is being rendered — see `articleAssetDirs`.
 asciidoctorBase('buildSitePrivate', '', privateSiteDir, 'build/site-private', [], true, "html5", [
                                                                         'includesdir': publicIncludesDir.absolutePath,
                                                                         'site-address-name': env('SITE_ADDRESS_NAME') ?: '.',
@@ -893,7 +982,7 @@ asciidoctorBase('buildSitePrivate', '', privateSiteDir, 'build/site-private', []
                                                                         'site-city'  : env('SITE_CITY') ?: '.',
                                                                         'site-tel'   : env('SITE_TEL') ?: '.',
                                                                         'site-email' : env('SITE_EMAIL') ?: '.'
-])
+], privateArticleAssetDirs)
 tasks.named('buildSitePrivate') {
     description = 'Renders the private content root locally, including drafts, into build/site-private.'
     dependsOn tasks.named('validateProfilePrivateMetamodel')
@@ -976,6 +1065,19 @@ tasks.register('testProfilePublicationStatus') {
     doLast {
         exec {
             commandLine 'ruby', '-Itest', 'test/profile_publication_status_test.rb'
+        }
+    }
+}
+
+tasks.register('testProfileArticleAssets') {
+    description = 'Runs the per-article asset selection behaviour tests.'
+    group = 'verification'
+    inputs.files('scripts/validate-profile-metamodel.rb', 'test/profile_article_assets_test.rb',
+                 'features/article-assets.feature')
+
+    doLast {
+        exec {
+            commandLine 'ruby', '-Itest', 'test/profile_article_assets_test.rb'
         }
     }
 }

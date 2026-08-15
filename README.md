@@ -92,6 +92,9 @@ profile-private            profile (this repository)
 * **Promotion is a move, not a copy**, so an article has one authoritative
   source. Because two repositories cannot be written in one transaction, it is a
   saga with a leading side and a defined recovery for every point it can stop at.
+* **An article carries its assets with it.** They sit in a directory named after
+  its artifact ID next to the source and are addressed relatively, so moving the
+  two paths rewrites no reference — see below.
 
 The decisions are ADR-008 (the lifecycle), ADR-009 (private repository
 integration), ADR-011 (preview visibility without authentication), and ADR-012
@@ -104,6 +107,53 @@ To render the private drafts locally, check the two repositories out as siblings
 and run `./gradlew buildSitePrivate` (or `./build.sh buildSitePrivate`) here. The
 target lands in `build/site-private`, carries `noindex` on every page, and is
 deployed by nothing.
+
+### Article assets
+
+Everything an article alone needs — images it shows, diagram sources it renders
+— goes in a directory named after its artifact ID, next to the article. The
+article names that directory once and derives the rest:
+
+```adoc
+include::{includesdir}/docheader.adoc[]
+:assetsdir: ART-003-doc-as-code
+:imagesdir: {assetsdir}
+```
+
+An image is then `image::<file>[alt text, role="size-50 left"]`, and a diagram
+source is `plantuml::{docfile}/../{assetsdir}/<file>.puml[…]`. The two differ
+because the mechanisms differ: an image is a second request the browser makes
+against the rendered site, so the file has to be published there; a diagram
+source is read from disk while the page is built and never is. `{docfile}`
+rather than `{imagesdir}` because asciidoctor-diagram resolves its target
+against the project root. The rendered SVG lands in `{imagesdir}` like any other
+image, which also stops two articles that use the same diagram name from writing
+one file.
+
+Use the `image::` macro rather than an `++++` passthrough block holding a raw
+`<img>` tag. A passthrough is copied into the page verbatim, so nothing resolves
+its `src`: the rendered site still works, because the page sits next to the
+directory, but the editor preview shows a broken image. `role="…"` carries the
+CSS classes onto the image block, which is where `.left`, `.size-50` and the
+`.mobile-size-*` rules are written to apply.
+
+The build asks `validate-profile-metamodel.rb --list-target-asset-dirs` which
+directories a target may publish and copies exactly those, to the position they
+hold in the source tree. Two things follow:
+
+* **Assets are selected by the same rule as their article.** An article a target
+  must not render cannot leave its pictures reachable in that target.
+* **Promotion rewrites no reference.** The paths are relative, so the same string
+  addresses the source tree and the rendered page in either repository.
+
+What an article does *not* own is addressed through `{includesdir}`: shared site
+chrome under `includes/images/`, and a diagram more than one article uses under
+`includes/diagrams/`. A shared asset does not move when an article is promoted,
+because it was never the article's.
+
+A directory named like an artifact that no article declares is a validation
+error rather than a spare file — nothing would copy it, and the symptom would be
+broken images with no stated cause.
 
 ---
 
@@ -295,7 +345,11 @@ src-content/
     readme/
     site/
       articles/         # Website articles and Markdown export sources
+        <topic>/
+          <slug>.adoc
+          <ARTIFACT-ID>/  # Assets that article alone owns; see "Article assets"
     includes/
+      diagrams/         # Diagram sources shared by more than one article
     generated/          # Generated profile artifact index
   theme/                # The theme for the docs and the profile
 metamodel/              # Architecture and profile metadata schemas
