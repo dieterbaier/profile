@@ -29,17 +29,33 @@ Der Wechsel auf Wörter ist eine reine Term-Änderung, weil alles über
 implizit erweisen; das zeigt sich erst mit Lesern, die nicht wissen, dass es die
 Seite zweisprachig gibt.
 
-=== Wo sprachabhängige Diagrammquellen liegen sollen
+=== Wo sprachabhängige Diagrammquellen liegen sollen — beantwortet am 2026-08-15
 
-#70 hält zwei Varianten offen: unter `i18n/<lang>/` wie alle Fragmente, oder mit
-Sprachsuffix neben dem Artikel wie das heutige `doc-influences-en.puml`. Die
+#70 hielt zwei Varianten offen: unter `i18n/<lang>/` wie alle Fragmente, oder mit
+Sprachsuffix neben dem Artikel wie das damalige `doc-influences-en.puml`. Die
 erste ist konsistent zur Fragmentregel, die zweite hält Assets bei dem Artikel,
 der sie benutzt.
 
-Ungelöst und wichtiger: wie ein Diagramm als *sprachneutral* markiert wird.
-`doc-pipeline.puml` ist bereits englisch beschriftet und funktioniert in beiden
-Sprachen; ohne Markierung bräuchte jedes rein technische Diagramm Kopien pro
-Sprache.
+Ungelöst und wichtiger schien: wie ein Diagramm als *sprachneutral* markiert
+wird. `doc-pipeline.puml` ist bereits englisch beschriftet und funktioniert in
+beiden Sprachen; ohne Markierung bräuchte jedes rein technische Diagramm Kopien
+pro Sprache.
+
+Beides hat PR #97 entschieden, ohne die Frage zu stellen. Die zweite Variante
+gewann, verschärft: nicht Sprachsuffix neben dem Artikel, sondern im Verzeichnis
+der Artefakt-ID — `doc-influences.puml` unter `ART-003-doc-as-code`,
+`doc-influences-en.puml` unter `ART-003-doc-as-code-en`. Eine Übersetzung ist ein
+eigenes Artefakt mit eigenem Status, also besitzt sie ihr Verzeichnis selbst.
+
+Sprachneutral wird gar nicht markiert, sondern verortet: was mehr als ein Artikel
+benutzt, gehört keinem von ihnen und liegt unter `includes/diagrams/`, adressiert
+über `{includesdir}`. Damit ist der Ablageort die Markierung, nach der der Thread
+gesucht hat, und die Frage nach einem Attribut dafür entfällt.
+
+Der Thread bleibt hier stehen, weil die Auflösung selbst die Lehre trägt: er war
+als Klassifikationsproblem formuliert und löste sich, als eine andere Frage —
+wem gehört diese Datei — einen Ort erzwang. #70 bleibt offen; dort geht es um
+die Sprachprüfung auf Diagrammquellen, nicht um deren Ablage.
 
 === Ob der CV überhaupt übersetzt werden soll
 

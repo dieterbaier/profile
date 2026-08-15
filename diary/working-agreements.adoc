@@ -84,3 +84,24 @@ Prüfung war grün und konnte es nicht sehen: sie beantwortete „rendert diese
 Datei", nicht „hat dieses Repository dafür schon eine Form". Gefunden von mir,
 nicht vom Test.
 
+Ein Pfad-Attribut, das der Build überschreibt, wird gegen die Umgebung geprüft,
+in der es *nicht* überschrieben ist.:: Kosten: zwei unabhängige Fehler an einem
+Tag aus demselben Mechanismus — `:iconsdir: {stylesdir}/` zeigte auf
+`theme/github.png` statt `theme/icons/github.png`, und die erste Illustration
+eines Artikels blieb in der Editor-Vorschau leer. Beide Male war der Build grün
+und hatte recht: `asciidoctorBase` setzt `buildsite`, und darunter steht eine
+zweite Zuweisung, die den fehlerhaften Wert nie zu Gesicht bekommt (PR #97).
+
+Ein Guard, der prüft, was ein anderer Task schreibt, erzwingt seine Reihenfolge
+selbst.:: Kosten: gering, weil er sofort laut wurde — `verifySiteAssetReferences`
+meldete beim ersten Lauf ein halb geschriebenes `build/site`. Gradle ordnet
+mehrere Finalizer derselben Task nicht gegeneinander, `finalizedBy` allein sagt
+also nichts darüber, ob der Copy-Task schon fertig ist (PR #97).
+
+Ein Prüfwerkzeug für ein gerendertes Target beantwortet „liegt das im Target",
+nicht „liegt das auf dieser Festplatte".:: Kosten: das eigene neue Werkzeug
+bestand einen Fall, den es hätte melden müssen. `resolve` normalisierte
+`..`-Segmente und fragte danach nur nach Existenz, sodass eine Referenz aus dem
+Target heraus in den bauenden Checkout zeigen und trotzdem als vorhanden gelten
+konnte. Gefunden im zweiten Review, nicht vom Test, den ich im ersten verlangt
+hatte (PR #97).

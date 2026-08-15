@@ -84,10 +84,25 @@ grün, weil ein Test, den niemand ausführt, nicht scheitern kann. Gefangen hät
 es: die Frage, ob die Liste in der Pipeline und die Liste im Build noch dieselbe
 ist (PR #96).
 
+`imagesdir` und `iconsdir` außerhalb von `buildsite` (2026-08-15):: Beide sind in
+`docheader.adoc` zweimal gesetzt, und die zweite Zuweisung steht unter
+`ifdef::buildsite[]`. Da `asciidoctorBase` dieses Attribut grundsätzlich setzt,
+findet *jede* Beobachtung, die Gradle je macht, in dem Kontext statt, in dem der
+obere Wert überschrieben ist — die Prüfung kann dort nicht scheitern, weil sie
+den Wert nie liest. Aus demselben Mechanismus kamen an einem Tag zwei
+unabhängige Fehler: ein zerlegter Icon-Pfad und ein relativer Bildpfad, der nur
+im Build aufgeht. Gefangen hätte es: ein Render ohne `buildsite` — also der Weg,
+auf dem ich schreibe (PR #97).
+
 Die Frage dieser Kategorie ist wieder eine andere. Erste Kategorie: „kenne ich ein
 zweites Beispiel?" Zweite: „stammt meine Beobachtung aus einem warmen Zustand?"
 Dritte: „berührt meine Prüfung die Stelle, an der die Zusicherung bricht — und
 läuft sie überhaupt?"
+
+Der Fall vom 15. August schärft die dritte Frage um eine Variante. Dort lief die
+Prüfung und berührte die Stelle — nur in einer Konfiguration, in der der Defekt
+per Konstruktion abwesend ist. Ein Attribut, das der Build überschreibt, ist vom
+Build aus unbeobachtbar, egal wie gründlich er prüft.
 
 Die drei Fälle sind auffällig billig zu finden gewesen, sobald die Frage gestellt
 war. Zwei davon fand ich, nicht der Prozess.

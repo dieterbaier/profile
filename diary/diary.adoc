@@ -39,6 +39,8 @@ include::2026-08-04-die-leichte-haelfte.adoc[]
 
 include::2026-08-05-die-antwort-lag-schon-da.adoc[]
 
+include::2026-08-15-was-der-build-nie-sieht.adoc[]
+
 include::toolkit-validation.adoc[]
 
 include::working-agreements.adoc[]

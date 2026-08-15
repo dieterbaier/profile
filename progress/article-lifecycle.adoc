@@ -46,6 +46,7 @@ Absicherung:
 Nebenbefunde:
 
 [options="checklist"]
+* [x] Artikel tragen ihre Assets mit sich, Referenzen überleben die Promotion — PR #97
 * [ ] Artikelquelle ohne Metadaten wird stillschweigend veröffentlicht — #91
 * [ ] Generierte Traceability-Views werden nirgends inkludiert — #90
 
@@ -90,6 +91,29 @@ kein eigenständiges Dokument ist. `buildSitePrivate` bleibt der Weg zur fertige
 Seite; ein Watcher dafür ist bewusst nicht gebaut, die Begründung steht in
 `diary/open-threads.adoc`.
 
+Was ein Artikel allein braucht — Bilder, Diagrammquellen — liegt in einem
+Verzeichnis, das nach seiner Artefakt-ID benannt ist, direkt neben ihm. Der
+Artikel nennt es einmal (`:assetsdir:`, davon abgeleitet `:imagesdir:`) und
+adressiert von dort relativ. Damit ist die Referenz in Quelle und gerenderter
+Seite dieselbe Zeichenkette, in beiden Repositories: eine Promotion bewegt zwei
+Pfade und schreibt keine Referenz um. Der Build erfragt die publizierbaren
+Verzeichnisse mit `--list-target-asset-dirs` aus derselben Metadatenregel, die
+die Artikel auswählt, sodass ein Artikel, den ein Target nicht trägt, dort auch
+keine Bilder erreichbar lässt. Ein Verzeichnis, das kein Artikel beansprucht, ist
+ein Validierungsfehler.
+
+Bilder werden als `image::`-Makro eingebunden, nicht als rohes `<img>` in einem
+Passthrough — ein Passthrough wird unverändert kopiert, sodass nichts seine
+`src` auflöst und die Editor-Vorschau bricht, während das gerenderte Target hält.
+Was mehr als ein Artikel benutzt, gehört keinem und liegt unter
+`includes/images/` beziehungsweise `includes/diagrams/`, adressiert über
+`{includesdir}`; es wandert bei einer Promotion nicht mit.
+
+Nach jedem Rendern fragt `verify-rendered-asset-references.rb` das Target, ob die
+Dateien, die seine eigenen Seiten anfordern, darin liegen — für `build/site`,
+`build/articles` und `build/site-private`. Auswahl und Ergebnis fallen unabhängig
+um, und kein Renderer meldet die Differenz.
+
 Was das private Target *nicht* tut: Generatoren laufen nicht gegen den privaten
 Baum, also hat eine private Seite keine Tags, keine Navigation und keine
 Serienlinks. Der Grund steht in ADR-009 und ist eine Kopplung, keine offene
@@ -117,6 +141,8 @@ ruby scripts/validate-profile-metamodel.rb
 ./gradlew validateProfileMetamodel validateArchitectureMetamodel
 ./gradlew testAll
 ./gradlew buildSite
+./gradlew buildArticlesMarkdown
 ./gradlew buildSitePrivate      # braucht den Geschwister-Checkout
 ./build.sh buildSitePrivate
+ruby scripts/verify-rendered-asset-references.rb --target-dir build/site --label build/site
 ----

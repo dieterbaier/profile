@@ -1,0 +1,137 @@
+== Day 15 — 15 August 2026: Was der Build nie sieht
+
+Angefangen hat der Tag mit einer Beobachtung beim Schreiben: die Bilder in
+`ai-als-assistent.adoc` tauchten im gerenderten privaten Target nicht auf. Am
+Ende stand PR #97 mit vier Commits, gemergt um 10:03 UTC, und `main` trägt eine
+Konvention, die es vorher nicht gab — jedes Artikel-eigene Asset liegt in einem
+Verzeichnis, das nach der Artefakt-ID benannt ist, direkt neben dem Artikel.
+
+Der Tag drehte sich aber nicht um die Konvention. Er drehte sich darum, dass
+dreimal etwas kaputt war, während jede automatische Prüfung grün blieb — und
+zwar jedes Mal, weil Prüfung und Fehler in verschiedenen Kontexten lebten.
+
+=== Der Build sah nie den Kontext, in dem es kaputt war
+
+`docheader.adoc` setzt `imagesdir` und `iconsdir` zweimal: einmal für den
+Editor, und darunter, unter `ifdef::buildsite[]`, noch einmal für den Build.
+`asciidoctorBase` setzt `buildsite` grundsätzlich. Damit läuft jede Beobachtung,
+die Gradle jemals macht, in dem einen Kontext, in dem der obere Wert überschrieben
+ist.
+
+Das produzierte an einem Tag zwei unabhängige Fehler aus demselben Mechanismus.
+Der erste war meiner: `0401612` vom Vorabend änderte `:iconsdir: {stylesdir}/icons`
+zu `:iconsdir: {stylesdir}/`, womit `{iconsdir}/github.png` auf `theme/github.png`
+zeigt statt auf `theme/icons/github.png`. Der zweite entstand aus der neuen
+Konvention selbst: ein relativer `imagesdir` funktioniert im gerenderten Target,
+weil die Seite neben dem Verzeichnis liegt, und in der Editor-Vorschau nicht.
+
+Beide waren im Build unauffindbar, und beide fielen mir beim Ansehen auf — den
+Icon-Pfad im Review von PR #97, das Bild beim Schreiben. Plausibel war das
+Übersehen, weil „der Build ist grün" hier tatsächlich stimmt: der Build ist
+grün, und er hat recht. Er beantwortet nur eine andere Frage als die, die ich
+beim Schreiben stelle.
+
+=== Ein Passthrough ist kein Bild
+
+Die erste Illustration stand in einem `++++`-Block als rohes `<img>`, weil ich
+CSS-Klassen für Größe und Umfluss brauchte. Ein Passthrough wird unverändert in
+die Seite kopiert; AsciiDoc sieht dort kein Bild und löst folglich auch nichts
+auf. Solange `imagesdir` absolut war, fiel das nicht auf — der absolute Pfad
+brauchte niemanden, der ihn auflöst.
+
+Mit dem relativen Pfad brauchte er es. Der Assistent schlug daraufhin die
+`image::`-Makroform mit `role="…"` vor, und das war die richtige Diagnose: das
+Makro ist das, wofür `imagesdir` überhaupt existiert, und die Vorschau kann nur
+auflösen, was sie als Bild erkennt. Nötig war dazu eine Theme-Regel, die es
+vorher nicht gab — das Stylesheet hatte für `img` überhaupt keine, sodass ein
+`role="size-50"` den Block verengt und das Bild darüber hinausragt.
+
+Der Assistent konnte den Fix nicht selbst verifizieren, weil die Vorschau im
+Editor läuft, und hat das auch so gesagt statt „behoben" zu melden. Bestätigt
+habe ich es.
+
+=== Die Diagramme funktionierten aus dem falschen Grund
+
+Im Review fiel mir auf, dass die Asset-Verzeichnisse nur an `buildSite` gingen.
+Der Markdown-Export bekam sie nicht, also mussten die Bildreferenzen dort ins
+Leere zeigen.
+
+Beim Nachmessen war es schlimmer und harmloser zugleich. Die beiden Diagramme in
+`doc-as-code` lösten im Export *auf* — nicht weil sie kopiert wurden, sondern
+weil asciidoctor-diagram die SVG in den DocBook-Baum schreibt, wo pandocs
+`--extract-media` sie findet und die Referenz auf `../media/…` umschreibt. Ein
+statisches Bild landet dort nie. Kein öffentlicher Artikel trägt bisher eines, und
+genau deshalb war die Lücke unsichtbar: das erste statische Bild wäre mit der
+ersten Promotion gekommen.
+
+Meine Vermutung im Review, die Liste an `buildArticlesDocbook` zu geben reiche
+nicht, weil dessen Copy-Task nach `build/articles/docbook` schreibt, war falsch —
+pandoc verlagert die Dateien selbst. Was tatsächlich fehlte, war etwas anderes:
+der Copy-Task warf bei einem Asset-Verzeichnis außerhalb des gerenderten Baums,
+und der Export liest nur `site/articles`, nicht `site/en/articles`.
+
+=== Der Guard scheiterte an sich selbst
+
+Aus dem Review kam die Forderung nach einem Ausgabetest. Der Assistent baute
+`scripts/verify-rendered-asset-references.rb`, das ein gerendertes Target fragt,
+ob die Dateien, die seine eigenen Seiten anfordern, darin liegen — für alle drei
+Targets, nicht nur den Export.
+
+Beim ersten Lauf meldete er `build/site` rot. Der Grund war nicht der Inhalt:
+Gradle ordnet mehrere Finalizer einer Task nicht gegeneinander, also lief die
+Prüfung gegen ein halb geschriebenes Target, bevor der Copy-Task fertig war. Ein
+Guard, der nach dem prüfen soll, was hineinschreibt, muss das explizit erzwingen.
+
+Das ist die angenehmste Sorte Fehler: ein Prüfwerkzeug, das im ersten Moment
+laut wird, statt still zu bestehen.
+
+=== Der Prüfer prüfte gegen den Checkout
+
+Im zweiten Review fand ich in genau diesem Prüfwerkzeug ein False Negative.
+`resolve` normalisiert `..`-Segmente und fragte danach nur noch, ob die Datei
+existiert. Eine Referenz wie `../../src-content/foo.png` klettert damit aus dem
+Target heraus und landet im Checkout, der gebaut hat. Auf meiner Maschine
+vorhanden, nach dem Deployment weg.
+
+Ein Prüfwerkzeug für gerenderte Targets, das die Frage „liegt das im Target"
+durch „liegt das auf dieser Festplatte" beantwortet, prüft die eine Sache nicht,
+für die es geschrieben wurde. Der Fix behandelt einen aufgelösten Pfad außerhalb
+der Wurzel unabhängig vom Dateisystem als fehlend.
+
+Zwei Details daran waren nicht in meiner Meldung enthalten und kamen vom
+Assistenten: die beiden Fehlerarten werden getrennt gemeldet, weil eine
+entkommene Referenz sich lokal öffnen lässt und „not found" jemanden nach einer
+Datei suchen ließe, die er sieht. Und der Containment-Vergleich läuft
+separator-terminiert statt über ein String-Präfix, weil sonst `build/site-private`
+als unterhalb von `build/site` gelesen wird — zwei der drei Targets, gegen die
+das Werkzeug läuft.
+
+=== Was die Konvention nebenbei entschieden hat
+
+`open-threads.adoc` trug seit dem 2. August die Frage, wo sprachabhängige
+Diagrammquellen liegen sollen, und daneben die schwierigere: wie ein Diagramm als
+sprachneutral markiert wird. Beide sind mit dem Tag beantwortet, ohne dass ich sie
+angefasst hätte.
+
+Was ein Artikel allein braucht, liegt in seinem Verzeichnis — also
+`doc-influences.puml` bei `ART-003-doc-as-code` und `doc-influences-en.puml` bei
+`ART-003-doc-as-code-en`. Sprachneutral wird nicht markiert, sondern verortet:
+`doc-pipeline.puml` benutzen beide Sprachfassungen und liegt deshalb unter
+`includes/diagrams/`, adressiert über `{includesdir}`. Die Markierung, nach der
+der Thread suchte, ist der Ablageort.
+
+Das ist der Teil des Tages, der mich am meisten überrascht hat. Die Frage stand
+seit knapp zwei Wochen offen und war als Klassifikationsproblem formuliert —
+„wie markiere ich das". Sie löste sich auf, weil eine andere Frage („wem gehört
+diese Datei") einen Ort erzwang, und der Ort die Klassifikation trägt.
+
+=== Stand
+
+`main` liegt auf `e0a2a78`, PR #97 ist per Rebase integriert, der Branch lokal und
+remote gelöscht. `testAll` zählt 155 Läufe, davon 18 neu aus den beiden
+hinzugekommenen Spezifikationen. Im privaten Repository liegt `39abd35`, die
+Artikel gehen weiter.
+
+Zwei Dinge fand ich, eines fand der Assistent an sich selbst, und keines fand ein
+Test, der vorher schon da war. Die Tests, die es künftig finden würden, gibt es
+seit heute.

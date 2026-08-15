@@ -150,3 +150,29 @@ das Szenario scheitern — es zielt nur nicht dorthin. Der Beitrag dieses Projek
 ist der zweite Fall und ein möglicher Zusatz zum Skill: zu jeder Zusicherung
 gehört das Szenario, das sie verletzt, nicht nur das, das sie bestätigt.
 
+
+=== Lücke: `commit-message` kennt nur Issues des eigenen Repositories
+
+`commit-message` legt das Präfix `issue_<nummer>:` fest und verlangt ausdrücklich,
+keine Nummer zu erfinden. Beides ist richtig und hat am 15. August gegriffen —
+nur nicht durch das Skill.
+
+Die Arbeit lief auf `profile-private/issue_7`, einem Branch im *öffentlichen*
+Repository, der eine Änderung für Issue 7 des *privaten* trägt. Der erste Commit
+bekam von mir folgerichtig `issue_7:`. Öffentliches Issue #7 heißt „Refine path
+filters for readme/site separation" und hat mit der Änderung nichts zu tun; das
+Präfix hätte den Commit einem fremden Vorgang zugeschrieben. Aufgefallen ist es
+dem Assistenten beim Vorbereiten des Pull Requests, weil er die Issue-Nummer
+nachschlug statt sie aus dem Branchnamen zu übernehmen.
+
+Nach dem Buchstaben des Skills war nichts verletzt: die Nummer war nicht
+erfunden, sie stand im Branchnamen. Was fehlt, ist die Frage, für *welches*
+Repository sie gilt. Ein Branch, dessen Arbeit zu einem Issue in einem anderen
+Repository gehört, ist in einem Zwei-Repository-Aufbau wie ADR-009 der Normalfall
+und nicht die Ausnahme, und das Präfix ist dort mehrdeutig statt hilfreich.
+
+Der bestehende Bestand im Repository beantwortet es bereits durch Verhalten:
+`0401612` auf demselben Branch trägt gar kein Präfix. Ein möglicher Zusatz
+stromaufwärts wäre die Regel, die daraus folgt — das Präfix nennt nur Issues des
+Repositories, in dem der Commit landet, und Arbeit für ein fremdes Issue nennt es
+im Body statt in der Kopfzeile.
