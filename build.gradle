@@ -1075,6 +1075,27 @@ tasks.named('buildSitePrivate') {
     finalizedBy tasks.named('verifyPrivateSiteAssetReferences')
 }
 
+// The web app manifest, put where the head that asks for it is rendered.
+//
+// Not in asciidoctorBase, because that copy runs for every target and most of
+// them are not a site. The Markdown export renders DocBook, which reads no
+// docinfo at all; the CV PDFs have no head; and README.adoc replaces the
+// shared docinfo with a footer-only one, so none of them ever asks for this
+// file. The two below do.
+//
+// This list is the other half of docinfo/docinfo.html: every target whose pages
+// carry that fragment holds the file the fragment links to. A target that
+// starts rendering the shared head without being added here is caught by its
+// own asset reference check rather than by a reader.
+['buildSiteCopyAssets', 'buildSitePrivateCopyAssets'].each { taskName ->
+    tasks.named(taskName, Copy) {
+        from("src-content/profile/site") {
+            include "site.webmanifest"
+            into "."
+        }
+    }
+}
+
 // Checks the rendered result rather than the selection that produced it, the
 // same way the public target is checked. The private target is allowed more
 // statuses, not any status.

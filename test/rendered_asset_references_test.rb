@@ -115,6 +115,58 @@ class RenderedAssetReferencesTest < Minitest::Test
     end
   end
 
+  def test_a_manifest_the_pages_link_to_is_checked_like_an_image
+    # Given: a page linking the web app manifest of its target
+    pages = { 'index.html' => '<link rel="manifest" href="./site.webmanifest">' }
+
+    with_target(pages) do |missing|
+      # When: the target is checked
+      # Then: it is reported when the target does not hold the manifest. The
+      # link is the only thing that makes a browser fetch the file, so a
+      # manifest nobody copied fails silently in exactly the same way an image
+      # does: the page renders and the install prompt never appears.
+      assert_equal 1, missing.length
+      assert_equal './site.webmanifest', missing.first.target
+      assert_equal :missing, missing.first.reason
+    end
+  end
+
+  def test_the_icons_a_manifest_names_are_checked
+    # Given: a manifest in the target naming an icon the target does not hold
+    manifest = <<~MANIFEST
+      {
+        "icons": [
+          { "src": "/assets/images/icon-192.png", "sizes": "192x192" }
+        ]
+      }
+    MANIFEST
+    pages = { 'site.webmanifest' => manifest }
+
+    with_target(pages) do |missing|
+      # When: the target is checked
+      # Then: it is reported against the manifest and the line the icon stands
+      # on. The manifest is data and no renderer resolves what it names, so its
+      # icons are unreachable by every other check in the build.
+      assert_equal 1, missing.length
+      assert_equal 'site.webmanifest', missing.first.page
+      assert_equal '/assets/images/icon-192.png', missing.first.target
+      assert_equal 3, missing.first.line
+    end
+  end
+
+  def test_a_manifest_entry_that_names_a_page_is_left_alone
+    # Given: a manifest whose start URL and scope name no file
+    manifest = '{ "start_url": "/", "scope": "/", "display": "standalone" }'
+
+    with_target({ 'site.webmanifest' => manifest }) do |missing|
+      # When: the target is checked
+      # Then: nothing is reported. Only a file can be absent from a target, and
+      # a start URL names a route the server answers rather than something the
+      # copy tasks put there.
+      assert_empty missing
+    end
+  end
+
   def test_a_percent_encoded_reference_names_the_file_it_encodes
     # Given: a page asking for a file whose name carries a space
     pages = { 'a.html' => '<img src="ART-001-a/two%20words.png">' }

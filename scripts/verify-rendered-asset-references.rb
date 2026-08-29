@@ -14,6 +14,10 @@
 # missing image raises no error anywhere in the build: asciidoctor does not
 # resolve it, pandoc does not resolve it, and the browser reports it to a reader
 # rather than to CI.
+#
+# Pages are not the only thing in a target that names a file. A web app manifest
+# is asked for by a page and then names files of its own, and nothing between
+# the two resolves either reference, so it is read here as well.
 
 require 'optparse'
 require 'pathname'
@@ -22,7 +26,11 @@ require 'cgi'
 module RenderedAssetReferences
   # What a reader fetches as a second request, rather than what the build reads
   # while it renders. Only the former has to exist in the target.
-  ASSET_EXTENSIONS = %w[.svg .png .jpg .jpeg .gif .webp .avif .ico].freeze
+  #
+  # The manifest is here for that reason and not because it is an image: a
+  # browser fetches it from the target after the page, so it fails the same way
+  # a missing image does.
+  ASSET_EXTENSIONS = %w[.svg .png .jpg .jpeg .gif .webp .avif .ico .webmanifest].freeze
 
   # Anything the target does not host and cannot be asked about.
   EXTERNAL = %r{\A(?:[a-z][a-z0-9+.-]*:|//|#|\?)}i.freeze
@@ -46,6 +54,27 @@ module RenderedAssetReferences
       line.scan(/!\[[^\]]*\]\(([^)\s]+)/) { |(target)| found << [target, number] }
     end
     found
+  end
+
+  # A manifest is data rather than a page: it carries no attribute and no
+  # Markdown image, and the files it names are fetched a request later still.
+  # `src` is the key every entry that names a file uses - icons, screenshots,
+  # shortcut icons - while `start_url` and `scope` name pages and drop out of
+  # `asset?` for want of a file extension.
+  #
+  # Read as text rather than as JSON so a reference keeps the line it stands on,
+  # which is what the report is for. A manifest that is not valid JSON is a
+  # different failure and is not this check's to make.
+  def manifest_references(text)
+    found = []
+    text.each_line.with_index(1) do |line, number|
+      line.scan(/"src"\s*:\s*"([^"]+)"/) { |(target)| found << [target, number] }
+    end
+    found
+  end
+
+  def manifest?(path)
+    File.extname(path.to_s).casecmp('.webmanifest').zero?
   end
 
   def asset?(target)
@@ -85,8 +114,10 @@ module RenderedAssetReferences
     return [] unless root.directory?
 
     missing = []
-    Pathname.glob(root.join('**', '*.{html,md}')).sort.each do |page|
-      references(page.read(encoding: 'UTF-8')).each do |target, line|
+    Pathname.glob(root.join('**', '*.{html,md,webmanifest}')).sort.each do |page|
+      text = page.read(encoding: 'UTF-8')
+      found = manifest?(page) ? manifest_references(text) : references(text)
+      found.each do |target, line|
         next unless asset?(target)
 
         resolved = resolve(target, page, root)
