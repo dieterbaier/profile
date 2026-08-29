@@ -48,6 +48,21 @@ Feature: Rendered asset references
     When the target is checked
     Then it is reported, because the export renders both forms
 
+  Scenario: A manifest the pages link to is checked like an image
+    Given a page linking the web app manifest of its target
+    When the target is checked
+    Then it is reported when the target does not hold the manifest
+
+  Scenario: The icons a manifest names are checked
+    Given a manifest in the target naming an icon the target does not hold
+    When the target is checked
+    Then it is reported against the manifest and the line the icon stands on
+
+  Scenario: A manifest entry that names a page is left alone
+    Given a manifest whose start URL and scope name no file
+    When the target is checked
+    Then nothing is reported, because only a file can be absent
+
   Scenario: A percent-encoded reference names the file it encodes
     Given a page asking for a file whose name carries a space
     When the target is checked

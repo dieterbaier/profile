@@ -1,0 +1,19 @@
+{
+  "name": "Dieter Baier",
+  "short_name": "Dieter Baier",
+  "start_url": "/",
+  "display": "standalone",
+  "icons": [
+    {
+      "src": "/assets/images/dieterbaier-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/assets/images/dieterbaier-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
