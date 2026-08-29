@@ -176,3 +176,29 @@ Der bestehende Bestand im Repository beantwortet es bereits durch Verhalten:
 stromaufwärts wäre die Regel, die daraus folgt — das Präfix nennt nur Issues des
 Repositories, in dem der Commit landet, und Arbeit für ein fremdes Issue nennt es
 im Body statt in der Kopfzeile.
+
+=== Lücke: die SDLC-Skills kennen nur Arbeit, die zu einem Issue gehört
+
+`implement-issue-workflow` beschreibt den Weg als Branch `issue_<n>`, Commit,
+Push, Pull Request. `commit-message` deckt den Fall ohne Issue ausdrücklich ab —
+die Kopfzeile beginnt dann direkt mit der Zusammenfassung. Zusammen ergibt das
+eine Regel für die Commit-Zeile und keine für alles andere.
+
+Am 29. August war die Arbeit genau dieser Fall: eine Änderung, die zu keinem
+Issue gehörte. Der Commit war damit geregelt, der Branchname nicht. Er hieß
+`favicon`, nach dem Gegenstand, und das ist eine Erfindung im Moment des
+Bedarfs.
+
+Der Bestand zeigt, dass dieselbe Lücke schon einmal gefüllt wurde, und zwar
+anders: `79cee58` trägt `NO_ISSUE: Some stylings`. Das Präfix kommt im Skill
+nicht vor und widerspricht seiner Regel für den issue-losen Fall. Zwei
+Antworten auf dieselbe unbeantwortete Frage, beide naheliegend, und keine von
+beiden falsch nach dem, was geschrieben steht.
+
+Das ist kein Fehler des Skills, sondern sein Zuschnitt: er ist als
+*implement-issue*-Workflow benannt und hält, was der Name sagt. Der mögliche
+Zusatz stromaufwärts ist klein — eine Zeile darüber, wie ein Branch heißt, wenn
+es kein Issue gibt, und die ausdrückliche Feststellung, dass ein
+Ersatzpräfix wie `NO_ISSUE:` keines ist. Verwandt mit dem Befund vom
+15. August, aber nicht derselbe: dort war die Frage, für *welches* Repository
+eine Issue-Nummer gilt, hier gibt es keine.

@@ -94,6 +94,15 @@ unabhängige Fehler: ein zerlegter Icon-Pfad und ein relativer Bildpfad, der nur
 im Build aufgeht. Gefangen hätte es: ein Render ohne `buildsite` — also der Weg,
 auf dem ich schreibe (PR #97).
 
+Überzählige Dateien in `build/articles/docbook` (2026-08-29):: `favicon.ico` und
+`.htaccess` liegen in einem Markdown-Export, weil der Copy-Block in
+`asciidoctorBase` steht und damit für jedes Target läuft.
+`verifyArticlesAssetReferences` prüft genau dieses Verzeichnis und hat nie etwas
+gemeldet — es fragt, ob jede Referenz eine Datei hat, und nie, ob jede Datei
+eine Referenz hat. Die Zusicherung ist gerichtet, und eine überzählige Datei
+liegt außerhalb dessen, was sie sehen kann, unabhängig davon, wie gründlich sie
+läuft. Gefangen hätte es: die umgekehrte Frage, einmal gestellt (PR #99).
+
 Die Frage dieser Kategorie ist wieder eine andere. Erste Kategorie: „kenne ich ein
 zweites Beispiel?" Zweite: „stammt meine Beobachtung aus einem warmen Zustand?"
 Dritte: „berührt meine Prüfung die Stelle, an der die Zusicherung bricht — und
@@ -103,6 +112,11 @@ Der Fall vom 15. August schärft die dritte Frage um eine Variante. Dort lief di
 Prüfung und berührte die Stelle — nur in einer Konfiguration, in der der Defekt
 per Konstruktion abwesend ist. Ein Attribut, das der Build überschreibt, ist vom
 Build aus unbeobachtbar, egal wie gründlich er prüft.
+
+Der Fall vom 29. August schärft sie um eine zweite. Dort lief die Prüfung, traf
+die Stelle und war in der richtigen Konfiguration — sie zeigte nur in die andere
+Richtung. Eine Prüfung, die Referenz → Datei fragt, kann über eine Datei ohne
+Referenz nichts sagen, und beide Formulierungen klingen wie „die Assets stimmen".
 
 Die drei Fälle sind auffällig billig zu finden gewesen, sobald die Frage gestellt
 war. Zwei davon fand ich, nicht der Prozess.

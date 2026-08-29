@@ -159,3 +159,31 @@ Einzeldokument-Vorschau nicht mehr genügt: eine Beurteilung, die Navigation,
 Serienlinks oder die Kommentarspalte braucht. Beim reinen Verfassen von Fließtext
 tut sie es.
 
+=== Ob die Asset-Prüfung eine Gegenrichtung bekommt
+
+`verify-rendered-asset-references.rb` fragt ein Target, ob jede Referenz seiner
+Seiten eine Datei findet. Die Gegenfrage — hält dieses Target eine Datei, die
+niemand anfordert? — stellt bisher nichts, und sie hätte am 29. August zwei
+Befunde geliefert: `favicon.ico` und `.htaccess` liegen in
+`build/articles/docbook`, einem reinen Markdown-Export, weil ihre Copy-Blöcke in
+`asciidoctorBase` stehen und damit für jedes Target laufen. Angefasst wurde
+davon nichts; PR #99 hat nur das Manifest an die zwei Targets gehängt, die es
+anfordern.
+
+Warum die Gegenfrage trotzdem nicht einfach zu stellen ist: ein Target hält
+legitimerweise Dateien, die keine Seite nennt. `.htaccess` liest der Server,
+`robots.txt` und `sitemap.xml` läsen Crawler, und `favicon.ico` holt der Browser
+über die Namenskonvention auch ohne Link — genau deshalb bleibt sie seit heute
+als Fallback neben dem `rel="icon"` liegen. Eine Prüfung „jede Datei braucht
+eine Referenz" bräuchte also eine Ausnahmeliste, und eine Ausnahmeliste ist das,
+was driftet: sie sähe genauso aus wie die Copy-Blöcke, die sie prüfen soll, und
+wäre dieselbe Aussage ein zweites Mal aufgeschrieben.
+
+Denkbar wäre stattdessen, die Frage nicht an das Target zu stellen, sondern an
+den Build: welcher Copy-Block schreibt in ein Target, dessen Seiten die Datei
+nie nennen? Das ist dieselbe Prüfung eine Ebene höher und ohne Ausnahmeliste,
+weil ein Copy-Block seine Absicht bereits nennt.
+
+Der Auslöser, es zu entscheiden, wäre die dritte Datei dieser Art — oder die
+erste, bei der die Überzähligkeit etwas kostet statt nur unordentlich zu sein.
+Bei einem Favicon in einem Markdown-Export kostet sie nichts.

@@ -112,7 +112,14 @@ Was mehr als ein Artikel benutzt, gehört keinem und liegt unter
 Nach jedem Rendern fragt `verify-rendered-asset-references.rb` das Target, ob die
 Dateien, die seine eigenen Seiten anfordern, darin liegen — für `build/site`,
 `build/articles` und `build/site-private`. Auswahl und Ergebnis fallen unabhängig
-um, und kein Renderer meldet die Differenz.
+um, und kein Renderer meldet die Differenz. Gelesen werden dabei auch die
+`.webmanifest`-Dateien eines Targets, weil eine Seite das Manifest anfordert und
+das Manifest seinerseits Icons nennt, die kein Renderer je auflöst.
+
+Die Prüfung ist gerichtet: sie fragt, ob jede Referenz eine Datei findet, nie
+umgekehrt. Eine Datei, die ein Target hält, ohne dass eine Seite sie nennt,
+liegt außerhalb ihrer Reichweite — der Thread dazu steht in
+`diary/open-threads.adoc`.
 
 Was das private Target *nicht* tut: Generatoren laufen nicht gegen den privaten
 Baum, also hat eine private Seite keine Tags, keine Navigation und keine

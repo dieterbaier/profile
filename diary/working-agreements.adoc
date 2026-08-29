@@ -105,3 +105,13 @@ bestand einen Fall, den es hätte melden müssen. `resolve` normalisierte
 Target heraus in den bauenden Checkout zeigen und trotzdem als vorhanden gelten
 konnte. Gefunden im zweiten Review, nicht vom Test, den ich im ersten verlangt
 hatte (PR #97).
+
+Eine Datei, die in ein Target kopiert wird, wird von einer Seite darin
+angefordert — oder sie gehört nicht in dieses Target.:: Kosten: das
+`site.webmanifest` lag nach jedem Build in `build/site` und wurde von keiner
+Seite genannt, weil nur der Copy-Block existierte und der `<link rel="manifest">`
+nie geschrieben worden war. Das Muster, dem der Block folgte, ist selbst
+defekt — `favicon.ico` und `.htaccess` liegen bis heute in
+`build/articles/docbook`. Ein vorhandener Copy-Block im Build ist kein Beleg,
+dass er an der richtigen Stelle steht; er ist ein Beleg, dass ihn niemand
+geprüft hat (PR #99).

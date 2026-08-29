@@ -1,0 +1,125 @@
+== Day 29 — 29 August 2026: Die Prüfung hat eine Richtung
+
+Der Tag begann mit einer kleinen Frage. Ich hatte ein `site.webmanifest` und
+zwei Icons ins Repository gelegt und in `build.gradle` einen Copy-Block dazu,
+direkt neben den für `favicon.ico`. Gefragt habe ich, ob der bestehende
+Validator noch angepasst werden muss, damit geprüft wird, dass die Datei auch im
+Target landet.
+
+Die Antwort war, dass die Frage eine Ebene zu tief ansetzte. Am Ende stand PR
+#99, per Rebase integriert um 14:43 UTC, `main` liegt auf `0aae3b5`, und der
+Deploy ist durch: `https://dieterbaier.eu/site.webmanifest` antwortet mit 200,
+die drei Icons ebenso.
+
+=== Die Datei lag im Target und war trotzdem nicht da
+
+Der Copy-Block funktionierte. `build/site/site.webmanifest` existierte nach
+jedem Build. Was fehlte, war der einzige Grund, aus dem ein Browser so eine
+Datei je anfordert: der `<link rel="manifest">` im Kopf. Ohne ihn holt sie
+niemand ab.
+
+Der Kopf von `build/site/index.html` hatte sieben Zeilen — charset, Viewport,
+Generator, Titel, Stylesheet — und keine davon nannte das Manifest. Die Prüfung,
+nach der ich gefragt hatte, hätte also grün sein können und nichts bedeutet:
+„liegt im Target" und „ist erreichbar" sind zwei Aussagen, und der Copy-Block
+trägt nur die erste.
+
+Plausibel war die Verwechslung, weil sie bei jeder anderen Datei stimmt. Ein
+Bild wird kopiert *weil* eine Seite es nennt; die Referenz kommt zuerst, der
+Copy-Block folgt ihr. Beim Manifest ist die Reihenfolge umgekehrt — die Datei
+ist zuerst da, und die Referenz muss extra angelegt werden. Das ist der ganze
+Unterschied, und er sieht in `build.gradle` nach nichts aus.
+
+Der Ort dafür lag bereits vorbereitet. `docheader.adoc:9` setzt
+`:docinfo: shared` seit jeher, aber im `docinfo/`-Verzeichnis stand nur
+`docinfo-footer.html`. Die Kopf-Hälfte des geteilten Docinfo war nie benutzt
+worden. Sie enthält jetzt zwei Zeilen: den Manifest-Link und — von mir
+nachgetragen, während der Assistent am Validator saß — einen `rel="icon"` auf
+das vorhandene PNG. `favicon.ico` bleibt daneben als Fallback über die
+Namenskonvention.
+
+=== Der Prüfer konnte die Frage gar nicht beantworten
+
+Auch mit dem Link hätte `verify-rendered-asset-references.rb` geschwiegen. Zwei
+Gründe, unabhängig voneinander: `.webmanifest` stand nicht in
+`ASSET_EXTENSIONS`, also fiel der Link durch `asset?`. Und der Glob las
+`**/*.{html,md}`, also wurde die Datei selbst nie geöffnet — die beiden
+Icon-Pfade darin waren für jede automatische Prüfung dieses Repositories
+unsichtbar.
+
+Das ist die Sorte Lücke, die das Werkzeug am 15. August gerade schließen sollte.
+Es fragt ein gerendertes Target, ob die Dateien, die seine Seiten anfordern,
+darin liegen. Eine JSON-Datei, die selbst Dateien anfordert, kam in dem Bild
+nicht vor, weil es keine gab.
+
+Beide Lücken sind zu und mit je einem Szenario belegt. Gelesen wird das Manifest
+zeilenweise statt über `JSON.parse`, damit ein gemeldetes Icon die Zeile behält,
+auf der es steht — ungültiges JSON ist ein anderer Fehler und nicht Sache dieser
+Prüfung. Der Gegentest gegen das echte Target: Manifest entfernt, 26 Seiten
+gemeldet; `dieterbaier-icon-512.png` entfernt, gemeldet als
+`site.webmanifest:13 -> /assets/images/dieterbaier-icon-512.png`, Exit 1.
+
+=== Das Vorbild war selbst falsch
+
+Meinen Copy-Block hatte ich neben den für `favicon.ico` gesetzt, in
+`asciidoctorBase`. Das ist die Stelle, an der die Datei landet — für *jedes*
+Target, das über diese Funktion gebaut wird.
+
+Beim Nachsehen liegt in `build/articles/docbook/` tatsächlich ein
+`favicon.ico`, und ein `.htaccess` dazu. Ein Markdown-Export mit einem Favicon
+und einer Apache-Konfiguration. Das steht dort seit Langem, und keine Prüfung
+hat je etwas gesagt.
+
+Sie kann es auch nicht. `verifyArticlesAssetReferences` läuft gegen genau dieses
+Verzeichnis und fragt: hat jede Referenz eine Datei? Die umgekehrte Frage — hat
+jede Datei eine Referenz? — stellt nichts. Die Zusicherung ist gerichtet, und
+eine überzählige Datei liegt per Konstruktion außerhalb dessen, was sie sehen
+kann.
+
+Der Manifest-Copy-Block wäre also mit demselben Muster in fünf Targets gelandet,
+und das Werkzeug, das ich am selben Tag erweitert habe, hätte in allen fünf
+„alles in Ordnung" gemeldet. Ein vorhandenes Muster im Build ist kein Beleg,
+dass das Muster stimmt — es ist nur ein Beleg, dass niemand es bisher geprüft
+hat.
+
+=== Drei Targets waren zwei
+
+Der Assistent leitete daraufhin aus dem Build her, welche Targets den geteilten
+Kopf überhaupt rendern, und kam auf drei: `build/site`, `build/site-private` und
+`build/readme`. Die Herleitung war sauber — DocBook liest kein Docinfo, die
+CV-PDFs haben keinen Kopf, alle übrigen HTML-Renders schließen `docheader.adoc`
+ein — und trotzdem um eines zu lang.
+
+`README.adoc:9` setzt nach dem Include `:docinfo: private-footer` und überschreibt
+die geteilte Einstellung. Herausgekommen ist das nicht beim Lesen, sondern beim
+Ausführen: `./gradlew buildReadme`, dann in den Kopf von `build/readme/README.html`
+gesehen, dort stand kein Link. Die Liste steht jetzt bei zwei.
+
+Das ist billig gewesen, weil es vor dem Commit passierte. Bemerkenswert finde
+ich, dass die falsche Liste aus korrektem Lesen entstand: jeder einzelne Schritt
+der Herleitung stimmte, und die eine Zeile, die sie kippt, steht nicht dort, wo
+man sie beim Verfolgen der Include-Kette liest, sondern *danach*.
+
+=== Kein Issue, und dafür keine Form
+
+Die Arbeit gehörte zu keinem Issue. Das ist im Toolkit ein blinder Fleck:
+`implement-issue-workflow` beschreibt Branch `issue_<n>`, Commit, Push, PR, und
+`commit-message` regelt zwar die Commit-Zeile ohne Issue, aber sonst nichts.
+Der Branch hieß deshalb `favicon`, nach dem, worum es ging.
+
+Der Bestand im Repository zeigt, dass die Lücke schon einmal gefüllt wurde, und
+zwar anders: `79cee58` trägt `NO_ISSUE: Some stylings`, ein Präfix, das im Skill
+nicht vorkommt. Zwei Antworten auf dieselbe unbeantwortete Frage, beide
+naheliegend.
+
+=== Stand
+
+`main` liegt auf `0aae3b5`, PR #99 ist integriert, der Branch `favicon` lokal und
+remote gelöscht, `session-diary` neu angelegt. `testAll` zählt 158 Läufe in 14
+Tasks, drei mehr als am 15. August — genau die drei neuen Szenarien.
+
+Der Tag hat keinen Fehler behoben, den ein Test gefunden hätte. Er hat eine
+Datei erreichbar gemacht, die vorher nur da war, und dabei sichtbar gemacht,
+dass die Prüfung dafür eine Richtung hat. Was in die andere Richtung liegt,
+liegt weiter da: `build/articles/docbook/favicon.ico` ist heute nicht angefasst
+worden.
