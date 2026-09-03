@@ -293,7 +293,6 @@ To enable the pipeline to use personal information (which is included in the doc
     secrets.SITE_STREET
     secrets.SITE_PLZ
     secrets.SITE_CITY
-    secrets.SITE_TEL
 
     secrets.GITLAB_TOKEN              # To be able to deploy the README.md files
     secrets.PROFILE_REPO_TOKEN

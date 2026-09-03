@@ -1,0 +1,82 @@
+= [architecture.]dieterbaier.[eu,at,net,info,com]
+include::{includesdir}/../../revinfo.adoc[]
+:lang: en
+:revdate!:
+:revnumber!:
+:revremark: Legal notice
+ifdef::buildsite[]
+:basedir: ..
+endif::[]
+include::{includesdir}/docheader.adoc[]
+
+:toclevels: 1
+toc::[]
+
+== Legal notice
+
+Information pursuant to § 5 DDG (German Digital Services Act)
+
+Dieter Baier +
+{site-address-name} +
+{site-street} +
+{site-plz} {site-city}
+
+Contact: +
+E-mail: {site-email} +
+Phone: please contact me by e-mail. I usually respond within two working days.
+
+This legal notice applies to the content available under the following domains:
+
+- dieterbaier.eu
+- dieterbaier.com
+- dieterbaier.net
+- dieterbaier.info
+- dieterbaier.at
+- architecture.dieterbaier.eu
+
+Responsible for the content pursuant to § 18 (2) MStV: +
+Dieter Baier (address as above)
+
+[.small]#Note: This website presents my professional profile as a software architect and IT consultant.#
+
+
+== Privacy policy
+
+This website serves solely to provide information about my professional profile.
+
+No personal data is actively collected, stored or analysed unless you contact me on your own initiative (e.g. by e-mail).
+
+
+=== Hosting
+
+This website is hosted by an external service provider (Strato AG).
+
+When the website is accessed, the hosting provider automatically records information (e.g. IP address, time of access, requested resources).
+
+This data is used exclusively for the technical operation and security of the website and is not used for analysis or profiling.
+
+
+=== Contacting me
+
+If you contact me by e-mail, the data you provide is used exclusively to process your enquiry.
+
+It is not passed on to third parties.
+
+
+=== External content and links
+
+This website contains links to external third-party websites.
+
+I have no influence on their content. The respective provider or operator is always responsible for the content of the linked pages.
+
+
+=== No tracking or cookies
+
+This website does not use any tracking or analytics tools.
+
+No cookies are set beyond those required for technically necessary functions.
+
+
+== Disclaimer
+
+The content of this website has been compiled with the greatest possible care. However, no guarantee can be given for the accuracy, completeness and topicality of the content.

@@ -817,7 +817,6 @@ asciidoctorBase('buildSite','buildCVDownload','src-content/profile/site', 'build
                                                                         'site-street': env('SITE_STREET') ?: '.',
                                                                         'site-plz'   : env('SITE_PLZ') ?: '.',
                                                                         'site-city'  : env('SITE_CITY') ?: '.',
-                                                                        'site-tel'   : env('SITE_TEL') ?: '.',
                                                                         'site-email' : env('SITE_EMAIL') ?: '.'
 ], publicArticleAssetDirs)
 tasks.named('buildSite') {
@@ -1022,7 +1021,6 @@ asciidoctorBase('buildSitePrivate', '', privateSiteDir, 'build/site-private', []
                                                                         'site-street': env('SITE_STREET') ?: '.',
                                                                         'site-plz'   : env('SITE_PLZ') ?: '.',
                                                                         'site-city'  : env('SITE_CITY') ?: '.',
-                                                                        'site-tel'   : env('SITE_TEL') ?: '.',
                                                                         'site-email' : env('SITE_EMAIL') ?: '.'
 ], privateArticleAssetDirs)
 tasks.named('buildSitePrivate') {

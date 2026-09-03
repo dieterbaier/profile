@@ -69,7 +69,6 @@ jobs:
       SITE_STREET: ${{ secrets.SITE_STREET }}
       SITE_PLZ: ${{ secrets.SITE_PLZ }}
       SITE_CITY: ${{ secrets.SITE_CITY }}
-      SITE_TEL: ${{ secrets.SITE_TEL }}
       SITE_BASE_URL: ${{ vars.SITE_BASE_URL }}
       REQUIRE_SITE_BASE_URL: 'true'
     outputs:

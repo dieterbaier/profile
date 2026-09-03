@@ -13,7 +13,7 @@ toc::[]
 
 == Impressum
 
-Angaben gemäß § 5 TMG
+Angaben gemäß § 5 DDG
 
 Dieter Baier +
 {site-address-name} +
@@ -22,7 +22,7 @@ Dieter Baier +
 
 Kontakt: +
 E-Mail: {site-email} +
-Telefon: {site-tel}
+Telefon: kontaktieren Sie mich über meine E-Mail-Adresse. Reaktion i.d.R. innerhalb von 2 Werktagen.
 
 Dieses Impressum gilt für die unter folgenden Domains erreichbaren Inhalte:
 
@@ -33,7 +33,7 @@ Dieses Impressum gilt für die unter folgenden Domains erreichbaren Inhalte:
 - dieterbaier.at
 - architecture.dieterbaier.eu
 
-Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV: +
+Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV: +
 Dieter Baier (Anschrift wie oben)
 
 [.small]#Hinweis: Diese Website dient der Darstellung meines beruflichen Profils als Softwarearchitekt und IT-Consultant.#
