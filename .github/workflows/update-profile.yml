@@ -25,19 +25,35 @@ jobs:
       - uses: dorny/paths-filter@v3
         id: filter
         with:
+          # `src-content/theme/**` belongs to every target that renders HTML, and
+          # `.github/workflows/**` to all of them: without the latter a change to
+          # the pipeline cannot deliver itself, because nothing it touches
+          # matches a filter and every build is skipped.
+          #
+          # A skipped job is green. Nothing distinguishes "there was nothing to
+          # build" from "the change was invisible here", which is how the theme
+          # came to be deployed only by accident — whenever a change happened to
+          # touch profile content as well.
           filters: |
             readme:
               - 'src-content/profile/**'
+              - '.github/workflows/**'
               - 'metamodel/profile-artifact.schema.yaml'
               - 'scripts/validate-profile-metamodel.rb'
               - 'build.gradle'
             articles:
               - 'src-content/profile/site/articles/**'
+              - '.github/workflows/**'
               - 'metamodel/profile-artifact.schema.yaml'
               - 'scripts/validate-profile-metamodel.rb'
               - 'build.gradle'
             architecture:
               - 'src-content/docs/**'
+              # The arc42 output is rendered with this theme and deployed to
+              # architecture.dieterbaier.eu, so it changes with it.
+              - 'src-content/theme/**'
+              - 'scripts/theme-version.rb'
+              - '.github/workflows/**'
               - 'metamodel/**'
               - 'scripts/validate-metamodel.rb'
               - 'templates/**'
@@ -49,6 +65,12 @@ jobs:
               - 'adapters/**'
             site:
               - 'src-content/profile/**'
+              # Stylesheets, fonts and scripts: everything the site looks like.
+              # `theme-version.rb` belongs here because it decides the URL each
+              # of them is served under.
+              - 'src-content/theme/**'
+              - 'scripts/theme-version.rb'
+              - '.github/workflows/**'
               - 'metamodel/profile-artifact.schema.yaml'
               - 'scripts/validate-profile-metamodel.rb'
               - 'build.gradle'
