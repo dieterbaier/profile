@@ -33,8 +33,10 @@ sichtbar gewesen, dass eine CV-Sprachvariante ein Alles-oder-nichts ist.
 == Where we are
 
 `/en/` ist live mit Startseite, Artikelübersicht, dem übersetzten
-Docs-as-Code-Artikel und den Listen. Ein Sprachumschalter (🇦🇹/🇬🇧) sitzt auf
-jeder Seite links von „Home". Verweise fallen auf Deutsch zurück und sagen es mit
+Docs-as-Code-Artikel und den Listen. Ein Sprachumschalter sitzt auf jeder Seite
+links von „Home"; seine Flaggen stehen seit #100 nicht mehr als Zeichen im
+Markup, sondern werden vom Stylesheet als Inline-SVG gezeichnet, adressiert über
+die Klasse `flag-<lang>`. Verweise fallen auf Deutsch zurück und sagen es mit
 `(de)`; Fragmente fallen nicht zurück, sondern brechen den Build. Übersetzungen
 tragen eine Provenienz-Notiz mit Digest-basierter Frischeprüfung, die der Autor
 überschreiben kann.
@@ -46,10 +48,9 @@ Fragmente sind echte Laufbahninhalte und damit Autorenarbeit.
 
 * Welche Artefakte als nächstes übersetzt werden, und ob der CV das überhaupt
   soll — die Fragmentregel macht ihn zu einem einzigen großen Schritt.
-* Ob Diagrammquellen unter `i18n/<lang>/` wandern oder mit Sprachsuffix neben
-  dem Artikel bleiben (#70 hält beide Varianten offen).
-* Ob ein Diagramm als sprachneutral markierbar sein soll — `doc-pipeline.puml`
-  ist bereits englisch und funktioniert in beiden Sprachen.
+* Die Sprachprüfung auf `plantuml::`-Quellen (#70). Wo diese Quellen liegen und
+  wie ein sprachneutrales Diagramm erkannt wird, hat PR #97 entschieden; offen
+  ist nur noch die Prüfung selbst.
 
 == Checks
 

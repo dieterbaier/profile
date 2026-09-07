@@ -115,3 +115,25 @@ defekt — `favicon.ico` und `.htaccess` liegen bis heute in
 `build/articles/docbook`. Ein vorhandener Copy-Block im Build ist kein Beleg,
 dass er an der richtigen Stelle steht; er ist ein Beleg, dass ihn niemand
 geprüft hat (PR #99).
+
+Nach einem Deploy wird die ausgelieferte Seite abgefragt, nicht das
+Lauf-Ergebnis gelesen.:: Kosten: #101 war gemerged, der Lauf `34149017136`
+meldete Erfolg, und `build-docs` war übersprungen worden, weil
+`src-content/theme/**` in keinem Pfadfilter stand. Live lief weiter das alte
+Stylesheet samt des Webfonts, den der Commit gelöscht hatte. Ein übersprungener
+Job ist im Lauf-Ergebnis von einem erfolgreichen nicht zu unterscheiden (#108).
+
+Eine Voraussetzung, auf die sich eine Konfiguration beruft, wird geprüft und
+nicht kommentiert.:: Kosten: `immutable` mit einem Jahr galt für alle `.css`,
+gerechtfertigt durch versionierte URLs — so stand es im Kommentar der
+`.htaccess`. Die arc42-Ausgaben setzen `:stylesheet:` selbst und waren
+unversioniert, und `verifyThemeVersions` lief gegen zwei der drei gerenderten
+Targets, nicht gegen dieses. Jeder Besuch auf dem Architektur-Host legte für ein
+Jahr einen Eintrag an, den kein Reload mehr korrigiert (#109).
+
+Ein Wert, der als URL gedacht ist, wird darauf geprüft, ob dieselbe Einstellung
+auch einen Dateinamen bestimmt.:: Kosten: `:stylesheet: style.css?v=…` erzeugte
+neben dem Link eine Datei `style.css?v=c552d7d869`, weil `:copycss:` denselben
+Wert als Namen nimmt. `?` ist lokal ein zulässiges Zeichen, der Build lief
+durch, und `actions/upload-artifact` brach ab — nach dem Rendern, auf `main`,
+mit übersprungenen Deploys (#105).

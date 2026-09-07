@@ -1,0 +1,239 @@
+== Day 7 — 7 September 2026: Hingeschrieben und still verworfen
+
+Angefangen hat der Tag mit zwei Unschönheiten, die ich auf dem Fernseher im
+Browser gesehen habe: der Sprachumschalter zeigte statt der Flagge die Buchstaben
+`AT`, und die Menüeinträge standen ohne Abstand aneinander. Mit den
+Chrome-Developer-Tools ließ sich beides nicht nachstellen.
+
+Am Ende standen sieben Issues, vier Pull Requests, zwei Pushes direkt auf `main`
+und sechs Commits von `39c15f8` auf `b636595`. Sechs der sieben Issues sind zu.
+
+Der Zusammenhang zwischen ihnen ist nicht das Thema — Flaggen, Abstände, Caching
+und Pfadfilter haben wenig miteinander zu tun. Der Zusammenhang ist die Form des
+Fehlers. Jeder einzelne war etwas, das sorgfältig hingeschrieben war, keine
+Wirkung hatte, und von nichts gemeldet wurde.
+
+=== Was der Fernseher zeigte, war kein Alt-Text
+
+`AT` sah aus wie ein Fallback-Text. Es war der Text selbst. `🇦🇹` sind zwei
+Regional-Indicator-Zeichen, `U+1F1E6` und `U+1F1F9`, und erst ein Font mit der
+Flaggen-Ligatur macht daraus eine Flagge. Jeder andere Font zeigt die beiden
+Buchstaben, aus denen sie besteht. Auf meinem Mac liefert Apple Color Emoji die
+Ligatur, auf dem Fernseher gibt es keinen Font, der sie hat.
+
+Die Abstände waren derselbe Mechanismus in CSS. `.mainnav ul` trug den gesamten
+Menüabstand in `gap`, und Flexbox-`gap` gibt es erst ab Chromium 84. LG webOS 5
+liefert Chromium 68, webOS 6 liefert 79, Samsung Tizen 6 liefert 76. Die
+Deklaration wird dort verworfen — nicht ignoriert mit Warnung, sondern
+fehlerfrei verworfen, weil genau das CSS vorwärtskompatibel macht.
+
+Dass die Developer-Tools es nicht zeigen konnten, ist deshalb kein Mangel des
+Werkzeugs. Sie simulieren Viewport und Touch; sie simulieren keine ältere Engine
+und keine anderen System-Fonts. Beide Fehler leben genau dort, wo die Simulation
+aufhört.
+
+=== Der Fix war naheliegend, gut belegt und falsch
+
+Im Repository liegt seit `de10e76` vom 8. April ein Emoji-Webfont,
+`noto-color-emoji-v39-emoji-regular.woff2`. Der Assistent hat nachgesehen, ob er
+die Flaggen enthält: die Ligaturen für AT und GB sind da, `glyph01802` und
+`glyph02634`, beide mit Zeichnung. Der Sprachumschalter nannte den Font nur
+nicht in seinem `font-family`.
+
+Eine Zeile CSS also. Der Vorher-Nachher-Vergleich der gebauten Seite widerlegte
+sie: der Pixel-Diff beschränkte sich auf den Bereich `(155,38)–(289,63)` — den
+Umschalter — und dort waren die Flaggen **weg**. Vorher hatte der Systemfont sie
+gezeichnet, nachher zeichnete niemand mehr etwas.
+
+Die Datei trägt eine `SVG `-Tabelle mit 711 Glyphen-Dokumenten. Es ist die
+OT-SVG-Variante, und Chromium zeichnet daraus nichts. Den Font zu nennen war
+damit schlechter als ihn wegzulassen: der Browser fand das Zeichen in der `cmap`
+des Webfonts und fiel deshalb *nicht* mehr auf den Systemfont zurück, der es
+gekonnt hätte. In einer Testseite verschwand in der Webfont-Zeile sogar die
+Ziffer `2` — sie steckt als Keycap-Basis mit im Font.
+
+Beim Nachsehen war das nicht die Folge meiner Änderung, sondern ein Zustand seit
+April: `.highlight.info`, `.warning`, `.error`, `.tip` und `.fingerPointsTo`
+nannten diesen Font alle, und ihre Symbole waren in Chrome fünf Monate lang
+unsichtbar. Aufgefallen ist es niemandem, weil der Platz reserviert bleibt und
+eine Box ohne Symbol immer noch wie eine Box aussieht.
+
+Plausibel war der falsche Fix, weil jede einzelne Prüfung stimmte. Der Font liegt
+da, er enthält die Ligatur, die Glyphe hat eine Zeichnung, und das Format ist
+`woff2`, das jeder Browser lädt. Die eine Frage, die niemand gestellt hat, ist,
+ob der Zielbrowser das Glyphen*format* im Font zeichnen kann — und die stellt man
+nicht, solange man Fonts als „hat das Zeichen oder hat es nicht" denkt.
+
+Die Flaggen sind jetzt Inline-SVG (#100), die fünf Icons ebenfalls (#101), und
+der Font ist gelöscht: 3.728.104 Bytes, die ausgeliefert wurden, ohne je etwas
+zu zeichnen.
+
+=== Der Beweis kam vom Gerät, und er trug zwei Aussagen
+
+Nach dem Deploy von #100 habe ich am Fernseher nachgesehen: das Menü sah richtig
+aus, und die Flagge war da. Das sind zwei unabhängige Belege, und ich hätte mich
+mit dem ersten zufriedengeben können.
+
+Die Abstände belegen, dass Flexbox-`gap` tatsächlich die Ursache war, die Engine
+also unter Chromium 84 liegt. Die Flagge belegt, dass ein SVG als
+`background-image` auf dieser Engine trägt — das war der riskante Teil, denn
+dafür gab es bis dahin nur den Umkehrschluss aus Chrome und kein positives
+Ergebnis. Erst damit war der Weg für die Icons in #101 nicht mehr plausibel,
+sondern am schwierigsten Zielgerät erprobt.
+
+=== Die Datei war gebaut und ist nie ausgeliefert worden
+
+Auf dem Fairphone fehlten die Flaggen nach dem Deploy. Der Grund war neues HTML
+mit altem CSS: das Markup verweist die Flagge seit #100 an eine Klasse, die
+Datei mit der Regel dazu lag im Cache in der Fassung von vorher.
+
+Der Server schickt für diese Dateien weder `Cache-Control` noch `Expires`. Ein
+Browser cacht dann heuristisch, ungefähr ein Zehntel des Alters beim Abruf.
+`style.css` änderte sich selten und war deshalb alt und lange frisch,
+`index.html` ändert sich fast bei jedem Deploy und war kurz frisch. Dieselbe
+Regel für beide Dateien erzeugt genau die Kombination, die bricht.
+
+Meine erste Erklärung dafür war falsch, und ich habe sie im Issue korrigiert.
+Ich hatte `vary: Accept-Encoding` als Beleg genommen, dass `mod_headers`
+arbeitet — den Header setzt `mod_deflate` von sich aus. `src-content/theme/.htaccess`
+enthielt ohnehin bereits einen `Header set Cache-Control`-Block, und auch der kam
+nicht an, was mit einem fehlenden Modul nicht zu erklären ist.
+
+Die Datei erreicht den Server nicht. Sie wird gebaut und liegt in
+`build/site/.htaccess`, aber `actions/upload-artifact@v4` schließt versteckte
+Dateien aus. Im Log des Laufs `34141096877` steht `include-hidden-files: false`,
+und der Deploy-Job spiegelt danach per `lftp`, was er bekommen hat. Beide Jobs
+waren grün. Die Kompression, die man live sieht, kommt aus der
+Serverkonfiguration und nicht aus dieser Datei.
+
+#103 versioniert die URLs jetzt aus dem Inhalt der Theme-Dateien, prüft das an
+den gerenderten Targets und stellt die Kopfzeilen einmal statt zweimal auf.
+Zweimal dasselbe zu sagen hat den Eindruck erst erzeugt, es hinge daran, welches
+Modul ein Host lädt.
+
+=== Ein Wert, der als URL gemeint war, wurde zu einem Dateinamen
+
+Der Lauf nach dem Merge von #103 brach ab:
+
+....
+##[error]The path for one of the files in artifact is not valid:
+/readme/stylesheet/style.css?v=c552d7d869. Contains the following character: Question mark ?
+....
+
+`docheader.adoc` setzt `:copycss:` unbedingt. Neben `:linkcss:` verlinkt AsciiDoc
+das Stylesheet nicht *statt* zu kopieren, sondern zusätzlich, und benennt die
+Kopie nach `:stylesheet:`. Dort stand seit #103 ein Query-String.
+
+Drei Umstände haben zusammengewirkt, damit das erst in CI auffällt. Ein `?` ist
+auf macOS ein zulässiges Zeichen im Dateinamen, die Datei entstand also lautlos
+neben der korrekten. Der Check aus #103 las `**/*.{html,css}` — eine Datei, die
+auf `.css?v=…` endet, hat diese Endung nicht; er prüfte, wie das Theme
+*adressiert* wird, und hatte keine Meinung dazu, was im Ziel *liegt*. Und
+`pr-check` rendert kein einziges Target: der Job führt Validierung, Generatoren
+und `testAll` aus, keinen `build*`-Task. Der Fehler entstand im `readme`-Target,
+der Pull Request konnte also gar nicht rot werden.
+
+Behoben mit `:copycss!:` (#105). Der Check meldet seitdem auch eine Datei, deren
+*Name* eine Version trägt — dieselbe Regel andersherum gelesen.
+
+=== Ein übersprungener Job ist grün
+
+#101 war gemerged und kam nicht an. Der Lauf `34149017136` meldete Erfolg und
+hatte nichts gebaut: `detect-changes` erfolgreich, `build-docs` übersprungen,
+`deploy-site` übersprungen. Live lief weiter `style.css?v=c552d7d869`, während
+lokal `9d00dd77a5` stand, und der gelöschte Webfont wurde weiter mit 200
+ausgeliefert.
+
+`src-content/theme/**` stand in keinem der vier Pfadfilter. Das gesamte
+Erscheinungsbild der Seite war für die Änderungserkennung unsichtbar.
+
+Bemerkenswert ist, wie lange das gutgehen konnte. Das Theme wurde ausgeliefert,
+wann immer dieselbe Änderung nebenbei `src-content/profile/**` oder
+`build.gradle` anfasste — #100, #103 und #105 taten das alle drei. #107 war die
+erste Änderung des Tages, die rein im Theme lag.
+
+Gesehen habe ich es nur, weil ich nach dem Deploy die ausgelieferte Seite
+abgefragt habe statt das Lauf-Ergebnis zu lesen. Ein übersprungener Job ist im
+Lauf-Ergebnis von einem erfolgreichen nicht zu unterscheiden.
+
+`.github/workflows/**` gehört seitdem in alle vier Filter, weil der Fix sich
+sonst nicht selbst hätte ausliefern können: ein Commit, der nur die Pipeline
+anfasst, trifft keinen Filter und überspringt jeden Build (#108).
+
+=== Die Voraussetzung stand als Kommentar
+
+Beim Gegenprüfen des Architektur-Hosts fiel ein Fehler auf, den #103 eingebaut
+hatte. `architecture.dieterbaier.eu` lieferte sein Stylesheet unter einer
+unversionierten URL mit `max-age=31536000, immutable` aus.
+
+`immutable` ist die Zusage, dass sich unter dieser URL nie etwas ändert; ein
+Browser hört daraufhin ganz auf zu fragen, auch beim Reload. Jeder Besuch legte
+einen Eintrag an, den nichts mehr korrigiert. Das ist schlechter als der Zustand
+vor #103, wo die heuristische Frist wenigstens ablief.
+
+Die arc42-Seiten inkludieren `docheader.adoc` nicht, sondern setzen
+`:stylesheet:` selbst. Sie bekommen das Theme, aber nicht die Versionierung. Die
+Voraussetzung, die `immutable` rechtfertigt, stand als Kommentar in der
+`.htaccess` und wurde in zwei von drei gerenderten Targets geprüft —
+ausgerechnet nicht in dem, für das sie falsch war.
+
+Behoben mit #109. Wichtig dabei: eine korrigierte Kopfzeile heilt keinen bereits
+gesetzten Eintrag. Nur die geänderte URL erreicht diese Leser wieder, die
+Versionierung ist hier also das Heilmittel und nicht die Vorsorge.
+
+=== Der Prüfer fand Sätze statt Referenzen
+
+Beim ersten Lauf gegen `build/architecture` meldete `theme-version.rb` zwei
+Treffer für `article-comments.js`. Beides waren Erwähnungen im Fließtext von
+ADR-010, das über die deutschen Statustexte in dieser Datei schreibt.
+
+Der Check suchte den Dateinamen im Text. Für `build/site` geht das gut; das
+Architektur-Target ist Dokumentation *über* dieses Repository und nennt seine
+eigenen Dateien ständig. Er liest jetzt URLs aus `href`, `src` und `@import` und
+vergleicht Basenamen — nebenbei ist damit auch die Sorge erledigt, dass
+`menuactivation.css` in `shortsmenuactivation.css` trifft, für die vorher eine
+Lookbehind-Konstruktion im Regex stand.
+
+=== Zweimal direkt auf `main`
+
+Für #108 und #109 habe ich den Pull Request weggelassen und direkt gepusht. Bei
+#108 hat der Assistent das Argument geliefert, das ich überzeugend fand: ein
+PR-Lauf hätte diesen Fix gar nicht prüfen können. `pr-check` testet keine
+Pfadfilter, und `build-docs` ist bei `pull_request` abgeschaltet. Der Push auf
+`main` *ist* der Test.
+
+Das ist kein Freibrief, sondern ein enger Fall — eine Änderung, deren einzige
+Prüfung die Ausführung im Zielzustand ist. Die SDLC-Skills kennen ihn nicht; sie
+beschreiben Branch, Commit, Push, Pull Request und setzen voraus, dass ein PR
+etwas zeigen kann.
+
+=== Und eine Hälfte wirkt weiter nicht
+
+Die Bedingung aus #109 greift nicht. Live liefern beide URLs denselben Wert:
+
+....
+$ curl -sI "https://dieterbaier.eu/stylesheet/style.css?v=9d00dd77a5"
+cache-control: public, max-age=3600          # erwartet: max-age=31536000, immutable
+....
+
+`SetEnvIf Query_String` — `Query_String` gehört nicht zu den dokumentierten
+Attributen von `SetEnvIf`, und `Request_URI`, das dazugehört, enthält den
+Query-String ausdrücklich nicht. Ein nicht erkanntes Attribut wird als
+Header-Name gelesen, findet nichts, und die Bedingung trifft nie zu. Ohne
+Fehlermeldung.
+
+Das fällt auf die sichere Seite — kein `immutable` auf einer unversionierten URL,
+nur konservativer als gewollt — und steht als #110. Der letzte Befund des Tages
+hat also dieselbe Form wie der erste, diesmal in einer Apache-Direktive.
+
+=== Stand
+
+`main` liegt auf `b636595`. Beide Hosts liefern versionierte Stylesheet-URLs,
+`no-cache` auf HTML und `immutable` auf den Fonts. Die Flaggen und die fünf
+Icons sind Inline-SVG, der Emoji-Webfont ist gelöscht. `testAll` zählt 181 Läufe
+in 16 Tasks, 23 mehr als am 29. August, in zwei neuen Prüfwerkzeugen:
+`verify-theme-browser-baseline.rb` und `theme-version.rb`.
+
+Offen sind #110 und die Feststellung, dass `pr-check` kein Target rendert. Das
+zweite ist die eigentliche Lücke des Tages: von den sieben Befunden hätte ein
+Pull-Request-Lauf keinen einzigen finden können.

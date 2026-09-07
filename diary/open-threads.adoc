@@ -24,10 +24,21 @@ Entschieden für Flaggen (🇦🇹/🇬🇧), mit dem Sprachnamen auf `title` un
 `aria-label`. Eine Flagge bezeichnet streng genommen ein Land, keine Sprache —
 🇦🇹 für Deutsch ist eine Aussage über den Autor, nicht über die Sprache.
 
-Der Wechsel auf Wörter ist eine reine Term-Änderung, weil alles über
-`{ui_language_*}` läuft. Offen bleibt, ob sich die Flaggen im Betrieb als zu
-implizit erweisen; das zeigt sich erst mit Lesern, die nicht wissen, dass es die
-Seite zweisprachig gibt.
+Offen bleibt, ob sich die Flaggen im Betrieb als zu implizit erweisen; das zeigt
+sich erst mit Lesern, die nicht wissen, dass es die Seite zweisprachig gibt.
+
+Die Begründung dieses Threads galt bis zum 7. September, dass ein Wechsel auf
+Wörter eine reine Term-Änderung sei, weil alles über `{ui_language_*}` laufe. Das
+stimmt seit #100 nicht mehr. Eine Flagge als Zeichen ist ein Paar
+Regional-Indicator-Zeichen, und ein Gerät ohne passenden Font zeigt die zwei
+Buchstaben — auf dem Fernseher stand `AT`. `ui_language_flag_de` und
+`ui_language_flag_en` sind deshalb entfallen; der Umschalter benennt seine
+Sprache als Klasse `flag-<lang>`, und das Stylesheet zeichnet ein Inline-SVG.
+
+Der Wechsel auf Wörter bliebe billig, aber er ist keine Term-Änderung mehr: er
+gäbe den Einträgen wieder Textinhalt und nähme ihnen die gezeichnete Fläche,
+also auch die Regel, die ihre Größe und den Hover-Unterstrich hält. Der Auslöser,
+es zu entscheiden, ist unverändert.
 
 === Wo sprachabhängige Diagrammquellen liegen sollen — beantwortet am 2026-08-15
 
@@ -187,3 +198,30 @@ weil ein Copy-Block seine Absicht bereits nennt.
 Der Auslöser, es zu entscheiden, wäre die dritte Datei dieser Art — oder die
 erste, bei der die Überzähligkeit etwas kostet statt nur unordentlich zu sein.
 Bei einem Favicon in einem Markdown-Export kostet sie nichts.
+
+=== Ob `pr-check` ein Target rendern soll
+
+Der Job führt `validateProfileMetamodel`, `generateProfileArtifacts`,
+`checkAgentAdapters`, `verifyThemeBrowserBaseline` und `testAll` aus — und keinen
+`build*`-Task. `build-docs` ist bei `pull_request` per
+`if: github.event_name != 'pull_request'` abgeschaltet.
+
+Ein Pull Request kann deshalb grün sein, während der Build gebrochen ist. Am
+7. September war das kein Gedankenspiel: #105 entstand aus einem Fehler im
+`readme`-Target, den PR #104 nicht sehen konnte, und von den sieben Befunden des
+Tages hätte ein PR-Lauf keinen einzigen gefunden. Zweimal habe ich deshalb direkt
+auf `main` gepusht, weil der Push der einzige verfügbare Test war.
+
+Dagegen steht, was den Zuschnitt erzeugt hat. `build-docs` läuft im
+`production`-Environment und trägt die `SITE_*`-Secrets; ein Rendern im
+PR-Kontext bräuchte entweder diese Geheimnisse in einem Lauf, der von einem Fork
+ausgehen könnte, oder ein zweites, secret-freies Target — und das prüft dann
+nicht mehr das, was ausgeliefert wird.
+
+Ein dritter Weg wäre, den Bruch billiger zu finden statt früher: eine Prüfung im
+Build, die jedes gerenderte Target auf Dateinamen absucht, die ein Artefakt-Upload
+ablehnt. Sie fände #105 lokal beim ersten `buildAll` und braucht keine Secrets.
+
+Der Auslöser, es zu entscheiden, wäre der erste Fehler dieser Art, der nicht am
+selben Tag auffällt — oder der erste, der zwischen Merge und Deploy auf `main`
+stehen bleibt.

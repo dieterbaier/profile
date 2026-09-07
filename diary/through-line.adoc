@@ -120,3 +120,52 @@ Referenz nichts sagen, und beide Formulierungen klingen wie „die Assets stimme
 
 Die drei Fälle sind auffällig billig zu finden gewesen, sobald die Frage gestellt
 war. Zwei davon fand ich, nicht der Prozess.
+
+=== Vierte Kategorie: die Aussage stand da und wurde nie ausgeführt
+
+Am 2026-09-07 kamen sieben Befunde an einem Tag zusammen, die nicht an fehlenden
+Beispielen lagen, nicht an einem warmen Zustand und nicht an der Richtung einer
+Prüfung. Bei ihnen war die Aussage korrekt hingeschrieben und wurde von der
+Umgebung, die sie lesen sollte, verworfen — fehlerfrei und ohne Meldung.
+
+Das unterscheidet sie von allen drei bisherigen Kategorien. Dort gab es eine
+Prüfung, die etwas Falsches bestätigte. Hier gibt es die Aussage und nichts, was
+sie je auswertet, also auch nichts, was widersprechen könnte.
+
+`gap` in `.mainnav ul` (2026-09-07):: Trug den gesamten Menüabstand. Flexbox-`gap`
+gibt es ab Chromium 84, die Fernsehbrowser liefern 68 bis 79, und eine CSS-
+Deklaration, die eine Engine nicht kennt, wird verworfen — das ist die Eigenschaft,
+die CSS vorwärtskompatibel macht. Gefangen hätte es: eine Prüfung des Stylesheets
+gegen eine benannte Engine-Baseline, also `verify-theme-browser-baseline.rb` (#100).
+
+`font-family: "Noto Color Emoji"` (2026-09-07):: Benannte einen Font, der die
+Ligatur nachweislich enthält. Er liegt als OT-SVG vor, und Chromium zeichnet
+daraus nichts; das Nennen verhinderte zusätzlich den Rückfall auf einen Font, der
+gekonnt hätte. Fünf Monate unbemerkt, seit `de10e76`. Gefangen hätte es: ein Blick
+auf die gerenderte Seite statt auf den Fontinhalt (#101).
+
+`Header set Cache-Control` in `.htaccess` (2026-09-07):: Stand vollständig und
+richtig in der Datei. Die Datei erreichte den Server nie, weil
+`actions/upload-artifact` versteckte Dateien ausschließt. Beide Jobs grün.
+Gefangen hätte es: ein `curl -sI` auf die ausgelieferte Datei — die Frage, ob die
+Kopfzeile ankommt, statt ob sie konfiguriert ist (#103).
+
+`src-content/theme/**` in keinem Pfadfilter (2026-09-07):: Das gesamte
+Erscheinungsbild der Seite war für die Änderungserkennung unsichtbar. Ein
+übersprungener Job ist grün, und der Lauf meldet Erfolg. Ausgeliefert wurde das
+Theme nur, wenn dieselbe Änderung nebenbei Profilinhalt anfasste. Gefangen hätte
+es: die ausgelieferte Seite abfragen statt das Lauf-Ergebnis lesen (#108).
+
+`SetEnvIf Query_String` (2026-09-07):: `Query_String` gehört nicht zu den
+Attributen, die `SetEnvIf` kennt. Ein unbekanntes Attribut wird als Header-Name
+gelesen, findet nichts, und die Bedingung trifft nie zu. Gefangen hätte es:
+dasselbe `curl -sI` wie oben, das den Befund auch erbracht hat (#110).
+
+Die Frage dieser Kategorie ist die vierte: „wird das, was ich hingeschrieben
+habe, von irgendetwas ausgeführt — und woran würde ich merken, dass nicht?"
+
+Sie ist unangenehmer als die drei anderen, weil ihre Antwort nicht im Repository
+liegt. Alle fünf Instanzen waren erst an der Zielumgebung zu sehen: an einem
+Fernseher, in einem Browserfenster, an einer HTTP-Kopfzeile. Ein grüner Build
+kann über keine von ihnen etwas aussagen, und das ist keine Nachlässigkeit der
+Prüfungen, sondern ihre Reichweite.

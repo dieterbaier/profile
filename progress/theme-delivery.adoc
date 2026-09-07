@@ -1,0 +1,72 @@
+= Theme-Auslieferung
+
+Was die Seite aussehen lässt, soll den Leser auch erreichen — auf dem Browser,
+den er hat, in der Fassung, die zuletzt gebaut wurde.
+
+*Status:* in flight — die Kette steht und ist auf beiden Hosts live geprüft;
+offen ist eine Apache-Direktive, die still nicht greift (#110).
+
+== The plan
+
+Die Reihenfolge kam nicht aus einer Planung, sondern aus dem, was der jeweils
+vorige Schritt sichtbar gemacht hat. Sie ist trotzdem die richtige, wenn jemand
+das noch einmal aufbaut: erst muss etwas beim Leser überhaupt ankommen, dann
+lohnt es sich, das Richtige zu schicken.
+
+[options="checklist"]
+* [x] Abstände ohne Flexbox-`gap`, Flaggen als Inline-SVG — #100
+* [x] Theme gegen eine benannte Engine-Baseline prüfen — `verify-theme-browser-baseline.rb`
+* [x] Theme-URLs aus dem Inhalt versionieren und im Target prüfen — #103
+* [x] `.htaccess` überhaupt ausliefern (`include-hidden-files`) — #103
+* [x] Stylesheet verlinken statt zusätzlich kopieren — #105
+* [x] Emoji-Icons zeichnen, Emoji-Webfont entfernen — #101
+* [x] `src-content/theme/**` in die Pfadfilter — #108
+* [x] arc42 versioniert mit, `immutable` nur bei versionierter URL — #109
+* [ ] `immutable` greift wieder — `SetEnvIf Query_String` wirkt nicht (#110)
+
+Der Reihenfolge hätte man ansehen können, dass #108 vor #101 gehört: eine reine
+Theme-Änderung wurde nicht ausgeliefert, weil das Verzeichnis in keinem Filter
+stand. Herausgekommen ist es andersherum, weil #100, #103 und #105 nebenbei
+Profilinhalt anfassten und deshalb zufällig deployten.
+
+== Where we are
+
+Beide Hosts liefern versionierte Stylesheet-URLs (`?v=` aus einem Hash über die
+CSS- und JS-Dateien des Themes), HTML mit `no-cache` und Fonts mit `immutable`.
+`verifyThemeVersions` prüft `build/site`, `build/site-private` und
+`build/architecture` darauf, dass keine Referenz ohne die aktuelle Version
+bleibt und keine Datei eine Version im Namen trägt.
+`verify-theme-browser-baseline.rb` hält fest, dass das Theme kein `gap` außerhalb
+eines Grid-Containers benutzt und kein Emoji als Text rendert.
+
+Der Emoji-Webfont ist gelöscht. Er lag als OT-SVG vor, das Chromium nicht
+zeichnet, und hat fünf Monate lang 3,7 MB ausgeliefert, ohne je ein Symbol zu
+zeigen.
+
+== Open in this topic
+
+* `#110` — `SetEnvIf Query_String` setzt die Variable nie, deshalb bekommen auch
+  versionierte URLs nur eine Stunde. Der Fehler fällt auf die sichere Seite.
+  Kandidaten sind `SetEnvIfExpr` und ein `RewriteRule ... [E=...]`; welcher
+  trägt, zeigt erst der Server.
+* Ob die Bedingung überhaupt bleiben soll. Seit #109 versionieren alle drei
+  gerenderten HTML-Targets, und eine Prüfung erzwingt das — die Zusicherung
+  liegt damit im Build statt in der Serverkonfiguration.
+
+Dass `pr-check` kein Target rendert, steht in `diary/open-threads.adoc`: das
+überlebt dieses Thema.
+
+== Checks
+
+Commands, not results. A number copied in here goes stale silently.
+
+[source,sh]
+----
+ruby scripts/verify-theme-browser-baseline.rb \
+  --theme-dir src-content/theme \
+  --interface-dir src-content/profile/includes/i18n
+ruby scripts/theme-version.rb --theme-dir src-content/theme
+./gradlew buildAll buildArticlesMarkdown
+find build -name '*[?:<>|*"]*'
+curl -sI "https://dieterbaier.eu/stylesheet/style.css?v=$(ruby scripts/theme-version.rb --theme-dir src-content/theme)"
+----

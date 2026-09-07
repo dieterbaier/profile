@@ -202,3 +202,29 @@ es kein Issue gibt, und die ausdrückliche Feststellung, dass ein
 Ersatzpräfix wie `NO_ISSUE:` keines ist. Verwandt mit dem Befund vom
 15. August, aber nicht derselbe: dort war die Frage, für *welches* Repository
 eine Issue-Nummer gilt, hier gibt es keine.
+
+=== Lücke: der Workflow setzt voraus, dass ein Pull Request etwas zeigen kann
+
+`implement-issue-workflow` beschreibt Branch `issue_<n>`, Commit, Push, Pull
+Request und nennt Warnzeichen, bei denen nicht integriert werden soll — fehlende
+oder unbekannte Checks stehen darunter. Vorausgesetzt ist dabei durchgehend, dass
+ein Pull Request über die Änderung etwas aussagt.
+
+Am 7. September traf das zweimal nicht zu. #108 korrigierte die Pfadfilter der
+Pipeline, #109 die Cache-Direktiven einer `.htaccess`. Für beide gilt: `pr-check`
+prüft davon nichts, `build-docs` ist bei `pull_request` abgeschaltet, und die
+`.htaccess` wirkt erst auf dem Server. Ein Pull Request wäre grün gewesen und
+hätte über den Fix genau nichts ausgesagt; der Push auf `main` war die einzige
+verfügbare Prüfung.
+
+Nach dem Buchstaben des Skills ist ein direkter Push auf `main` ausgeschlossen —
+„so changes are reviewable and never land directly on `main`". Nach seinem Zweck
+war er hier das Ehrlichere: ein grüner Check, der nichts geprüft hat, ist
+schlechter als ein bewusster Push mit angesagtem Risiko.
+
+Der mögliche Zusatz stromaufwärts ist eine Kategorie, keine Ausnahme: eine
+Änderung, deren einzige Prüfung ihre Ausführung im Zielzustand ist. Für sie
+gehört in den Workflow, was stattdessen zu tun ist — den fehlenden Nachweis im
+Commit benennen, die Prüfung nach der Integration ausführen und das Ergebnis
+festhalten. Genau das ist hier passiert, aber ohne Rückhalt im Skill, und damit
+ist es beim nächsten Mal wieder eine Einzelfallentscheidung.
