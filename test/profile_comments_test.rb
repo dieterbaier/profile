@@ -57,7 +57,10 @@ class ProfileCommentsTest < Minitest::Test
       # Then: a local enhancement loads matching issues and renders linked titles
       assert_includes generated, '{ui_comments_load}'
       assert_includes generated, '[subs="attributes"]'
-      assert_includes generated, '<script src="{basedir}/stylesheet/article-comments.js"></script>'
+      # Addressed by the theme version, so a reader holding the previous script
+      # is not left running it against a newer comment section.
+      assert_includes generated,
+                      '<script src="{basedir}/stylesheet/article-comments.js?v={theme_version}"></script>'
       assert_includes script, 'addEventListener("click"'
       assert_includes script, 'https://api.github.com/search/issues?q='
       assert_includes script, 'label:\"Artikelkommentar\"'

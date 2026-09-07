@@ -14,44 +14,49 @@
   AddOutputFilterByType DEFLATE image/svg+xml
 </IfModule>
 
-<IfModule mod_headers.c>
-  Header append Vary Accept-Encoding
-</IfModule>
-
 # ----------------------------------------
 # Browser caching
 # ----------------------------------------
-<IfModule mod_expires.c>
-  ExpiresActive On
-
-  # Default fallback
-  ExpiresDefault "access plus 7 days"
-
-  # HTML: short cache
-  ExpiresByType text/html "access plus 1 hour"
-
-  # CSS + JS: medium cache
-  ExpiresByType text/css "access plus 7 days"
-  ExpiresByType application/javascript "access plus 7 days"
-
-  # Images: longer cache, but not forever
-  ExpiresByType image/png "access plus 30 days"
-  ExpiresByType image/svg+xml "access plus 30 days"
-
-  # Fonts: longer cache
-  ExpiresByType font/woff2 "access plus 30 days"
-</IfModule>
-
+#
+# Stated once, as Cache-Control. The earlier version said the same thing twice,
+# through mod_expires and mod_headers, which made it look like the caching rules
+# were a matter of which module a host happens to load. They were not: none of it
+# ever reached the server, because the artifact upload dropped this file for
+# being hidden. Saying it once leaves one place to read and one to be wrong in.
+#
+# The values below assume that stylesheets and scripts are addressed by a URL
+# carrying their content version, which scripts/theme-version.rb produces and
+# checks. Without that assumption a long max-age here is the bug it is meant to
+# prevent, so the two belong together.
 <IfModule mod_headers.c>
+  # Pages revalidate every time. This is what makes a deploy arrive: the ETag
+  # turns the usual case into a 304 with no body, and the reader can never hold
+  # a page whose stylesheet has moved on without it.
   <FilesMatch "\.(html|htm)$">
-    Header set Cache-Control "public, max-age=3600"
+    Header set Cache-Control "public, no-cache"
   </FilesMatch>
 
+  # Versioned URLs, so the content behind one of them never changes. A changed
+  # file is a changed URL and is fetched because it was never seen before.
   <FilesMatch "\.(css|js)$">
-    Header set Cache-Control "public, max-age=604800"
+    Header set Cache-Control "public, max-age=31536000, immutable"
   </FilesMatch>
 
-  <FilesMatch "\.(png|svg|woff2)$">
+  # Fonts carry the version they were vendored at in their file name, which
+  # makes their URLs content-addressed the same way.
+  <FilesMatch "\.woff2$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+
+  # Images are addressed by a plain name, so they are cached for a while rather
+  # than forever: a replaced image has to be able to arrive.
+  <FilesMatch "\.(png|jpe?g|webp|avif|gif|svg|ico)$">
     Header set Cache-Control "public, max-age=2592000"
+  </FilesMatch>
+
+  # The manifest is unversioned and names the icons a device keeps, so it is
+  # kept short enough to correct within a day.
+  <FilesMatch "\.webmanifest$">
+    Header set Cache-Control "public, max-age=3600"
   </FilesMatch>
 </IfModule>

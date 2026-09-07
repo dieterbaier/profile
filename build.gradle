@@ -181,6 +181,36 @@ verifyAssetReferences('verifyArticlesAssetReferences', 'build/articles', 'build/
 verifyAssetReferences('verifyPrivateSiteAssetReferences', 'build/site-private', 'build/site-private',
         ['buildSitePrivate', 'buildSitePrivateCopyAssets'])
 
+// Asked of a rendered target for the same reason as the asset references above:
+// the mistake is not in producing the file but in how a page addresses it. A
+// stylesheet whose URL never changes is served from the reader's cache against
+// freshly fetched markup, and no job fails over it.
+//
+// `afterTasks` names what writes the theme into the target, so this does not
+// read a target the build was still copying into.
+def verifyThemeVersions = { taskName, targetDir, label, List<String> afterTasks ->
+    tasks.register(taskName) {
+        description = "Fails when a page in ${label} addresses the theme by a URL that does not carry its version."
+        group = 'verification'
+        inputs.file('scripts/theme-version.rb')
+        inputs.dir('src-content/theme')
+        afterTasks.each { mustRunAfter tasks.named(it) }
+
+        doLast {
+            exec {
+                commandLine 'ruby', 'scripts/theme-version.rb',
+                        '--theme-dir', file('src-content/theme').absolutePath,
+                        '--target-dir', file(targetDir).absolutePath
+            }
+        }
+    }
+}
+
+verifyThemeVersions('verifySiteThemeVersions', 'build/site', 'build/site',
+        ['buildSite', 'buildSiteCopyAssets', 'buildCVSiteCopyAssets'])
+verifyThemeVersions('verifyPrivateSiteThemeVersions', 'build/site-private', 'build/site-private',
+        ['buildSitePrivate', 'buildSitePrivateCopyAssets'])
+
 // Asked of the theme source rather than of a rendered target, because the
 // failure is not in the rendering: a browser that does not understand a
 // declaration drops it silently, which is what makes CSS forward compatible and
@@ -262,6 +292,24 @@ tasks.register('housekeeping', Delete) {
 // A deny-list rather than an allow-list of image types, so a format the site has
 // not used before works by being committed. An allow-list would drop it without
 // saying so, which is the failure this whole convention exists to remove.
+// The value the theme's stylesheets and scripts are addressed by. Without it a
+// deploy reaches a returning reader only in part: the URLs never changed, so a
+// browser went on using the stylesheet it already held against freshly fetched
+// HTML, and since the language switcher draws its flag from a class rather than
+// writing it as a character, that pairing renders a switcher with nothing in it.
+//
+// Read from the same script that checks the rendered targets, so the value a URL
+// carries and the value the check expects cannot drift apart. Empty is refused
+// rather than passed on: an empty version produces `?v=` on every asset, which
+// looks versioned and busts nothing.
+def themeVersion = providers.exec {
+    commandLine 'ruby', 'scripts/theme-version.rb', '--theme-dir', file('src-content/theme').absolutePath
+}.standardOutput.asText.get().trim()
+
+if (themeVersion.isEmpty()) {
+    throw new GradleException('scripts/theme-version.rb produced no theme version')
+}
+
 def articleAssetBuildInputs = ['**/*.puml', '**/*.dot', '**/*.adoc', '**/.DS_Store']
 
 // gemeinsame Konfiguration
@@ -275,6 +323,7 @@ def asciidoctorBase = { taskName, taskDependsOnTask, sourceDir, outputDir, List<
     var asciidocAttributes = ['includesdir': 'src-content/profile/includes',
                       'buildsite': 'true',
                       'skip-front-matter': '',
+                      'theme_version': themeVersion,
     ] + extraAttrs
 
     def taskProvider
@@ -331,9 +380,19 @@ def asciidoctorBase = { taskName, taskDependsOnTask, sourceDir, outputDir, List<
 
         into(taskProvider.map { it.outputDir })
 
+        // style.css imports the vendored framework through a URL of its own, and
+        // no AsciiDoc attribute reaches inside a stylesheet. Versioned while it is
+        // copied, so that one file is not the single thing a reader keeps from the
+        // previous deploy. The charset is stated because filtering otherwise reads
+        // the file in the platform default, and style.css carries emoji.
+        filteringCharset = 'UTF-8'
+
         from("src-content/theme") {
             include "*.css"
             into "stylesheet"
+            filter { line ->
+                line.replace('url("./asciidoctor.css")', "url(\"./asciidoctor.css?v=${themeVersion}\")")
+            }
         }
 
         from("src-content/theme") {
@@ -874,6 +933,7 @@ tasks.named('buildSite') {
     finalizedBy tasks.named('verifyNoArticleSummariesInGeneratedOutputs')
     finalizedBy tasks.named('verifyPublicTargetHasOnlyPublishedArticles')
     finalizedBy tasks.named('verifySiteAssetReferences')
+    finalizedBy tasks.named('verifySiteThemeVersions')
 }
 
 // ---------------------------------------------------------------------------
@@ -1093,6 +1153,7 @@ tasks.named('buildSitePrivate') {
 
     finalizedBy tasks.named('verifyPrivateTargetHasOnlyAllowedArticles')
     finalizedBy tasks.named('verifyPrivateSiteAssetReferences')
+    finalizedBy tasks.named('verifyPrivateSiteThemeVersions')
 }
 
 // The web app manifest, put where the head that asks for it is rendered.
@@ -1149,6 +1210,19 @@ tasks.register('testProfilePublicationStatus') {
     doLast {
         exec {
             commandLine 'ruby', '-Itest', 'test/profile_publication_status_test.rb'
+        }
+    }
+}
+
+tasks.register('testThemeAssetVersioning') {
+    description = 'Runs the theme asset versioning behaviour tests.'
+    group = 'verification'
+    inputs.files('scripts/theme-version.rb', 'test/theme_asset_versioning_test.rb',
+                 'features/theme-asset-versioning.feature')
+
+    doLast {
+        exec {
+            commandLine 'ruby', '-Itest', 'test/theme_asset_versioning_test.rb'
         }
     }
 }

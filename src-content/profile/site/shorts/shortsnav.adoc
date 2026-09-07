@@ -2,7 +2,7 @@
 [subs=attributes,macros]
 ++++
 <style>
-@import "{basedir}/stylesheet/shortsmenuactivation.css";
+@import "{basedir}/stylesheet/shortsmenuactivation.css?v={theme_version}";
 </style>
 
 <nav id="shortsnav" class="subnav noborder" data-active="{shorts_active}" style="margin-bottom: 2rem">

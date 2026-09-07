@@ -1842,7 +1842,7 @@ class ProfileArtifactValidator
      '  <p class="article-comments-status" aria-live="polite"></p>',
      '  <ul class="article-comments-list"></ul>',
      '</section>',
-     '<script src="{basedir}/stylesheet/article-comments.js"></script>',
+     '<script src="{basedir}/stylesheet/article-comments.js?v={theme_version}"></script>',
      '++++',
      'endif::[]',
      ''].join("\n")

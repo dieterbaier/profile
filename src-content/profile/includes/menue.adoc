@@ -3,7 +3,7 @@
 [subs=attributes,macros]
 ++++
 <style>
-@import "{basedir}/stylesheet/menuactivation.css";
+@import "{basedir}/stylesheet/menuactivation.css?v={theme_version}";
 </style>
 
 <nav id="mainnav" class="mainnav" data-active="{active}">
@@ -39,5 +39,5 @@ endif::[]
 <div class="nav-overlay"></div>
 </nav>
 
-<script type="text/javascript" src="{basedir}/stylesheet/navigation.js"></script>
+<script type="text/javascript" src="{basedir}/stylesheet/navigation.js?v={theme_version}"></script>
 ++++
