@@ -74,11 +74,6 @@ Feature: Theme browser baseline
     When the theme is checked
     Then nothing is reported
 
-  Scenario: A recorded exception is reported without failing the check
-    Given a rule that renders an emoji and is recorded against its own issue
-    When the theme is checked
-    Then it is reported apart from the findings that fail
-
   Scenario: A comment is not read as a rule
     Given a comment that talks about gap and about an emoji
     When the theme is checked

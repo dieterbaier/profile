@@ -1,15 +1,5 @@
 @import url("./asciidoctor.css"); /* Default asciidoc style framework - important */
 
-/* noto-color-emoji-regular - emoji */
-@font-face {
-    font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
-    font-family: 'Noto Color Emoji';
-    font-style: normal;
-    font-weight: 400;
-    src: url('fonts/noto-color-emoji-v39-emoji-regular.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
-}
-
-
 @font-face {
     font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
     font-family: 'Noto Sans';
@@ -83,7 +73,7 @@
 
     --text-color-subtle: #6b7280;
 
-    --highlight-icon-font-size: xx-large;
+    --highlight-icon-size: 2rem;
 
     --page-width: 62.5em;      /* kommt von Asciidoctor */
     --page-gutter: 0.9375em;   /* kommt von Asciidoctor */
@@ -411,14 +401,33 @@ p {
     border-left: 6px solid #c7a85a;
 }
 
+/* Drawn rather than written, like the flags in the language switcher and for
+   the same reason: an emoji is only as good as the font the reading device
+   happens to have. The webfont this theme used to bundle was no answer — it was
+   the OT-SVG build of Noto Color Emoji, which Chromium draws nothing from, so
+   naming it left these markers blank on every Chrome. An image asks nothing.
+
+   An arrow rather than the pointing hand it replaces: a hand at the size of a
+   line of text is a smudge, and this marker sits inside running text.
+
+   The arrow carries the link colour as a literal. A data URI is its own
+   document and cannot read a custom property from this one, so --link-color and
+   this stroke have to be changed together. */
 .fingerPointsTo::before {
-    content: "👉";
-    font-family: "Noto Color Emoji", "Noto Sans", sans-serif;
+    content: "";
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    vertical-align: -0.15em;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='none' stroke='%233f6f8c' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round' d='M3.5 12h15.5M13 6l6 6-6 6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
     margin-right: 0.25rem;
 }
+
 a.fingerPointsTo::before {
     text-decoration: none;
-    display: inline-block;
 }
 
 /* --- Highlight (inhaltlich wichtig) --- */
@@ -428,28 +437,38 @@ a.fingerPointsTo::before {
     border-left: 6px solid var(--box-border-strong);
 }
 
+/* The box says what kind of note it is before a word of it is read, so the
+   icons keep the colours their emoji had. The size is a length now rather than
+   a font size: nothing here is text any more. */
+.highlight.info::before,
+.highlight.warning::before,
+.highlight.error::before,
+.highlight.tip::before {
+    content: "";
+    display: inline-block;
+    width: var(--highlight-icon-size);
+    height: var(--highlight-icon-size);
+    vertical-align: -0.35rem;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    margin-right: 0.5rem;
+}
+
 .highlight.info::before {
-    content: "💡 ";
-    font-size: var(--highlight-icon-font-size);
-    font-family: "Noto Color Emoji", "Noto Sans", sans-serif;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23f2c744' d='M12 1.8a7.2 7.2 0 0 0-4.2 13.05V17a1.2 1.2 0 0 0 1.2 1.2h6a1.2 1.2 0 0 0 1.2-1.2v-2.15A7.2 7.2 0 0 0 12 1.8z'/%3E%3Cpath fill='%238d9299' d='M9 19.4h6v1.7H9zm1 3h4v1.4h-4z'/%3E%3C/svg%3E");
 }
 
 .highlight.warning::before {
-    content: "⚠️ ";
-    font-size: var(--highlight-icon-font-size);
-    font-family: "Noto Color Emoji", "Noto Sans", sans-serif;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23e8a33d' d='M12 2.2 23.4 21.8H0.6z'/%3E%3Cpath fill='%233a2f16' d='M10.9 8.6h2.2v6.4h-2.2zm0 7.9h2.2v2.3h-2.2z'/%3E%3C/svg%3E");
 }
 
 .highlight.error::before {
-    content: "❗ ";
-    font-size: var(--highlight-icon-font-size);
-    font-family: "Noto Color Emoji", "Noto Sans", sans-serif;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23d64541' d='M9.5 1.6h5l-.9 13.4h-3.2z'/%3E%3Ccircle fill='%23d64541' cx='12' cy='20' r='2.5'/%3E%3C/svg%3E");
 }
 
 .highlight.tip::before {
-    content: "✅ ";
-    font-size: var(--highlight-icon-font-size);
-    font-family: "Noto Color Emoji", "Noto Sans", sans-serif;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect fill='%233fa45b' width='24' height='24' rx='5'/%3E%3Cpath fill='none' stroke='%23fff' stroke-width='2.8' stroke-linecap='round' stroke-linejoin='round' d='M6.4 12.4 10.3 16.3 17.6 7.9'/%3E%3C/svg%3E");
 }
 
 /* --- Skillbox --- */

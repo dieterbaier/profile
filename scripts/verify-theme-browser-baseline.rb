@@ -39,7 +39,9 @@
 # worse, because the browser then finds the character in the webfont's cmap and
 # stops falling back to the system font it could have drawn. The rule is
 # therefore about the character, not about the font: an emoji the theme renders
-# has to be an image.
+# has to be an image. It is stated without exception, because the theme has none
+# left: the icons this rule was first written against, and the webfont they
+# named, are gone.
 #
 # Interface terms are read alongside the stylesheets, because a flag reached the
 # page as an attribute value rather than through a `content` declaration. Asking
@@ -53,20 +55,6 @@ module ThemeBrowserBaseline
   # statement, not a detection: it says which features may be relied on, and it
   # is the reason each rule below exists.
   BASELINE = 'Chromium 68 (LG webOS 5)'
-
-  # Rules that still render an emoji as text, recorded against the issue that
-  # replaces them: https://github.com/dieterbaier/profile/issues/101
-  #
-  # They are reported on every run and do not fail the build. Written down, the
-  # debt has a name and an end; left out of the rule, the check would pass for
-  # the wrong reason and say nothing about what is missing on the page.
-  RECORDED = [
-    '.fingerPointsTo::before',
-    '.highlight.info::before',
-    '.highlight.warning::before',
-    '.highlight.error::before',
-    '.highlight.tip::before'
-  ].freeze
 
   GAP_DECLARATION = /(?<![\w-])(gap|row-gap|column-gap)\s*:/.freeze
 
@@ -167,11 +155,8 @@ module ThemeBrowserBaseline
   def emoji_rule_findings(path, rule)
     return [] unless rule[:body].match?(EMOJI)
 
-    recorded = RECORDED.include?(rule[:selector])
-
     [Finding.new(
-      file: path, line: rule[:line], subject: rule[:selector],
-      reason: recorded ? :emoji_text_recorded : :emoji_text,
+      file: path, line: rule[:line], subject: rule[:selector], reason: :emoji_text,
       detail: 'renders an emoji as text; draw it as an image instead, because no ' \
               'font can be assumed to have it'
     )]
@@ -235,21 +220,14 @@ if $PROGRAM_NAME == __FILE__
   terms = options[:terms] ? ThemeBrowserBaseline.read(Pathname.new(options[:terms]).glob('ui-*.adoc')) : {}
 
   found = ThemeBrowserBaseline.findings(stylesheets: stylesheets, interface_terms: terms)
-  recorded, failing = found.partition { |finding| finding.reason == :emoji_text_recorded }
 
-  unless recorded.empty?
-    puts "#{recorded.length} recorded exception(s) still render an emoji as text:"
-    recorded.each { |finding| puts "  - #{finding.file}:#{finding.line} #{finding.subject}" }
-    puts '  Tracked as https://github.com/dieterbaier/profile/issues/101; not a failure here.'
-  end
-
-  if failing.empty?
+  if found.empty?
     puts "The theme stays inside the supported browser baseline (#{ThemeBrowserBaseline::BASELINE})."
     exit(0)
   end
 
-  warn "The theme leaves the supported browser baseline (#{ThemeBrowserBaseline::BASELINE}) in #{failing.length} place(s):"
-  failing.each do |finding|
+  warn "The theme leaves the supported browser baseline (#{ThemeBrowserBaseline::BASELINE}) in #{found.length} place(s):"
+  found.each do |finding|
     warn "  - #{finding.file}:#{finding.line} #{finding.subject}"
     warn "      #{finding.detail}"
   end
