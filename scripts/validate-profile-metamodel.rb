@@ -555,13 +555,19 @@ class ProfileArtifactValidator
   # flag; a device without one shows the two letters they are made of, which is
   # what a television browser does. Nothing in the build reports that, because
   # the character is rendered exactly as asked — just not as a flag.
+  #
+  # Both entries therefore carry `aria-label`, the current language included.
+  # Drawing the flag leaves the element empty, and `title` is the last source
+  # the accessible name computation consults and the one screen readers treat
+  # most inconsistently. Without the label the current language can reach a
+  # reader as a nameless element that claims `aria-current`.
   def render_language_switcher(current_language, variants, current_source)
     entries = variants.keys.sort.map do |language|
       name = "{ui_language_name_#{language}}"
 
       if language == current_language
         "            <span class=\"language-switch-current flag-#{language}\" lang=\"#{language}\" " \
-          "title=\"#{name}\" aria-current=\"true\"></span>"
+          "title=\"#{name}\" aria-label=\"#{name}\" aria-current=\"true\"></span>"
       else
         href = h(page_link_href(current_source, variants[language]))
         "            <a class=\"flag-#{language}\" href=\"#{href}\" lang=\"#{language}\" " \
@@ -570,9 +576,9 @@ class ProfileArtifactValidator
     end
 
     # One list item holding every language, rather than one item per language:
-    # the menu row sets a single gap for all its entries, so separate items could
-    # only be spaced apart by a negative margin that breaks whenever that gap
-    # changes between breakpoints.
+    # the menu row spaces its entries by a margin on every list item, so separate
+    # items would each carry that full entry spacing and stand as far apart as
+    # two menu entries do.
     #
     # Raw HTML without block delimiters: this file is included from inside the
     # menu's passthrough block, which already applies attribute substitution.

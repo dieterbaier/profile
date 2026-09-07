@@ -77,6 +77,13 @@ class ProfileLanguageAlternatesTest < Minitest::Test
       assert_includes english, '<span class="language-switch-current flag-en" lang="en"'
       assert_match(%r{<a class="flag-de" href="[^"]*index\.html" lang="de"[^>]*></a>}, english)
       assert_equal 1, german.scan('<li class="language-switch">').length
+
+      # Both entries name their language for a screen reader, the current one
+      # included: drawing the flag leaves the element with no text of its own,
+      # and `title` alone is the weakest source of an accessible name. Without
+      # this the current language is a nameless element claiming aria-current.
+      assert_match(%r{<span class="language-switch-current flag-de"[^>]*aria-label="\{ui_language_name_de\}"[^>]*aria-current="true">}, german)
+      assert_match(%r{<span class="language-switch-current flag-en"[^>]*aria-label="\{ui_language_name_en\}"[^>]*aria-current="true">}, english)
     end
   end
 
