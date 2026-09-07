@@ -63,16 +63,19 @@ class ProfileLanguageAlternatesTest < Minitest::Test
       german = switcher(root, 'site/generated/index-langswitch.adoc')
       english = switcher(root, 'site/en/generated/index-langswitch.adoc')
 
-      # Rendered as menu list items: a flag as the visible label, the language
-      # name on title and aria-label, because a flag is no accessible name.
-      # One list item holds every language, so the menu row's single gap cannot
-      # push the flags apart. A flag is the visible label only; the language name
-      # stays on title and aria-label, because a flag is no accessible name.
+      # Rendered as menu list items: the flag is named as a class and drawn by
+      # the stylesheet, and the language name stays on title and aria-label,
+      # because a flag is no accessible name. Written as a character the flag
+      # is a pair of regional indicators that a device without the right font
+      # shows as two letters, which is what a television browser did.
+      # One list item holds every language, so the menu row's own entry spacing
+      # cannot push the flags apart.
       assert_includes german, '<li class="language-switch">'
-      assert_includes german, '<span class="language-switch-current" lang="de" title="{ui_language_name_de}"'
-      assert_match(%r{<a href="[^"]*en/index\.html" lang="en"[^>]*>\{ui_language_flag_en\}</a>}, german)
-      assert_includes english, '<span class="language-switch-current" lang="en"'
-      assert_match(%r{<a href="[^"]*index\.html" lang="de"[^>]*>\{ui_language_flag_de\}</a>}, english)
+      assert_includes german,
+                      '<span class="language-switch-current flag-de" lang="de" title="{ui_language_name_de}"'
+      assert_match(%r{<a class="flag-en" href="[^"]*en/index\.html" lang="en"[^>]*></a>}, german)
+      assert_includes english, '<span class="language-switch-current flag-en" lang="en"'
+      assert_match(%r{<a class="flag-de" href="[^"]*index\.html" lang="de"[^>]*></a>}, english)
       assert_equal 1, german.scan('<li class="language-switch">').length
     end
   end
@@ -113,8 +116,8 @@ class ProfileLanguageAlternatesTest < Minitest::Test
       german = switcher(root, 'site/articles/lists/generated/all-langswitch.adoc')
       english = switcher(root, 'site/en/articles/lists/generated/all-langswitch.adoc')
 
-      assert_match(%r{<a href="\.\./\.\./en/articles/lists/all\.html"}, german)
-      assert_match(%r{<a href="\.\./\.\./\.\./articles/lists/all\.html"}, english)
+      assert_match(%r{<a class="flag-en" href="\.\./\.\./en/articles/lists/all\.html"}, german)
+      assert_match(%r{<a class="flag-de" href="\.\./\.\./\.\./articles/lists/all\.html"}, english)
     end
   end
 

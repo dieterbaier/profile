@@ -181,6 +181,28 @@ verifyAssetReferences('verifyArticlesAssetReferences', 'build/articles', 'build/
 verifyAssetReferences('verifyPrivateSiteAssetReferences', 'build/site-private', 'build/site-private',
         ['buildSitePrivate', 'buildSitePrivateCopyAssets'])
 
+// Asked of the theme source rather than of a rendered target, because the
+// failure is not in the rendering: a browser that does not understand a
+// declaration drops it silently, which is what makes CSS forward compatible and
+// also what let a menu lose all its spacing on a television without anything
+// failing. The interface terms are read alongside the stylesheets, because a
+// flag reaches the page as an attribute value rather than as a declaration.
+tasks.register('verifyThemeBrowserBaseline') {
+    description = 'Fails when the theme relies on CSS the supported browser baseline does not have.'
+    group = 'verification'
+    inputs.file('scripts/verify-theme-browser-baseline.rb')
+    inputs.dir('src-content/theme')
+    inputs.dir('src-content/profile/includes/i18n')
+
+    doLast {
+        exec {
+            commandLine 'ruby', 'scripts/verify-theme-browser-baseline.rb',
+                    '--theme-dir', file('src-content/theme').absolutePath,
+                    '--interface-dir', file('src-content/profile/includes/i18n').absolutePath
+        }
+    }
+}
+
 // The tasks that render article sources into a publishable target. Named once
 // so the validation contract below and its test refer to the same list.
 def publicRenderTasks = ['buildSite', 'buildArticlesDocbook']
@@ -1127,6 +1149,19 @@ tasks.register('testProfilePublicationStatus') {
     doLast {
         exec {
             commandLine 'ruby', '-Itest', 'test/profile_publication_status_test.rb'
+        }
+    }
+}
+
+tasks.register('testThemeBrowserBaseline') {
+    description = 'Runs the theme browser baseline behaviour tests.'
+    group = 'verification'
+    inputs.files('scripts/verify-theme-browser-baseline.rb', 'test/theme_browser_baseline_test.rb',
+                 'features/theme-browser-baseline.feature')
+
+    doLast {
+        exec {
+            commandLine 'ruby', '-Itest', 'test/theme_browser_baseline_test.rb'
         }
     }
 }

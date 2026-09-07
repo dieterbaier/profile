@@ -40,8 +40,6 @@
 :ui_cv_nav_projects: Projekte
 :ui_cv_nav_education: Weiterbildung
 :ui_author_prefix: Autor:
-:ui_language_flag_de: 🇦🇹
-:ui_language_flag_en: 🇬🇧
 :ui_article_list_back: Zurück zur Artikelübersicht
 :ui_article_list_show_all: Alle Artikel anzeigen
 :ui_article_list_recent: Die zuletzt veröffentlichten Artikel:
