@@ -86,6 +86,22 @@ module ThemeVersion
     end
   end
 
+  # A version belongs in a URL and never in a file name. AsciiDoc writes the
+  # stylesheet to a file named by the same value that addresses it, so a value
+  # meant as a URL can land on disk: `style.css?v=…` is a legal file name here
+  # and is rejected by the artifact upload, which fails the build after it has
+  # rendered. Asked of the target rather than of the settings that produced it,
+  # because any of several of them can put it there.
+  def misnamed(target_dir)
+    root = Pathname.new(target_dir)
+    return [] unless root.directory?
+
+    root.glob('**/*')
+        .select { |path| path.file? && path.basename.to_s.include?('?') }
+        .map { |path| path.relative_path_from(root).to_s }
+        .sort
+  end
+
   def stale_in(text, relative, names, expected)
     found = []
 
@@ -148,17 +164,25 @@ if $PROGRAM_NAME == __FILE__
     exit(0)
   end
 
-  stale = ThemeVersion.stale(target, assets: assets, version: version)
-  if stale.empty?
-    puts "Every theme reference in '#{target}' carries the current version (#{version})."
-    exit(0)
+  misnamed = ThemeVersion.misnamed(target)
+  unless misnamed.empty?
+    warn "#{misnamed.length} file(s) in '#{target}' carry a version in their name rather than in a URL:"
+    misnamed.each { |path| warn "  - #{path}" }
+    warn '  A version addresses a file; it is not part of what the file is called.'
   end
 
-  warn "#{stale.length} theme reference(s) in '#{target}' do not carry the current version (#{version}):"
-  stale.each do |reference|
-    warn "  - #{reference.file}:#{reference.line} #{reference.asset}#{reference.found}"
+  stale = ThemeVersion.stale(target, assets: assets, version: version)
+  unless stale.empty?
+    warn "#{stale.length} theme reference(s) in '#{target}' do not carry the current version (#{version}):"
+    stale.each do |reference|
+      warn "  - #{reference.file}:#{reference.line} #{reference.asset}#{reference.found}"
+    end
+    warn '  A reader holding the previous file keeps using it against this page, and nothing'
+    warn '  reports the mismatch — the page renders, with the older stylesheet.'
   end
-  warn '  A reader holding the previous file keeps using it against this page, and nothing'
-  warn '  reports the mismatch — the page renders, with the older stylesheet.'
-  exit(1)
+
+  exit(1) unless misnamed.empty? && stale.empty?
+
+  puts "Every theme reference in '#{target}' carries the current version (#{version})."
+  exit(0)
 end

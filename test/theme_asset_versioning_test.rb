@@ -157,6 +157,24 @@ class ThemeAssetVersioningTest < Minitest::Test
     end
   end
 
+  def test_a_file_whose_name_carries_the_version_is_reported
+    # Given: a target holding a stylesheet written as style.css?v=<version>
+    version = ThemeVersion.version(THEME)
+
+    Dir.mktmpdir('theme-version-misnamed') do |dir|
+      root = Pathname.new(dir)
+      (root + 'stylesheet').mkpath
+      (root + 'stylesheet' + "style.css?v=#{version}").write('body {}')
+      (root + 'stylesheet' + 'style.css').write('body {}')
+
+      # When: the target is checked
+      misnamed = ThemeVersion.misnamed(root)
+
+      # Then: it is reported, because a version addresses a file rather than naming it
+      assert_equal ["stylesheet/style.css?v=#{version}"], misnamed
+    end
+  end
+
   def test_a_target_that_was_never_rendered_reports_nothing
     # Given: no rendered target at all
     Dir.mktmpdir('theme-version-missing') do |dir|
@@ -165,6 +183,7 @@ class ThemeAssetVersioningTest < Minitest::Test
       # When: a directory that does not exist is checked
       # Then: nothing is reported
       assert_empty ThemeVersion.stale(absent, assets: THEME, version: ThemeVersion.version(THEME))
+      assert_empty ThemeVersion.misnamed(absent)
     end
   end
 end

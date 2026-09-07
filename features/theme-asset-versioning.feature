@@ -69,6 +69,11 @@ Feature: Theme asset versioning
     When the target is checked
     Then menuactivation.css is not reported inside it
 
+  Scenario: A file whose name carries the version is reported
+    Given a target holding a stylesheet written as style.css?v=<version>
+    When the target is checked
+    Then it is reported, because a version addresses a file rather than naming it
+
   Scenario: A target that was never rendered reports nothing
     Given no rendered target at all
     When a directory that does not exist is checked
