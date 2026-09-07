@@ -128,6 +128,12 @@ jobs:
         with:
           name: docs
           path: build/
+          # The rendered site carries a .htaccess, and this action drops hidden
+          # files unless told otherwise. Its caching and compression rules were
+          # therefore never on the server: the file was built, excluded here, and
+          # the deploy job mirrored what it had been handed. Nothing reported it,
+          # because every job succeeded.
+          include-hidden-files: true
 
   pr-check:
     runs-on: ubuntu-latest
