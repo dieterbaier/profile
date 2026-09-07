@@ -29,10 +29,15 @@ endif::[]
 ifdef::buildsite[]
 :stylesdir: {basedir}/stylesheet
 :iconsdir: {basedir}/assets/icons
-// Only where the stylesheet is linked. With :copycss: the value names the file
-// AsciiDoc writes, and a query string would become part of that file's name.
+// Only where the stylesheet is linked, and only with the copy switched off.
+// :copycss: makes AsciiDoc write the stylesheet to a file named by this value,
+// and it does so alongside :linkcss: rather than instead of it — a query string
+// then lands in the file name, where `?` is legal on this machine and rejected
+// by the artifact upload. The copy is redundant here anyway: the Gradle copy
+// task puts the stylesheet in place and versions the import it makes.
 :stylesheet: style.css?v={theme_version}
 :linkcss:
+:copycss!:
 ifeval::["{backend}" != "pdf"]
 :imagesdir: {basedir}/assets/images/
 endif::[]
