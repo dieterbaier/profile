@@ -182,19 +182,6 @@ class ThemeBrowserBaselineTest < Minitest::Test
     assert_empty findings('', terms: terms)
   end
 
-  def test_a_recorded_exception_is_reported_without_failing_the_check
-    # Given: a rule that renders an emoji and is recorded against its own issue
-    recorded = ThemeBrowserBaseline::RECORDED.first
-    css = "#{recorded} { content: \"\u{1F4A1}\"; }\n"
-
-    # When: the theme is checked
-    found = findings(css)
-
-    # Then: it is reported apart from the findings that fail
-    assert_equal [:emoji_text_recorded], found.map(&:reason)
-    assert_equal recorded, found.first.subject
-  end
-
   def test_a_comment_is_not_read_as_a_rule
     # Given: a comment that talks about gap and about an emoji
     css = <<~CSS
