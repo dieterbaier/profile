@@ -228,3 +228,40 @@ gehört in den Workflow, was stattdessen zu tun ist — den fehlenden Nachweis i
 Commit benennen, die Prüfung nach der Integration ausführen und das Ergebnis
 festhalten. Genau das ist hier passiert, aber ohne Rückhalt im Skill, und damit
 ist es beim nächsten Mal wieder eine Einzelfallentscheidung.
+
+=== Lücke: ohne Update-Prozess ist jede Aktualisierung eine Ausgrabung
+
+Am 7. September wollte ich die übernommenen Toolkit-Artefakte auf den aktuellen
+Stand bringen. Der erste Schritt war nicht das Aktualisieren, sondern
+festzustellen, *was* überhaupt übernommen ist und wie weit es auseinanderliegt.
+
+Ein `diff` beantwortet das nicht. Er zeigt, dass zwei Dateien verschieden sind,
+und sagt nichts darüber, ob hier eine alte Kopie liegt oder ob jemand
+absichtlich daran gearbeitet hat. Die Frage entscheidet aber alles: im ersten
+Fall wird überschrieben, im zweiten verlöre Überschreiben Arbeit.
+
+Beantworten ließ es sich nur über die Historie des Toolkits — für jede Datei
+prüfen, ob ihr Blob-Hash in irgendeinem Commit unter demselben Pfad vorkommt.
+Trifft es zu, ist sie eine unveränderte Kopie eines datierbaren Standes; trifft
+es nicht zu, wurde hier daran gearbeitet. Von neun geprüften Artefakten waren
+zwei identisch, drei unveränderte Kopien vom 4. Juli und vier beidseitig
+divergiert.
+
+Das ist eine Rekonstruktion aus fremder Git-Historie, und sie funktioniert nur,
+solange das Toolkit als Checkout danebenliegt und die Pfade sich nicht geändert
+haben. Was fehlt, ist die Angabe, gegen welchen Stand ein Artefakt übernommen
+wurde — eine Versionsangabe an der Kopie oder eine Manifestdatei, irgendetwas,
+das die Frage beantwortet, ohne die Historie abzusuchen.
+
+Stromaufwärts hängt es an #63 (versionierte Distribution) und #64 (Consumer-CLI),
+beide als Epic geführt. Der kleinste brauchbare Zwischenschritt wäre keiner von
+beiden, sondern die Feststellung selbst: ein Skript, das für jede übernommene
+Datei „identisch", „veraltete Kopie von <commit> <datum>" oder „lokal verändert"
+ausgibt. Es löst das Aktualisieren nicht, aber es macht die Ausgangslage
+ablesbar statt ausgrabbar.
+
+Die Kopplung im aktuellen Bestand zeigt zugleich, warum eine reine Dateiliste zu
+wenig wäre: die drei Templates lassen sich nicht ohne Schema und Generator
+übernehmen, weil sie Fragmente inkludieren, die nur der neuere Generator
+schreibt. Ein Update-Prozess muss Artefaktgruppen kennen, nicht nur Dateien
+(lokal #111).

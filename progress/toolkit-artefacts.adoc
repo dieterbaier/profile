@@ -1,0 +1,73 @@
+= Toolkit-Artefakte aktualisieren
+
+Was dieses Repository aus dem architecture-knowledge-toolkit übernommen hat,
+soll auf dessen aktuellem Stand sein — ohne die Anpassungen zu verlieren, die
+hier absichtlich daran vorgenommen wurden.
+
+*Status:* in flight — Bestandsaufnahme steht (#111), noch nichts übernommen.
+
+== The plan
+
+Die Reihenfolge folgt dem Nutzen, nicht dem Aufwand. Der erste Schritt ist der
+einzige, der etwas bringt statt nur Gleichstand herzustellen; die beiden anderen
+sind Aufräumen.
+
+[options="checklist"]
+* [x] Feststellen, was Kopie und was Divergenz ist — #111
+* [ ] Schema, Generator und Templates zusammenführen — schließt #90, arbeitet #75 ab
+* [ ] `clock-in`/`clock-out`: Toolkit-Fassung übernehmen oder nicht, `AGENTS.md` korrigieren
+* [ ] `build.sh` und `build-agent-adapters.js` auf fehlende Korrekturen ansehen
+* [ ] Die Feststellungsmethode als Skript ablegen, damit die nächste Aktualisierung keine Ausgrabung ist
+
+Schritt 2 ist nicht teilbar. Die drei Templates verweisen auf
+`generated/…-impact.adoc` und `…-attributes.adoc` und werten
+`derived_from_description` aus; die Fragmente schreibt nur der Toolkit-Generator,
+das Attribut kennt nur das Toolkit-Schema. Eines davon einzeln zu übernehmen
+ergibt eine Ausgabe mit fehlenden Includes.
+
+== Where we are
+
+Nichts ist übernommen. Der Bestand steht in #111, mit der Methode, die ihn
+erhoben hat: für jede Datei prüfen, ob ihr Inhalt *irgendeinem* historischen
+Toolkit-Stand entspricht. Das trennt die veraltete Kopie von der bewusst
+angepassten Datei, was ein `diff` allein nicht kann.
+
+Ergebnis in Kürze: `relations.schema.yaml` und `check-agent-adapters.js` sind
+identisch. Die drei Templates sind unveränderte Kopien von `797e949` vom
+4. Juli. `artifact.schema.yaml`, `validate-metamodel.rb`,
+`build-agent-adapters.js` und `build.sh` sind lokal verändert und müssen
+zusammengeführt statt überschrieben werden.
+
+Die Divergenz von Schema und Generator geht in beide Richtungen: hier
+`priority` und die Einseiten-Ausgabe (`aggregate_entry`), dort `derived_from`
+und die Impact- und Attributes-Fragmente.
+
+== Open in this topic
+
+* Ob die Toolkit-Fassungen von `clock-in`/`clock-out` übernommen werden. Sie
+  sind keine generalisierte Fassung der lokalen, sondern führen ein privates
+  Journal als eigene Ebene ein. Das ist eine Entscheidung über den Arbeitsablauf,
+  keine Aktualisierung.
+* Ob `priority` im Schema stromaufwärts gehört oder hier bleibt. Solange es hier
+  bleibt, ist jede Schema-Aktualisierung wieder eine Zusammenführung (#75,
+  docs-as-code-toolkit#26).
+
+Dass das Toolkit keinen Update-Prozess hat, steht in
+`diary/toolkit-validation.adoc`: das überlebt dieses Thema und gehört
+stromaufwärts an #63 und #64.
+
+== Checks
+
+Commands, not results. A number copied in here goes stale silently.
+
+[source,sh]
+----
+TK=../architecture-knowledge-toolkit
+diff metamodel/artifact.schema.yaml $TK/metamodel/artifact.schema.yaml
+diff scripts/validate-metamodel.rb $TK/scripts/validate-metamodel.rb
+for f in templates/adr.adoc templates/quality-scenario.adoc templates/risk.adoc; do
+  diff "$f" "$TK/$f"
+done
+./gradlew validateArchitectureMetamodel generateArchitectureArtifacts
+./gradlew buildArchitecture
+----
