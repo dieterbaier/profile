@@ -141,6 +141,21 @@ class ThemeAssetVersioningTest < Minitest::Test
     end
   end
 
+  def test_a_file_name_written_in_prose_is_not_a_reference
+    # Given: a page that mentions article-comments.js in a sentence
+    assets = THEME.merge('article-comments.js' => "// comments\n")
+    version = ThemeVersion.version(assets)
+    prose = '<p>German status strings live in <code>src-content/theme/article-comments.js</code>.</p>'
+    link = %(<link rel="stylesheet" href="./stylesheet/style.css?v=#{version}">)
+    pages = { 'adr.html' => "#{prose}\n#{link}\n" }
+
+    with_target(pages, assets: assets, version: version) do |stale|
+      # When: the target is checked
+      # Then: nothing is reported, because a name in prose asks for no file
+      assert_empty stale
+    end
+  end
+
   def test_a_name_that_ends_in_another_assets_name_is_not_mistaken_for_it
     # Given: a page linking shortsmenuactivation.css with the current version
     assets = {

@@ -98,10 +98,19 @@ Dieter Baier
 :stylesdir: ../../theme
 :iconsdir: {stylesdir}/icons
 :icons: image
+ifndef::theme_version[]
+:theme_version: dev
+endif::[]
 ifdef::buildsite[]
 :stylesdir: ./stylesheet
 :iconsdir: ./assets/icons
+// Versioned like the profile pages, so a changed theme reaches a reader who
+// still holds the previous one. :copycss!: because AsciiDoc otherwise writes the
+// stylesheet to a file named by this value, and a query string in a file name is
+// rejected by the artifact upload.
+:stylesheet: style.css?v={theme_version}
 :linkcss:
+:copycss!:
 endif::[]
 :docinfo: shared
 :docinfodir: {includesdir}/../docinfo/

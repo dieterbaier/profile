@@ -210,6 +210,8 @@ verifyThemeVersions('verifySiteThemeVersions', 'build/site', 'build/site',
         ['buildSite', 'buildSiteCopyAssets', 'buildCVSiteCopyAssets'])
 verifyThemeVersions('verifyPrivateSiteThemeVersions', 'build/site-private', 'build/site-private',
         ['buildSitePrivate', 'buildSitePrivateCopyAssets'])
+verifyThemeVersions('verifyArchitectureThemeVersions', 'build/architecture', 'build/architecture',
+        ['buildArchitecture', 'buildArchitectureCopyAssets'])
 
 // Asked of the theme source rather than of a rendered target, because the
 // failure is not in the rendering: a browser that does not understand a
@@ -1322,6 +1324,7 @@ asciidoctorBase('buildArchitecture','','src-content/docs/arc42', 'build/architec
 
 tasks.named('buildArchitecture') {
     dependsOn tasks.named('generateArchitectureArtifacts')
+    finalizedBy tasks.named('verifyArchitectureThemeVersions')
 }
 
 tasks.named('buildReadmeDocbook') {

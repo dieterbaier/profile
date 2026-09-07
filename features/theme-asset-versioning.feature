@@ -64,6 +64,11 @@ Feature: Theme asset versioning
     When the target is checked
     Then its import is checked, because no page mentions that file
 
+  Scenario: A file name written in prose is not a reference
+    Given a page that mentions article-comments.js in a sentence
+    When the target is checked
+    Then nothing is reported, because a name in prose asks for no file
+
   Scenario: A name that ends in another asset's name is not mistaken for it
     Given a page linking shortsmenuactivation.css with the current version
     When the target is checked

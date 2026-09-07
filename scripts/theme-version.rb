@@ -63,15 +63,27 @@ module ThemeVersion
     digest.hexdigest[0, LENGTH]
   end
 
-  # A reference to one of the assets, wherever a rendered file makes one: an
-  # HTML `href`/`src`, or an `@import` in a stylesheet or an inline `<style>`.
-  # Matching the file name rather than a URL shape keeps this indifferent to how
-  # the reference was written and to how deep in the tree it sits.
+  # Where a rendered file asks for something: an HTML `href`/`src`, or an
+  # `@import` in a stylesheet or an inline `<style>`.
   #
-  # The lookbehind is what keeps `menuactivation.css` from matching inside
-  # `shortsmenuactivation.css`.
-  def reference_pattern(asset)
-    /(?<![\w.-])#{Regexp.escape(asset)}(\?[^"'\s)>]*)?/
+  # The URL is read first and the file name taken from it, rather than the file
+  # name being looked for in the text. The architecture output is written about
+  # this repository and names its own files in prose — `article-comments.js`
+  # appears twice inside an ADR — and a name in a sentence is not a request for
+  # a file. Reading the URL also settles `menuactivation.css` against
+  # `shortsmenuactivation.css`: the names are compared whole.
+  URL_IN_MARKUP = /(?:href|src)\s*=\s*["']([^"']+)["']/i.freeze
+  URL_IN_IMPORT = /@import\s+(?:url\(\s*)?["']([^"']+)["']/i.freeze
+
+  def urls(text)
+    found = []
+
+    text.each_line.with_index(1) do |line, number|
+      line.scan(URL_IN_MARKUP) { |(url)| found << [url, number] }
+      line.scan(URL_IN_IMPORT) { |(url)| found << [url, number] }
+    end
+
+    found
   end
 
   # References that do not carry the current version, so a browser holding the
@@ -103,20 +115,16 @@ module ThemeVersion
   end
 
   def stale_in(text, relative, names, expected)
-    found = []
+    urls(text).filter_map do |url, number|
+      path, separator, query = url.partition('?')
+      asset = File.basename(path)
+      next unless names.include?(asset)
 
-    text.each_line.with_index(1) do |line, number|
-      names.each do |asset|
-        line.scan(reference_pattern(asset)) do
-          query = Regexp.last_match(1)
-          next if query == expected
+      carried = separator.empty? ? nil : "?#{query}"
+      next if carried == expected
 
-          found << Reference.new(file: relative, line: number, asset: asset, found: query)
-        end
-      end
+      Reference.new(file: relative, line: number, asset: asset, found: carried)
     end
-
-    found
   end
 end
 

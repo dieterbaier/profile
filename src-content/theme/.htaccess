@@ -36,10 +36,19 @@
     Header set Cache-Control "public, no-cache"
   </FilesMatch>
 
-  # Versioned URLs, so the content behind one of them never changes. A changed
-  # file is a changed URL and is fetched because it was never seen before.
+  # `immutable` is the promise that what lives at a URL never changes, and only
+  # a versioned URL can keep it. Tied to the query rather than to the file name,
+  # because the file is the same either way and the URL is not: the architecture
+  # output links this very stylesheet without a version, and for a while it was
+  # served frozen for a year with no revalidation to correct it.
+  #
+  # Without a version, an hour. Long enough to be worth caching, short enough
+  # that a mistake corrects itself rather than outliving the deploy that made it.
+  SetEnvIf Query_String "(^|&)v=" versioned_asset
+
   <FilesMatch "\.(css|js)$">
-    Header set Cache-Control "public, max-age=31536000, immutable"
+    Header set Cache-Control "public, max-age=31536000, immutable" env=versioned_asset
+    Header set Cache-Control "public, max-age=3600" env=!versioned_asset
   </FilesMatch>
 
   # Fonts carry the version they were vendored at in their file name, which
