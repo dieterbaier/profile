@@ -40,8 +40,6 @@
 :ui_cv_nav_projects: Projects
 :ui_cv_nav_education: Professional development
 :ui_author_prefix: Author:
-:ui_language_flag_de: 🇦🇹
-:ui_language_flag_en: 🇬🇧
 :ui_article_list_back: Back to the article overview
 :ui_article_list_show_all: Show all articles
 :ui_article_list_recent: The most recently published articles:

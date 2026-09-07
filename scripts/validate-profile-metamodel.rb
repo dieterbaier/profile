@@ -548,18 +548,24 @@ class ProfileArtifactValidator
   # itself rather than as a separate block. The visible label is a flag; the
   # language name stays on title and aria-label, because a flag alone is not an
   # accessible name and stands for a country rather than a language.
+  #
+  # The flag is named as a class and drawn by the stylesheet, rather than
+  # written as a character. As text it is a pair of regional indicator
+  # characters, and only a font carrying the flag ligature turns those into a
+  # flag; a device without one shows the two letters they are made of, which is
+  # what a television browser does. Nothing in the build reports that, because
+  # the character is rendered exactly as asked — just not as a flag.
   def render_language_switcher(current_language, variants, current_source)
     entries = variants.keys.sort.map do |language|
-      flag = "{ui_language_flag_#{language}}"
       name = "{ui_language_name_#{language}}"
 
       if language == current_language
-        "            <span class=\"language-switch-current\" lang=\"#{language}\" title=\"#{name}\" " \
-          "aria-current=\"true\">#{flag}</span>"
+        "            <span class=\"language-switch-current flag-#{language}\" lang=\"#{language}\" " \
+          "title=\"#{name}\" aria-current=\"true\"></span>"
       else
         href = h(page_link_href(current_source, variants[language]))
-        "            <a href=\"#{href}\" lang=\"#{language}\" hreflang=\"#{language}\" title=\"#{name}\" " \
-          "aria-label=\"#{name}\">#{flag}</a>"
+        "            <a class=\"flag-#{language}\" href=\"#{href}\" lang=\"#{language}\" " \
+          "hreflang=\"#{language}\" title=\"#{name}\" aria-label=\"#{name}\"></a>"
       end
     end
 
