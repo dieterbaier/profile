@@ -58,6 +58,7 @@ Generated artifacts are uploaded once and consumed by separate deploy jobs. Each
 |===
 | Target | Credential | Reason
 | GitHub profile README | `PROFILE_REPO_TOKEN` repository secret | Cross-repository push to `dieterbaier/dieterbaier` requires write access to the target repository.
+| Article comments allowlist | `ARTICLE_COMMENTS_REPO_TOKEN` repository secret | Cross-repository push to `dieterbaier/profile-artikelkommentare` requires write access to the target repository.
 | GitLab profile README | `GITLAB_TOKEN` repository secret | GitLab push requires a GitLab credential independent of GitHub Actions.
 | Personal website and architecture documentation | `SFTP_PASSWORD` production environment secret plus `SFTP_*` variables | Private webspace deployment is external to GitHub and uses SFTP.
 | Personal contact data | `SITE_*` production environment secrets | Private data is injected only during CI generation and is not stored in source files.
