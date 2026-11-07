@@ -1308,6 +1308,20 @@ tasks.register('testPrivateCheckoutContract') {
     }
 }
 
+tasks.register('testCredentialCheck') {
+    description = 'Runs the credential check behaviour tests.'
+    group = 'verification'
+    inputs.files('scripts/check-token-expiry.rb', 'scripts/check-git-write-access.sh',
+                 '.github/workflows/check-credentials.yml', '.github/workflows/update-profile.yml',
+                 'test/credential_check_test.rb', 'features/credential-check.feature')
+
+    doLast {
+        exec {
+            commandLine 'ruby', '-Itest', 'test/credential_check_test.rb'
+        }
+    }
+}
+
 tasks.register('testSiteMetadata') {
     description = 'Runs the canonical public-site metadata behaviour tests.'
     group = 'verification'

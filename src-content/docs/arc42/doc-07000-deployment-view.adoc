@@ -54,4 +54,6 @@ The publication targets are defined by accepted xref:adr-008-private-to-public-a
 
 The GitHub profile README is deployed to a different repository than the workflow source repository. The default `GITHUB_TOKEN` is intentionally not used for this cross-repository push; it is scoped to the workflow repository. `PROFILE_REPO_TOKEN` therefore has to be rotated when it expires or when GitHub reports `Bad credentials` during the `checkout github profile repo` step.
 
+The `Check credentials` workflow proves the credentials above without deploying, see xref:doc-06002-site-operations-runtime[DOC-06002]. How to renew them is described in `docs/howto/rotate-deployment-credentials.adoc`.
+
 Preview and private deployments are intentionally separated from the public website deployment and require Basic Auth. The public target emits canonical links for published pages from the deployment-specific `SITE_BASE_URL`; preview and private targets must emit `noindex` metadata and omit canonical links.

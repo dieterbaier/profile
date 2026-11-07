@@ -317,7 +317,7 @@ Credential ownership:
 | `SFTP_*` variables | `production` environment variables in `dieterbaier/profile` | Configure SFTP target host, port, user, and remote base path | Non-secret deployment configuration |
 | `SITE_BASE_URL` | `production` environment variable in `dieterbaier/profile` | Derive canonical URLs for generated public HTML pages | Non-secret public HTTPS URL; the production build fails when it is missing or invalid |
 
-To renew a credential, or to find out which one failed, see [Rotate deployment credentials](docs/howto/rotate-deployment-credentials.adoc).
+To renew a credential, or to find out which one failed, see [Rotate deployment credentials](docs/howto/rotate-deployment-credentials.adoc). The `Check credentials` workflow proves all of them without deploying, weekly and on manual dispatch.
 
 The pipeline builds and deploys
 
@@ -338,6 +338,7 @@ When article sources change, the pipeline also builds Markdown exports under `bu
 .github/
   workflows/
     update-profile.yml  # The CI/CD github action description
+    check-credentials.yml # Proves the deployment credentials without deploying
 docs/
   howto/                # Operating instructions, e.g. rotating deployment credentials
 src-content/
