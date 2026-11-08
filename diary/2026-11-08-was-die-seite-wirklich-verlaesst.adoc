@@ -172,8 +172,8 @@ Plausibel war der Satz, weil der Export existierte und Arbeit machte, und Arbeit
 sieht nach Bedarf aus. `8ffef9c` filterte unveröffentlichte Artikel aus ihm heraus,
 `3e62b5d` brachte ihm die Assets, und am 29. August stand er in `through-line` und
 `open-threads`. Jede dieser Änderungen setzte voraus, dass jemand die Dateien
-liest. Im Workflow nannte sie kein Schritt, und ich lud sie auch nicht von Hand
-herunter.
+liest. Im Workflow nannte sie kein Schritt, und ich veröffentlichte keinen Artikel
+als Markdown.
 
 Ich selbst hatte eine andere Erklärung, und auch die war falsch: Die Dateien unter
 `build/articles` stammten wohl aus der Generierung der Zusammenfassungen. Die
@@ -181,7 +181,7 @@ Architekturdoku stützte das. `doc-05000` zeigte seit `8777423` vom 7. Juli den 
 `[buildArticlesMarkdown] --> SummaryGenerator`. Der Assistent prüfte es, statt dem
 Diagramm zu glauben: `./gradlew generateArticleSummaries --dry-run` führte nur diesen
 einen Task aus, und das Skript las AsciiDoc-Quellen und Sidecars direkt. `COMP-006`
-nannte die Eingaben die ganze Zeit richtig. Zwei Stellen derselben Doku widersprachen
+nannte die Eingaben richtig. Zwei Stellen derselben Doku widersprachen
 sich, und gerendert wurde der falsche Pfeil trotzdem bei jedem Build.
 
 === Einen Kanal zu streichen war eine Vertragsänderung
