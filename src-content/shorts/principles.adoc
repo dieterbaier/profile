@@ -12,7 +12,6 @@ include::{includesdir}/../../revinfo.adoc[]
 :active: shorts
 include::{includesdir}/docheader.adoc[]
 
-:shorts_active: principles
 include::shortsnav.adoc[]
 
 toc::[]

@@ -12,7 +12,6 @@ include::{includesdir}/../../revinfo.adoc[]
 :active: shorts
 include::{includesdir}/docheader.adoc[]
 
-:shorts_active: ddd
 include::shortsnav.adoc[]
 
 [quote, nach Allen Holub]
