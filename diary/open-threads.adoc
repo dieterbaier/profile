@@ -225,3 +225,42 @@ ablehnt. Sie fände #105 lokal beim ersten `buildAll` und braucht keine Secrets.
 Der Auslöser, es zu entscheiden, wäre der erste Fehler dieser Art, der nicht am
 selben Tag auffällt — oder der erste, der zwischen Merge und Deploy auf `main`
 stehen bleibt.
+
+=== Was aus der Antwort von STRATO folgt
+
+`legal.adoc` sagt öffentlich, dass ich einzelne nicht anonymisierte Einträge
+gefunden habe und das mit STRATO kläre. Die Anfrage ging am 7. November raus, die
+Antwort steht aus.
+
+Sobald sie da ist: die heruntergeladene Logdatei löschen, wie der Text es zusagt,
+und den Satz in beiden Sprachfassungen an das Ergebnis anpassen. Der offene Absatz
+im Artikel `privacy-im-qualitaetsbaum` in `profile-private` hängt an derselben
+Antwort.
+
+=== Ob der Rechtstext eine anwaltliche Prüfung bekommt
+
+Der Text ist aus Anbieterangaben und Messungen geschrieben, nicht geprüft. Die
+Einwilligung per Klick (Art. 6 Abs. 1 lit. a) beim Laden der Kommentare ist eine
+Abwägung, kein gesicherter Befund. Auslöser für eine Prüfung wäre eine Abmahnung,
+eine neue Einbindung eines Dritten oder der Wunsch, die Seite kommerziell zu nutzen.
+
+=== Ob etwas verhindert, dass wieder ein Fragment gerendert wird
+
+#125 hat die drei Seiten mit Google Fonts entfernt, nicht den Mechanismus. Jede
+`.adoc` unter `src-content/profile/site` ohne Docheader wird wieder eine eigene
+Seite mit Asciidoctors Standard-Stylesheet. Eine Prüfung über das gerenderte
+`build/site` auf externe Ressourcen fände das lokal und ohne Secrets, und sie würde
+auch die Aussage „keine Verbindung zu GitHub ohne Klick“ dauerhaft absichern. Heute
+beruht das auf einem einmaligen Scan.
+
+Auslöser wäre das nächste Fragment unter `site/` oder der nächste Eingriff in den
+Rechtstext.
+
+=== Convergence Check für #125 bis #127
+
+Nachgeholt am 8. November, nach dem Merge. Zwei Befunde:
+
+* #118 nannte den gewachsenen Umfang (Art. 13, Hinweis am Block, URL-Fix) nur im PR.
+* #123 ändert sichtbares Verhalten (Menü, entfernte Seiten) ohne Gherkin-Szenario
+  und ohne festgehaltenen Waiver. Das entscheide ich als Owner: Szenario nachziehen
+  oder Waiver mit Begründung in #123 festhalten.

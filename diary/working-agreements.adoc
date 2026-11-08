@@ -137,3 +137,19 @@ neben dem Link eine Datei `style.css?v=c552d7d869`, weil `:copycss:` denselben
 Wert als Namen nimmt. `?` ist lokal ein zulässiges Zeichen, der Build lief
 durch, und `actions/upload-artifact` brach ab — nach dem Rendern, auf `main`,
 mit übersprungenen Deploys (#105).
+
+Ein Feature mit neuem Datenfluss prüft den Rechtstext im selben Issue.:: Kosten:
+„Keine personenbezogenen Daten“ stand vom 19. Juli bis zum 8. November neben einer
+Kommentarfunktion, die den Browser mit GitHub verbindet, und wurde dazwischen noch
+ins Englische übersetzt (#44, #126).
+
+Vor einer Integration wird der Integrationsabschnitt des Workflow-Skills gelesen,
+nicht aus der Historie geschlossen.:: Kosten: drei Squash-Merges statt Rebase und
+ein übersprungener Convergence Check, dessen zwei Befunde erst beim Clock-out
+auftauchten (#125, #126, #127).
+
+Gestapelte Branches werden per expliziter Commit-Liste übertragen, sobald einer
+davon umgeschrieben ist.:: Kosten: `issue_118..issue_124` umfasste nach dem
+Rebase von `issue_118` den ganzen Stapel. Der Rebase lief in Konflikte, das Skript
+weiter, und nur der unverändert gebliebene Ref und ein abgelehnter Merge verhinderten
+Schaden (#127).

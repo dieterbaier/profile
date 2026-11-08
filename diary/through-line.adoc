@@ -169,3 +169,23 @@ liegt. Alle fünf Instanzen waren erst an der Zielumgebung zu sehen: an einem
 Fernseher, in einem Browserfenster, an einer HTTP-Kopfzeile. Ein grüner Build
 kann über keine von ihnen etwas aussagen, und das ist keine Nachlässigkeit der
 Prüfungen, sondern ihre Reichweite.
+
+=== Nachtrag vom 2026-11-08
+
+Drei neue Instanzen, jede in einer vorhandenen Kategorie. Eine neue Kategorie war
+nicht nötig.
+
+`git push --dry-run` (2026-11-08):: Dritte Kategorie. Behauptete den Schreibzugriff
+auf `main`. Der frische Klon ist `up-to-date`, und ohne Ref-Update gibt es nichts,
+woran der Server scheitern könnte. Gefangen hat es: ein echter Push gegen einen
+`pre-receive`-Hook im Review von #115.
+
+Ein `<link>` auf Google Fonts in Fragmenten ohne Docheader (2026-11-08):: Vierte
+Kategorie. Niemand hatte ihn hingeschrieben, und die Suche im Quelltext fand nur
+eine auskommentierte Zeile; er entstand beim Rendern. Sechs Monate live. Gefangen
+hat es: der Scan über `build/site` statt über das Repository (#125).
+
+„Im Repo wird gesquasht“ (2026-11-08):: Erste Kategorie, wörtlich. Ein einziger
+Merge mit `(#115)` im Titel wurde zur Konvention, und `--squash` lief dreimal.
+Gefangen hätte es: `implement-issue-workflow` lesen oder #122 ansehen, der am selben
+Tag mit Rebase kam.

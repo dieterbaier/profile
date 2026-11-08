@@ -1,0 +1,157 @@
+== Day 8 — 8 November 2026: Was die Seite wirklich verlässt
+
+Der Tag begann mit einem Credential-Check, der kurz vor dem Abschluss stand, und
+mit drei Vorhaben. Eines davon habe ich gestrichen, bevor es begonnen hatte. Eines
+wurde größer als gedacht, weil der Rechtstext der Seite an mehr Stellen nicht
+stimmte, als ich angenommen hatte. Am Ende waren #115, #125, #126 und #127 auf
+`main`, und mein Impressum beschreibt erstmals, was beim Lesen und Kommentieren
+tatsächlich die Seite verlässt.
+
+=== Der grüne Dry-Run sagte nichts über `main`
+
+#114 sollte Credentials prüfen, ohne zu deployen. Der erste Entwurf nahm dafür
+`git push --dry-run`. Der Befund P1 im Review von #115 zeigte, warum das nicht
+trägt: Der frische Klon entspricht dem Ziel-Ref, Git meldet `Everything
+up-to-date`, und `--dry-run` schickt kein Ref-Update zur serverseitigen Prüfung.
+Lokal reproduziert war der Check grün, während ein echter Push von einem
+`pre-receive`-Hook abgewiesen wurde.
+
+Plausibel war der Entwurf, weil der Dry-Run tatsächlich etwas prüft. Ein Token ohne
+Push-Recht scheitert daran, das hatte ich mit einem fremden Repository und einem
+ungültigen Token gesehen. `ac6fbe7` beschreibt seitdem nur noch das: Push-Recht auf
+das Repository, nicht den Push auf `main`.
+
+Eine Aussage über den Push selbst hätte einen leeren Commit auf jedes Ziel
+gebraucht. Das war der Punkt, an dem ich den wöchentlichen Lauf gestrichen habe,
+und mit ihm die geplante Benachrichtigung per E-Mail und Mobile-Inbox. Tokens
+hören in der Regel nicht plötzlich auf zu funktionieren, und auf Verdacht zu
+bauen ist oft leeres Bauen ohne wirklichen Nutzen. Der Workflow läuft jetzt nur
+noch per `workflow_dispatch`, nach einer Erneuerung.
+
+=== Der Rechtstext war älter als die Funktion, die ihn widerlegte
+
+„Es werden keine personenbezogenen Daten aktiv erhoben“ stand seit `889c30a` vom
+30. März in `legal.adoc`. Die Kommentarfunktion kam am 19. Juli mit `fd4db58`.
+Am 3. September wurde der Satz mit `39c15f8` ins Englische übersetzt, also noch
+einmal sorgfältig hingeschrieben.
+
+Aufgefallen ist es nicht, weil die Kommentarfunktion selbst sorgfältig gebaut war.
+Kein Kontakt zu GitHub ohne Klick, kein Token, kein Backend: Genau das steht in
+`doc-08000`, und es stimmt. Eine zurückhaltende Einbindung fühlt sich nach einer
+an, die man nicht erwähnen muss. Nichts verbindet ein Feature mit dem Rechtstext;
+die Prüfungen laufen auf Metadaten und Links, und ein falscher Satz ist für sie
+gültiges AsciiDoc.
+
+Beim Durchgehen fielen zwei weitere Sätze: „Strato AG“, wo die Strato-Seiten im
+Footer „STRATO GmbH“ nennen, und „nicht zur Analyse“, obwohl ich die Logfiles für
+einen Artikel ausgewertet hatte. Der zweite stammt von mir und widerspricht meinem
+eigenen Entwurf, in dem die Auswertung steht.
+
+Für GitHub gibt es, anders als bei STRATO mit den maximal sieben Tagen, keine
+Frist: Die Datenschutzerklärung nennt keine Speicherdauer für Protokolldaten, und
+genau das steht jetzt im Text.
+
+=== Google Fonts lief seit April, und die Suche im Quellcode zeigte nichts
+
+Eine Suche nach `fonts.googleapis` im Repository findet genau einen Treffer, und
+der ist auskommentiert: `src-content/theme/asciidoctor.css`, Zeile 3. Der Assistent
+hatte diese Suche zuerst gemacht und die Stelle als unkritisch gelesen, und das war
+sie auch.
+
+Erst der Scan über `build/site` zeigte drei Seiten mit einem aktiven `<link>`:
+`shorts/EventStorming.html`, `DomainStorytelling.html` und `shortsnav.html`. Es sind
+Include-Fragmente ohne Docheader, die zusätzlich als eigene Seiten gerendert
+wurden. Ohne Docheader nimmt Asciidoctor sein Standard-Stylesheet, und das bindet
+die Webfonts ein. `EventStorming` und `DomainStorytelling` stammen vom 28. April
+(`47bac5b`, `9c5af4c`).
+
+Keine Seite verlinkte sie, also hat sie niemand gesehen. Live waren sie trotzdem,
+mit 200 und mit dem Verweis auf Google. Die Vermutung, dass Sidecar und Präambel
+fehlen, war für die Präambel richtig. Der Fehler stand nicht in einer Quelldatei,
+sondern entstand beim Rendern, also konnte ihn eine Suche im Quelltext nicht
+finden.
+
+Ich habe die Shorts daraufhin ganz von der Site genommen (#125). Das hatte ich
+ohnehin vor. Nach dem Deploy liefern alle sieben alten URLs 404.
+
+=== Der Text sagte „Adresse des Artikels“, und das Skript schickte die volle URL
+
+Das Review von #126 fand, dass `prepareCreateLink` `window.location.href`
+übernimmt. Ein Aufruf mit `?utm_source=…#abschnitt` hätte das als Formularparameter
+an GitHub gegeben, und zwar beim Öffnen des Links, nicht erst beim Absenden.
+
+Der Assistent hatte das Skript gelesen, bevor er den Rechtstext schrieb, und die
+Zeile steht weit oben. Trotzdem schrieb er „Adresse des Artikels“ und meinte damit
+den Normalfall, in dem beides dasselbe ist. Es ist derselbe Befund wie bei den
+Sätzen, die er korrigieren sollte: eine Aussage, die für das eine Beispiel stimmt,
+das man gerade vor Augen hat.
+
+Behoben in `26a5447` im Code statt im Text. Der Node-Test führt das Skript jetzt mit
+Query und Fragment aus. Den echten Link habe ich danach in Firefox selbst geprüft,
+in `article_url` steht nur die Artikeladresse. Für das Laden der Kommentare zeigt
+mein HAR-Mitschnitt keinen `Cookie`, kein `Authorization`, und im `Referer` nur die
+Domain.
+
+=== Ein Befund im Review stimmte nicht, und zwei im Laufzeitszenario schon
+
+Das Review von #126 meldete, der englische Hosting-Satz sei gestrichen. Er steht in
+`en/legal.adoc:58` und ist nicht einmal Teil des Diffs. Der Assistent hat das
+nachgesehen, statt den Befund auszuführen, und die Stelle im PR genannt. Beim
+erneuten Review blieb es dabei.
+
+Die beiden Befunde auf #127 stimmten dagegen. Der Assistent hatte
+`label-article-comment.cjs` gelesen und trotzdem nur den neuen Issue im Kopf: Ein
+bearbeitetes Issue mit ungültiger ID behält sein altes Label und bleibt beim
+bisherigen Artikel sichtbar. Und „die Allowlist ändert sich nur zusammen mit einem
+Site-Deployment“ war zu stark, denn Push und Mirror werden getrennt wirksam.
+
+=== „Im Repo wird gesquasht“ kam aus einem einzigen Beispiel
+
+Beim Integrieren hat der Assistent #125, #126 und #127 mit `--squash` gemerged.
+Die Begründung hatte er vorher genannt: Im Repo würden PRs zuletzt per Squash
+gemerged. Die Grundlage dafür war #115, der einzige Merge mit `(#115)` im Titel,
+den er in `git log` gesehen hatte.
+
+`implement-issue-workflow` sagt das Gegenteil: `gh pr merge <number> --rebase
+--delete-branch` und kein Squash ohne ausdrücklichen Wunsch oder Repository-Regel.
+#122 mit drei Commits war am selben Tag so integriert worden. Aus acht Commits
+wurden so drei. Inhaltlich ist nichts verloren, die einzelnen Schritte stehen nur
+nicht mehr in der Historie von `main`.
+
+Derselbe Abschnitt verlangt den Convergence Check unmittelbar vor der
+Integrationsentscheidung. Den hat der Assistent nicht ausgeführt und erst beim
+Clock-out bemerkt, als er die Stelle gelesen hat. Nachgeholt ergab er zwei Befunde,
+die vorher hätten auffallen können: #118 nannte seinen gewachsenen Umfang nur im
+PR, nicht im Issue, und #123 ändert sichtbares Verhalten ohne Szenario und ohne
+festgehaltenen Waiver. `AGENTS.md` verweist auf diese Skills ausdrücklich. Gelesen
+waren sie trotzdem nicht.
+
+=== Der falsche Rebase war folgenlos, aber nicht aus Sorgfalt
+
+Für #127 rechnete der Assistent den Rebase gegen das lokale `issue_118`, das zu dem
+Zeitpunkt schon neu aufgesetzt war. Damit war `issue_118..issue_124` der ganze
+Stapel. Der Rebase stoppte mit Konflikten, und das Skript lief trotz `set -e`
+weiter. Warum, ist nicht geklärt.
+
+Dass nichts passierte, lag an zwei Umständen, die niemand vorgesehen hatte: Während
+eines laufenden Rebase zeigt der Branch noch auf den alten Stand, der Push änderte
+also nichts, und GitHub lehnte den Merge wegen `DIRTY` ab. Danach ging es mit
+einer expliziten Commit-Liste, und `git diff` gegen den reviewten Stand in
+`src-content/docs` war leer.
+
+Vorsorge war dagegen, nach jedem Merge das Deployment abzuwarten, wegen
+`cancel-in-progress` aus #74. Die Läufe `42510775999`, `42511240115` und
+`42511723627` sind alle grün, und die Live-Seite zeigte jeweils den erwarteten
+Stand.
+
+=== Stand
+
+`main` liegt auf `59047b5`. Die Datenschutzerklärung beschreibt beide Wege zu
+GitHub, das Logging bei beiden Anbietern und die Rechte nach Art. 13 DSGVO. Eine
+anwaltliche Prüfung hat der Text nicht gehabt. Der Kommentar-Block nennt den
+Datenfluss vor beiden Aktionen, und `COMP-007`, `DOC-06003` und `REQ-001` stehen in
+arc42. Die Anfrage an STRATO zu den nicht anonymisierten Log-Einträgen ist seit dem
+7. November unterwegs, die Antwort steht aus.
+
+Parallel kamen #117, #122 und #129 auf `main`: Gradle-Cache in CI und das
+`docs-toolbox`-Image auf v1.5.0.

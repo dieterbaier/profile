@@ -265,3 +265,21 @@ wenig wäre: die drei Templates lassen sich nicht ohne Schema und Generator
 übernehmen, weil sie Fragmente inkludieren, die nur der neuere Generator
 schreibt. Ein Update-Prozess muss Artefaktgruppen kennen, nicht nur Dateien
 (lokal #111).
+
+=== Der Workflow-Skill hatte recht, und niemand hatte ihn gelesen (2026-11-08)
+
+Bestätigt, und zwar durch Verstoß: `implement-issue-workflow` schreibt `--rebase`
+und den Convergence Check unmittelbar vor der Integration vor. Beides wurde bei #125
+bis #127 ausgelassen, obwohl `AGENTS.md` auf den Skill verweist. Der nachgeholte
+Check fand zwei echte Befunde. Die Anleitung braucht keine Änderung; der Verweis in
+`AGENTS.md` reicht aber offenbar nicht, damit sie im entscheidenden Moment gelesen
+wird.
+
+Der Skill kennt außerdem keine gestapelten Pull Requests: wie ein Stapel nach dem
+ersten Merge weitergeführt wird, steht nirgends. Mit Rebase-Merges wäre das Problem
+kleiner gewesen, aber nicht weg, denn neue Commit-IDs entstehen auch dort.
+
+Der Typ `Requirement` steht im Metamodell, aber unter `skills/` im Toolkit erwähnt
+ihn keine Datei, und hier gibt es kein einziges Artefakt davon. `REQ-001` steht
+deshalb als Tabellenzeile in `doc-03000`, wie die Business Goals. Das wäre eine Frage
+an das Toolkit: entweder eine Anleitung oder den Typ streichen.
