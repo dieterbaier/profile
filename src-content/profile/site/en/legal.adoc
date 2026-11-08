@@ -53,7 +53,7 @@ Personal data arises in three cases: at the hosting provider as soon as you open
 
 === Hosting
 
-This website is hosted by an external service provider (STRATO GmbH).
+This website is hosted by an external service provider (STRATO GmbH). STRATO processes the data on my behalf; a data processing agreement under Art. 28 GDPR is in place.
 
 When the website is accessed, the hosting provider automatically records information (e.g. IP address, time of access, requested resources).
 

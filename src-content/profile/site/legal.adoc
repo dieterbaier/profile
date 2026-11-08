@@ -52,7 +52,7 @@ Personenbezogene Daten fallen in drei Fällen an: beim Hosting-Anbieter, sobald 
 
 === Hosting
 
-Diese Website wird bei einem externen Dienstleister (STRATO GmbH) gehostet.
+Diese Website wird bei einem externen Dienstleister (STRATO GmbH) gehostet. STRATO verarbeitet die Daten in meinem Auftrag; eine Vereinbarung zur Auftragsverarbeitung nach Art. 28 DSGVO ist abgeschlossen.
 
 Beim Aufruf der Website erfasst der Hosting-Anbieter automatisch Informationen (z. B. IP-Adresse, Zeitpunkt des Zugriffs, angeforderte Ressourcen).
 
