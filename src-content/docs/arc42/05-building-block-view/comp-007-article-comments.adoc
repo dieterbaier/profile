@@ -59,7 +59,7 @@ It does not own:
 | Part | Responsibility | Location
 | Comment block generator | Generates the block from article metadata, for the website target only. Its wording stays attribute references, resolved per page language. | `render_article_comments` in `scripts/validate-profile-metamodel.rb`
 | Interface terms | Provide the wording per language, including the wording the script shows. | `ui_comments_*` in `src-content/profile/includes/i18n/`
-| Browser script | Completes the link with the page URL and loads the list on request. It holds no wording and no token. | `src-content/theme/article-comments.js`
+| Browser script | Completes the link with the address of the article, without query and fragment, and loads the list on request. It holds no wording and no token. | `src-content/theme/article-comments.js`
 | Allowlist | Lists the article IDs eligible for comments, derived from published website articles. | `build/article-comments/allowed-article-ids.json`, copied to `config/allowed-article-ids.json` in `dieterbaier/profile-artikelkommentare`
 | Issue form | Takes article ID, title, URL, the comment, and the acknowledgement that it is public. | `.github/ISSUE_TEMPLATE/artikelkommentar.yml` in `dieterbaier/profile-artikelkommentare`
 | Labelling workflow | Validates the submitted article ID against the allowlist and assigns the labels the list searches for. | `.github/workflows/label-article-comments.yml` in `dieterbaier/profile-artikelkommentare`
@@ -70,7 +70,7 @@ It does not own:
 [cols="1,1,3", options="header"]
 |===
 | Interface | Used by | Purpose and data
-| `https://github.com/dieterbaier/profile-artikelkommentare/issues/new` | Reader's browser, following a link | Opens the form, prefilled with article ID, title, and URL. Submitting needs a GitHub account and creates a public issue.
+| `https://github.com/dieterbaier/profile-artikelkommentare/issues/new` | Reader's browser, following a link | Opens the form, prefilled with article ID, title, and address. GitHub receives these and the reader's IP address when the link is opened, before anything is submitted. Submitting needs a GitHub account and creates a public issue.
 | `https://api.github.com/search/issues` | Reader's browser, after a click | Searches issues by the two labels. The request is unauthenticated, so GitHub sees the reader's IP address and the article ID, and applies the rate limit for unauthenticated requests.
 | Git push to `dieterbaier/profile-artikelkommentare` | `deploy-site` job | Synchronizes the allowlist, using `ARTICLE_COMMENTS_REPO_TOKEN`.
 |===
