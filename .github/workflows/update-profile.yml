@@ -13,14 +13,11 @@ concurrency:
 jobs:
   detect-changes:
     runs-on: ubuntu-latest
-    # A manual dispatch deploys every target. It is the end-to-end proof after a
-    # credential or a branch rule changed, so it must not depend on what the last
-    # commit touched.
     outputs:
-      readme: ${{ github.event_name == 'workflow_dispatch' || steps.filter.outputs.readme }}
-      articles: ${{ github.event_name == 'workflow_dispatch' || steps.filter.outputs.articles }}
-      architecture: ${{ github.event_name == 'workflow_dispatch' || steps.filter.outputs.architecture }}
-      site: ${{ github.event_name == 'workflow_dispatch' || steps.filter.outputs.site }}
+      readme: ${{ steps.filter.outputs.readme }}
+      articles: ${{ steps.filter.outputs.articles }}
+      architecture: ${{ steps.filter.outputs.architecture }}
+      site: ${{ steps.filter.outputs.site }}
 
     steps:
       - uses: actions/checkout@v4

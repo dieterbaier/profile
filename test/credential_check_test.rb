@@ -7,11 +7,8 @@
 require 'minitest/autorun'
 require 'yaml'
 
-require_relative '../scripts/check-token-expiry'
-
 class CredentialCheckTest < Minitest::Test
   ROOT = File.expand_path('..', __dir__)
-  NOW = Time.utc(2026, 11, 7, 12)
   # Plain values: they carry no access and cannot expire.
   VALUE_SECRETS = /\ASITE_/.freeze
 
@@ -26,67 +23,15 @@ class CredentialCheckTest < Minitest::Test
     workflow.scan(SECRET_REFERENCE).flatten.compact.uniq.reject { |name| name.match?(VALUE_SECRETS) }
   end
 
-  def expiring_in(days)
-    (NOW + (days * TokenExpiry::SECONDS_PER_DAY)).strftime('%F %T UTC')
-  end
-
-  def test_a_token_far_from_its_expiry_date_passes
-    # Given: a token that GitHub accepts and that expires in 30 days
-    expiry = expiring_in(30)
-
-    # When: its expiry is checked
-    result = TokenExpiry.verdict(status: 200, expiry: expiry, now: NOW)
-
-    # Then: the check passes and names the expiry date
-    assert result.ok
-    assert_includes result.message, '2026-12-07'
-  end
-
-  def test_a_token_close_to_its_expiry_date_fails_early
-    # Given: a token that GitHub accepts and that expires in 13 days
-    expiry = expiring_in(13)
-
-    # When: its expiry is checked
-    result = TokenExpiry.verdict(status: 200, expiry: expiry, now: NOW)
-
-    # Then: the check fails and names the expiry date
-    refute result.ok
-    assert_includes result.message, '2026-11-20'
-  end
-
-  def test_a_token_without_an_expiry_date_passes
-    # Given: a token that GitHub accepts and for which it reports no expiry date
-    expiry = nil
-
-    # When: its expiry is checked
-    result = TokenExpiry.verdict(status: 200, expiry: expiry, now: NOW)
-
-    # Then: the check passes
-    assert result.ok
-  end
-
-  def test_a_rejected_token_fails
-    # Given: a token that GitHub rejects
-    status = 401
-
-    # When: its expiry is checked
-    result = TokenExpiry.verdict(status: status, expiry: nil, now: NOW)
-
-    # Then: the check fails and names the HTTP status
-    refute result.ok
-    assert_includes result.message, '401'
-  end
-
-  def test_the_check_runs_weekly_and_by_hand
+  def test_the_check_runs_only_by_hand
     # Given: the credential check workflow
     workflow = YAML.safe_load(read('.github/workflows/check-credentials.yml'))
 
     # When: its triggers are read
     triggers = workflow.fetch(true)
 
-    # Then: it runs on a schedule and on manual dispatch
-    assert triggers.key?('workflow_dispatch')
-    refute_empty triggers.fetch('schedule')
+    # Then: it runs on manual dispatch and on nothing else
+    assert_equal ['workflow_dispatch'], triggers.keys
   end
 
   def test_every_deployment_credential_is_checked
@@ -100,22 +45,6 @@ class CredentialCheckTest < Minitest::Test
     # Then: every credential the deployment uses is also checked
     refute_empty secrets_in(deployment)
     assert_empty unchecked
-  end
-
-  def test_a_manual_deployment_deploys_every_target
-    # Given: the deployment workflow
-    workflow = YAML.safe_load(read('.github/workflows/update-profile.yml'))
-
-    # When: it is dispatched by hand
-    triggers = workflow.fetch(true)
-    targets = workflow.dig('jobs', 'detect-changes', 'outputs')
-
-    # Then: every target counts as changed, whatever the last commit touched
-    assert triggers.key?('workflow_dispatch')
-    refute_empty targets
-    targets.each do |target, value|
-      assert value.start_with?("${{ github.event_name == 'workflow_dispatch' || "), "#{target} depends on the last commit"
-    end
   end
 
   def test_a_credential_is_recognized_in_every_reference_syntax

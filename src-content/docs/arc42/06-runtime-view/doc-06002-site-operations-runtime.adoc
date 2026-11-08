@@ -7,7 +7,7 @@ owner: "Dieter Baier"
 created: '2026-11-07'
 reviewed: false
 generated: false
-summary: "Runtime scenarios for keeping the deployment of the site working: the credential check, renewing a credential, a deployment with an expired credential, and a manual deployment of every target."
+summary: "Runtime scenarios for keeping the deployment of the site working: the credential check, renewing a credential, and a deployment with an expired credential."
 tags:
 - arc42
 - runtime
@@ -32,21 +32,15 @@ The site is static, so operating it means keeping its deployment working. What r
 
 === Scenario 1: Check Credentials
 
-The `Check credentials` workflow runs every Monday and on manual dispatch. It has one job per credential, so a failed job names the credential, and it changes nothing at any target.
+The `Check credentials` workflow runs on manual dispatch only, after a credential was renewed. It has one job per credential, so a failed job names the credential, and it changes nothing at any target.
 
 [plantuml]
 ----
 @startuml
 start
-:Monday schedule or manual dispatch;
+:Manual dispatch;
 fork
-  :GitHub tokens: read expiry date;
-  if (Rejected or less than 14 days left?) then (yes)
-    #pink:Job fails;
-    stop
-  else (no)
-    :Dry-run push: push permission on the repository;
-  endif
+  :GitHub tokens: dry-run push, push permission on the repository;
 fork again
   :GitLab token: dry-run push, push permission on the repository;
 fork again
@@ -65,13 +59,13 @@ A dry-run push opens the server's receive side, which rejects a token without pu
 
 It does not prove that a real push to `main` succeeds: the dry run sends no ref update, so branch rules and server hooks never see one. When the check was introduced, `main` had no rules in either GitHub target repository. In the GitLab target, `main` is protected and accepts pushes from maintainers, which the token owner is. A rule added later is not caught by the check, see xref:risk-006-credential-expiry[RISK-006].
 
-The expiry warning covers the GitHub tokens only, because GitHub reports their expiry date with every response. Reading it for the GitLab token would need more access than the deployment does, so its expiry stays a calendar entry. The SFTP password has no expiry date.
+The check does not watch expiry dates. GitHub and GitLab send an email before a token expires, and the SFTP password has no expiry date. A credential is most likely broken right after it was renewed, by a wrong value, repository, or permission, and that is when the check runs.
 
 === Scenario 2: Renew A Credential
 
 The owner renews the credential at its provider, stores it in `dieterbaier/profile`, and dispatches `Check credentials`. A green run shows immediately that the new value is accepted and has the needed permission.
 
-A green `Build Docs` run after a push proves nothing here: a deployment job only runs when its paths changed, and a skipped job shows as green. Only a manual dispatch runs every deployment job, see scenario 4.
+A green `Build Docs` run after a push proves nothing here: a deployment job only runs when its paths changed, and a skipped job shows as green.
 
 === Scenario 3: Deployment With An Expired Credential
 
@@ -89,9 +83,3 @@ Each deployment job fails on its own, so the other targets are still deployed:
 The published site keeps working in every case, because a failed job leaves the deployed files untouched. Reading and writing comments needs no token either. Only the allowlist goes stale, so comments on a newly published article do not get their article label.
 
 After renewing the credential, re-running the failed job finishes the deployment without repeating the targets that succeeded.
-
-=== Scenario 4: Deploy Every Target By Hand
-
-A manual dispatch of `Build Docs` deploys every target, whatever the last commit touched. Without the dispatch rule, the path filter would compare only the last commit, and a skipped job would again show as green.
-
-It is not a proof of the branch rules. A git target only gets a ref update when its content changed: with an unchanged README or allowlist, the job commits nothing, the push reports that everything is up to date, and the job is green without a branch rule having seen a push. A rule on `main` therefore shows with the first deployment that changes the target. The owner sets these rules, so the deployment that follows a new rule is the expected place to notice it.
