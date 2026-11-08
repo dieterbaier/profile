@@ -86,8 +86,6 @@ filters:
   readme:
     - 'README.adoc'
     - 'profile/**'
-  articles:
-    - 'profile/site/articles/**'
   architecture:
     - 'docs/**'
   site:
@@ -97,7 +95,6 @@ filters:
 Damit lassen sich Änderungen in Kategorien einteilen:
 
 - README
-- Artikel
 - Architektur
 - Website
 
@@ -111,10 +108,6 @@ CMD="./gradlew --no-daemon"
 
 if [ "$README_CHANGED" == "true" ]; then
   CMD="$CMD buildReadme"
-fi
-
-if [ "$ARTICLES_CHANGED" == "true" ]; then
-  CMD="$CMD buildArticlesMarkdown"
 fi
 
 if [ "$ARCH_CHANGED" == "true" ]; then
