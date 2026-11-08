@@ -92,6 +92,6 @@ After renewing the credential, re-running the failed job finishes the deployment
 
 === Scenario 4: Deploy Every Target By Hand
 
-A manual dispatch of `Build Docs` deploys every target, whatever the last commit touched. It is the end-to-end proof that `Check credentials` cannot give: a real push to `main` in each target repository, so it also shows whether a branch rule rejects the deployment.
+A manual dispatch of `Build Docs` deploys every target, whatever the last commit touched. Without the dispatch rule, the path filter would compare only the last commit, and a skipped job would again show as green.
 
-It changes the targets, so it is meant for after a credential or a branch rule changed, not as a schedule. Without the dispatch rule, the path filter would compare only the last commit, and a skipped job would again show as green.
+It is not a proof of the branch rules. A git target only gets a ref update when its content changed: with an unchanged README or allowlist, the job commits nothing, the push reports that everything is up to date, and the job is green without a branch rule having seen a push. A rule on `main` therefore shows with the first deployment that changes the target. The owner sets these rules, so the deployment that follows a new rule is the expected place to notice it.
