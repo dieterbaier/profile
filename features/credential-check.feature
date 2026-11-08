@@ -39,6 +39,11 @@ Feature: Credential check
     When the credentials of both are compared
     Then every credential the deployment uses is also checked
 
+  Scenario: A credential is recognized in every reference syntax
+    Given a workflow that references credentials by property, by index, and with digits in their names
+    When its credentials are read
+    Then every credential is found with its full name, and plain values are left out
+
   Scenario: The check changes nothing at a target
     Given the credential check workflow and its write access script
     When their commands are read

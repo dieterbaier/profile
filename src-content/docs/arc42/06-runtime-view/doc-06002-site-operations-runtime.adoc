@@ -45,29 +45,31 @@ fork
     #pink:Job fails;
     stop
   else (no)
-    :Dry-run push to the target repository;
+    :Dry-run push: push permission on the repository;
   endif
 fork again
-  :GitLab token: dry-run push;
+  :GitLab token: dry-run push, push permission on the repository;
 fork again
   :SFTP password: log in and list the remote base;
 end fork
 if (Any check rejected?) then (yes)
   #pink:Job fails, GitHub notifies the owner;
 else (no)
-  :All credentials proven;
+  :All credentials accepted;
 endif
 stop
 @enduml
 ----
 
-A dry-run push asks the server for push access without sending anything, so it proves write access rather than only a valid token.
+A dry-run push opens the server's receive side, which rejects a token without push permission on the repository. So it proves more than a valid token.
+
+It does not prove that a real push to `main` succeeds: the dry run sends no ref update, so branch rules and server hooks never see one. When the check was introduced, `main` had no rules in either GitHub target repository. In the GitLab target, `main` is protected and accepts pushes from maintainers, which the token owner is. A rule added later is not caught by the check, see xref:risk-006-credential-expiry[RISK-006].
 
 The expiry warning covers the GitHub tokens only, because GitHub reports their expiry date with every response. Reading it for the GitLab token would need more access than the deployment does, so its expiry stays a calendar entry. The SFTP password has no expiry date.
 
 === Scenario 2: Renew A Credential
 
-The owner renews the credential at its provider, stores it in `dieterbaier/profile`, and dispatches `Check credentials`. A green run proves the new value immediately.
+The owner renews the credential at its provider, stores it in `dieterbaier/profile`, and dispatches `Check credentials`. A green run shows immediately that the new value is accepted and has the needed permission.
 
 A green `Build Docs` run proves nothing here: a deployment job only runs when its paths changed, and a skipped job shows as green.
 

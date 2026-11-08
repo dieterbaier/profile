@@ -19,8 +19,11 @@ class CredentialCheckTest < Minitest::Test
     File.read(File.join(ROOT, path))
   end
 
+  # Both GitHub expression syntaxes: secrets.NAME and secrets['NAME'].
+  SECRET_REFERENCE = /\bsecrets(?:\.([A-Za-z0-9_]+)|\[\s*['"]([A-Za-z0-9_]+)['"]\s*\])/.freeze
+
   def secrets_in(workflow)
-    workflow.scan(/secrets\.([A-Z_]+)/).flatten.uniq.reject { |name| name.match?(VALUE_SECRETS) }
+    workflow.scan(SECRET_REFERENCE).flatten.compact.uniq.reject { |name| name.match?(VALUE_SECRETS) }
   end
 
   def expiring_in(days)
@@ -97,6 +100,23 @@ class CredentialCheckTest < Minitest::Test
     # Then: every credential the deployment uses is also checked
     refute_empty secrets_in(deployment)
     assert_empty unchecked
+  end
+
+  def test_a_credential_is_recognized_in_every_reference_syntax
+    # Given: a workflow that references credentials by property, by index, and with digits in their names
+    workflow = <<~'YAML'
+      env:
+        A: ${{ secrets.DEPLOY_TOKEN_V2 }}
+        B: ${{ secrets['NEW_DEPLOY_TOKEN'] }}
+        C: ${{ secrets[ "OTHER_TOKEN" ] }}
+        D: ${{ secrets.SITE_CITY }}
+    YAML
+
+    # When: its credentials are read
+    credentials = secrets_in(workflow)
+
+    # Then: every credential is found with its full name, and plain values are left out
+    assert_equal %w[DEPLOY_TOKEN_V2 NEW_DEPLOY_TOKEN OTHER_TOKEN], credentials
   end
 
   def test_the_check_changes_nothing_at_a_target
