@@ -159,6 +159,7 @@ package "Generators" {
 | Profile Artifact Generator | Generates the profile artifact index from profile metadata. | xref:comp-005-profile-artifact-generator[COMP-005]
 | Article Summary Generator | Generates LinkedIn/Substack-oriented HTML summary packs without publishing them into public site targets. | xref:comp-006-article-summary-generator[COMP-006]
 | Publication Target Generator | Proposed component for deriving public, preview, and private article source sets and navigation from metadata. | xref:comp-001-publication-target-generator[COMP-001]
+| Article Comments | Lets readers comment on website articles through public GitHub issues, with no backend and no contact with GitHub until the reader asks for it. Spans a generator, a theme script, and the comments repository. | xref:comp-007-article-comments[COMP-007]
 |===
 
 include::generated/doc-05000-building-block-view-includes.adoc[]

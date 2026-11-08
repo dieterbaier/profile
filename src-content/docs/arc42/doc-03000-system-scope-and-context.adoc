@@ -27,11 +27,23 @@ actor "Dieter Baier" as Author
 rectangle "profile-dieterbaier" as System
 actor "Employers / Clients" as Audience
 actor "Technical Community" as Community
+rectangle "GitHub" as GitHub
 Author --> System : writes AsciiDoc and metadata
 System --> Audience : publishes CV and website
 System --> Community : publishes README and articles
+Audience --> GitHub : comments on articles
+Community --> GitHub : comments on articles
+GitHub --> Author : comments to answer and moderate
 @enduml
 ----
+
+=== Requirements
+
+[cols="1,3,2", options="header"]
+|===
+| ID | Requirement | Realized by
+| REQ-001 | A reader can comment on a website article publicly and read existing comments, without the website running a backend and without a connection to a third party until the reader asks for it. The reader is told what goes to the third party before acting. | xref:comp-007-article-comments[COMP-007], https://github.com/dieterbaier/profile/issues/44[feature #44]
+|===
 
 == Technical Context
 
@@ -48,5 +60,10 @@ left to right direction
 [GitHub Actions] --> [SFTP webspace]
 [GitHub Actions] --> [GitHub profile README]
 [GitHub Actions] --> [GitLab profile README]
+[GitHub Actions] --> [Article comments repository] : article allowlist
+[Reader's browser] --> [SFTP webspace] : reads pages
+[Reader's browser] --> [GitHub API] : loads comments on request
+[Reader's browser] --> [GitHub issue form] : writes a comment
+[GitHub issue form] --> [Article comments repository]
 @enduml
 ----

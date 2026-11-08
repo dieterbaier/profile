@@ -1,0 +1,94 @@
+---
+id: DOC-06003-article-comments-runtime
+type: Document
+title: "Article Comments Runtime"
+status: proposed
+owner: "Dieter Baier"
+created: '2026-11-08'
+reviewed: false
+generated: false
+summary: "Runtime scenarios for reading an article, loading comments, writing a comment, and synchronizing the article allowlist."
+tags:
+- arc42
+- runtime
+- articles
+- comments
+relations:
+- type: refines
+  target: DOC-06000-runtime-view
+  status: proposed
+  rationale: "The document details the runtime scenarios of the article comment function."
+  reviewed: false
+- type: documents
+  target: COMP-007-article-comments
+  status: proposed
+  rationale: "The scenarios show how the parts of the component work together at runtime."
+  reviewed: false
+metadata_version: '1.0'
+---
+[[doc-06003-article-comments-runtime]]
+== DOC-06003: Article Comments Runtime
+
+The parts named here are described in xref:comp-007-article-comments[COMP-007].
+
+=== Scenario 1: Read An Article
+
+Reading an article involves the webspace only. The comment block and its script come from the same host as the page, and the script contacts nothing while the page loads. It only completes the comment link with the URL of the page.
+
+=== Scenario 2: Load Comments
+
+The reader asks for the list. Only this click makes the browser contact GitHub, directly and without a token.
+
+[plantuml]
+----
+@startuml
+actor Reader
+participant "Article page\n(article-comments.js)" as Page
+participant "GitHub API\napi.github.com" as API
+
+Reader -> Page : clicks "Load existing comments"
+Page -> API : search issues with labels\nArtikelkommentar and article ID
+note right : GitHub receives the reader's\nIP address and the article ID
+API --> Page : matching issues
+Page -> Page : keep issues carrying both labels
+Page --> Reader : linked titles, or "no comments yet"
+@enduml
+----
+
+A failed request, GitHub's rate limit, incomplete search results, or more than 1000 results show the error wording and enable the button again. The article itself is not affected.
+
+=== Scenario 3: Write A Comment
+
+The link leads away from the website. Everything after it happens on GitHub, and the website is not involved.
+
+[plantuml]
+----
+@startuml
+actor Reader
+participant "Article page" as Page
+participant "Issue form\ngithub.com" as Form
+participant "Labelling workflow" as Workflow
+database "Comments repository\nissues and allowlist" as Repo
+
+Reader -> Page : follows the comment link
+Page -> Form : new tab, prefilled with\narticle ID, title, and URL
+Reader -> Form : signs in, writes the comment,\nacknowledges that it is public
+Form -> Repo : creates a public issue
+Repo -> Workflow : issue opened or edited
+Workflow -> Repo : assign label Artikelkommentar
+Workflow -> Repo : read allowlist
+alt article ID is on the allowlist
+  Workflow -> Repo : assign the article ID label,\nremove other article ID labels
+else article ID is malformed or not on the allowlist
+  Workflow -> Workflow : run fails, no article ID label
+end
+@enduml
+----
+
+An issue without the article ID label exists and stays public, but no article lists it, because the list searches for both labels. A failed run shows in the comments repository only, not on the website.
+
+=== Scenario 4: Synchronize The Allowlist
+
+The build derives the allowlist from the articles eligible for the public website. The `deploy-site` job checks out the comments repository with `ARTICLE_COMMENTS_REPO_TOKEN`, commits the allowlist if it changed, and pushes it, before it mirrors the site to the webspace.
+
+A failed push stops the job before the site is deployed. The job only runs when the path filter of the site target matches, so the allowlist changes with a site deployment and at no other time.
