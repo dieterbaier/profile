@@ -139,9 +139,9 @@ workflow idempotently creates and assigns the fixed `Artikelkommentar` label,
 validates the submitted ID against that allowlist, and assigns the article-ID label. A local,
 framework-free script lists issues matching both labels, but contacts the GitHub
 API only after the reader explicitly requests the list. Failure or rate limiting
-affects only the optional list, never the article content. The observable behaviour is specified in
-`features/article-comments.feature` and bridged to
-`test/profile_comments_test.rb`.
+affects only the optional list, never the article content. The component is
+xref:comp-007-article-comments[COMP-007], its runtime
+xref:doc-06003-article-comments-runtime[DOC-06003].
 
 == Sustainability
 

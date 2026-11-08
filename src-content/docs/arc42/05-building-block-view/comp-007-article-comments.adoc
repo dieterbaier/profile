@@ -1,0 +1,82 @@
+---
+id: COMP-007-article-comments
+type: Component
+title: "Article Comments"
+status: proposed
+owner: "Dieter Baier"
+created: '2026-11-08'
+reviewed: false
+generated: false
+summary: "Lets readers comment on website articles through public GitHub issues while the website stays static and contacts GitHub only on request."
+tags:
+- component
+- articles
+- comments
+relations:
+- type: refines
+  target: DOC-05000-building-block-view
+  status: proposed
+  rationale: "The component details the article comment function that spans several containers of the building block view."
+  reviewed: false
+- type: depends_on
+  target: ADR-005-minimal-static-site
+  status: proposed
+  rationale: "Comments follow the static-site boundary: no backend, and no contact with GitHub until the reader asks for it."
+  reviewed: false
+- type: addresses
+  target: QS-004-minimal-static-site
+  status: proposed
+  rationale: "An article renders completely without any call to GitHub."
+  reviewed: false
+metadata_version: '1.0'
+---
+[[comp-007-article-comments]]
+== COMP-007: Article Comments
+
+=== Responsibility
+
+Article Comments lets a reader comment on a website article without the website running a backend. It implements `REQ-001` from the business context, tracked as https://github.com/dieterbaier/profile/issues/44[feature #44].
+
+It owns:
+
+* one comment block per website article, in the language of the page;
+* a notice in that block naming what goes to GitHub, placed before both actions and linked to the privacy policy;
+* the prefilled link to the issue form;
+* loading the list of comments after an explicit click;
+* keeping comments of an article and its language variants in separate threads, through one article ID per variant;
+* deciding which article IDs may receive comments, through the allowlist.
+
+It does not own:
+
+* storing comments, accounts, or sign-in: GitHub does;
+* moderation tooling: comments are moderated as GitHub issues;
+* showing comment text on the website: the list shows linked titles only.
+
+=== Parts
+
+[cols="1,3,2", options="header"]
+|===
+| Part | Responsibility | Location
+| Comment block generator | Generates the block from article metadata, for the website target only. Its wording stays attribute references, resolved per page language. | `render_article_comments` in `scripts/validate-profile-metamodel.rb`
+| Interface terms | Provide the wording per language, including the wording the script shows. | `ui_comments_*` in `src-content/profile/includes/i18n/`
+| Browser script | Completes the link with the address of the article, without query and fragment, and loads the list on request. It holds no wording and no token. | `src-content/theme/article-comments.js`
+| Allowlist | Lists the article IDs eligible for comments, derived from published website articles. | `build/article-comments/allowed-article-ids.json`, copied to `config/allowed-article-ids.json` in `dieterbaier/profile-artikelkommentare`
+| Issue form | Takes article ID, title, URL, the comment, and the acknowledgement that it is public. | `.github/ISSUE_TEMPLATE/artikelkommentar.yml` in `dieterbaier/profile-artikelkommentare`
+| Labelling workflow | Validates the submitted article ID against the allowlist and assigns the labels the list searches for. | `.github/workflows/label-article-comments.yml` in `dieterbaier/profile-artikelkommentare`
+|===
+
+=== Interfaces
+
+[cols="1,1,3", options="header"]
+|===
+| Interface | Used by | Purpose and data
+| `https://github.com/dieterbaier/profile-artikelkommentare/issues/new` | Reader's browser, following a link | Opens the form, prefilled with article ID, title, and address. GitHub receives these and the reader's IP address when the link is opened, before anything is submitted. Submitting needs a GitHub account and creates a public issue.
+| `https://api.github.com/search/issues` | Reader's browser, after a click | Searches issues by the two labels. The request is unauthenticated, so GitHub sees the reader's IP address and the article ID, and applies the rate limit for unauthenticated requests.
+| Git push to `dieterbaier/profile-artikelkommentare` | `deploy-site` job | Synchronizes the allowlist, using `ARTICLE_COMMENTS_REPO_TOKEN`.
+|===
+
+The personal data involved and its legal treatment are described for readers in the privacy policy, `src-content/profile/site/legal.adoc` and its English variant. The runtime is in xref:doc-06003-article-comments-runtime[DOC-06003].
+
+=== Verification
+
+The observable behaviour is specified in `features/article-comments.feature` and bridged to `test/profile_comments_test.rb`.
