@@ -7,7 +7,7 @@ owner: "Dieter Baier"
 created: '2026-07-04'
 reviewed: false
 generated: false
-summary: "Use Pandoc via DocBook for README and article Markdown exports."
+summary: "Use Pandoc via DocBook for the README Markdown export; articles are not exported."
 tags:
 - adr
 - decision
@@ -28,11 +28,15 @@ Proposed (derived).
 
 === Decision
 
-Use Pandoc via DocBook for README and article Markdown exports.
+Use Pandoc via DocBook for the README Markdown export. GitHub and GitLab profile pages require the README as Markdown.
+
+Articles are not exported to Markdown. The personal website is the only platform that carries a full article.
 
 === Context
 
 This ADR was derived while bootstrapping the existing project to the architecture-knowledge-toolkit structure. The decision reflects existing repository practice and should be reviewed before being marked accepted.
+
+The ADR originally also covered an article Markdown export under `build/articles`, which existed so that articles could be published elsewhere. The owner does not publish articles as Markdown on other targets, and nothing consumed the output, so the export was removed. Article summaries do not depend on it: xref:adr-007-build-generated-article-summaries[ADR-007] generates them directly from the article sources.
 
 === Pugh Matrix
 
@@ -49,4 +53,5 @@ s| Sum s| +3 s| ? s| -3
 
 * Positive: The project keeps a coherent source-based publishing workflow.
 * Negative: Contributors need to understand the chosen toolchain.
+* Consequence: Publishing a full article on another platform would require a new decision and a new publication target.
 * Follow-up: Human review should confirm the derived status and rationale.

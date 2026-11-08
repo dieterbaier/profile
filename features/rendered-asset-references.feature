@@ -29,7 +29,7 @@ Feature: Rendered asset references
     Then it is reported with the page and the line it stands on
 
   Scenario: A reference is resolved relative to the page that makes it
-    Given a page reaching out of its own directory, as the Markdown export does
+    Given a page reaching out of its own directory
     When the target is checked
     Then the reference resolves rather than being read from the target root
 

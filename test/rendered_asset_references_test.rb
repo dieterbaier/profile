@@ -66,7 +66,7 @@ class RenderedAssetReferencesTest < Minitest::Test
   end
 
   def test_a_reference_is_resolved_relative_to_the_page_that_makes_it
-    # Given: a page reaching out of its own directory, as the Markdown export does
+    # Given: a page reaching out of its own directory
     pages = { 'articles/documentation/a.md' => '<img src="../media/ART-001-a/picture.svg">' }
 
     with_target(pages, assets: ['articles/media/ART-001-a/picture.svg']) do |missing|

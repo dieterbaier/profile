@@ -20,7 +20,7 @@ metadata_version: '1.0'
 [cols="1,2,3", options="header"]
 |===
 | Strategy | Supports | Description
-| Single source profile knowledge | xref:qg-002-maintainability[QG-002], xref:qg-004-correctness[QG-004] | Profile artifacts are authored once and reused across website, CV, README, and article exports.
+| Single source profile knowledge | xref:qg-002-maintainability[QG-002], xref:qg-004-correctness[QG-004] | Profile artifacts are authored once and reused across website, CV, and README.
 | Metadata-backed content | xref:qg-002-maintainability[QG-002], xref:qg-004-correctness[QG-004] | Standalone content artifacts receive front matter; include-heavy reusable fragments are covered by sidecar metadata.
 | Toolkit-compatible architecture knowledge | xref:qg-002-maintainability[QG-002], xref:qg-003-automation[QG-003] | arc42 chapters, ADRs, quality scenarios, risks, schemas, validators, and generated fragments follow architecture-knowledge-toolkit conventions.
 | Gradle task orchestration | xref:qg-001-reproducibility[QG-001], xref:qg-003-automation[QG-003] | Build, validation, and generation are exposed as repeatable Gradle tasks.
@@ -47,7 +47,6 @@ Only changed target categories trigger the matching Gradle tasks:
 |===
 | Change category | Build output
 | README | `build/readme/README.md`
-| Articles | Markdown exports under `build/articles`
 | Architecture | `build/architecture`
 | Site | `build/site`
 |===

@@ -44,9 +44,9 @@ module RenderedAssetReferences
 
   module_function
 
-  # HTML `src`/`href` and Markdown `![](…)`, which is what the two rendered
-  # forms of an article use. Both appear in the Markdown export: pandoc keeps an
-  # <img> tag wherever the source carried attributes it cannot express.
+  # HTML `src`/`href` and Markdown `![](…)`. A Markdown page can carry both:
+  # pandoc keeps an <img> tag wherever the source carried attributes it cannot
+  # express.
   def references(text)
     found = []
     text.each_line.with_index(1) do |line, number|

@@ -56,7 +56,7 @@ class ProfileArtifactValidator
   # written in exactly one language. Absent metadata means DEFAULT_LANGUAGE.
   LANGUAGES = %w[de en].freeze
   DIGEST_PATTERN = /\A[0-9a-f]{64}\z/
-  CHANNELS = %w[website cv readme github gitlab markdown-export pdf].freeze
+  CHANNELS = %w[website cv readme github gitlab pdf].freeze
   RELATION_TYPES = %w[addresses depends_on constrains refines supersedes conflicts_with mitigates introduces_risk affects verifies documents relates_to].freeze
   RELATION_STATUSES = %w[proposed reviewed accepted rejected].freeze
   RELATION_KEYS = %w[type target status rationale evidence reviewed].freeze
@@ -327,16 +327,10 @@ class ProfileArtifactValidator
   end
 
   # Where a rendered target keeps the output of a given source tree.
-  # Article sources live below the site tree, so an article source is rendered
-  # into both the site and the markdown export and has to be checked in both.
   RENDER_ROOTS = [
-    { source_dir: 'src-content/profile/site', output_dir: 'build/site', extension: '.html' },
-    { source_dir: 'src-content/profile/site/articles', output_dir: 'build/articles', extension: '.md' }
+    { source_dir: 'src-content/profile/site', output_dir: 'build/site', extension: '.html' }
   ].freeze
 
-  # The private target renders to HTML only and has no markdown export, because
-  # nothing consumes one: the export exists so the public articles can be
-  # published elsewhere, and a private draft is published nowhere.
   PRIVATE_RENDER_ROOTS = [
     { source_dir: 'src-content/profile/site', output_dir: 'build/site-private', extension: '.html' }
   ].freeze

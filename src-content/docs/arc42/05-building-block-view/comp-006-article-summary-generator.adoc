@@ -38,7 +38,7 @@ It owns:
 * deriving summary content from the source article;
 * applying LinkedIn and Substack HTML templates;
 * writing generated summary files to `build/summaries/`;
-* keeping summary outputs out of public website and article export targets.
+* keeping summary outputs out of the public website target.
 
 It does not own:
 

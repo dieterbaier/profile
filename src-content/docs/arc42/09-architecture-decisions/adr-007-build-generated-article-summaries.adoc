@@ -28,7 +28,7 @@ relations:
   - type: affects
     target: ADR-004-pandoc-markdown-export
     status: proposed
-    rationale: "The decision keeps article Markdown exports separate from generated HTML summary artifacts."
+    rationale: "Summaries are generated as HTML directly from article sources and do not pass through the Pandoc conversion, which serves the README only."
     evidence: skills/article-summary-pack/SKILL.md
     reviewed: false
 metadata_version: '1.0'
@@ -50,7 +50,7 @@ under `build/summaries`. Each summary filename uses the article filename stem
 plus `_summary_<target>` and the `.html` extension.
 
 These summaries are generated writing aids. They are excluded from generated
-site and article-export targets, and generated public content must not link to
+site targets, and generated public content must not link to
 them.
 
 For example:
@@ -67,6 +67,10 @@ build/summaries/doc-as-code_summary_substack.html
 The project already treats profile article sources under
 `src-content/profile/site/articles` as product source. AI-assisted article
 summaries are paste-ready publication aids for LinkedIn and Substack.
+
+The website carries the only full version of an article. Publishing summaries on
+other platforms is optional; a summary that is published links back to the article
+on the website.
 
 An earlier proposal placed written summaries next to the article source. The
 current desired practice is different: summaries are generated whenever they are
@@ -127,7 +131,7 @@ s| Sum s| +3 s| 0 s| +1 s| 0
 * Summary drafts can be regenerated with `./gradlew generateArticleSummaries`.
 * Article source directories stay focused on primary sources and metadata.
 * `build/` remains the place for reproducible generated outputs.
-* The build verifies that generated site and article-export outputs do not contain summary files or `_summary_<target>` references.
+* The build verifies that generated site outputs do not contain summary files or `_summary_<target>` references.
 
 ==== Negative
 
@@ -147,7 +151,7 @@ s| Sum s| +3 s| 0 s| +1 s| 0
 | Artifact | Impact | Rationale
 | xref:qs-003-public-artifact-consistency[QS-003: Public Artifact Consistency] | addressed | Generated summaries remain traceable to article metadata and source files.
 | xref:risk-001-metadata-drift[RISK-001-metadata-drift] | mitigated | Regeneration reduces manual drift between source articles and publication aids.
-| xref:adr-004-pandoc-markdown-export[ADR-004-pandoc-markdown-export] | affected | Pandoc exports remain generated Markdown outputs, while summaries become generated HTML outputs.
+| xref:adr-004-pandoc-markdown-export[ADR-004-pandoc-markdown-export] | affected | Pandoc generates only the README Markdown; summaries are generated HTML outputs read directly from article sources.
 |===
 
 === Traceability
@@ -157,7 +161,7 @@ s| Sum s| +3 s| 0 s| +1 s| 0
 | Relation | Target | Rationale
 | `addresses` | xref:qs-003-public-artifact-consistency[QS-003: Public Artifact Consistency] | Supports consistency between generated publication aids and source articles.
 | `mitigates` | xref:risk-001-metadata-drift[RISK-001-metadata-drift] | Reduces hidden drift by regenerating summary artifacts from article source.
-| `affects` | xref:adr-004-pandoc-markdown-export[ADR-004-pandoc-markdown-export] | Clarifies that summary HTML is generated separately from Pandoc article Markdown exports.
+| `affects` | xref:adr-004-pandoc-markdown-export[ADR-004-pandoc-markdown-export] | Clarifies that summary HTML is generated from article sources, independently of the Pandoc README conversion.
 |===
 
 === Assumptions
@@ -168,7 +172,7 @@ s| Sum s| +3 s| 0 s| +1 s| 0
 === Open Questions
 
 * Should future validation require one summary file for every supported target?
-* Should generated site or Markdown export tasks explicitly ignore all `_summary_<target>` files regardless of extension?
+* Should generated site tasks explicitly ignore all `_summary_<target>` files regardless of extension?
 
 === Review Notes
 

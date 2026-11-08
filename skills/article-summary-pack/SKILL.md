@@ -50,7 +50,7 @@ build/summaries/<article-slug>_summary_substack.html
 
 Each output must be directly pasteable. Put assumptions and missing values in a short `notes` block after the platform copy.
 
-Summary files are generated writing aids. They must not be linked from article content, navigation, generated site pages, or generated article exports.
+Summary files are generated writing aids. They must not be linked from article content, navigation, or generated site pages.
 
 ## Build Task
 

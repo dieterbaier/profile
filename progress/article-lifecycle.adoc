@@ -62,7 +62,7 @@ vor allem Privaten und ist zu.
 
 == Where we are
 
-`build/site` und der Markdown-Export enthalten nur Artikel mit
+`build/site` enthält nur Artikel mit
 `status: published`, fail-closed, mit zwei Checks dahinter
 (`verifyPublicRenderTasksValidateMetadata` prüft den Task-Graphen,
 `verifyPublicTargetHasOnlyPublishedArticles` das Ergebnis).
@@ -110,8 +110,8 @@ Was mehr als ein Artikel benutzt, gehört keinem und liegt unter
 `{includesdir}`; es wandert bei einer Promotion nicht mit.
 
 Nach jedem Rendern fragt `verify-rendered-asset-references.rb` das Target, ob die
-Dateien, die seine eigenen Seiten anfordern, darin liegen — für `build/site`,
-`build/articles` und `build/site-private`. Auswahl und Ergebnis fallen unabhängig
+Dateien, die seine eigenen Seiten anfordern, darin liegen — für `build/site`
+und `build/site-private`. Auswahl und Ergebnis fallen unabhängig
 um, und kein Renderer meldet die Differenz. Gelesen werden dabei auch die
 `.webmanifest`-Dateien eines Targets, weil eine Seite das Manifest anfordert und
 das Manifest seinerseits Icons nennt, die kein Renderer je auflöst.
@@ -148,7 +148,6 @@ ruby scripts/validate-profile-metamodel.rb
 ./gradlew validateProfileMetamodel validateArchitectureMetamodel
 ./gradlew testAll
 ./gradlew buildSite
-./gradlew buildArticlesMarkdown
 ./gradlew buildSitePrivate      # braucht den Geschwister-Checkout
 ./build.sh buildSitePrivate
 ruby scripts/verify-rendered-asset-references.rb --target-dir build/site --label build/site

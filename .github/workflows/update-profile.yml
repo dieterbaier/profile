@@ -15,7 +15,6 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       readme: ${{ steps.filter.outputs.readme }}
-      articles: ${{ steps.filter.outputs.articles }}
       architecture: ${{ steps.filter.outputs.architecture }}
       site: ${{ steps.filter.outputs.site }}
 
@@ -37,12 +36,6 @@ jobs:
           filters: |
             readme:
               - 'src-content/profile/**'
-              - '.github/workflows/**'
-              - 'metamodel/profile-artifact.schema.yaml'
-              - 'scripts/validate-profile-metamodel.rb'
-              - 'build.gradle'
-            articles:
-              - 'src-content/profile/site/articles/**'
               - '.github/workflows/**'
               - 'metamodel/profile-artifact.schema.yaml'
               - 'scripts/validate-profile-metamodel.rb'
@@ -95,7 +88,7 @@ jobs:
       REQUIRE_SITE_BASE_URL: 'true'
     outputs:
       isBuilt: ${{ steps.run_build.outputs.IS_BUILT }}
-    if: github.event_name != 'pull_request' && (needs.detect-changes.outputs.readme == 'true' || needs.detect-changes.outputs.articles == 'true' || needs.detect-changes.outputs.architecture == 'true' || needs.detect-changes.outputs.site == 'true')
+    if: github.event_name != 'pull_request' && (needs.detect-changes.outputs.readme == 'true' || needs.detect-changes.outputs.architecture == 'true' || needs.detect-changes.outputs.site == 'true')
 
     steps:
       - uses: actions/checkout@v4
@@ -124,10 +117,6 @@ jobs:
 
           if [ "${{ needs.detect-changes.outputs.readme }}" == "true" ]; then
             TASKS="$TASKS buildReadme"
-          fi
-
-          if [ "${{ needs.detect-changes.outputs.articles }}" == "true" ]; then
-            TASKS="$TASKS buildArticlesMarkdown"
           fi
 
           if [ "${{ needs.detect-changes.outputs.architecture }}" == "true" ]; then

@@ -17,7 +17,9 @@ metadata_version: '1.0'
 [[introduction-and-goals]]
 = Introduction and Goals
 
-`profile-dieterbaier` exists to maintain one authoritative personal profile source and publish it to multiple channels: personal website, CV, GitHub README, GitLab README, article exports, and architecture documentation.
+`profile-dieterbaier` exists to maintain one authoritative personal profile source and publish it to multiple channels: personal website, CV, GitHub README, GitLab README, and architecture documentation.
+
+The personal website is the only channel that carries full articles. Other platforms receive summaries at most, and those summaries link back to the website.
 
 == Motivation
 
@@ -34,7 +36,7 @@ rendered by the build pipeline.
 |===
 | ID | Goal | Success indicator
 | G-001 | Single source of truth for profile, CV, articles, and architecture documentation. | Public artifacts are generated from repository sources.
-| G-002 | Multi-target publishing without copy-paste maintenance. | README, website, CV, and article Markdown are built by Gradle tasks.
+| G-002 | Multi-target publishing without copy-paste maintenance. | README, website, and CV are built by Gradle tasks.
 | G-003 | Treat the profile as a software product. | Architecture documentation, decisions, risks, quality scenarios, metamodels, validators, and generators are part of the repository.
 |===
 

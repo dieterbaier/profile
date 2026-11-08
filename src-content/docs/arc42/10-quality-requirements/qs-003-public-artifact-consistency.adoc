@@ -32,7 +32,7 @@ xref:qg-004-correctness[QG-004: Correctness]
 |===
 | Element | Description
 | Source | Reader
-| Stimulus | opens generated website, CV, README, or article export
+| Stimulus | opens generated website, CV, or README
 | Artifact | generated artifact
 | Environment | after CI deployment
 | Response | content reflects the source artifact
