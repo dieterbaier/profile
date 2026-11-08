@@ -98,7 +98,7 @@ properties:
     type: array
     items:
       type: string
-      enum: [website, cv, readme, github, gitlab, markdown-export, pdf]
+      enum: [website, cv, readme, github, gitlab, pdf]
   summary:
     type: string
     description: >-
@@ -162,6 +162,7 @@ properties:
       the enum, and an absent value, both fail validation.
     enum:
       - "1.0"
+      - "1.1"
 allOf:
   # Article-series navigation is only meaningful for articles.
   - if:

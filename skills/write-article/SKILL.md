@@ -41,7 +41,7 @@ Use the template for new articles as a flexible scaffold. Do not rewrite existin
 
 - Use a `*.profile.yaml` sidecar next to the article.
 - Follow `metamodel/profile-artifact.schema.yaml` and `ai-contracts/profile-artifact-metadata.md`.
-- Use `type: Article`, `generated: false`, and channels such as `website` and `markdown-export` when applicable.
+- Use `type: Article`, `generated: false`, and channels such as `website` when applicable.
 - Assign a stable article ID only after checking existing `ART-*` IDs.
 - Mark `reviewed: false` for AI-created or AI-modified articles until human review is recorded.
 - Use meaningful, discriminating topical tags. Avoid ubiquitous tags such as `profile`; they add no relatedness signal and the validator warns when an article relies on them.
@@ -51,13 +51,13 @@ Use the template for new articles as a flexible scaffold. Do not rewrite existin
 
 - Each article ends with a generated navigation include (previous/next series links and a "Könnte Sie auch interessieren" list). `templates/write-article/article.adoc` already carries the guarded include line; keep it and do not author the navigation block by hand.
 - `generateProfileArtifacts` writes one `<slug>-navigation.adoc` per article into a `generated/` directory next to the article (for example `.../architecture/generated/`), empty when nothing applies. Placing it beside the article keeps the filename unique per directory, so articles that share a basename in different directories never collide. Related articles are derived from shared meaningful tags (ubiquitous tags excluded) and from `relations`, limited to the five newest.
-- The navigation renders on the website only, not in the Markdown/README export.
+- The navigation renders on the website only.
 
 ## Article Tags
 
 - Each article starts with the guarded generated `{docname}-tags.adoc` include from `templates/write-article/article.adoc`; do not author the tag list by hand.
 - `generateProfileArtifacts` writes the article's metadata tags as the same linked, horizontal `article-card-tags` markup used by article listings.
-- The tag list renders on the website only, not in the Markdown/README export.
+- The tag list renders on the website only.
 
 ## Output Expectations
 

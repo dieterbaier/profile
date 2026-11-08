@@ -139,8 +139,7 @@ CSS classes onto the image block, which is where `.left`, `.size-50` and the
 
 The build asks `validate-profile-metamodel.rb --list-target-asset-dirs` which
 directories a target may publish and copies exactly those, to the position they
-hold in the source tree. Every publishing target gets them, including the
-Markdown export, where pandoc rewrites the references as it moves the files.
+hold in the source tree. Every publishing target gets them.
 
 Afterwards `verify-rendered-asset-references.rb` asks each rendered target
 whether the files its own pages request are in it. Selection and result fail
@@ -172,7 +171,6 @@ Available tasks:
 
 - buildSite
 - buildReadme
-- buildArticlesMarkdown
 - buildCVPersonal
 - buildArchitecture
 - validateArchitectureMetamodel
@@ -205,8 +203,6 @@ Available tasks:
 |----------------------------|---------------------------------|
 | README                     | `build/readme/README.md`        |
 | README                     | `build/readme/README.html`      |
-| Articles (Markdown)        | `build/articles/**/*.md`        |
-| Article media              | `build/articles/media/**`       |
 | Website                    | `build/site/index.html`         |
 | CV (on the website, HTML)  | `build/site/cv.html`            |
 | CV (on the website, PDF)   | `build/site/cv.pdf`             |
@@ -238,7 +234,6 @@ This project uses the docker image [ghcr.io/docs-as-code-toolkit/docs-toolbox](h
 The build is implemented using Gradle:
 
 * Custom tasks (e.g. Pandoc integration)
-* Directory-based Pandoc conversion for article Markdown exports
 * Architecture metamodel validation and generation from `scripts/validate-metamodel.rb`
 * Profile artifact validation and index generation from `scripts/validate-profile-metamodel.rb`
 * Asset pipeline (Copy tasks)
@@ -328,8 +323,6 @@ The pipeline builds and deploys
 
 Each deployment target has its own GitHub Actions job. This allows a failed target deployment to be re-run without deploying already successful targets again.
 
-When article sources change, the pipeline also builds Markdown exports under `build/articles` as part of the uploaded build artifact.
-
 ---
 
 ## 📐 Project Structure
@@ -350,7 +343,7 @@ src-content/
     cv/
     readme/
     site/
-      articles/         # Website articles and Markdown export sources
+      articles/         # Website articles
         <topic>/
           <slug>.adoc
           <ARTIFACT-ID>/  # Assets that article alone owns; see "Article assets"
@@ -404,7 +397,6 @@ All of these share the same core information — but differ in format, level of 
     * Public CV
     * Private CV (with personal data)
     * README files
-    * Article Markdown exports
 * Inject environment-specific data (e.g. contact details; check `.env-example` to get an idea what personal information can be injected via the environment; if you rename `.env-example` to `.env` and insert your personal info, `./build.sh buildCVPersonal` will inject these values into the `build/cv/cv.pdf`) only when needed
 
 ---

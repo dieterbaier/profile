@@ -14,7 +14,6 @@
     - technical-community
   channels:
     - website
-    - markdown-export
   summary: "Article about building and deploying only what changed."
   summary_de: "Wie eine CI/CD-Pipeline nur das baut und ausliefert, was sich wirklich geändert hat – für schnellere und ressourcenschonende Builds."
   source: src-content/profile/site/articles/architecture/smarte-cicd-pipeline.adoc
@@ -25,4 +24,4 @@
     - CI-CD-Pipelines
   previous: ART-001-intentionally-simple-website
   relations: []
-  metadata_version: '1.0'
+  metadata_version: '1.1'

@@ -66,7 +66,7 @@ ruby scripts/verify-theme-browser-baseline.rb \
   --theme-dir src-content/theme \
   --interface-dir src-content/profile/includes/i18n
 ruby scripts/theme-version.rb --theme-dir src-content/theme
-./gradlew buildAll buildArticlesMarkdown
+./gradlew buildAll
 find build -name '*[?:<>|*"]*'
 curl -sI "https://dieterbaier.eu/stylesheet/style.css?v=$(ruby scripts/theme-version.rb --theme-dir src-content/theme)"
 ----

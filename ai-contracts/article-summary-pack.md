@@ -54,7 +54,7 @@ metadata entries under `src-content/profile/site/articles`.
 - Keep the author's first-person perspective when the source article uses it.
 - Keep the source article as the authority. Summaries may simplify but must not contradict it.
 - Treat file-based summaries as generated writing aids under `build/summaries/`.
-- Do not include summary files in generated site or article export targets.
+- Do not include summary files in generated site targets.
 - Do not add links, xrefs, navigation entries, or generated public content that points to `_summary_<target>` files.
 - Use paste-ready HTML based on the platform template.
 - Do not include internal build paths in the public copy.

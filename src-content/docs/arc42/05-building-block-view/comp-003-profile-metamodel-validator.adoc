@@ -30,7 +30,7 @@ metadata_version: '1.0'
 
 === Responsibility
 
-The Profile Metamodel Validator checks profile content metadata before profile indexes, website artifacts, CV output, README output, or article exports are generated.
+The Profile Metamodel Validator checks profile content metadata before profile indexes, website artifacts, CV output, or README output are generated.
 
 It owns:
 

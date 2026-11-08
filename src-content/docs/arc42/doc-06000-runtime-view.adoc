@@ -29,7 +29,7 @@ start
 :Generate derived architecture fragments;
 :Generate profile indexes;
 :Render AsciiDoc outputs;
-:Convert selected DocBook outputs to Markdown;
+:Convert README DocBook output to Markdown;
 :Copy assets;
 :Deploy affected artifacts;
 stop

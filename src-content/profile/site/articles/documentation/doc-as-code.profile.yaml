@@ -14,7 +14,6 @@
     - technical-community
   channels:
     - website
-    - markdown-export
   summary: "Article explaining Docs-as-Code as a documentation discipline."
   summary_de: "Was Docs-as-Code als Dokumentationsdisziplin bedeutet und warum Dokumentation wie Quellcode gepflegt, versioniert und generiert werden sollte."
   source: src-content/profile/site/articles/documentation/doc-as-code.adoc
@@ -23,4 +22,4 @@
   skills:
     - Docs-as-Code
   relations: []
-  metadata_version: '1.0'
+  metadata_version: '1.1'

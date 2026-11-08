@@ -82,8 +82,7 @@ toc::[]
 
 // Generated article navigation (previous/next series links and related articles).
 // The file is produced per article by generateProfileArtifacts into a `generated/`
-// directory next to this article and is empty when nothing applies. Website only;
-// skipped in the readme/markdown export.
+// directory next to this article and is empty when nothing applies. Website only.
 ifeval::["{type}" != "readme"]
 include::{docfile}/../generated/{docname}-navigation.adoc[opts=optional]
 include::{docfile}/../generated/{docname}-comments.adoc[opts=optional]

@@ -63,9 +63,6 @@ validator which sources a target excludes while it configures itself, because a
 render task resolves its sources before any generator runs; a list produced
 during the build would be missing exactly when a clean build needs it.
 
-The same selection applies to the markdown export, since CI uploads the whole
-build directory as a workflow artifact of a public repository.
-
 The selection fails closed. An article that must be kept out of a target and
 whose source file cannot be named stops the build, because a list that silently
 omits such an article looks complete while leaving out exactly what must not be
@@ -93,9 +90,7 @@ deployed nowhere.
 
 Both targets ask the same question of the same validator; only the answer
 differs, because the status set belongs to the target rather than to the
-mechanism. The private target renders to HTML alone: the markdown export exists
-so public articles can be published elsewhere, and a private draft is published
-nowhere.
+mechanism.
 
 The private repository holds content only. Its build reaches this repository's
 tooling through a sibling checkout, resolved from `PROFILE_PRIVATE_DIR` or from

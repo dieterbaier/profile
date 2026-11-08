@@ -28,44 +28,6 @@ abstract class PandocTask extends DefaultTask {
     }
 }
 
-abstract class PandocDirectoryTask extends DefaultTask {
-
-    @InputDirectory
-    abstract DirectoryProperty getInputDirectory()
-
-    @OutputDirectory
-    abstract DirectoryProperty getOutputDirectory()
-
-    @TaskAction
-    void runPandoc() {
-        def sourceDirectory = inputDirectory.get().asFile
-        def targetDirectory = outputDirectory.get().asFile
-
-        project.fileTree(sourceDirectory) {
-            include '**/*.xml'
-        }.each { File input ->
-            def relativePath = sourceDirectory.toPath().relativize(input.toPath()).toString()
-            def markdownPath = relativePath.replaceFirst(/\.xml$/, '.md')
-            def output = new File(targetDirectory, markdownPath)
-            def mediaDirectory = new File(targetDirectory, 'media')
-            def relativeMediaPath = output.parentFile.toPath().relativize(mediaDirectory.toPath()).toString()
-            output.parentFile.mkdirs()
-
-            project.exec {
-                workingDir output.parentFile
-                commandLine 'pandoc',
-                        input.absoluteFile,
-                        '-f', 'docbook',
-                        '-t', 'gfm',
-                        '--wrap=none',
-                        '--resource-path', input.parentFile.absoluteFile,
-                        '--extract-media', relativeMediaPath,
-                        '-o', output.name
-            }
-        }
-    }
-}
-
 def commandExists = { String command, String versionArgument ->
     try {
         def result = new ByteArrayOutputStream()
@@ -148,9 +110,8 @@ def publicArticleAssetDirs = { ->
 
 // Asked of a rendered target rather than of the selection that produced it, the
 // same way the publication status is asked twice. A target can hold the right
-// assets in the wrong place — the Markdown export moves them while it converts —
-// and no renderer reports that, because a missing image reaches the reader
-// rather than the build.
+// assets in the wrong place, and no renderer reports that, because a missing
+// image reaches the reader rather than the build.
 // `afterTasks` names what writes into the target last, usually the copy that
 // puts the assets there. Finalizers of one task are not ordered against each
 // other, so without this the check runs against a half-written target and
@@ -175,8 +136,6 @@ def verifyAssetReferences = { taskName, targetDir, label, List<String> afterTask
 
 verifyAssetReferences('verifySiteAssetReferences', 'build/site', 'build/site',
         ['buildSite', 'buildSiteCopyAssets', 'buildCVSiteCopyAssets'])
-verifyAssetReferences('verifyArticlesAssetReferences', 'build/articles', 'build/articles',
-        ['buildArticlesMarkdown', 'buildArticlesDocbookCopyAssets'])
 verifyAssetReferences('verifyPrivateSiteAssetReferences', 'build/site-private', 'build/site-private',
         ['buildSitePrivate', 'buildSitePrivateCopyAssets'])
 
@@ -236,7 +195,7 @@ tasks.register('verifyThemeBrowserBaseline') {
 
 // The tasks that render article sources into a publishable target. Named once
 // so the validation contract below and its test refer to the same list.
-def publicRenderTasks = ['buildSite', 'buildArticlesDocbook']
+def publicRenderTasks = ['buildSite']
 
 // The list holds repository-relative paths; a source spec matches relative to
 // its own source directory, so the directory prefix comes off again.
@@ -431,9 +390,8 @@ def asciidoctorBase = { taskName, taskDependsOnTask, sourceDir, outputDir, List<
         //
         // Callers pass the whole selection for a publication target, and a task
         // takes the part of it that lies below the tree it renders. The targets
-        // do not all render the same tree — the Markdown export reads only the
-        // default-language articles — so a directory outside this one belongs to
-        // an article this task does not render, which is an ordinary state and
+        // do not all render the same tree, so a directory outside this one belongs
+        // to an article this task does not render, which is an ordinary state and
         // not a misplaced file. A directory no article claims at all is caught
         // by the validator, where the metadata to judge it lives.
         def assetSourceRoot = file(sourceDir).toPath().toAbsolutePath().normalize()
@@ -729,39 +687,6 @@ tasks.register('convertDocBookToMarkdown', PandocTask) {
     setOutputFile(file("build/readme/README.md"))
 }
 asciidoctorBase('buildReadme','convertDocBookToMarkdown','src-content/profile/readme', 'build/readme', [],false)
-// Articles Markdown
-def articleSources = fileTree('src-content/profile/site/articles') {
-    include '**/*.adoc'
-    articleSummarySourceExcludes.each { exclude it }
-    exclude '**/generated/**'
-    exclude '**/.asciidoctorconfig.adoc'
-    exclude 'articles.adoc'
-}.files.collect {
-    file('src-content/profile/site/articles').toPath().relativize(it.toPath()).toString()
-}.sort()
-
-// The Markdown export is a second publication target and carries the same
-// assets. Pandoc rewrites the references while it converts, but only for files
-// it can find next to the DocBook it reads, so they have to be copied into the
-// DocBook tree rather than beside the Markdown.
-asciidoctorBase('buildArticlesDocbook','','src-content/profile/site/articles', 'build/articles/docbook', articleSources,true, 'docbook', ['type': 'readme'], publicArticleAssetDirs)
-
-// The markdown export is a second rendering of the same article sources, and CI
-// uploads all of build/ as a workflow artifact. Filtering only build/site would
-// leave the full text of an unpublished article in a downloadable artifact of a
-// public repository, so the same metadata selection applies here.
-tasks.named('buildArticlesDocbook') {
-    sources {
-        excludeNonPublicArticles(delegate, 'src-content/profile/site/articles')
-    }
-}
-tasks.register('buildArticlesMarkdown', PandocDirectoryTask) {
-    dependsOn tasks.named('buildArticlesDocbook')
-    dependsOn tasks.named('buildArticlesDocbookCopyAssets')
-
-    setInputDirectory(layout.buildDirectory.dir("articles/docbook"))
-    setOutputDirectory(layout.buildDirectory.dir("articles"))
-}
 
 // Checks the rendered result rather than the selection that produced it. The
 // source filter and this task fail independently: the filter decides what is
@@ -806,12 +731,11 @@ tasks.register('verifyPublicRenderTasksValidateMetadata') {
 }
 
 tasks.register('verifyPublicTargetHasOnlyPublishedArticles') {
-    description = 'Fails when build/site or build/articles contains output of an article that is not published.'
+    description = 'Fails when build/site contains output of an article that is not published.'
     group = 'verification'
 
     dependsOn tasks.named('verifyPublicRenderTasksValidateMetadata')
     mustRunAfter tasks.named('buildSite')
-    mustRunAfter tasks.named('buildArticlesMarkdown')
 
     inputs.files(fileTree('src-content/profile') {
         include '**/*.adoc'
@@ -829,12 +753,10 @@ tasks.register('verifyPublicTargetHasOnlyPublishedArticles') {
 
 tasks.register('verifyNoArticleSummariesInGeneratedOutputs') {
     mustRunAfter tasks.named('buildSite')
-    mustRunAfter tasks.named('buildArticlesMarkdown')
 
     doLast {
         def generatedTargets = [
-                layout.buildDirectory.dir('site').get().asFile,
-                layout.buildDirectory.dir('articles').get().asFile
+                layout.buildDirectory.dir('site').get().asFile
         ]
         def summaryReferencePattern = ~/_summary_[A-Za-z0-9-]+/
         def textExtensions = ['.adoc', '.css', '.html', '.js', '.json', '.md', '.txt', '.xml', '.yaml', '.yml']
@@ -862,16 +784,11 @@ tasks.register('verifyNoArticleSummariesInGeneratedOutputs') {
         }
 
         if (!violations.isEmpty()) {
-            throw new GradleException("Article summaries must not be part of generated site or article outputs:\n- ${violations.join('\n- ')}")
+            throw new GradleException("Article summaries must not be part of generated site outputs:\n- ${violations.join('\n- ')}")
         }
     }
 }
 
-tasks.named('buildArticlesMarkdown') {
-    finalizedBy tasks.named('verifyNoArticleSummariesInGeneratedOutputs')
-    finalizedBy tasks.named('verifyPublicTargetHasOnlyPublishedArticles')
-    finalizedBy tasks.named('verifyArticlesAssetReferences')
-}
 // CV
 asciidoctorBase('buildCVPersonal','','src-content/profile/cv', 'build/cv', ['cv.adoc'],true, 'pdf', [ // personal PDF (not deployed to the site)
                                                                        'cvprint'       : 'true',
@@ -1160,10 +1077,9 @@ tasks.named('buildSitePrivate') {
 // The web app manifest, put where the head that asks for it is rendered.
 //
 // Not in asciidoctorBase, because that copy runs for every target and most of
-// them are not a site. The Markdown export renders DocBook, which reads no
-// docinfo at all; the CV PDFs have no head; and README.adoc replaces the
-// shared docinfo with a footer-only one, so none of them ever asks for this
-// file. The two below do.
+// them are not a site. The CV PDFs have no head, and README.adoc replaces the
+// shared docinfo with a footer-only one, so neither ever asks for this file.
+// The two below do.
 //
 // This list is the other half of docinfo/docinfo.html: every target whose pages
 // carry that fragment holds the file the fragment links to. A target that
@@ -1370,10 +1286,6 @@ tasks.named('buildArchitecture') {
 }
 
 tasks.named('buildReadmeDocbook') {
-    dependsOn tasks.named('generateProfileArtifacts')
-}
-
-tasks.named('buildArticlesDocbook') {
     dependsOn tasks.named('generateProfileArtifacts')
 }
 

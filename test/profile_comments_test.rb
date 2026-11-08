@@ -159,9 +159,9 @@ class ProfileCommentsTest < Minitest::Test
     Dir.mktmpdir('profile-comment-allowlist-test') do |dir|
       root = Pathname.new(dir)
       articles = [
-        ['ART-101-public', 'published', %w[website markdown-export]],
+        ['ART-101-public', 'published', %w[website pdf]],
         ['ART-102-preview', 'preview', %w[website]],
-        ['ART-103-export', 'published', %w[markdown-export]]
+        ['ART-103-export', 'published', %w[pdf]]
       ]
       articles.each do |id, status, channels|
         slug = id.downcase
