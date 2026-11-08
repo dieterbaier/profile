@@ -244,8 +244,8 @@ stehen bleibt.
 === Was aus der Antwort von STRATO folgt
 
 `legal.adoc` sagt öffentlich, dass ich einzelne nicht anonymisierte Einträge
-gefunden habe und das mit STRATO kläre. Die Anfrage ging am 7. November raus, die
-Antwort steht aus.
+gefunden habe und das mit STRATO kläre. Die Anfrage ist verschickt, die Antwort steht
+aus.
 
 Sobald sie da ist: die heruntergeladene Logdatei löschen, wie der Text es zusagt,
 und den Satz in beiden Sprachfassungen an das Ergebnis anpassen. Der offene Absatz

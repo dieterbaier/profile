@@ -223,3 +223,5 @@ ADR-004 und ADR-007 bleiben `proposed`, bis ich sie geprüft habe. Stehen geblie
 sind die `{type}`-Abfragen in den Artikeln, die Markdown-Erkennung im Asset-Check und
 das Szenario „Non-website article exports omit the comment block“. Sie schaden nicht,
 dienen aber keinem Artikel-Export mehr.
+
+Korrektur zum Stand: „Seit dem 7. November“ für die Anfrage an STRATO ist nicht belegt. Mein privater Tageseintrag nennt sie schon am 6. November als verschickt.
