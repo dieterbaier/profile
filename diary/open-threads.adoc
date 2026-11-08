@@ -255,12 +255,3 @@ beruht das auf einem einmaligen Scan.
 
 Auslöser wäre das nächste Fragment unter `site/` oder der nächste Eingriff in den
 Rechtstext.
-
-=== Convergence Check für #125 bis #127
-
-Nachgeholt am 8. November, nach dem Merge. Zwei Befunde:
-
-* #118 nannte den gewachsenen Umfang (Art. 13, Hinweis am Block, URL-Fix) nur im PR.
-* #123 ändert sichtbares Verhalten (Menü, entfernte Seiten) ohne Gherkin-Szenario
-  und ohne festgehaltenen Waiver. Das entscheide ich als Owner: Szenario nachziehen
-  oder Waiver mit Begründung in #123 festhalten.
