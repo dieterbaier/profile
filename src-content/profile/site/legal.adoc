@@ -41,18 +41,37 @@ Dieter Baier (Anschrift wie oben)
 
 == Datenschutzerklärung
 
-Diese Website dient ausschließlich der Bereitstellung von Informationen zu meinem beruflichen Profil.
+Diese Website stellt Informationen zu meinem beruflichen Profil bereit. Sie hat kein eigenes Backend und keine eigene Datenerfassung.
 
-Es werden keine personenbezogenen Daten aktiv erhoben, gespeichert oder ausgewertet, es sei denn, Sie kontaktieren mich aktiv (z. B. per E-Mail).
+Personenbezogene Daten fallen in drei Fällen an: beim Hosting-Anbieter, sobald Sie eine Seite aufrufen, bei GitHub, wenn Sie die Kommentarfunktion nutzen, und bei mir, wenn Sie mich kontaktieren.
+
+[.small]#Die Angaben der Anbieter habe ich im November 2026 nachgesehen.#
 
 
 === Hosting
 
-Diese Website wird bei einem externen Dienstleister (Strato AG) gehostet.
+Diese Website wird bei einem externen Dienstleister (STRATO GmbH) gehostet.
 
-Beim Aufruf der Website werden durch den Hosting-Anbieter automatisch Informationen erfasst (z. B. IP-Adresse, Zeitpunkt des Zugriffs, angeforderte Ressourcen).
+Beim Aufruf der Website erfasst der Hosting-Anbieter automatisch Informationen (z. B. IP-Adresse, Zeitpunkt des Zugriffs, angeforderte Ressourcen).
 
-Diese Daten dienen ausschließlich dem technischen Betrieb und der Sicherheit der Website und werden nicht zur Analyse oder Profilbildung verwendet.
+Nach https://www.strato.de/faq/vertrag/fragen-zur-auftragsverarbeitungsvertrag-avv-und-der-neuen-eu-datenschutzgrundverordnung-dsgvo/[eigener Angabe^] speichert STRATO die IP-Adressen der Besucher zur Erkennung und Abwehr von Angriffen maximal sieben Tage. Eine Einstellung dafür finde ich in der Dokumentation nicht.
+
+Mir stellt STRATO die https://www.strato.de/faq/hosting/wo-finde-ich-meine-logfiles/[Logfiles der letzten sechs Wochen^] und eine daraus erstellte https://www.strato.de/faq/hosting/so-erfahren-sie-wie-oft-ihre-internet-seiten-besucht-worden-sind/[Zugriffsstatistik^] bereit, die bis zu 400 Tage darstellen kann. Die Client-Adresse ist darin nach Angabe von STRATO anonymisiert: Ein Teil der Adresse wird gehasht, und dieselbe Ausgangsadresse ergibt höchstens 24 Stunden lang dieselbe anonymisierte Adresse. Die Domain Ihres Internetanbieters kann erkennbar bleiben.
+
+In meinen Logfiles vom Oktober 2026 habe ich auch einzelne Einträge mit nicht anonymisierter IP-Adresse gefunden. Das kläre ich mit STRATO.
+
+Ich nutze diese Daten für den technischen Betrieb und die Sicherheit der Website und sehe die Logfiles gelegentlich selbst durch, etwa um die Anonymisierung zu prüfen. Zur Profilbildung nutze ich sie nicht.
+
+
+=== Kommentarfunktion (GitHub)
+
+Artikel auf dieser Website haben eine Kommentarfunktion, die auf GitHub aufbaut (GitHub, Inc., USA, und GitHub B.V., Prins Bernhardplein 200, 1097JB Amsterdam, Niederlande). Solange Sie sie nicht nutzen, baut eine Artikelseite keine Verbindung zu GitHub auf.
+
+*Kommentare laden:* Erst wenn Sie die Schaltfläche dafür anklicken, ruft Ihr Browser direkt die Schnittstelle `api.github.com` auf. GitHub erhält dabei Ihre IP-Adresse, die üblichen Verbindungsdaten und die Kennung des Artikels. Eine Anmeldung bei GitHub wird dabei nicht mitgeschickt. Solche Anfragen ordnet GitHub https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api[nach eigener Angabe^] der IP-Adresse zu.
+
+*Kommentar schreiben:* Der Link öffnet in einem neuen Tab ein Formular auf github.com, in dem Kennung, Titel und Adresse des Artikels vorausgefüllt sind. Zum Absenden brauchen Sie ein GitHub-Konto. Ihr Kommentar wird als öffentliches Issue im Repository `dieterbaier/profile-artikelkommentare` gespeichert und ist mit Ihrem GitHub-Benutzernamen für alle sichtbar. Ich kann ihn dort lesen, beantworten und moderieren.
+
+*Was GitHub erfasst:* Nach https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement[eigener Datenschutzerklärung^] erfasst GitHub automatisch unter anderem IP-Adresse, Geräteinformationen und Sitzungsdaten sowie die verweisende Seite und den Zeitpunkt des Besuchs. Eine konkrete Speicherfrist für diese Daten nennt GitHub nicht; sie hänge vom Zweck der Erhebung und von gesetzlichen Pflichten ab. GitHub verarbeitet Daten auch in den USA und stützt sich dafür nach eigener Angabe auf die EU-Standardvertragsklauseln und das EU-U.S. Data Privacy Framework. Auf github.com setzt GitHub https://docs.github.com/en/site-policy/privacy-policies/github-cookies[eigene Cookies^]. Auf all das habe ich keinen Einfluss.
 
 
 === Kontaktaufnahme
@@ -71,9 +90,7 @@ Auf deren Inhalte habe ich keinen Einfluss. Für die Inhalte der verlinkten Seit
 
 === Verzicht auf Tracking und Cookies
 
-Diese Website verwendet keine Tracking- oder Analyse-Tools.
-
-Es werden keine Cookies gesetzt, die über die technisch notwendigen Funktionen hinausgehen.
+Diese Website bindet keine Tracking- oder Analyse-Tools ein und setzt selbst keine Cookies.
 
 
 == Haftungsausschluss

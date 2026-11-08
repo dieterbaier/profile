@@ -42,18 +42,37 @@ Dieter Baier (address as above)
 
 == Privacy policy
 
-This website serves solely to provide information about my professional profile.
+This website provides information about my professional profile. It has no backend and no data collection of its own.
 
-No personal data is actively collected, stored or analysed unless you contact me on your own initiative (e.g. by e-mail).
+Personal data arises in three cases: at the hosting provider as soon as you open a page, at GitHub if you use the comment function, and with me if you contact me.
+
+[.small]#I checked the providers' statements in November 2026.#
 
 
 === Hosting
 
-This website is hosted by an external service provider (Strato AG).
+This website is hosted by an external service provider (STRATO GmbH).
 
 When the website is accessed, the hosting provider automatically records information (e.g. IP address, time of access, requested resources).
 
-This data is used exclusively for the technical operation and security of the website and is not used for analysis or profiling.
+According to https://www.strato.de/faq/vertrag/fragen-zur-auftragsverarbeitungsvertrag-avv-und-der-neuen-eu-datenschutzgrundverordnung-dsgvo/[its own statement^] (in German), STRATO stores visitors' IP addresses for a maximum of seven days to detect and defend against attacks. I cannot find a setting for this in the documentation.
+
+STRATO provides me with the https://www.strato.de/faq/hosting/wo-finde-ich-meine-logfiles/[log files of the last six weeks^] and https://www.strato.de/faq/hosting/so-erfahren-sie-wie-oft-ihre-internet-seiten-besucht-worden-sind/[access statistics^] derived from them, which can show up to 400 days (both in German). According to STRATO, the client address in them is anonymised: part of the address is hashed, and the same original address yields the same anonymised address for at most 24 hours. The domain of your internet provider may remain recognisable.
+
+In my log files from October 2026 I also found individual entries with a non-anonymised IP address. I am clarifying this with STRATO.
+
+I use this data for the technical operation and security of the website, and I occasionally go through the log files myself, for example to check the anonymisation. I do not use them for profiling.
+
+
+=== Comment function (GitHub)
+
+Articles on this website have a comment function built on GitHub (GitHub, Inc., USA, and GitHub B.V., Prins Bernhardplein 200, 1097JB Amsterdam, Netherlands). As long as you do not use it, an article page does not connect to GitHub.
+
+*Loading comments:* Only when you click the button for this does your browser directly call the interface `api.github.com`. GitHub receives your IP address, the usual connection data and the article's identifier. A GitHub login is not sent along. According to https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api[its own statement^], GitHub associates such requests with the IP address.
+
+*Writing a comment:* The link opens a form on github.com in a new tab, with the article's identifier, title and address filled in. You need a GitHub account to submit it. Your comment is stored as a public issue in the repository `dieterbaier/profile-artikelkommentare` and is visible to everyone together with your GitHub user name. I can read, answer and moderate it there.
+
+*What GitHub records:* According to https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement[its privacy statement^], GitHub automatically records, among other things, IP address, device information and session details, as well as the referring site and the date and time of the visit. GitHub does not state a specific retention period for this data; it says this depends on the purpose of collection and on legal obligations. GitHub also processes data in the United States and, according to its statement, relies on the EU standard contractual clauses and the EU-U.S. Data Privacy Framework for this. On github.com, GitHub sets https://docs.github.com/en/site-policy/privacy-policies/github-cookies[its own cookies^]. I have no influence on any of this.
 
 
 === Contacting me
@@ -72,9 +91,7 @@ I have no influence on their content. The respective provider or operator is alw
 
 === No tracking or cookies
 
-This website does not use any tracking or analytics tools.
-
-No cookies are set beyond those required for technically necessary functions.
+This website does not embed any tracking or analytics tools and does not set any cookies itself.
 
 
 == Disclaimer
