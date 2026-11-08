@@ -19,6 +19,16 @@ Feature: CI Gradle cache
     When the jobs that run the build are read
     Then each of them caches the Gradle wrapper distribution
 
+  Scenario: The distribution cache survives a build file change
+    Given the jobs that run the build
+    When the key of their distribution cache is read
+    Then it depends on the wrapper properties alone, so a new task in build.gradle keeps it
+
+  Scenario: A changed build file restores the latest dependency cache
+    Given the jobs that run the build
+    When their dependency cache is read
+    Then it falls back to the latest cache under its prefix instead of none
+
   Scenario: The wrapper waits for a slow download
     Given the Gradle wrapper properties
     When the network timeout is read
