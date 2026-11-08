@@ -14,6 +14,14 @@ class CiGradleCacheTest < Minitest::Test
     YAML.safe_load(File.read(File.join(ROOT, '.github/workflows/update-profile.yml')))
   end
 
+  def cache_steps(job)
+    job.fetch('steps').select { |step| step['uses'].to_s.start_with?('actions/cache@') }
+  end
+
+  def cache_for(job, path)
+    cache_steps(job).find { |step| step.dig('with', 'path').to_s.lines.map(&:strip).include?(path) }
+  end
+
   def cache_paths(job)
     job.fetch('steps')
        .select { |step| step['uses'].to_s.start_with?('actions/cache@') }
@@ -47,6 +55,37 @@ class CiGradleCacheTest < Minitest::Test
     refute_empty jobs
     jobs.each do |name, job|
       assert_includes cache_paths(job), '~/.gradle/wrapper', "#{name} downloads Gradle on every run"
+    end
+  end
+
+  def test_the_distribution_cache_survives_a_build_file_change
+    # Given: the jobs that run the build
+    jobs = gradle_jobs
+
+    # When: the key of their distribution cache is read
+    keys = jobs.transform_values { |job| cache_for(job, '~/.gradle/wrapper').dig('with', 'key') }
+
+    # Then: it depends on the wrapper properties alone, so a new task in build.gradle keeps it
+    refute_empty keys
+    keys.each do |name, key|
+      assert_equal ["'gradle/wrapper/gradle-wrapper.properties'"], key.scan(/'[^']+'/), "#{name} keys the distribution on more than the wrapper"
+    end
+  end
+
+  def test_a_changed_build_file_restores_the_latest_dependency_cache
+    # Given: the jobs that run the build
+    jobs = gradle_jobs
+
+    # When: their dependency cache is read
+    caches = jobs.transform_values { |job| cache_for(job, '~/.gradle/caches') }
+
+    # Then: it falls back to the latest cache under its prefix instead of none
+    refute_empty caches
+    caches.each do |name, step|
+      refute_nil step, "#{name} does not cache the dependencies"
+      prefix = step.dig('with', 'restore-keys').to_s.strip
+      refute_empty prefix, "#{name} has no fallback for a changed build file"
+      assert step.dig('with', 'key').start_with?(prefix), "#{name} falls back to another cache"
     end
   end
 
