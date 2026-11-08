@@ -102,6 +102,22 @@ class CredentialCheckTest < Minitest::Test
     assert_empty unchecked
   end
 
+  def test_a_manual_deployment_deploys_every_target
+    # Given: the deployment workflow
+    workflow = YAML.safe_load(read('.github/workflows/update-profile.yml'))
+
+    # When: it is dispatched by hand
+    triggers = workflow.fetch(true)
+    targets = workflow.dig('jobs', 'detect-changes', 'outputs')
+
+    # Then: every target counts as changed, whatever the last commit touched
+    assert triggers.key?('workflow_dispatch')
+    refute_empty targets
+    targets.each do |target, value|
+      assert value.start_with?("${{ github.event_name == 'workflow_dispatch' || "), "#{target} depends on the last commit"
+    end
+  end
+
   def test_a_credential_is_recognized_in_every_reference_syntax
     # Given: a workflow that references credentials by property, by index, and with digits in their names
     workflow = <<~'YAML'

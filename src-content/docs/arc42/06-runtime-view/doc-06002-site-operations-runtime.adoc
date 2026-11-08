@@ -7,7 +7,7 @@ owner: "Dieter Baier"
 created: '2026-11-07'
 reviewed: false
 generated: false
-summary: "Runtime scenarios for keeping the deployment of the site working: the credential check, renewing a credential, and a deployment with an expired credential."
+summary: "Runtime scenarios for keeping the deployment of the site working: the credential check, renewing a credential, a deployment with an expired credential, and a manual deployment of every target."
 tags:
 - arc42
 - runtime
@@ -71,7 +71,7 @@ The expiry warning covers the GitHub tokens only, because GitHub reports their e
 
 The owner renews the credential at its provider, stores it in `dieterbaier/profile`, and dispatches `Check credentials`. A green run shows immediately that the new value is accepted and has the needed permission.
 
-A green `Build Docs` run proves nothing here: a deployment job only runs when its paths changed, and a skipped job shows as green.
+A green `Build Docs` run after a push proves nothing here: a deployment job only runs when its paths changed, and a skipped job shows as green. Only a manual dispatch runs every deployment job, see scenario 4.
 
 === Scenario 3: Deployment With An Expired Credential
 
@@ -89,3 +89,9 @@ Each deployment job fails on its own, so the other targets are still deployed:
 The published site keeps working in every case, because a failed job leaves the deployed files untouched. Reading and writing comments needs no token either. Only the allowlist goes stale, so comments on a newly published article do not get their article label.
 
 After renewing the credential, re-running the failed job finishes the deployment without repeating the targets that succeeded.
+
+=== Scenario 4: Deploy Every Target By Hand
+
+A manual dispatch of `Build Docs` deploys every target, whatever the last commit touched. It is the end-to-end proof that `Check credentials` cannot give: a real push to `main` in each target repository, so it also shows whether a branch rule rejects the deployment.
+
+It changes the targets, so it is meant for after a credential or a branch rule changed, not as a schedule. Without the dispatch rule, the path filter would compare only the last commit, and a skipped job would again show as green.

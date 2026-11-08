@@ -39,6 +39,11 @@ Feature: Credential check
     When the credentials of both are compared
     Then every credential the deployment uses is also checked
 
+  Scenario: A manual deployment deploys every target
+    Given the deployment workflow
+    When it is dispatched by hand
+    Then every target counts as changed, whatever the last commit touched
+
   Scenario: A credential is recognized in every reference syntax
     Given a workflow that references credentials by property, by index, and with digits in their names
     When its credentials are read
