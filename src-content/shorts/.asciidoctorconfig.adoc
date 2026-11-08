@@ -1,0 +1,2 @@
+:includesdir: ../profile/includes
+:basedir: ../..

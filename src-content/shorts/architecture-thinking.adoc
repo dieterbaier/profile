@@ -11,8 +11,7 @@ include::{includesdir}/../../revinfo.adoc[]
 :active: shorts
 include::{includesdir}/docheader.adoc[]
 
-:shorts_active: architecture
-include::{includesdir}/../site/shorts/shortsnav.adoc[]
+include::shortsnav.adoc[]
 
 toc::[]
 

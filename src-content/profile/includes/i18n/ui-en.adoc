@@ -2,7 +2,6 @@
 :ui_nav_cv: Curriculum Vitae
 :ui_nav_toolkit: Toolbox & Skills Matrix
 :ui_nav_articles: Articles
-:ui_nav_shorts: Shorts
 :ui_nav_open: Open menu
 :ui_nav_close: Close menu
 :ui_toc_title: Contents

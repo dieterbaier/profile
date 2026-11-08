@@ -31,9 +31,6 @@ endif::[]
         <li>
             <a data-nav="articles" href="{url_articles_articles}">{ui_nav_articles}{url_articles_articles_marker}</a>
         </li>
-        <li>
-            <a data-nav="shorts" href="{url_shorts_shorts}">{ui_nav_shorts}{url_shorts_shorts_marker}</a>
-        </li>
     </ul>
 </div>
 <div class="nav-overlay"></div>
