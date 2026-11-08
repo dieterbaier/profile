@@ -232,7 +232,7 @@ class ProfileArtifactValidator
   # repository-relative paths.
   #
   # The build excludes rather than includes because the site tree holds more
-  # than articles: profile pages, the toolkit page, legal, shorts, and generated
+  # than articles: profile pages, the toolkit page, legal, and generated
   # list pages carry no article status and must keep rendering. An include list
   # would have to enumerate all of them and would silently drop whatever it
   # forgot; an exclude list only ever names articles that metadata rules out.

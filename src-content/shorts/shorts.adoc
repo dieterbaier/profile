@@ -9,7 +9,7 @@ endif::[]
 :active: shorts
 include::{includesdir}/docheader.adoc[]
 
-include::{includesdir}/../site/shorts/shortsnav.adoc[]
+include::shortsnav.adoc[]
 
 [.highlight.info]
 --

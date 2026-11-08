@@ -2,7 +2,6 @@
 :ui_nav_cv: Curriculum Vitae
 :ui_nav_toolkit: Werkzeugkasten & Kenntnismatrix
 :ui_nav_articles: Artikel
-:ui_nav_shorts: Shorts
 :ui_nav_open: Menu öffnen
 :ui_nav_close: Menü schließen
 :ui_toc_title: Inhalt

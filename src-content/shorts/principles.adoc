@@ -13,7 +13,7 @@ include::{includesdir}/../../revinfo.adoc[]
 include::{includesdir}/docheader.adoc[]
 
 :shorts_active: principles
-include::{includesdir}/../site/shorts/shortsnav.adoc[]
+include::shortsnav.adoc[]
 
 toc::[]
 

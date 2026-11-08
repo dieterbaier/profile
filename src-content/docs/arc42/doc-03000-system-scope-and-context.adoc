@@ -29,7 +29,7 @@ actor "Employers / Clients" as Audience
 actor "Technical Community" as Community
 Author --> System : writes AsciiDoc and metadata
 System --> Audience : publishes CV and website
-System --> Community : publishes README, articles, shorts
+System --> Community : publishes README and articles
 @enduml
 ----
 

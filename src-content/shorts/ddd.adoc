@@ -13,7 +13,7 @@ include::{includesdir}/../../revinfo.adoc[]
 include::{includesdir}/docheader.adoc[]
 
 :shorts_active: ddd
-include::{includesdir}/../site/shorts/shortsnav.adoc[]
+include::shortsnav.adoc[]
 
 [quote, nach Allen Holub]
 Der Schlüssel für eine evolutionäre Architektur ist die Fähigkeit, die Domäne zu verstehen und zu modellieren. Domain-Driven Design (DDD) bietet einen Ansatz, um dies zu erreichen, indem es die Zusammenarbeit zwischen Domänenexperten und Entwicklern fördert und eine gemeinsame Sprache schafft, um komplexe Geschäftsprobleme zu lösen.
@@ -234,5 +234,5 @@ Strategisches DDD konzentriert sich auf die Identifizierung von Bounded Contexts
 --
 Durch die Anwendung der Prinzipien von strategischem DDD können Teams sicherstellen, dass die Softwarearchitektur gut mit der Domäne und den Geschäftsprozessen übereinstimmt, was zu einer besseren Softwarelösung führt, die den Bedürfnissen der Benutzer entspricht und sich an die sich ändernden Anforderungen anpassen kann.
 
-include::{includesdir}/../site/shorts/EventStorming.adoc[]
-include::{includesdir}/../site/shorts/DomainStorytelling.adoc[]
+include::EventStorming.adoc[]
+include::DomainStorytelling.adoc[]
