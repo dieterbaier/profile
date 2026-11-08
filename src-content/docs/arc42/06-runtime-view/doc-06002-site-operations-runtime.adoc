@@ -1,0 +1,85 @@
+---
+id: DOC-06002-site-operations-runtime
+type: Document
+title: "Site Operations Runtime"
+status: proposed
+owner: "Dieter Baier"
+created: '2026-11-07'
+reviewed: false
+generated: false
+summary: "Runtime scenarios for keeping the deployment of the site working: the credential check, renewing a credential, and a deployment with an expired credential."
+tags:
+- arc42
+- runtime
+- operations
+- deployment
+relations:
+- type: refines
+  target: DOC-06000-runtime-view
+  status: proposed
+  rationale: "The document details runtime scenarios for operating the site."
+  reviewed: false
+metadata_version: '1.0'
+---
+[[doc-06002-site-operations-runtime]]
+== DOC-06002: Site Operations Runtime
+
+=== Status
+
+Introduced with https://github.com/dieterbaier/profile/issues/114[issue #114]. The steps for renewing a credential are kept in `docs/howto/rotate-deployment-credentials.adoc`; these scenarios describe how the system behaves.
+
+The site is static, so operating it means keeping its deployment working. What runs out over time are the credentials the deployment jobs use, see xref:risk-006-credential-expiry[RISK-006].
+
+=== Scenario 1: Check Credentials
+
+The `Check credentials` workflow runs on manual dispatch only, after a credential was renewed. It has one job per credential, so a failed job names the credential, and it changes nothing at any target.
+
+[plantuml]
+----
+@startuml
+start
+:Manual dispatch;
+fork
+  :GitHub tokens: dry-run push, push permission on the repository;
+fork again
+  :GitLab token: dry-run push, push permission on the repository;
+fork again
+  :SFTP password: log in and list the remote base;
+end fork
+if (Any check rejected?) then (yes)
+  #pink:Job fails, GitHub notifies the owner;
+else (no)
+  :All credentials accepted;
+endif
+stop
+@enduml
+----
+
+A dry-run push opens the server's receive side, which rejects a token without push permission on the repository. So it proves more than a valid token.
+
+It does not prove that a real push to `main` succeeds: the dry run sends no ref update, so branch rules and server hooks never see one. When the check was introduced, `main` had no rules in either GitHub target repository. In the GitLab target, `main` is protected and accepts pushes from maintainers, which the token owner is. A rule added later is not caught by the check, see xref:risk-006-credential-expiry[RISK-006].
+
+The check does not watch expiry dates. GitHub and GitLab send an email before a token expires, and the SFTP password has no expiry date. A credential is most likely broken right after it was renewed, by a wrong value, repository, or permission, and that is when the check runs.
+
+=== Scenario 2: Renew A Credential
+
+The owner renews the credential at its provider, stores it in `dieterbaier/profile`, and dispatches `Check credentials`. A green run shows immediately that the new value is accepted and has the needed permission.
+
+A green `Build Docs` run after a push proves nothing here: a deployment job only runs when its paths changed, and a skipped job shows as green.
+
+=== Scenario 3: Deployment With An Expired Credential
+
+Each deployment job fails on its own, so the other targets are still deployed:
+
+[cols="2,3", options="header"]
+|===
+| Expired credential | Effect
+| `ARTICLE_COMMENTS_REPO_TOKEN` | `deploy-site` stops before the upload, so the website is not deployed at all.
+| `PROFILE_REPO_TOKEN` | The GitHub profile README stays at its old version.
+| `GITLAB_TOKEN` | The GitLab profile README stays at its old version.
+| `SFTP_PASSWORD` | Neither the website nor the architecture documentation is deployed.
+|===
+
+The published site keeps working in every case, because a failed job leaves the deployed files untouched. Reading and writing comments needs no token either. Only the allowlist goes stale, so comments on a newly published article do not get their article label.
+
+After renewing the credential, re-running the failed job finishes the deployment without repeating the targets that succeeded.
