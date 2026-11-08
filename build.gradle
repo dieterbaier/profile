@@ -1322,6 +1322,19 @@ tasks.register('testCredentialCheck') {
     }
 }
 
+tasks.register('testCiGradleCache') {
+    description = 'Runs the CI Gradle cache behaviour tests.'
+    group = 'verification'
+    inputs.files('.github/workflows/update-profile.yml', 'gradle/wrapper/gradle-wrapper.properties',
+                 'test/ci_gradle_cache_test.rb', 'features/ci-gradle-cache.feature')
+
+    doLast {
+        exec {
+            commandLine 'ruby', '-Itest', 'test/ci_gradle_cache_test.rb'
+        }
+    }
+}
+
 tasks.register('testSiteMetadata') {
     description = 'Runs the canonical public-site metadata behaviour tests.'
     group = 'verification'
