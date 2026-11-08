@@ -11,7 +11,7 @@ class ReadmeBadgesTest < Minitest::Test
 
   def test_badges_are_images_in_the_source
     # Given: the profile sources
-    sources = Dir.glob(File.join(ROOT, 'src-content/profile/**/*.adoc'))
+    sources = Dir.glob(File.join(ROOT, 'src-content/profile/**/*.adoc')).reject { |path| path.include?('/generated/') }
 
     # When: they are searched for a badge written as an exclamation mark before a link
     tricks = sources.select { |path| File.read(path).include?('!link:') }

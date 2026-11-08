@@ -1338,7 +1338,10 @@ tasks.register('testReadmeBadges') {
     description = 'Runs the README badge behaviour tests.'
     group = 'verification'
     inputs.files('build.gradle', 'test/readme_badges_test.rb', 'features/readme-badges.feature')
-    inputs.dir('src-content/profile')
+    inputs.files(fileTree('src-content/profile') {
+        include '**/*.adoc'
+        exclude '**/generated/**'
+    })
 
     doLast {
         exec {
