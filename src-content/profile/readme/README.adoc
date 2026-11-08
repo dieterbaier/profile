@@ -20,7 +20,7 @@ endif::[]
 
 [.highlight]
 --
-!link:https://img.shields.io/badge/Docs_as_Code-Toolkit-blue[Docs-as-Code Toolkit] +
+image:https://img.shields.io/badge/Docs_as_Code-Toolkit-blue[Docs-as-Code Toolkit] +
 Initiator des Open-Source-Projektes
 → https://github.com/docs-as-code-toolkit[https://github.com/docs-as-code-toolkit^]
 --
