@@ -155,3 +155,71 @@ arc42. Die Anfrage an STRATO zu den nicht anonymisierten Log-Einträgen ist seit
 
 Parallel kamen #117, #122 und #129 auf `main`: Gradle-Cache in CI und das
 `docs-toolbox`-Image auf v1.5.0.
+
+=== Nachtrag vom Abend: Der Export hatte einen Zweck, den ich nie hatte
+
+Nach dem Abschluss des Tages fragte ich, auf welcher Anforderung der
+Markdown-Export der Artikel beruht. Eine eigene gab es nicht. `G-002` setzte ihn
+als Erfolgskriterium voraus, ADR-004 war laut eigenem Text aus der bestehenden
+Praxis abgeleitet, und QS-003 nannte ihn, ohne ihn zu begründen. Den Zweck nannte
+nur ein Nebensatz in `doc-08000`, seit `8f0ca64` vom 4. August: „the markdown
+export exists so public articles can be published elsewhere“. Das hatte ich nie
+vor. Meine Idee waren Zusammenfassungen auf anderen Plattformen, die auf die
+Website verweisen, und die Website sollte als einzige den vollständigen Artikel
+tragen.
+
+Plausibel war der Satz, weil der Export existierte und Arbeit machte, und Arbeit
+sieht nach Bedarf aus. `8ffef9c` filterte unveröffentlichte Artikel aus ihm heraus,
+`3e62b5d` brachte ihm die Assets, und am 29. August stand er in `through-line` und
+`open-threads`. Jede dieser Änderungen setzte voraus, dass jemand die Dateien
+liest. Im Workflow nannte sie kein Schritt, und ich lud sie auch nicht von Hand
+herunter.
+
+Ich selbst hatte eine andere Erklärung, und auch die war falsch: Die Dateien unter
+`build/articles` stammten wohl aus der Generierung der Zusammenfassungen. Die
+Architekturdoku stützte das. `doc-05000` zeigte seit `8777423` vom 7. Juli den Pfeil
+`[buildArticlesMarkdown] --> SummaryGenerator`. Der Assistent prüfte es, statt dem
+Diagramm zu glauben: `./gradlew generateArticleSummaries --dry-run` führte nur diesen
+einen Task aus, und das Skript las AsciiDoc-Quellen und Sidecars direkt. `COMP-006`
+nannte die Eingaben die ganze Zeit richtig. Zwei Stellen derselben Doku widersprachen
+sich, und gerendert wurde der falsche Pfeil trotzdem bei jedem Build.
+
+=== Einen Kanal zu streichen war eine Vertragsänderung
+
+Für #130 nahm der Assistent `markdown-export` aus Schema, Validator und Artikeln und
+las erst danach `ai-contracts/profile-artifact-metadata.md`. Dort steht „a value that
+stops being accepted“ als Grund, die `metadata_version` zu erhöhen.
+
+Dass das leicht durchrutscht, ist naheliegend: Nach dem Streichen enthielt der Baum
+den Wert nirgends mehr, also gab es keine Datei, an der etwas hätte scheitern können.
+Die Prüfung aus `8623bb8` fragt nur, ob eine Version in der Aufzählung steht, nicht
+ob sich der Vertrag geändert hat. Die Regel erreicht nur, wer sie liest.
+
+Die Aufzählung enthielt bis dahin nur `1.0`, das hier ist also die erste Erhöhung. Die
+drei Artikel mit dem Kanal und die Vorlage gingen auf `1.1`. `1.0` blieb gültig, weil
+die übrigen Artefakte den Wert nie benutzt hatten und damit wahr bleiben, auch die vier
+in `profile-private`.
+
+=== Die Gegenprobe ließ ihre Testzeile in der Quelle
+
+Um zu sehen, ob der Validator den alten Wert ablehnt, schrieb der Assistent ihn zurück
+in `doc-as-code.profile.yaml` und wollte die Datei danach per `cp` wiederherstellen.
+`cp` fragte nach und meldete `not overwritten`, und die Zeile blieb stehen. Der Befehl
+war Teil einer längeren Kette, die weiterlief. Aufgefallen ist es an der Diff-Statistik
+direkt dahinter: `1 insertion, 1 deletion` statt der erwarteten einen Einfügung und
+zwei Löschungen. Der Assistent stellte die Datei vor dem Commit wieder her.
+
+Die Gegenprobe selbst war richtig. Falsch war, sie an der Datei zu machen, die danach
+committet werden sollte.
+
+=== Stand am Abend
+
+Dieser Nachtrag ändert nichts an den Abschnitten oben, und der Tag bleibt geschlossen.
+`main` liegt ohne #130. PR #131 ist offen, `pr-check` und `detect-changes` sind grün,
+der Merge steht aus. Der Workflow selbst lief mit der Änderung noch nicht als Build
+und Deploy, das passiert erst nach dem Merge.
+
+ADR-004 und ADR-007 bleiben `proposed`, bis ich sie geprüft habe. Stehen geblieben
+sind die `{type}`-Abfragen in den Artikeln, die Markdown-Erkennung im Asset-Check und
+das Szenario „Non-website article exports omit the comment block“. Sie schaden nicht,
+dienen aber keinem Artikel-Export mehr.

@@ -199,6 +199,21 @@ Der Auslöser, es zu entscheiden, wäre die dritte Datei dieser Art — oder die
 erste, bei der die Überzähligkeit etwas kostet statt nur unordentlich zu sein.
 Bei einem Favicon in einem Markdown-Export kostet sie nichts.
 
+Nachtrag vom 2026-11-08: Mit PR #131 fällt `build/articles/docbook` weg und damit das
+Beispiel, nicht die Frage. Die Copy-Blöcke in `asciidoctorBase` laufen weiter für jedes
+Target.
+
+=== Ob die Zusammenfassungen den Link zur Website selbst setzen
+
+Seit #130 ist festgehalten, dass nur die Website den vollständigen Artikel trägt und
+eine veröffentlichte Zusammenfassung auf sie verweist. `generate-article-summaries.rb`
+setzt dafür weiterhin den Platzhalter `[Artikel-Link einsetzen]`, und der Vertrag
+verbietet, eine Publikations-URL zu erfinden.
+
+Ob sich die URL aus dem Quellpfad ableiten ließe, ist nicht geprüft. Der Auslöser, es
+zu entscheiden, wäre die erste Zusammenfassung, die ich wirklich veröffentliche. Ob es
+dazu kommt, ist offen, und auf Verdacht baue ich es nicht.
+
 === Ob `pr-check` ein Target rendern soll
 
 Der Job führt `validateProfileMetamodel`, `generateProfileArtifacts`,
