@@ -23,7 +23,6 @@ abstract class PandocTask extends DefaultTask {
                     '-f', 'docbook',
                     '-t', 'gfm',
                     '--wrap=none',
-                    '--extract-media=build/pandoc/media',
                     '-o', outputFile.get().asFile
         }
     }
@@ -1331,6 +1330,19 @@ tasks.register('testCiGradleCache') {
     doLast {
         exec {
             commandLine 'ruby', '-Itest', 'test/ci_gradle_cache_test.rb'
+        }
+    }
+}
+
+tasks.register('testReadmeBadges') {
+    description = 'Runs the README badge behaviour tests.'
+    group = 'verification'
+    inputs.files('build.gradle', 'test/readme_badges_test.rb', 'features/readme-badges.feature')
+    inputs.dir('src-content/profile')
+
+    doLast {
+        exec {
+            commandLine 'ruby', '-Itest', 'test/readme_badges_test.rb'
         }
     }
 }
