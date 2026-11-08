@@ -64,7 +64,7 @@ class ProfileCommentsTest < Minitest::Test
       assert_includes script, 'addEventListener("click"'
       assert_includes script, 'https://api.github.com/search/issues?q='
       assert_includes script, 'label:\"Artikelkommentar\"'
-      assert_includes script, 'url.searchParams.set("article_url", window.location.href)'
+      assert_includes script, 'url.searchParams.set("article_url", articleAddress())'
       refute_includes script, 'DOMContentLoaded'
     end
   end
@@ -86,6 +86,34 @@ class ProfileCommentsTest < Minitest::Test
       refute_match(/Kommentare werden von GitHub geladen/, script)
       refute_match(/Noch keine Kommentare vorhanden/, script)
     end
+  end
+
+  def test_the_comment_block_names_what_goes_to_github_before_the_reader_acts
+    # Given: an article comment block on the static website
+    with_article do |validator, artifacts, root|
+      # When: the comment block is generated
+      validator.generate_article_comment_includes(artifacts)
+      generated = (root + 'articles/generated/example-comments.adoc').read
+
+      # Then: a notice links to the privacy policy and stands before both actions
+      assert_includes generated, '{ui_comments_notice}'
+      assert_includes generated, 'href="{url_legal}#comments"'
+      notice = generated.index('{ui_comments_notice}')
+      assert_operator notice, :<, generated.index('{ui_comments_create}')
+      assert_operator notice, :<, generated.index('{ui_comments_load}')
+    end
+  end
+
+  # The behaviour runs in test/article_comments_test.mjs under the same name.
+  def test_the_comment_link_carries_the_article_address_without_query_and_fragment
+    # Given: a page opened with a query and a fragment
+    script = Pathname.new(__dir__).join('../src-content/theme/article-comments.js').read
+
+    # When: the comment block is prepared
+    # Then: the script clears both before the address reaches the link
+    assert_includes script, 'page.search = ""'
+    assert_includes script, 'page.hash = ""'
+    refute_includes script, 'set("article_url", window.location.href)'
   end
 
   def test_non_website_article_exports_omit_the_comment_block

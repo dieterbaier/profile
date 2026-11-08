@@ -28,7 +28,7 @@ class Element {
     }
 }
 
-function articleComments(fetch) {
+function articleComments(fetch, href = 'http://localhost:63342/articles/example.html') {
     const button = new Element('button');
     const status = new Element('p');
     const list = new Element('ul');
@@ -58,7 +58,7 @@ function articleComments(fetch) {
         createElement: kind => new Element(kind),
         querySelectorAll: () => [container]
     };
-    const window = { location: { href: 'http://localhost:63342/articles/example.html' } };
+    const window = { location: { href } };
     vm.runInNewContext(script, { document, fetch, URL, window });
 
     return { button, container, createLink, list, status };
@@ -115,6 +115,17 @@ test('existing comments use server-side search pagination and render matching is
     assert.equal(list.children[100].children[0].textContent, 'Vollständig geänderter Titel');
     assert.equal(status.textContent, '101 Kommentare:');
     assert.equal(button.hidden, true);
+});
+
+test('the comment link carries the article address without query and fragment', () => {
+    // Given: a page opened with a campaign parameter and a jump mark
+    const href = 'https://dieterbaier.eu/articles/example.html?utm_source=mail#abschnitt';
+
+    // When: the comment block is prepared
+    const { createLink } = articleComments(async () => ({}), href);
+
+    // Then: the form receives only the address of the article
+    assert.equal(new URL(createLink.href).searchParams.get('article_url'), 'https://dieterbaier.eu/articles/example.html');
 });
 
 test('searches beyond the GitHub result limit remain retryable', async () => {

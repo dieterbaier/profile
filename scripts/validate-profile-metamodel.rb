@@ -1837,6 +1837,7 @@ class ProfileArtifactValidator
      "<section class=\"article-comments\" data-article-comments data-repository=\"#{h(ARTICLE_COMMENTS_REPOSITORY)}\" data-article-id=\"#{h(article_id)}\" #{comment_terms}>",
      '  <h2>{ui_comments_heading}</h2>',
      '  <p>{ui_comments_intro}</p>',
+     '  <p class="article-comments-notice">{ui_comments_notice} <a href="{url_legal}#comments">{ui_comments_notice_link}</a></p>',
      "  <p><a class=\"article-comment-create fingerPointsTo\" href=\"#{h(new_issue_url)}\" target=\"_blank\" rel=\"noopener noreferrer\">{ui_comments_create}</a></p>",
      '  <button class="article-comments-load" type="button">{ui_comments_load}</button>',
      '  <p class="article-comments-status" aria-live="polite"></p>',

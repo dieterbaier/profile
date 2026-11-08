@@ -1,12 +1,21 @@
 (function () {
     "use strict";
 
+    // Only the address of the article goes to GitHub. Query and fragment can
+    // carry what the reader never meant to send, such as a campaign parameter.
+    function articleAddress() {
+        const page = new URL(window.location.href);
+        page.search = "";
+        page.hash = "";
+        return page.toString();
+    }
+
     function prepareCreateLink(container) {
         const link = container.querySelector(".article-comment-create");
         if (!link) return;
 
         const url = new URL(link.href);
-        url.searchParams.set("article_url", window.location.href);
+        url.searchParams.set("article_url", articleAddress());
         link.href = url.toString();
     }
 

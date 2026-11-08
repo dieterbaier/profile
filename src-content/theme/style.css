@@ -166,6 +166,10 @@ footer {
     margin-top: 0;
 }
 
+.article-comments-notice {
+    font-size: 0.875em;
+}
+
 .article-comments-load {
     padding: 0.55rem 0.85rem;
     border: 1px solid currentColor;
