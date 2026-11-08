@@ -88,6 +88,22 @@ class ProfileCommentsTest < Minitest::Test
     end
   end
 
+  def test_the_comment_block_names_what_goes_to_github_before_the_reader_acts
+    # Given: an article comment block on the static website
+    with_article do |validator, artifacts, root|
+      # When: the comment block is generated
+      validator.generate_article_comment_includes(artifacts)
+      generated = (root + 'articles/generated/example-comments.adoc').read
+
+      # Then: a notice links to the privacy policy and stands before both actions
+      assert_includes generated, '{ui_comments_notice}'
+      assert_includes generated, 'href="{url_legal}#comments"'
+      notice = generated.index('{ui_comments_notice}')
+      assert_operator notice, :<, generated.index('{ui_comments_create}')
+      assert_operator notice, :<, generated.index('{ui_comments_load}')
+    end
+  end
+
   def test_non_website_article_exports_omit_the_comment_block
     # Given: a generated article comment include
     with_article do |validator, artifacts, root|

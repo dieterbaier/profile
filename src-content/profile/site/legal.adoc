@@ -41,6 +41,8 @@ Dieter Baier (Anschrift wie oben)
 
 == Datenschutzerklärung
 
+Verantwortlich für die Datenverarbeitung auf dieser Website im Sinne der DSGVO bin ich, Dieter Baier (Kontakt siehe Impressum).
+
 Diese Website stellt Informationen zu meinem beruflichen Profil bereit. Sie hat kein eigenes Backend und keine eigene Datenerfassung.
 
 Personenbezogene Daten fallen in drei Fällen an: beim Hosting-Anbieter, sobald Sie eine Seite aufrufen, bei GitHub, wenn Sie die Kommentarfunktion nutzen, und bei mir, wenn Sie mich kontaktieren.
@@ -60,9 +62,12 @@ Mir stellt STRATO die https://www.strato.de/faq/hosting/wo-finde-ich-meine-logfi
 
 In meinen Logfiles vom Oktober 2026 habe ich auch einzelne Einträge mit nicht anonymisierter IP-Adresse gefunden. Das kläre ich mit STRATO.
 
-Ich nutze diese Daten für den technischen Betrieb und die Sicherheit der Website und sehe die Logfiles gelegentlich selbst durch, etwa um die Anonymisierung zu prüfen. Zur Profilbildung nutze ich sie nicht.
+Auf die bereitgestellten Logfiles habe ich jederzeit Zugriff und prüfe sie bei Bedarf. Das dient nicht der Profilbildung, sondern ich komme damit meinen Pflichten als Verantwortlicher nach und prüfe, ob die Angaben von STRATO mit den Tatsachen übereinstimmen. Logfiles, die ich dafür herunterlade, lösche ich, sobald die Prüfung abgeschlossen ist.
+
+Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO. Mein berechtigtes Interesse liegt im sicheren Betrieb der Website und in der Kontrolle meines Dienstleisters.
 
 
+[#comments]
 === Kommentarfunktion (GitHub)
 
 Artikel auf dieser Website haben eine Kommentarfunktion, die auf GitHub aufbaut (GitHub, Inc., USA, und GitHub B.V., Prins Bernhardplein 200, 1097JB Amsterdam, Niederlande). Solange Sie sie nicht nutzen, baut eine Artikelseite keine Verbindung zu GitHub auf.
@@ -73,12 +78,16 @@ Artikel auf dieser Website haben eine Kommentarfunktion, die auf GitHub aufbaut 
 
 *Was GitHub erfasst:* Nach https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement[eigener Datenschutzerklärung^] erfasst GitHub automatisch unter anderem IP-Adresse, Geräteinformationen und Sitzungsdaten sowie die verweisende Seite und den Zeitpunkt des Besuchs. Eine konkrete Speicherfrist für diese Daten nennt GitHub nicht; sie hänge vom Zweck der Erhebung und von gesetzlichen Pflichten ab. GitHub verarbeitet Daten auch in den USA und stützt sich dafür nach eigener Angabe auf die EU-Standardvertragsklauseln und das EU-U.S. Data Privacy Framework. Auf github.com setzt GitHub https://docs.github.com/en/site-policy/privacy-policies/github-cookies[eigene Cookies^]. Auf all das habe ich keinen Einfluss.
 
+*Rechtsgrundlagen und Speicherdauer:* Das Laden der Kommentare beruht auf Ihrer Einwilligung (Art. 6 Abs. 1 lit. a DSGVO), die Sie mit dem Klick auf die Schaltfläche erteilen. Sie gilt nur für diesen Abruf und wirkt nicht fort. Beim Schreiben eines Kommentars ist GitHub selbst Verantwortlicher. Dass ich Kommentare lese, beantworte und moderiere, beruht auf Art. 6 Abs. 1 lit. f DSGVO; mein berechtigtes Interesse ist der fachliche Austausch über meine Artikel. Kommentare bleiben öffentlich, bis sie gelöscht werden. Wenn Sie das wünschen, schreiben Sie mir.
+
 
 === Kontaktaufnahme
 
-Wenn Sie mich per E-Mail kontaktieren, werden die von Ihnen übermittelten Daten ausschließlich zur Bearbeitung Ihrer Anfrage verwendet.
+Wenn Sie mich per E-Mail kontaktieren, verwende ich die von Ihnen übermittelten Daten ausschließlich zur Bearbeitung Ihrer Anfrage und gebe sie nicht an Dritte weiter.
 
-Eine Weitergabe an Dritte erfolgt nicht.
+Diese Website versendet selbst keine E-Mails. Ihre Nachricht läuft über Ihren und meinen E-Mail-Anbieter, nicht über diese Website.
+
+Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO, mein berechtigtes Interesse ist die Beantwortung Ihrer Anfrage; geht es um einen Vertrag oder dessen Anbahnung, Art. 6 Abs. 1 lit. b DSGVO. Ich lösche die Daten, sobald die Anfrage erledigt ist und keine gesetzlichen Aufbewahrungspflichten entgegenstehen.
 
 
 === Externe Inhalte und Links
@@ -91,6 +100,17 @@ Auf deren Inhalte habe ich keinen Einfluss. Für die Inhalte der verlinkten Seit
 === Verzicht auf Tracking und Cookies
 
 Diese Website bindet keine Tracking- oder Analyse-Tools ein und setzt selbst keine Cookies.
+
+
+=== Ihre Rechte
+
+Sie haben das Recht auf Auskunft (Art. 15 DSGVO), Berichtigung (Art. 16), Löschung (Art. 17), Einschränkung der Verarbeitung (Art. 18) und Datenübertragbarkeit (Art. 20). Eine erteilte Einwilligung können Sie jederzeit mit Wirkung für die Zukunft widerrufen (Art. 7 Abs. 3).
+
+*Soweit eine Verarbeitung auf Art. 6 Abs. 1 lit. f DSGVO beruht, können Sie ihr aus Gründen, die sich aus Ihrer besonderen Situation ergeben, jederzeit widersprechen (Art. 21).*
+
+Wenden Sie sich dafür an die im Impressum genannte Adresse. Außerdem können Sie sich bei einer Datenschutz-Aufsichtsbehörde beschweren (Art. 77), insbesondere an Ihrem Aufenthaltsort.
+
+Die Bereitstellung Ihrer Daten ist weder gesetzlich noch vertraglich vorgeschrieben. Ohne die Übertragung der IP-Adresse kann Ihr Browser diese Website allerdings nicht abrufen. Eine automatisierte Entscheidungsfindung einschließlich Profiling findet durch mich nicht statt.
 
 
 == Haftungsausschluss

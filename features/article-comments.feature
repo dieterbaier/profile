@@ -18,6 +18,11 @@ Feature: GitHub-backed article comments
     When the reader requests existing comments
     Then the local enhancement loads issues carrying the comment and article id labels and presents their headings as links
 
+  Scenario: The comment block names what goes to GitHub before the reader acts
+    Given an article comment block on the static website
+    When the comment block is generated
+    Then a notice on the data sent to GitHub links to the privacy policy and stands before the comment link and the load button
+
   Scenario: Non-website article exports omit the comment block
     Given a generated article comment include
     When the article is rendered for a non-website target

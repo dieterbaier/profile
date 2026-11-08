@@ -42,6 +42,8 @@ Dieter Baier (address as above)
 
 == Privacy policy
 
+I, Dieter Baier, am the controller within the meaning of the GDPR for data processing on this website (see the legal notice for contact details).
+
 This website provides information about my professional profile. It has no backend and no data collection of its own.
 
 Personal data arises in three cases: at the hosting provider as soon as you open a page, at GitHub if you use the comment function, and with me if you contact me.
@@ -61,9 +63,12 @@ STRATO provides me with the https://www.strato.de/faq/hosting/wo-finde-ich-meine
 
 In my log files from October 2026 I also found individual entries with a non-anonymised IP address. I am clarifying this with STRATO.
 
-I use this data for the technical operation and security of the website, and I occasionally go through the log files myself, for example to check the anonymisation. I do not use them for profiling.
+I have access to the log files provided at any time and check them when needed. This is not for profiling: I do it to meet my obligations as controller and to check whether STRATO's statements match the facts. Log files I download for this purpose are deleted as soon as the check is finished.
+
+The legal basis is Art. 6(1)(f) GDPR. My legitimate interest lies in operating the website securely and in supervising my service provider.
 
 
+[#comments]
 === Comment function (GitHub)
 
 Articles on this website have a comment function built on GitHub (GitHub, Inc., USA, and GitHub B.V., Prins Bernhardplein 200, 1097JB Amsterdam, Netherlands). As long as you do not use it, an article page does not connect to GitHub.
@@ -74,12 +79,16 @@ Articles on this website have a comment function built on GitHub (GitHub, Inc., 
 
 *What GitHub records:* According to https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement[its privacy statement^], GitHub automatically records, among other things, IP address, device information and session details, as well as the referring site and the date and time of the visit. GitHub does not state a specific retention period for this data; it says this depends on the purpose of collection and on legal obligations. GitHub also processes data in the United States and, according to its statement, relies on the EU standard contractual clauses and the EU-U.S. Data Privacy Framework for this. On github.com, GitHub sets https://docs.github.com/en/site-policy/privacy-policies/github-cookies[its own cookies^]. I have no influence on any of this.
 
+*Legal bases and retention:* Loading comments is based on your consent (Art. 6(1)(a) GDPR), which you give by clicking the button. It applies to this request only and does not carry over. When a comment is written, GitHub is itself the controller. My reading, answering and moderating comments is based on Art. 6(1)(f) GDPR; my legitimate interest is professional exchange about my articles. Comments remain public until they are deleted. If you would like that, write to me.
+
 
 === Contacting me
 
-If you contact me by e-mail, the data you provide is used exclusively to process your enquiry.
+If you contact me by e-mail, I use the data you provide exclusively to process your enquiry and do not pass it on to third parties.
 
-It is not passed on to third parties.
+This website does not send any e-mails itself. Your message travels via your e-mail provider and mine, not via this website.
+
+The legal basis is Art. 6(1)(f) GDPR, my legitimate interest being to answer your enquiry; where a contract or its preparation is concerned, Art. 6(1)(b) GDPR. I delete the data once the enquiry is settled, unless statutory retention obligations apply.
 
 
 === External content and links
@@ -92,6 +101,17 @@ I have no influence on their content. The respective provider or operator is alw
 === No tracking or cookies
 
 This website does not embed any tracking or analytics tools and does not set any cookies itself.
+
+
+=== Your rights
+
+You have the right of access (Art. 15 GDPR), rectification (Art. 16), erasure (Art. 17), restriction of processing (Art. 18) and data portability (Art. 20). You can withdraw consent at any time with effect for the future (Art. 7(3)).
+
+*Where processing is based on Art. 6(1)(f) GDPR, you can object to it at any time on grounds relating to your particular situation (Art. 21).*
+
+Please use the address given in the legal notice. You can also lodge a complaint with a data protection supervisory authority (Art. 77), in particular at your place of residence.
+
+Providing your data is not required by law or contract. Without transmitting the IP address, however, your browser cannot retrieve this website. I do not carry out automated decision-making, including profiling.
 
 
 == Disclaimer

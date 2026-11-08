@@ -12,6 +12,8 @@
 :ui_footer_architecture: Architektur der Seite
 :ui_comments_heading: Kommentare
 :ui_comments_intro: Fragen, Ergänzungen oder Feedback sind willkommen und werden als öffentliches GitHub-Issue erfasst.
+:ui_comments_notice: Beim Laden der Kommentare verbindet sich Ihr Browser direkt mit GitHub und übermittelt dabei Ihre IP-Adresse. Kommentieren führt zu github.com und setzt ein GitHub-Konto voraus; Kommentar und Benutzername sind dann öffentlich.
+:ui_comments_notice_link: Mehr dazu in der Datenschutzerklärung
 :ui_comments_create: Diesen Artikel kommentieren
 :ui_comments_load: Vorhandene Kommentare laden
 :ui_comments_empty: Noch keine Kommentare vorhanden.

@@ -12,6 +12,8 @@
 :ui_footer_architecture: Architecture of this site
 :ui_comments_heading: Comments
 :ui_comments_intro: Questions, additions and feedback are welcome and are recorded as a public GitHub issue.
+:ui_comments_notice: When loading comments, your browser connects directly to GitHub and transmits your IP address. Commenting leads to github.com and requires a GitHub account; the comment and your user name are then public.
+:ui_comments_notice_link: More in the privacy policy
 :ui_comments_create: Comment on this article
 :ui_comments_load: Load existing comments
 :ui_comments_empty: No comments yet.
