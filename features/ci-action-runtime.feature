@@ -14,6 +14,11 @@ Feature: CI action runtime
     When their actions are compared with the first major version that runs on Node.js 24
     Then none of them is older
 
+  Scenario: A workflow file ending in yaml is checked too
+    Given a repository whose workflow file ends in .yaml and uses an older action
+    When its workflows are read and their actions compared
+    Then the action is reported
+
   Scenario: An action older than its Node.js 24 version is reported
     Given a workflow that uses an action below its first Node.js 24 version
     When its actions are compared

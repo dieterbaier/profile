@@ -4,7 +4,9 @@
 #
 # Bridged from features/ci-action-runtime.feature by the sanitized scenario title.
 
+require 'fileutils'
 require 'minitest/autorun'
+require 'tmpdir'
 require 'yaml'
 
 class CiActionRuntimeTest < Minitest::Test
@@ -19,6 +21,10 @@ class CiActionRuntimeTest < Minitest::Test
     'actions/upload-artifact' => 6,
     'dorny/paths-filter' => 4
   }.freeze
+
+  def workflows_in(root)
+    Dir[File.join(root, '.github/workflows/*.{yml,yaml}')].map { |path| YAML.safe_load(File.read(path)) }
+  end
 
   def actions_in(workflow)
     workflow.fetch('jobs').values.flat_map { |job| job.fetch('steps', []) }.filter_map { |step| step['uses'] }
@@ -38,7 +44,7 @@ class CiActionRuntimeTest < Minitest::Test
 
   def test_every_workflow_action_runs_on_node_js_24
     # Given: all workflows of this repository
-    workflows = Dir[File.join(ROOT, '.github/workflows/*.yml')].map { |path| YAML.safe_load(File.read(path)) }
+    workflows = workflows_in(ROOT)
     refute_empty workflows
 
     # When: their actions are compared with the first major version that runs on Node.js 24
@@ -47,6 +53,21 @@ class CiActionRuntimeTest < Minitest::Test
     # Then: none of them is older
     refute_empty actions
     assert_empty outdated(actions)
+  end
+
+  def test_a_workflow_file_ending_in_yaml_is_checked_too
+    Dir.mktmpdir do |root|
+      # Given: a repository whose workflow file ends in .yaml and uses an older action
+      directory = File.join(root, '.github/workflows')
+      FileUtils.mkdir_p(directory)
+      File.write(File.join(directory, 'release.yaml'), YAML.dump(workflow_from('actions/checkout@v4')))
+
+      # When: its workflows are read and their actions compared
+      reported = outdated(workflows_in(root).flat_map { |workflow| actions_in(workflow) })
+
+      # Then: the action is reported
+      assert_equal ['actions/checkout@v4'], reported
+    end
   end
 
   def test_an_action_older_than_its_node_js_24_version_is_reported
