@@ -1250,6 +1250,18 @@ tasks.register('testCiGradleCache') {
     }
 }
 
+tasks.register('testCiActionRuntime') {
+    description = 'Runs the CI action runtime behaviour tests.'
+    group = 'verification'
+    inputs.files(fileTree('.github/workflows'), 'test/ci_action_runtime_test.rb', 'features/ci-action-runtime.feature')
+
+    doLast {
+        exec {
+            commandLine 'ruby', '-Itest', 'test/ci_action_runtime_test.rb'
+        }
+    }
+}
+
 tasks.register('testReadmeBadges') {
     description = 'Runs the README badge behaviour tests.'
     group = 'verification'
