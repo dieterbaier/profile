@@ -67,6 +67,21 @@ def env = { String key, String defaultValue = null ->
     System.getenv(key) ?: localEnv[key] ?: defaultValue
 }
 
+// Runs a command while the build configures itself and hands back its exit
+// value and both outputs, so the caller decides what a failure means. Gradle
+// 9 deprecates starting a process there by any other way, and Gradle 11 fails
+// on it.
+def configurationTimeCommand = { List<String> command ->
+    def execution = providers.exec {
+        commandLine command
+        workingDir rootDir
+        ignoreExitValue = true
+    }
+    [exitValue: execution.result.get().exitValue,
+     stdout   : execution.standardOutput.asText.get(),
+     stderr   : execution.standardError.asText.get()]
+}
+
 def articleSummarySourceExcludes = [
         '**/*_summary_*.adoc',
         '**/*_summary_*.md',
@@ -85,40 +100,31 @@ def articleSummarySourceExcludes = [
 // mid-build directory, and configuration time removes it rather than ordering
 // around it.
 def publicArticleExclusions = { ->
-    def stdout = new StringWriter()
-    def stderr = new StringWriter()
-    def process = ['ruby', 'scripts/validate-profile-metamodel.rb', '--list-public-source-exclusions']
-            .execute(null, rootDir)
-    process.waitForProcessOutput(stdout, stderr)
+    def result = configurationTimeCommand(['ruby', 'scripts/validate-profile-metamodel.rb', '--list-public-source-exclusions'])
 
     // Fail closed. Without a trustworthy list the safe answer is to render
     // nothing, not to render everything.
-    if (process.exitValue() != 0) {
+    if (result.exitValue != 0) {
         throw new GradleException(
                 'Could not determine which articles the public target may render.\n' +
-                        "ruby scripts/validate-profile-metamodel.rb --list-public-source-exclusions failed:\n${stderr}")
+                        "ruby scripts/validate-profile-metamodel.rb --list-public-source-exclusions failed:\n${result.stderr}")
     }
 
-    stdout.toString().readLines().findAll { !it.trim().isEmpty() }.toSet()
+    result.stdout.readLines().findAll { !it.trim().isEmpty() }.toSet()
 }()
 
 // The asset directories the public target may publish, asked of the same owner
 // of the metadata contract and at the same time as the selection above, so a
 // page and the files it asks for are chosen by one rule rather than two.
 def publicArticleAssetDirs = { ->
-    def stdout = new StringWriter()
-    def stderr = new StringWriter()
-    def process = ['ruby', 'scripts/validate-profile-metamodel.rb', '--list-target-asset-dirs', '--target', 'public']
-            .execute(null, rootDir)
-    process.waitForProcessOutput(stdout, stderr)
-
-    if (process.exitValue() != 0) {
+    def result = configurationTimeCommand(['ruby', 'scripts/validate-profile-metamodel.rb', '--list-target-asset-dirs', '--target', 'public'])
+    if (result.exitValue != 0) {
         throw new GradleException(
                 'Could not determine which article assets the public target may publish.\n' +
-                        "ruby scripts/validate-profile-metamodel.rb --list-target-asset-dirs failed:\n${stderr}")
+                        "ruby scripts/validate-profile-metamodel.rb --list-target-asset-dirs failed:\n${result.stderr}")
     }
 
-    stdout.toString().readLines().findAll { !it.trim().isEmpty() }.collect { file(it) }
+    result.stdout.readLines().findAll { !it.trim().isEmpty() }.collect { file(it) }
 }()
 
 // Asked of a rendered target rather than of the selection that produced it, the
@@ -946,24 +952,20 @@ def privateArticleExclusions = {
         return [] as Set
     }
 
-    def stdout = new StringWriter()
-    def stderr = new StringWriter()
-    def process = ['ruby', 'scripts/validate-profile-metamodel.rb',
+    def result = configurationTimeCommand(['ruby', 'scripts/validate-profile-metamodel.rb',
                    '--list-public-source-exclusions',
                    '--target', 'private',
                    '--root', privateCheckoutDir.absolutePath,
                    '--profile-dir', privateContentDir.absolutePath,
-                   '--includes-dir', publicIncludesDir.absolutePath].execute(null, rootDir)
-    process.waitForProcessOutput(stdout, stderr)
-
-    if (process.exitValue() != 0) {
+                   '--includes-dir', publicIncludesDir.absolutePath])
+    if (result.exitValue != 0) {
         privateSelectionFailure =
                 'Could not determine which articles the private target may render.\n' +
-                "ruby scripts/validate-profile-metamodel.rb --target private failed:\n${stderr}"
+                "ruby scripts/validate-profile-metamodel.rb --target private failed:\n${result.stderr}"
         return null
     }
 
-    stdout.toString().readLines().findAll { !it.trim().isEmpty() }.toSet()
+    result.stdout.readLines().findAll { !it.trim().isEmpty() }.toSet()
 }()
 
 // The assets side of the same selection, carried the same way. It fails closed
@@ -975,25 +977,21 @@ def privateArticleAssetDirs = {
         return []
     }
 
-    def stdout = new StringWriter()
-    def stderr = new StringWriter()
-    def process = ['ruby', 'scripts/validate-profile-metamodel.rb',
+    def result = configurationTimeCommand(['ruby', 'scripts/validate-profile-metamodel.rb',
                    '--list-target-asset-dirs',
                    '--target', 'private',
                    '--root', privateCheckoutDir.absolutePath,
                    '--profile-dir', privateContentDir.absolutePath,
-                   '--includes-dir', publicIncludesDir.absolutePath].execute(null, rootDir)
-    process.waitForProcessOutput(stdout, stderr)
-
-    if (process.exitValue() != 0) {
+                   '--includes-dir', publicIncludesDir.absolutePath])
+    if (result.exitValue != 0) {
         privateSelectionFailure =
                 'Could not determine which article assets the private target may publish.\n' +
-                "ruby scripts/validate-profile-metamodel.rb --list-target-asset-dirs failed:\n${stderr}"
+                "ruby scripts/validate-profile-metamodel.rb --list-target-asset-dirs failed:\n${result.stderr}"
         return []
     }
 
     // Reported relative to the private checkout, which is not this project.
-    stdout.toString().readLines().findAll { !it.trim().isEmpty() }
+    result.stdout.readLines().findAll { !it.trim().isEmpty() }
             .collect { new File(privateCheckoutDir, it) }
 }()
 
