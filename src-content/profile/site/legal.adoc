@@ -60,8 +60,6 @@ Nach https://www.strato.de/faq/vertrag/fragen-zur-auftragsverarbeitungsvertrag-a
 
 Mir stellt STRATO die https://www.strato.de/faq/hosting/wo-finde-ich-meine-logfiles/[Logfiles der letzten sechs Wochen^] und eine daraus erstellte https://www.strato.de/faq/hosting/so-erfahren-sie-wie-oft-ihre-internet-seiten-besucht-worden-sind/[Zugriffsstatistik^] bereit, die bis zu 400 Tage darstellen kann. Die Client-Adresse ist darin nach Angabe von STRATO anonymisiert: Ein Teil der Adresse wird gehasht, und dieselbe Ausgangsadresse ergibt höchstens 24 Stunden lang dieselbe anonymisierte Adresse. Die Domain Ihres Internetanbieters kann erkennbar bleiben.
 
-In meinen Logfiles vom Oktober 2026 habe ich auch einzelne Einträge mit nicht anonymisierter IP-Adresse gefunden. Das kläre ich mit STRATO.
-
 Auf die bereitgestellten Logfiles habe ich jederzeit Zugriff und prüfe sie bei Bedarf. Das dient nicht der Profilbildung, sondern ich komme damit meinen Pflichten als Verantwortlicher nach und prüfe, ob die Angaben von STRATO mit den Tatsachen übereinstimmen. Logfiles, die ich dafür herunterlade, lösche ich, sobald die Prüfung abgeschlossen ist.
 
 Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO. Mein berechtigtes Interesse liegt im sicheren Betrieb der Website und in der Kontrolle meines Dienstleisters.
