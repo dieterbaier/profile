@@ -243,12 +243,12 @@ stehen bleibt.
 
 === Was aus der Antwort von STRATO folgt
 
-`legal.adoc` sagt öffentlich, dass ich einzelne nicht anonymisierte Einträge
-gefunden habe und das mit STRATO kläre. Die Anfrage ist verschickt, die Antwort steht
-aus.
+Die Anfrage ist verschickt, die Antwort steht aus. Den Satz zu den einzelnen nicht
+anonymisierten Einträgen habe ich am 9. November aus beiden Sprachfassungen von
+`legal.adoc` entfernt, die Klärung läuft unabhängig davon weiter.
 
-Sobald sie da ist: die heruntergeladene Logdatei löschen, wie der Text es zusagt,
-und den Satz in beiden Sprachfassungen an das Ergebnis anpassen. Der offene Absatz
+Sobald die Antwort da ist: die heruntergeladene Logdatei löschen, wie der Text es
+zusagt, und prüfen, ob das Ergebnis in `legal.adoc` gehört. Der offene Absatz
 im Artikel `privacy-im-qualitaetsbaum` in `profile-private` hängt an derselben
 Antwort.
 
