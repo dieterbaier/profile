@@ -61,8 +61,6 @@ According to https://www.strato.de/faq/vertrag/fragen-zur-auftragsverarbeitungsv
 
 STRATO provides me with the https://www.strato.de/faq/hosting/wo-finde-ich-meine-logfiles/[log files of the last six weeks^] and https://www.strato.de/faq/hosting/so-erfahren-sie-wie-oft-ihre-internet-seiten-besucht-worden-sind/[access statistics^] derived from them, which can show up to 400 days (both in German). According to STRATO, the client address in them is anonymised: part of the address is hashed, and the same original address yields the same anonymised address for at most 24 hours. The domain of your internet provider may remain recognisable.
 
-In my log files from October 2026 I also found individual entries with a non-anonymised IP address. I am clarifying this with STRATO.
-
 I have access to the log files provided at any time and check them when needed. This is not for profiling: I do it to meet my obligations as controller and to check whether STRATO's statements match the facts. Log files I download for this purpose are deleted as soon as the check is finished.
 
 The legal basis is Art. 6(1)(f) GDPR. My legitimate interest lies in operating the website securely and in supervising my service provider.
