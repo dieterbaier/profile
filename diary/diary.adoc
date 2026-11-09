@@ -47,6 +47,8 @@ include::2026-09-07-hingeschrieben-und-still-verworfen.adoc[]
 
 include::2026-11-08-was-die-seite-wirklich-verlaesst.adoc[]
 
+include::2026-11-09-was-der-gruene-lauf-nicht-sieht.adoc[]
+
 include::toolkit-validation.adoc[]
 
 include::working-agreements.adoc[]

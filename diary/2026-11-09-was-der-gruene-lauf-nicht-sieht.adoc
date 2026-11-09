@@ -1,0 +1,49 @@
+== Day 9 — 9 November 2026: Was der grüne Lauf nicht sieht
+
+Der Tag galt den Werkzeugen. #120 hob die GitHub Actions in drei Repositories auf
+ihre Node-24-Versionen, mit #132 hier als letztem Merge. #121 sollte Gradle auf
+9.x heben und endete als PR #136 mit Gradle 9.9.0, aber ohne das neue
+Asciidoctor-Plugin, das jetzt in #135 steht. Dreimal an diesem Tag war ein Lauf
+grün oder still, und dreimal sagte das weniger, als es schien.
+
+=== „Everything up-to-date“ zum zweiten Mal
+
+#120 verlangte, dass beide `git push`-Schritte im Deployment mit dem neuen
+`checkout` funktionieren, das den Token seit v6 anders ablegt. Der Lauf nach dem
+Merge von #132, 42684106529, war in allen fünf Deploy-Jobs grün.
+`deploy-github-readme` meldete dabei `nothing to commit` und `Everything
+up-to-date`.
+
+Plausibel war die Abnahme, weil der Schritt wirklich lief und wirklich grün war.
+Er hatte nur nichts zu schreiben. Gestern hat genau diese Meldung den Dry-Run in
+#114 als Beleg entwertet, heute denselben Push-Schritt. Im Kommentar zu #120 steht
+deshalb, was der Lauf zeigt und was nicht: Ob ein Schreibzugriff durchgeht, zeigt
+erst die nächste Änderung an README oder Artikel-IDs.
+
+=== Gradle 8.8 meldete nichts, weil es nichts wissen konnte
+
+#121 hielt fest, dass Gradle 8.8 mit `--warning-mode all` keine Deprecation
+meldet, und zählte 38 `exec`-Aufrufe. Beides stimmte. Unter 9.9.0 kamen zwei
+Dinge dazu, die das Issue nicht kannte: vier Prozesse, die `build.gradle` beim
+Konfigurieren mit `.execute()` startet und die Gradle 11 nicht mehr zulässt, und
+eine Deprecation aus dem Asciidoctor-Plugin 4.0.5 selbst.
+
+Plausibel war die Bestandsaufnahme, weil eine stille Version wie ein sauberer
+Build aussieht. Eine Deprecation erscheint aber erst in der Version, die sie
+einführt. Was 8.8 nicht meldet, hat 8.8 noch nicht gekannt. Die Prozesse laufen
+seit `d4d01bb` über `providers.exec`.
+
+=== Ein Diagrammfehler landet in der Seite, nicht im Build
+
+Das Issue nannte für das Asciidoctor-Plugin 5.1.0 als aktuelle Version. Auf
+GitHub stimmt das. Die bisherigen Plugin-IDs enden aber bei 4.0.5, und 5.x führt
+das alte Modell nur noch als `.classic`, das es selbst als auslaufend meldet. Im
+Probelauf damit lief dem Gradle-Daemon der Metaspace aus, und `buildReadme` und
+`buildCVDownload` schlugen fehl.
+
+`buildArchitecture` dagegen lief durch. In der erzeugten Seite stand an 23
+Stellen `Failed to generate image: Could not load PlantUML`, weil das
+Diagramm-Modul PlantUML nicht mehr mitbringt. Rot war der Lauf nur wegen des
+Speichers. Gefunden hat die kaputten Diagramme erst der Vergleich mit dem
+Referenzbuild unter 8.8. Das Plugin bleibt deshalb bei 4.0.5, und die Migration
+auf `model5` ist mit diesem Befund in #135 beschrieben.

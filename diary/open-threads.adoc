@@ -243,14 +243,19 @@ stehen bleibt.
 
 === Was aus der Antwort von STRATO folgt
 
-Die Anfrage ist verschickt, die Antwort steht aus. Den Satz zu den einzelnen nicht
-anonymisierten Einträgen habe ich am 9. November aus beiden Sprachfassungen von
-`legal.adoc` entfernt, die Klärung läuft unabhängig davon weiter.
+STRATO hat am 9. November geantwortet: Die Logdateien behalten die IP-Adresse
+sieben Tage vollständig und liegen danach sechs Wochen anonymisiert vor. #133
+beschreibt das, PR #134 schreibt es in beide Sprachfassungen von `legal.adoc`.
+Den Satz zu den einzelnen nicht anonymisierten Einträgen hatte ich am selben Tag
+schon entfernt.
 
-Sobald die Antwort da ist: die heruntergeladene Logdatei löschen, wie der Text es
-zusagt, und prüfen, ob das Ergebnis in `legal.adoc` gehört. Der offene Absatz
-im Artikel `privacy-im-qualitaetsbaum` in `profile-private` hängt an derselben
-Antwort.
+Nicht geklärt hat die Antwort, warum Einträge vom 25. Oktober in den am
+6. November geladenen Dateien noch volle Adressen trugen. Das steht in #133 und
+wird nicht weiter verfolgt.
+
+Als Nächstes: #134 integrieren, die heruntergeladene Logdatei löschen, wie der
+Text es zusagt, und den offenen Absatz im Artikel `privacy-im-qualitaetsbaum` in
+`profile-private` an die Antwort anpassen.
 
 === Ob der Rechtstext eine anwaltliche Prüfung bekommt
 
