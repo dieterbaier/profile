@@ -19,9 +19,9 @@ jobs:
       site: ${{ steps.filter.outputs.site }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: dorny/paths-filter@v3
+      - uses: dorny/paths-filter@v4
         id: filter
         with:
           # `src-content/theme/**` belongs to every target that renders HTML, and
@@ -91,20 +91,20 @@ jobs:
     if: github.event_name != 'pull_request' && (needs.detect-changes.outputs.readme == 'true' || needs.detect-changes.outputs.architecture == 'true' || needs.detect-changes.outputs.site == 'true')
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       # actions/cache expands `~` but not `$HOME`; with `$HOME` the cache was
       # never saved, and every run downloaded Gradle again. The distribution is
       # keyed on the wrapper alone: keyed on build.gradle too, every new task
       # missed it, and a cache saved in a pull request is not visible to main.
       - name: Cache Gradle distribution
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.gradle/wrapper
           key: gradle-wrapper-${{ runner.os }}-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
 
       - name: Cache Gradle dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.gradle/caches
           key: gradle-caches-${{ runner.os }}-${{ hashFiles('**/*.gradle*', 'settings.gradle', 'gradle/wrapper/gradle-wrapper.properties') }}
@@ -145,7 +145,7 @@ jobs:
           ./build.sh $TASKS
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: steps.run_build.outputs.IS_BUILT == 'true'
         with:
           name: docs
@@ -162,20 +162,20 @@ jobs:
     if: github.event_name == 'pull_request'
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       # actions/cache expands `~` but not `$HOME`; with `$HOME` the cache was
       # never saved, and every run downloaded Gradle again. The distribution is
       # keyed on the wrapper alone: keyed on build.gradle too, every new task
       # missed it, and a cache saved in a pull request is not visible to main.
       - name: Cache Gradle distribution
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.gradle/wrapper
           key: gradle-wrapper-${{ runner.os }}-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
 
       - name: Cache Gradle dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.gradle/caches
           key: gradle-caches-${{ runner.os }}-${{ hashFiles('**/*.gradle*', 'settings.gradle', 'gradle/wrapper/gradle-wrapper.properties') }}
@@ -207,13 +207,13 @@ jobs:
       SFTP_REMOTE_BASE: ${{ vars.SFTP_REMOTE_BASE }}
 
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: docs
           path: build
 
       - name: Checkout article comments repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: dieterbaier/profile-artikelkommentare
           token: ${{ secrets.ARTICLE_COMMENTS_REPO_TOKEN }}
@@ -257,7 +257,7 @@ jobs:
       SFTP_REMOTE_BASE: ${{ vars.SFTP_REMOTE_BASE }}
 
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: docs
           path: build
@@ -281,13 +281,13 @@ jobs:
     if: needs.build-docs.outputs.isBuilt == 'true' && needs.detect-changes.outputs.readme == 'true'
 
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: docs
           path: build
 
       - name: checkout github profile repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: dieterbaier/dieterbaier
           token: ${{ secrets.PROFILE_REPO_TOKEN }}
@@ -309,7 +309,7 @@ jobs:
     if: needs.build-docs.outputs.isBuilt == 'true' && needs.detect-changes.outputs.readme == 'true'
 
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: docs
           path: build
