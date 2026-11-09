@@ -253,9 +253,10 @@ Nicht geklärt hat die Antwort, warum Einträge vom 25. Oktober in den am
 6. November geladenen Dateien noch volle Adressen trugen. Das steht in #133 und
 wird nicht weiter verfolgt.
 
-Als Nächstes: #134 integrieren, die heruntergeladene Logdatei löschen, wie der
-Text es zusagt, und den offenen Absatz im Artikel `privacy-im-qualitaetsbaum` in
-`profile-private` an die Antwort anpassen.
+Die heruntergeladene Logdatei ist gelöscht, wie der Text es zusagt.
+
+Als Nächstes: #134 integrieren und den offenen Absatz im Artikel
+`privacy-im-qualitaetsbaum` in `profile-private` an die Antwort anpassen.
 
 === Ob der Rechtstext eine anwaltliche Prüfung bekommt
 
