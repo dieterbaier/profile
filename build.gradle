@@ -7,6 +7,9 @@ repositories {
     mavenCentral()
 }
 
+// Gradle 9 removed Project.exec. Processes run through ExecOperations, which
+// Gradle injects into a task class, and into the build script through
+// InjectedExecOperations below.
 abstract class PandocTask extends DefaultTask {
 
     @InputFile
@@ -15,9 +18,12 @@ abstract class PandocTask extends DefaultTask {
     @OutputFile
     abstract RegularFileProperty getOutputFile()
 
+    @Inject
+    abstract ExecOperations getExecOperations()
+
     @TaskAction
     void runPandoc() {
-        project.exec {
+        execOperations.exec {
             commandLine 'pandoc',
                     inputFile.get().asFile,
                     '-f', 'docbook',
@@ -28,10 +34,17 @@ abstract class PandocTask extends DefaultTask {
     }
 }
 
+interface InjectedExecOperations {
+    @Inject
+    ExecOperations getExecOperations()
+}
+
+def execOperations = objects.newInstance(InjectedExecOperations).execOperations
+
 def commandExists = { String command, String versionArgument ->
     try {
         def result = new ByteArrayOutputStream()
-        exec {
+        execOperations.exec {
             commandLine command, versionArgument
             standardOutput = result
             errorOutput = result
@@ -54,6 +67,21 @@ def env = { String key, String defaultValue = null ->
     System.getenv(key) ?: localEnv[key] ?: defaultValue
 }
 
+// Runs a command while the build configures itself and hands back its exit
+// value and both outputs, so the caller decides what a failure means. Gradle
+// 9 deprecates starting a process there by any other way, and Gradle 11 fails
+// on it.
+def configurationTimeCommand = { List<String> command ->
+    def execution = providers.exec {
+        commandLine command
+        workingDir rootDir
+        ignoreExitValue = true
+    }
+    [exitValue: execution.result.get().exitValue,
+     stdout   : execution.standardOutput.asText.get(),
+     stderr   : execution.standardError.asText.get()]
+}
+
 def articleSummarySourceExcludes = [
         '**/*_summary_*.adoc',
         '**/*_summary_*.md',
@@ -72,40 +100,31 @@ def articleSummarySourceExcludes = [
 // mid-build directory, and configuration time removes it rather than ordering
 // around it.
 def publicArticleExclusions = { ->
-    def stdout = new StringWriter()
-    def stderr = new StringWriter()
-    def process = ['ruby', 'scripts/validate-profile-metamodel.rb', '--list-public-source-exclusions']
-            .execute(null, rootDir)
-    process.waitForProcessOutput(stdout, stderr)
+    def result = configurationTimeCommand(['ruby', 'scripts/validate-profile-metamodel.rb', '--list-public-source-exclusions'])
 
     // Fail closed. Without a trustworthy list the safe answer is to render
     // nothing, not to render everything.
-    if (process.exitValue() != 0) {
+    if (result.exitValue != 0) {
         throw new GradleException(
                 'Could not determine which articles the public target may render.\n' +
-                        "ruby scripts/validate-profile-metamodel.rb --list-public-source-exclusions failed:\n${stderr}")
+                        "ruby scripts/validate-profile-metamodel.rb --list-public-source-exclusions failed:\n${result.stderr}")
     }
 
-    stdout.toString().readLines().findAll { !it.trim().isEmpty() }.toSet()
+    result.stdout.readLines().findAll { !it.trim().isEmpty() }.toSet()
 }()
 
 // The asset directories the public target may publish, asked of the same owner
 // of the metadata contract and at the same time as the selection above, so a
 // page and the files it asks for are chosen by one rule rather than two.
 def publicArticleAssetDirs = { ->
-    def stdout = new StringWriter()
-    def stderr = new StringWriter()
-    def process = ['ruby', 'scripts/validate-profile-metamodel.rb', '--list-target-asset-dirs', '--target', 'public']
-            .execute(null, rootDir)
-    process.waitForProcessOutput(stdout, stderr)
-
-    if (process.exitValue() != 0) {
+    def result = configurationTimeCommand(['ruby', 'scripts/validate-profile-metamodel.rb', '--list-target-asset-dirs', '--target', 'public'])
+    if (result.exitValue != 0) {
         throw new GradleException(
                 'Could not determine which article assets the public target may publish.\n' +
-                        "ruby scripts/validate-profile-metamodel.rb --list-target-asset-dirs failed:\n${stderr}")
+                        "ruby scripts/validate-profile-metamodel.rb --list-target-asset-dirs failed:\n${result.stderr}")
     }
 
-    stdout.toString().readLines().findAll { !it.trim().isEmpty() }.collect { file(it) }
+    result.stdout.readLines().findAll { !it.trim().isEmpty() }.collect { file(it) }
 }()
 
 // Asked of a rendered target rather than of the selection that produced it, the
@@ -125,7 +144,7 @@ def verifyAssetReferences = { taskName, targetDir, label, List<String> afterTask
         afterTasks.each { mustRunAfter tasks.named(it) }
 
         doLast {
-            exec {
+            execOperations.exec {
                 commandLine 'ruby', 'scripts/verify-rendered-asset-references.rb',
                         '--target-dir', file(targetDir).absolutePath,
                         '--label', label
@@ -155,7 +174,7 @@ def verifyThemeVersions = { taskName, targetDir, label, List<String> afterTasks 
         afterTasks.each { mustRunAfter tasks.named(it) }
 
         doLast {
-            exec {
+            execOperations.exec {
                 commandLine 'ruby', 'scripts/theme-version.rb',
                         '--theme-dir', file('src-content/theme').absolutePath,
                         '--target-dir', file(targetDir).absolutePath
@@ -185,7 +204,7 @@ tasks.register('verifyThemeBrowserBaseline') {
     inputs.dir('src-content/profile/includes/i18n')
 
     doLast {
-        exec {
+        execOperations.exec {
             commandLine 'ruby', 'scripts/verify-theme-browser-baseline.rb',
                     '--theme-dir', file('src-content/theme').absolutePath,
                     '--interface-dir', file('src-content/profile/includes/i18n').absolutePath
@@ -439,7 +458,7 @@ tasks.register('validateArchitectureMetamodel') {
     inputs.files('metamodel/artifact.schema.yaml', 'metamodel/relations.schema.yaml', 'scripts/validate-metamodel.rb')
 
     doLast {
-        exec {
+        execOperations.exec {
             commandLine 'ruby',
                     'scripts/validate-metamodel.rb',
                     '--docs', 'src-content/docs/arc42',
@@ -462,7 +481,7 @@ tasks.register('generateArchitectureArtifacts') {
     outputs.dir('src-content/docs/arc42/11-risks-and-technical-debt/generated')
 
     doLast {
-        exec {
+        execOperations.exec {
             commandLine 'ruby',
                     'scripts/validate-metamodel.rb',
                     '--docs', 'src-content/docs/arc42',
@@ -483,7 +502,7 @@ tasks.register('validateProfileMetamodel') {
     inputs.files('metamodel/profile-artifact.schema.yaml', 'metamodel/relations.schema.yaml', 'scripts/validate-profile-metamodel.rb')
 
     doLast {
-        exec {
+        execOperations.exec {
             commandLine 'ruby', 'scripts/validate-profile-metamodel.rb'
         }
     }
@@ -500,7 +519,7 @@ tasks.register('generateProfileArtifacts') {
     outputs.file('build/article-comments/allowed-article-ids.json')
 
     doLast {
-        exec {
+        execOperations.exec {
             commandLine 'ruby', 'scripts/validate-profile-metamodel.rb', '--generate'
         }
     }
@@ -523,7 +542,7 @@ tasks.register('generateArticleSummaries') {
     outputs.dir(layout.buildDirectory.dir('summaries'))
 
     doLast {
-        exec {
+        execOperations.exec {
             commandLine 'ruby',
                     'scripts/generate-article-summaries.rb',
                     '--articles-dir', 'src-content/profile/site/articles',
@@ -548,7 +567,7 @@ tasks.register('buildAgentAdapters') {
     outputs.dir('adapters/cursor')
 
     doLast {
-        exec {
+        execOperations.exec {
             commandLine 'node', 'scripts/build-agent-adapters.js'
         }
     }
@@ -560,7 +579,7 @@ tasks.register('checkAgentAdapters') {
     configure agentAdapterInputs
 
     doLast {
-        exec {
+        execOperations.exec {
             commandLine 'node', 'scripts/check-agent-adapters.js'
         }
     }
@@ -573,7 +592,7 @@ tasks.register('testAgentAdapters') {
     inputs.files('test/build-agent-adapters.test.mjs')
 
     doLast {
-        exec {
+        execOperations.exec {
             commandLine 'node', '--test', 'test/build-agent-adapters.test.mjs'
         }
     }
@@ -586,7 +605,7 @@ tasks.register('testProfileNavigation') {
     inputs.files('features/article-navigation.feature')
 
     doLast {
-        exec {
+        execOperations.exec {
             commandLine 'ruby', '-Itest', 'test/profile_navigation_test.rb'
         }
     }
@@ -599,7 +618,7 @@ tasks.register('testProfileLanguage') {
     inputs.files('metamodel/profile-artifact.schema.yaml')
 
     doLast {
-        exec {
+        execOperations.exec {
             commandLine 'ruby', '-Itest', 'test/profile_language_test.rb'
         }
     }
@@ -612,7 +631,7 @@ tasks.register('testProfileCvLanguage') {
     inputs.files('features/multilingual-cv.feature')
 
     doLast {
-        exec {
+        execOperations.exec {
             commandLine 'ruby', '-Itest', 'test/profile_cv_language_test.rb'
         }
     }
@@ -625,7 +644,7 @@ tasks.register('testProfileLanguageAlternates') {
     inputs.files('features/language-alternates.feature')
 
     doLast {
-        exec {
+        execOperations.exec {
             commandLine 'ruby', '-Itest', 'test/profile_language_alternates_test.rb'
         }
     }
@@ -638,7 +657,7 @@ tasks.register('testProfileTranslation') {
     inputs.files('features/article-translation-provenance.feature')
 
     doLast {
-        exec {
+        execOperations.exec {
             commandLine 'ruby', '-Itest', 'test/profile_translation_test.rb'
         }
     }
@@ -651,7 +670,7 @@ tasks.register('testProfileListings') {
     inputs.files('features/article-listings.feature')
 
     doLast {
-        exec {
+        execOperations.exec {
             commandLine 'ruby', '-Itest', 'test/profile_listings_test.rb'
         }
     }
@@ -668,10 +687,10 @@ tasks.register('testProfileComments') {
     inputs.files('templates/write-article/article.adoc')
 
     doLast {
-        exec {
+        execOperations.exec {
             commandLine 'ruby', '-Itest', 'test/profile_comments_test.rb'
         }
-        exec {
+        execOperations.exec {
             commandLine 'node', '--test', 'test/article_comments_test.mjs'
         }
     }
@@ -745,7 +764,7 @@ tasks.register('verifyPublicTargetHasOnlyPublishedArticles') {
     inputs.files('scripts/validate-profile-metamodel.rb')
 
     doLast {
-        exec {
+        execOperations.exec {
             commandLine 'ruby', 'scripts/validate-profile-metamodel.rb', '--verify-public-target-output'
         }
     }
@@ -843,7 +862,7 @@ tasks.named('buildSite') {
         if (env('REQUIRE_SITE_BASE_URL', 'false').toBoolean()) {
             command += ['--required']
         }
-        exec {
+        execOperations.exec {
             commandLine command
         }
     }
@@ -933,24 +952,20 @@ def privateArticleExclusions = {
         return [] as Set
     }
 
-    def stdout = new StringWriter()
-    def stderr = new StringWriter()
-    def process = ['ruby', 'scripts/validate-profile-metamodel.rb',
+    def result = configurationTimeCommand(['ruby', 'scripts/validate-profile-metamodel.rb',
                    '--list-public-source-exclusions',
                    '--target', 'private',
                    '--root', privateCheckoutDir.absolutePath,
                    '--profile-dir', privateContentDir.absolutePath,
-                   '--includes-dir', publicIncludesDir.absolutePath].execute(null, rootDir)
-    process.waitForProcessOutput(stdout, stderr)
-
-    if (process.exitValue() != 0) {
+                   '--includes-dir', publicIncludesDir.absolutePath])
+    if (result.exitValue != 0) {
         privateSelectionFailure =
                 'Could not determine which articles the private target may render.\n' +
-                "ruby scripts/validate-profile-metamodel.rb --target private failed:\n${stderr}"
+                "ruby scripts/validate-profile-metamodel.rb --target private failed:\n${result.stderr}"
         return null
     }
 
-    stdout.toString().readLines().findAll { !it.trim().isEmpty() }.toSet()
+    result.stdout.readLines().findAll { !it.trim().isEmpty() }.toSet()
 }()
 
 // The assets side of the same selection, carried the same way. It fails closed
@@ -962,25 +977,21 @@ def privateArticleAssetDirs = {
         return []
     }
 
-    def stdout = new StringWriter()
-    def stderr = new StringWriter()
-    def process = ['ruby', 'scripts/validate-profile-metamodel.rb',
+    def result = configurationTimeCommand(['ruby', 'scripts/validate-profile-metamodel.rb',
                    '--list-target-asset-dirs',
                    '--target', 'private',
                    '--root', privateCheckoutDir.absolutePath,
                    '--profile-dir', privateContentDir.absolutePath,
-                   '--includes-dir', publicIncludesDir.absolutePath].execute(null, rootDir)
-    process.waitForProcessOutput(stdout, stderr)
-
-    if (process.exitValue() != 0) {
+                   '--includes-dir', publicIncludesDir.absolutePath])
+    if (result.exitValue != 0) {
         privateSelectionFailure =
                 'Could not determine which article assets the private target may publish.\n' +
-                "ruby scripts/validate-profile-metamodel.rb --list-target-asset-dirs failed:\n${stderr}"
+                "ruby scripts/validate-profile-metamodel.rb --list-target-asset-dirs failed:\n${result.stderr}"
         return []
     }
 
     // Reported relative to the private checkout, which is not this project.
-    stdout.toString().readLines().findAll { !it.trim().isEmpty() }
+    result.stdout.readLines().findAll { !it.trim().isEmpty() }
             .collect { new File(privateCheckoutDir, it) }
 }()
 
@@ -999,7 +1010,7 @@ tasks.register('validateProfilePrivateMetamodel') {
     dependsOn tasks.named('checkPrivateCheckout')
 
     doLast {
-        exec {
+        execOperations.exec {
             commandLine 'ruby', 'scripts/validate-profile-metamodel.rb',
                     '--root', privateCheckoutDir.absolutePath,
                     '--profile-dir', privateContentDir.absolutePath,
@@ -1062,7 +1073,7 @@ tasks.named('buildSitePrivate') {
     // locally and deployed nowhere, and the two rules are what keep it from
     // claiming to be the official location of anything.
     doLast {
-        exec {
+        execOperations.exec {
             commandLine 'ruby', 'scripts/inject-site-metadata.rb',
                     '--site-dir', layout.buildDirectory.dir('site-private').get().asFile,
                     '--noindex'
@@ -1106,7 +1117,7 @@ tasks.register('verifyPrivateTargetHasOnlyAllowedArticles') {
         if (privateSelectionFailure != null) {
             throw new GradleException(privateSelectionFailure)
         }
-        exec {
+        execOperations.exec {
             commandLine 'ruby', 'scripts/validate-profile-metamodel.rb',
                     '--verify-public-target-output',
                     '--target', 'private',
@@ -1125,7 +1136,7 @@ tasks.register('testProfilePublicationStatus') {
                  'features/article-publication-status.feature')
 
     doLast {
-        exec {
+        execOperations.exec {
             commandLine 'ruby', '-Itest', 'test/profile_publication_status_test.rb'
         }
     }
@@ -1138,7 +1149,7 @@ tasks.register('testThemeAssetVersioning') {
                  'features/theme-asset-versioning.feature')
 
     doLast {
-        exec {
+        execOperations.exec {
             commandLine 'ruby', '-Itest', 'test/theme_asset_versioning_test.rb'
         }
     }
@@ -1151,7 +1162,7 @@ tasks.register('testThemeBrowserBaseline') {
                  'features/theme-browser-baseline.feature')
 
     doLast {
-        exec {
+        execOperations.exec {
             commandLine 'ruby', '-Itest', 'test/theme_browser_baseline_test.rb'
         }
     }
@@ -1164,7 +1175,7 @@ tasks.register('testRenderedAssetReferences') {
                  'features/rendered-asset-references.feature')
 
     doLast {
-        exec {
+        execOperations.exec {
             commandLine 'ruby', '-Itest', 'test/rendered_asset_references_test.rb'
         }
     }
@@ -1177,7 +1188,7 @@ tasks.register('testProfileArticleAssets') {
                  'features/article-assets.feature')
 
     doLast {
-        exec {
+        execOperations.exec {
             commandLine 'ruby', '-Itest', 'test/profile_article_assets_test.rb'
         }
     }
@@ -1190,7 +1201,7 @@ tasks.register('testProfileMetadataVersion') {
                  'test/profile_metadata_version_test.rb', 'features/metadata-contract-version.feature')
 
     doLast {
-        exec {
+        execOperations.exec {
             commandLine 'ruby', '-Itest', 'test/profile_metadata_version_test.rb'
         }
     }
@@ -1203,7 +1214,7 @@ tasks.register('testProfilePrivateTarget') {
                  'test/profile_private_target_test.rb', 'features/private-content-target.feature')
 
     doLast {
-        exec {
+        execOperations.exec {
             commandLine 'ruby', '-Itest', 'test/profile_private_target_test.rb'
         }
     }
@@ -1217,7 +1228,7 @@ tasks.register('testPrivateCheckoutContract') {
     inputs.files('build.gradle', 'test/private_checkout_contract_test.rb', 'features/private-content-target.feature')
 
     doLast {
-        exec {
+        execOperations.exec {
             commandLine 'ruby', '-Itest', 'test/private_checkout_contract_test.rb'
         }
     }
@@ -1231,7 +1242,7 @@ tasks.register('testCredentialCheck') {
                  'test/credential_check_test.rb', 'features/credential-check.feature')
 
     doLast {
-        exec {
+        execOperations.exec {
             commandLine 'ruby', '-Itest', 'test/credential_check_test.rb'
         }
     }
@@ -1244,7 +1255,7 @@ tasks.register('testCiGradleCache') {
                  'test/ci_gradle_cache_test.rb', 'features/ci-gradle-cache.feature')
 
     doLast {
-        exec {
+        execOperations.exec {
             commandLine 'ruby', '-Itest', 'test/ci_gradle_cache_test.rb'
         }
     }
@@ -1256,7 +1267,7 @@ tasks.register('testCiActionRuntime') {
     inputs.files(fileTree('.github/workflows'), 'test/ci_action_runtime_test.rb', 'features/ci-action-runtime.feature')
 
     doLast {
-        exec {
+        execOperations.exec {
             commandLine 'ruby', '-Itest', 'test/ci_action_runtime_test.rb'
         }
     }
@@ -1272,7 +1283,7 @@ tasks.register('testReadmeBadges') {
     })
 
     doLast {
-        exec {
+        execOperations.exec {
             commandLine 'ruby', '-Itest', 'test/readme_badges_test.rb'
         }
     }
@@ -1284,7 +1295,7 @@ tasks.register('testSiteMetadata') {
     inputs.files('scripts/inject-site-metadata.rb', 'test/site_metadata_injector_test.rb', 'features/canonical-site-urls.feature')
 
     doLast {
-        exec {
+        execOperations.exec {
             commandLine 'ruby', '-Itest', 'test/site_metadata_injector_test.rb'
         }
     }
