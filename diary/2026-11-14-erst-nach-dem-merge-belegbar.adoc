@@ -1,0 +1,52 @@
+== Day 14 — 14 November 2026: Erst nach dem Merge belegbar
+
+Der Tag hat die Werkzeugkette für Gradle abgeschlossen. PR #136 hob den Build auf
+Gradle 9.9.0, PR #134 schrieb die Antwort von STRATO in `legal.adoc`. Beide sind
+per Rebase integriert, #121 und #133 sind geschlossen. Das Review von #136 hatte
+der Assistent schon am 10. November begonnen. Heute kamen der Convergence Check und
+die beiden Folge-Issues #137 und #138 dazu.
+
+=== Ein `Closes` hätte ein Kriterium geschlossen, das es noch nicht geben konnte
+
+Das letzte Akzeptanzkriterium von #121 verlangte, dass der Gradle-Cache aus #116
+nach dem Wechsel weiter trifft. Der Schlüssel des Wrapper-Caches hängt an
+`gradle-wrapper.properties`. Der erste Lauf auf `main` nach dem Merge musste ihn
+deshalb verfehlen, und erst ein zweiter Lauf konnte den Treffer zeigen. PR #136
+trug trotzdem `Closes #121` und hätte das Issue beim Merge geschlossen.
+
+Plausibel war das, weil alle übrigen Belege des PR vollständig waren und
+`Closes` die übliche Verknüpfung ist. Gefunden hat es der Convergence Check, als
+er die Kriterien einzeln gegen die Belege legte. Der PR sagt seitdem `Part of #121`.
+Ich habe #121 erst geschlossen, als Lauf 43614389729
+`Cache hit for: gradle-wrapper-Linux-7af99abe…` meldete.
+
+=== Der zweite Lauf brauchte eine Änderung, die der Pfadfilter durchlässt
+
+Für den zweiten Lauf hätte ein beliebiger Commit auf `main` nicht genügt.
+`build-docs` läuft nur, wenn `detect-changes` einen seiner Pfade sieht. Ein
+Diary-Commit löst den Job nicht aus, und eine Änderung allein an
+`gradle-wrapper.properties` auch nicht, denn die Datei steht in keinem Filter. Ein
+manueller Neustart des Laufs hätte noch einmal in Produktion deployt. Der Beleg kam
+deshalb über PR #134, der `src-content/profile/**` ändert.
+
+Die Lücke im Filter steht als P3 im Review von #136. Ein Issue gibt es dafür nicht.
+
+=== Der Vergleich ohne Container belegte die Auslieferung nicht
+
+PR #136 hatte die gerenderte Ausgabe unter 8.8 und 9.9.0 lokal verglichen, mit
+JDK 21 und ohne Container. Ausgeliefert wird aber aus dem Image
+`docs-toolbox:v1.5.0`, und `pr-check` rendert kein Target. Ohne weiteren Schritt
+wäre der erste Render unter Gradle 9 in dieser Umgebung der Deploy nach dem Merge
+gewesen.
+
+Der Assistent hat den Vergleich deshalb im Image wiederholt, mit
+`./build.sh buildReadme buildArchitecture buildSite` auf `main` und auf
+`issue_121`. Beide Ausgaben waren byte-gleich, bis auf den Problems-Report von
+Gradle 9 und drei Bytes Zeitstempel in `cv.pdf`. Das Ergebnis hat gehalten. Belegt
+hat die Auslieferung aber erst dieser zweite Vergleich, nicht der erste. Das ist
+derselbe Abstand, den der offene Faden zu `pr-check` beschreibt.
+
+Ebenso geprüft und nicht nur angenommen: `providers.exec` startet einen Befehl in
+9.9.0 genau einmal, auch wenn Exit-Code, stdout und stderr getrennt abgefragt
+werden. Der Assistent hat das in einem Probeprojekt gezählt.
+

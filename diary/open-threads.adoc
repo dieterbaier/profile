@@ -241,6 +241,19 @@ Der Auslöser, es zu entscheiden, wäre der erste Fehler dieser Art, der nicht a
 selben Tag auffällt — oder der erste, der zwischen Merge und Deploy auf `main`
 stehen bleibt.
 
+Am 14. November wäre der Wechsel auf Gradle 9.9.0 (PR #136) ohne Zusatzschritt
+erst beim Deploy im Image gerendert worden. Ein lokaler Vergleich im Container
+hat die Lücke für diesen PR geschlossen. Ein Fehler war es nicht, der Auslöser
+ist also nicht erreicht.
+
+=== Ob `gradle-wrapper.properties` in die Pfadfilter gehört
+
+`detect-changes` kennt die Datei nicht. Eine Änderung nur am Wrapper, etwa ein
+Patch-Release von Gradle, baut auf `main` deshalb nichts. Der neue Wrapper läuft
+erst mit der nächsten inhaltlichen Änderung, und dann zusammen mit dem Deploy.
+Festgehalten als P3 im Review von #136. Zu entscheiden, sobald der Wrapper
+wieder allein angehoben wird.
+
 === Was aus der Antwort von STRATO folgt
 
 STRATO hat am 9. November geantwortet: Die Logdateien behalten die IP-Adresse
@@ -255,8 +268,10 @@ wird nicht weiter verfolgt.
 
 Die heruntergeladene Logdatei ist gelöscht, wie der Text es zusagt.
 
-Als Nächstes: #134 integrieren und den offenen Absatz im Artikel
-`privacy-im-qualitaetsbaum` in `profile-private` an die Antwort anpassen.
+PR #134 ist am 14. November integriert (`6a61196`), #133 ist geschlossen.
+
+Als Nächstes: den offenen Absatz im Artikel `privacy-im-qualitaetsbaum` in
+`profile-private` an die Antwort anpassen.
 
 === Ob der Rechtstext eine anwaltliche Prüfung bekommt
 
